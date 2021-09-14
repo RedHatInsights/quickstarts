@@ -4,7 +4,10 @@ import (
 	"net/http"
 
 	"github.com/RedHatInsights/quickstarts/config"
+	"github.com/RedHatInsights/quickstarts/pkg/database"
+	"github.com/RedHatInsights/quickstarts/pkg/models"
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
 )
 
@@ -14,6 +17,7 @@ func initDependecies() {
 
 func main() {
 	initDependecies()
+	godotenv.Load()
 	cfg := config.Get()
 	logrus.WithFields(logrus.Fields{
 		"ServerAddr": cfg.ServerAddr,
@@ -32,6 +36,28 @@ func main() {
 
 	engine.GET("/api/quickstarts/v1/openapi.json", func(c *gin.Context) {
 		c.File(cfg.OpenApiSpecPath)
+	})
+
+	engine.POST("/api/quickstarts/v1/quickstarts", func(c *gin.Context) {
+		var quickStart models.Quickstart
+		if err := c.ShouldBindJSON(&quickStart); err != nil {
+			logrus.Error(err)
+			c.JSON(http.StatusBadRequest, gin.H{"msg": err})
+		}
+
+		id, err := database.CreateQuickstart(&quickStart)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"msg": err})
+		}
+		c.JSON(http.StatusOK, gin.H{"id": id})
+	})
+
+	engine.GET("/api/quickstarts/v1/quickstarts", func(c *gin.Context) {
+		data, err := database.GetQuickstarts()
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"msg": err})
+		}
+		c.JSON(http.StatusOK, gin.H{"data": data})
 	})
 
 	server := http.Server{
