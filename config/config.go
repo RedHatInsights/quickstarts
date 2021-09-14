@@ -5,11 +5,12 @@ package config
  */
 
 type Config struct {
-	ServerAddr string
+	ServerAddr      string
+	OpenApiSpecPath string
 }
 
 func createConfig() *Config {
-	c := Config{ServerAddr: ":8888"}
+	c := Config{ServerAddr: ":8888", OpenApiSpecPath: "./spec/openapi.json"}
 	return &c
 }
 
