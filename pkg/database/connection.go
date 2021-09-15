@@ -3,9 +3,9 @@ package database
 import (
 	"context"
 	"fmt"
+	"os"
 	"time"
 
-	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -18,10 +18,9 @@ const (
 )
 
 func GetConnection() (*mongo.Client, context.Context, context.CancelFunc) {
-	godotenv.Load(".env")
-	username := "myuser"
-	password := "mypassword"
-	clusterEndpoint := "127.0.0.1:27017"
+	username := os.Getenv("MONGO_INITDB_ROOT_USERNAME")
+	password := os.Getenv("MONGO_INITDB_ROOT_PASSWORD")
+	clusterEndpoint := os.Getenv("MONGO_INITDB_ENDPOINT")
 
 	connectionURI := fmt.Sprintf(connectionStringTemplate, username, password, clusterEndpoint)
 	fmt.Printf("connection %v, username %v, password %v, endpoint %v\n", connectionURI, username, password, clusterEndpoint)

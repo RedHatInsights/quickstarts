@@ -16,6 +16,7 @@ func initDependecies() {
 }
 
 func main() {
+	godotenv.Load()
 	initDependecies()
 	godotenv.Load()
 	cfg := config.Get()
