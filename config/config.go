@@ -10,7 +10,7 @@ type Config struct {
 }
 
 func createConfig() *Config {
-	c := Config{ServerAddr: ":8888", OpenApiSpecPath: "./spec/openapi.json"}
+	c := Config{ServerAddr: ":8000", OpenApiSpecPath: "./spec/openapi.json"}
 	return &c
 }
 
