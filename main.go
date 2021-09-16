@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/RedHatInsights/quickstarts/config"
 	"github.com/RedHatInsights/quickstarts/pkg/models"
@@ -20,13 +21,17 @@ func initDependecies() {
 func main() {
 	godotenv.Load()
 	initDependecies()
-	godotenv.Load()
 	cfg := config.Get()
 	logrus.WithFields(logrus.Fields{
 		"ServerAddr": cfg.ServerAddr,
 	})
 
-	dbdns := "host=localhost user=martin password=martin dbname=quickstarts port=5432 sslmode=disable"
+	dbHost := os.Getenv("DABATASE_HOST")
+	dbUser := os.Getenv("DATABASE_USERNAME")
+	dbPassword := os.Getenv("DATABASE_PASSWORKD")
+	dbName := os.Getenv("DATABASE_NAME")
+	dbdns := fmt.Sprintf("host=%v user=%v password=%v dbname=%v port=5432 sslmode=disable", dbHost, dbUser, dbPassword, dbName)
+	fmt.Println(dbdns)
 	db, err := gorm.Open(postgres.Open(dbdns), &gorm.Config{})
 
 	if db.Migrator().HasTable(&models.Quickstart{}) == false {
