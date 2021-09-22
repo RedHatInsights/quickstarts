@@ -28,7 +28,7 @@ func main() {
 
 	dbHost := os.Getenv("DABATASE_HOST")
 	dbUser := os.Getenv("DATABASE_USERNAME")
-	dbPassword := os.Getenv("DATABASE_PASSWORKD")
+	dbPassword := os.Getenv("DATABASE_PASSWORD")
 	dbName := os.Getenv("DATABASE_NAME")
 	dbdns := fmt.Sprintf("host=%v user=%v password=%v dbname=%v port=5432 sslmode=disable", dbHost, dbUser, dbPassword, dbName)
 	fmt.Println(dbdns)
