@@ -1,21 +1,18 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
-	"os"
 
 	"github.com/RedHatInsights/quickstarts/config"
+	"github.com/RedHatInsights/quickstarts/pkg/database"
 	"github.com/RedHatInsights/quickstarts/pkg/models"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
 )
 
 func initDependecies() {
-
+	database.Init()
 }
 
 func main() {
@@ -25,23 +22,6 @@ func main() {
 	logrus.WithFields(logrus.Fields{
 		"ServerAddr": cfg.ServerAddr,
 	})
-
-	dbHost := os.Getenv("DABATASE_HOST")
-	dbUser := os.Getenv("DATABASE_USERNAME")
-	dbPassword := os.Getenv("DATABASE_PASSWORD")
-	dbName := os.Getenv("DATABASE_NAME")
-	dbdns := fmt.Sprintf("host=%v user=%v password=%v dbname=%v port=5432 sslmode=disable", dbHost, dbUser, dbPassword, dbName)
-	fmt.Println(dbdns)
-	db, err := gorm.Open(postgres.Open(dbdns), &gorm.Config{})
-
-	if db.Migrator().HasTable(&models.Quickstart{}) == false {
-		db.Migrator().CreateTable(&models.Quickstart{})
-	}
-
-	if err != nil {
-		logrus.Error(err)
-		panic("failed to connect database")
-	}
 
 	// done := make(chan struct{})
 	// sigint := make(chan os.Signal, 1)
@@ -65,20 +45,13 @@ func main() {
 			c.JSON(http.StatusBadRequest, gin.H{"msg": err})
 		}
 
-		db.Create(&quickStart)
-		fmt.Println("After create")
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"msg": err})
-		}
+		database.DB.Create(&quickStart)
 		c.JSON(http.StatusOK, gin.H{"id": quickStart.ID})
 	})
 
 	engine.GET("/api/quickstarts/v1/quickstarts", func(c *gin.Context) {
 		var quickStarts []models.Quickstart
-		db.Find(&quickStarts)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"msg": err})
-		}
+		database.DB.Find(&quickStarts)
 		c.JSON(http.StatusOK, gin.H{"data": quickStarts})
 	})
 

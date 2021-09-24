@@ -14,7 +14,6 @@ COPY --from=builder /src/mypackage/myapp/spec/openapi.json /var/tmp
 
 USER 1001
 
-ENV MONGODB_USERNAME=myusername MONGODB_PASSWORD=mypassword MONGODB_ENDPOINT=quickstarts
 
 CMD ["quickstarts"]
 EXPOSE 8000

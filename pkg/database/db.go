@@ -2,25 +2,38 @@ package database
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/RedHatInsights/quickstarts/pkg/models"
+	"github.com/sirupsen/logrus"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
-var db *gorm.DB
+var DB *gorm.DB
 
-// CreateQuickstart is a function that creates new quickstart entry in the DB
-func CreateQuickstart(quickstart *models.Quickstart) (uint, error) {
-	newQuickstart := models.Quickstart{Title: "quickstart.Title"}
-	fmt.Println(newQuickstart)
-	result := db.Create(&newQuickstart)
-	fmt.Println(result, newQuickstart.ID)
-	return newQuickstart.ID, nil
-}
+func Init() {
+	var err error
+	var dia gorm.Dialector
 
-// GetQuickstarts list all avaiable quickstarts
-func GetQuickstarts() ([]models.Quickstart, error) {
-	var quickStarts []models.Quickstart
-	db.Find(quickStarts)
-	return quickStarts, nil
+	dbUser := os.Getenv("PGSQL_USER")
+	dbPassword := os.Getenv("PGSQL_PASSWORD")
+	dbHostname := os.Getenv("PGSQL_HOSTNAME")
+	dbPort := os.Getenv("PGSQL_PORT")
+	dbName := os.Getenv("PGSQL_DATABASE")
+
+	dbdns := fmt.Sprintf("host=%v user=%v password=%v dbname=%v port=%v sslmode=disable", dbHostname, dbUser, dbPassword, dbName, dbPort)
+
+	dia = postgres.Open(dbdns)
+	DB, err = gorm.Open(dia, &gorm.Config{})
+
+	if !DB.Migrator().HasTable(&models.Quickstart{}) {
+		DB.Migrator().CreateTable(&models.Quickstart{})
+	}
+
+	if err != nil {
+		panic(fmt.Sprintf("failed to connect database: %s", err.Error()))
+	}
+
+	logrus.Infoln("Database conection established")
 }

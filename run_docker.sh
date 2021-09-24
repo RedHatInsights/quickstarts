@@ -1,1 +1,1 @@
-docker run --name mongodb -e MONGO_INITDB_ROOT_USERNAME=myuser -e MONGO_INITDB_ROOT_PASSWORD=mypassword -e MONGO_INITDB_DATABASE=quickstarts -p 27017:27017 -p 28017:28017 -d mongo:latest
+podman run -d --name postgresql_database -e POSTGRESQL_USER=user -e POSTGRESQL_PASSWORD=pass -e POSTGRESQL_DATABASE=quickstarts -p 5432:5432 rhel8/postgresql-13

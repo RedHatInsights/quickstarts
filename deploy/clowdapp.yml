@@ -44,9 +44,9 @@ objects:
         - name: DABATASE_HOST
           value: localhost
         - name: DATABASE_USERNAME
-          value: foo
+          value: postgres
         - name: DATABASE_PASSWORD
-          value: foo
+          value: postgres
         - name: DATABASE_NAME
           value: quickstarts
         resources:
