@@ -17,6 +17,7 @@ func initDependecies() {
 
 func main() {
 	godotenv.Load()
+	config.Init()
 	initDependecies()
 	cfg := config.Get()
 	logrus.WithFields(logrus.Fields{

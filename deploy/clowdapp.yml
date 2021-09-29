@@ -10,6 +10,9 @@ objects:
     name: quickstarts
   spec:
     envName: ${ENV_NAME}
+    database:
+      name: quickstarts
+      version: 13
     optionalDependencies:
     - rbac
     deployments:

@@ -2,8 +2,8 @@ package database
 
 import (
 	"fmt"
-	"os"
 
+	"github.com/RedHatInsights/quickstarts/config"
 	"github.com/RedHatInsights/quickstarts/pkg/models"
 	"github.com/sirupsen/logrus"
 	"gorm.io/driver/postgres"
@@ -16,13 +16,9 @@ func Init() {
 	var err error
 	var dia gorm.Dialector
 
-	dbUser := os.Getenv("PGSQL_USER")
-	dbPassword := os.Getenv("PGSQL_PASSWORD")
-	dbHostname := os.Getenv("PGSQL_HOSTNAME")
-	dbPort := os.Getenv("PGSQL_PORT")
-	dbName := os.Getenv("PGSQL_DATABASE")
+	cfg := config.Get()
 
-	dbdns := fmt.Sprintf("host=%v user=%v password=%v dbname=%v port=%v sslmode=disable", dbHostname, dbUser, dbPassword, dbName, dbPort)
+	dbdns := fmt.Sprintf("host=%v user=%v password=%v dbname=%v port=%v sslmode=disable", cfg.DbHost, cfg.DbUser, cfg.DbPassword, cfg.DbName, cfg.DbPort)
 
 	dia = postgres.Open(dbdns)
 	DB, err = gorm.Open(dia, &gorm.Config{})
