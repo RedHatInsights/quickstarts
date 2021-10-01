@@ -31,7 +31,11 @@ func createQuickstart(c *gin.Context) {
 func getQuickstartById(c *gin.Context) {
 	var quickstart models.Quickstart
 	quickstartId := c.Param("id")
-	database.DB.First(&quickstart, quickstartId)
+	err := database.DB.First(&quickstart, quickstartId).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		c.JSON(http.StatusBadRequest, gin.H{"msg": "Not found"})
+		return
+	}
 	c.JSON(http.StatusOK, gin.H{"data": quickstart})
 
 }
@@ -48,10 +52,28 @@ func deleteQuickstartById(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"msg": "Quickstart successfully removed"})
 }
 
+func updateQuickstartById(c *gin.Context) {
+	var quickstart models.Quickstart
+	quickstartId := c.Param("id")
+	err := database.DB.First(&quickstart, quickstartId).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		c.JSON(http.StatusBadRequest, gin.H{"msg": "Not found"})
+		return
+	}
+	if err := c.ShouldBindJSON(&quickstart); err != nil {
+		logrus.Error(err)
+		c.JSON(http.StatusBadRequest, gin.H{"msg": err})
+		return
+	}
+	database.DB.Save(quickstart)
+	c.JSON(http.StatusOK, gin.H{"data": quickstart})
+}
+
 // MakeQuickstartsRouter creates a router handles for /quickstarts group
 func MakeQuickstartsRouter(subRouter *gin.RouterGroup) {
 	subRouter.POST("", createQuickstart)
 	subRouter.GET("", getAllQuickstarts)
 	subRouter.GET("/:id", getQuickstartById)
 	subRouter.DELETE("/:id", deleteQuickstartById)
+	subRouter.PATCH("/:id", updateQuickstartById)
 }
