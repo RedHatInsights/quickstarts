@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"net/http"
 
 	"github.com/RedHatInsights/quickstarts/config"
@@ -46,12 +45,6 @@ func main() {
 			logrus.Error(err)
 			c.JSON(http.StatusBadRequest, gin.H{"msg": err})
 		}
-		content, err := json.Marshal([]string{"foo", "bar", "baz"})
-		if err != nil {
-			panic(err)
-		}
-
-		quickStart.Content = content
 
 		database.DB.Create(&quickStart)
 		c.JSON(http.StatusOK, gin.H{"id": quickStart.ID})
