@@ -11,7 +11,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func findQuickstartById(id string) (models.Quickstart, error) {
+func FindQuickstartById(id string) (models.Quickstart, error) {
 	var quickStart models.Quickstart
 	err := database.DB.First(&quickStart, id).Error
 	return quickStart, err
@@ -35,7 +35,7 @@ func createQuickstart(c *gin.Context) {
 }
 
 func getQuickstartById(c *gin.Context) {
-	quickStart, err := findQuickstartById(c.Param("id"))
+	quickStart, err := FindQuickstartById(c.Param("id"))
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		c.JSON(http.StatusBadRequest, gin.H{"msg": "Not found"})
 		return
@@ -44,7 +44,7 @@ func getQuickstartById(c *gin.Context) {
 }
 
 func deleteQuickstartById(c *gin.Context) {
-	quickStart, err := findQuickstartById(c.Param("id"))
+	quickStart, err := FindQuickstartById(c.Param("id"))
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		c.JSON(http.StatusBadRequest, gin.H{"msg": "Not found"})
 		return
@@ -54,7 +54,7 @@ func deleteQuickstartById(c *gin.Context) {
 }
 
 func updateQuickstartById(c *gin.Context) {
-	quickStart, err := findQuickstartById(c.Param("id"))
+	quickStart, err := FindQuickstartById(c.Param("id"))
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		c.JSON(http.StatusBadRequest, gin.H{"msg": "Not found"})
 		return

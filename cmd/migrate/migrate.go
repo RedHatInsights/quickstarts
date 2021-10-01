@@ -12,7 +12,7 @@ func main() {
 	godotenv.Load()
 	config.Init()
 	database.Init()
-	err := database.DB.AutoMigrate(&models.Quickstart{})
+	err := database.DB.AutoMigrate(&models.Quickstart{}, &models.QuickstartProgress{})
 	if err != nil {
 		panic(err)
 	}

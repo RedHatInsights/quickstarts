@@ -18,3 +18,13 @@ curl --location --request GET 'http://localhost:8000/api/quickstarts/v1/quicksta
 
 ### IMPORTANT
 `oc port-forward -n quickstarts svc/quickstarts-service 8000:8000`!
+
+## Sample requests
+
+### Create progress
+
+```sh
+curl --location --request POST 'http://localhost:8000/api/quickstarts/v1/progress/{quikcstartId}' --header 'Content-Type: application/json' --data-raw '{
+"AccountId": 123456, "Progress": {"Some": "Progress"}
+}'
+```

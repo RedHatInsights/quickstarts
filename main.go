@@ -41,7 +41,9 @@ func main() {
 
 	versionGroup := engine.Group("/api/quickstarts/v1")
 	quickstartsGroup := versionGroup.Group("/quickstarts")
+	quickstartsProgressGroup := versionGroup.Group("/progress")
 	routes.MakeQuickstartsRouter(quickstartsGroup)
+	routes.MakeQuickstartsProgressRouter(quickstartsProgressGroup)
 	server := http.Server{
 		Addr:    cfg.ServerAddr,
 		Handler: engine,
