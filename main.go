@@ -5,7 +5,7 @@ import (
 
 	"github.com/RedHatInsights/quickstarts/config"
 	"github.com/RedHatInsights/quickstarts/pkg/database"
-	"github.com/RedHatInsights/quickstarts/pkg/models"
+	"github.com/RedHatInsights/quickstarts/pkg/routes"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
@@ -39,23 +39,9 @@ func main() {
 		c.File(cfg.OpenApiSpecPath)
 	})
 
-	engine.POST("/api/quickstarts/v1/quickstarts", func(c *gin.Context) {
-		var quickStart *models.Quickstart
-		if err := c.ShouldBindJSON(&quickStart); err != nil {
-			logrus.Error(err)
-			c.JSON(http.StatusBadRequest, gin.H{"msg": err})
-		}
-
-		database.DB.Create(&quickStart)
-		c.JSON(http.StatusOK, gin.H{"id": quickStart.ID})
-	})
-
-	engine.GET("/api/quickstarts/v1/quickstarts", func(c *gin.Context) {
-		var quickStarts []models.Quickstart
-		database.DB.Find(&quickStarts)
-		c.JSON(http.StatusOK, gin.H{"data": quickStarts})
-	})
-
+	versionGroup := engine.Group("/api/quickstarts/v1")
+	quickstartsGroup := versionGroup.Group("/quickstarts")
+	routes.MakeQuickstartsRouter(quickstartsGroup)
 	server := http.Server{
 		Addr:    cfg.ServerAddr,
 		Handler: engine,
