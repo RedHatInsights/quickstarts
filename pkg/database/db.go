@@ -31,7 +31,5 @@ func Init() {
 		panic(fmt.Sprintf("failed to connect database: %s", err.Error()))
 	}
 
-	DB.AutoMigrate(&models.Quickstart{})
-
 	logrus.Infoln("Database conection established")
 }
