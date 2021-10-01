@@ -21,6 +21,13 @@ objects:
       web: true # this is old
       podSpec:
         image: ${IMAGE}:${IMAGE_TAG}
+        initContainers:
+        - name: run-migrations
+          command:
+            - bash
+            - -c
+            - quickstarts-migrate
+          inheritEnv: true
         livenessProbe:
           failureThreshold: 3
           httpGet:
