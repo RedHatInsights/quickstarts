@@ -25,6 +25,6 @@ curl --location --request GET 'http://localhost:8000/api/quickstarts/v1/quicksta
 
 ```sh
 curl --location --request POST 'http://localhost:8000/api/quickstarts/v1/progress/{quikcstartId}' --header 'Content-Type: application/json' --data-raw '{
-"AccountId": 123456, "Progress": {"Some": "Progress"}
+"AccountId": 1, "Progress": {"Some": "Progress"}
 }'
 ```
