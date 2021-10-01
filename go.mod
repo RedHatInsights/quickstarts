@@ -16,6 +16,7 @@ require (
 	golang.org/x/sys v0.0.0-20210910150752-751e447fb3d0 // indirect
 	google.golang.org/protobuf v1.27.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
+	gorm.io/datatypes v1.0.2 // indirect
 	gorm.io/driver/postgres v1.1.1
 	gorm.io/gorm v1.21.15
 )
