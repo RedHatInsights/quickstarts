@@ -11,6 +11,12 @@ import (
 	"gorm.io/gorm"
 )
 
+func findQuickstartById(id string) (models.Quickstart, error) {
+	var quickStart models.Quickstart
+	err := database.DB.First(&quickStart, id).Error
+	return quickStart, err
+}
+
 func getAllQuickstarts(c *gin.Context) {
 	var quickStarts []models.Quickstart
 	database.DB.Find(&quickStarts)
@@ -29,44 +35,37 @@ func createQuickstart(c *gin.Context) {
 }
 
 func getQuickstartById(c *gin.Context) {
-	var quickstart models.Quickstart
-	quickstartId := c.Param("id")
-	err := database.DB.First(&quickstart, quickstartId).Error
+	quickStart, err := findQuickstartById(c.Param("id"))
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		c.JSON(http.StatusBadRequest, gin.H{"msg": "Not found"})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"data": quickstart})
-
+	c.JSON(http.StatusOK, gin.H{"data": quickStart})
 }
 
 func deleteQuickstartById(c *gin.Context) {
-	var quickstart models.Quickstart
-	quickstartId := c.Param("id")
-	err := database.DB.First(&quickstart, quickstartId).Error
+	quickStart, err := findQuickstartById(c.Param("id"))
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		c.JSON(http.StatusBadRequest, gin.H{"msg": "Not found"})
 		return
 	}
-	database.DB.Delete(&quickstart)
+	database.DB.Delete(&quickStart)
 	c.JSON(http.StatusOK, gin.H{"msg": "Quickstart successfully removed"})
 }
 
 func updateQuickstartById(c *gin.Context) {
-	var quickstart models.Quickstart
-	quickstartId := c.Param("id")
-	err := database.DB.First(&quickstart, quickstartId).Error
+	quickStart, err := findQuickstartById(c.Param("id"))
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		c.JSON(http.StatusBadRequest, gin.H{"msg": "Not found"})
 		return
 	}
-	if err := c.ShouldBindJSON(&quickstart); err != nil {
+	if err := c.ShouldBindJSON(&quickStart); err != nil {
 		logrus.Error(err)
 		c.JSON(http.StatusBadRequest, gin.H{"msg": err})
 		return
 	}
-	database.DB.Save(quickstart)
-	c.JSON(http.StatusOK, gin.H{"data": quickstart})
+	database.DB.Save(quickStart)
+	c.JSON(http.StatusOK, gin.H{"data": quickStart})
 }
 
 // MakeQuickstartsRouter creates a router handles for /quickstarts group
