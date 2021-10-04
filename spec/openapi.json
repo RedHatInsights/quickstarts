@@ -1,3 +1,1 @@
-{
-
-}
+{"components":{"schemas":{"v1.Quickstart":{"properties":{"Content":{"format":"byte","type":"string"},"CreatedAt":{"format":"date-time","type":"string"},"DeletedAt":{},"ID":{"minimum":0,"type":"integer"},"Title":{"type":"string"},"UpdatedAt":{"format":"date-time","type":"string"}},"type":"object"},"v1.QuickstartProgress":{"properties":{"AccountId":{"type":"integer"},"Progress":{"format":"byte","type":"string"},"Quickstart":{"properties":{"Content":{"format":"byte","type":"string"},"CreatedAt":{"format":"date-time","type":"string"},"DeletedAt":{},"ID":{"minimum":0,"type":"integer"},"Title":{"type":"string"},"UpdatedAt":{"format":"date-time","type":"string"}},"type":"object"},"QuickstartID":{"minimum":0,"type":"integer"}},"type":"object"}}},"info":null,"openapi":"","paths":null}
