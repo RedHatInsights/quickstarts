@@ -7,9 +7,8 @@ import (
 
 type QuickstartProgress struct {
 	gorm.Model
-	ID           uint `gorm:"primaryKey"`
-	QuickstartID uint
-	Quickstart   Quickstart
-	Progress     datatypes.JSON `gorm:"type: JSONB"`
-	AccountId    int
+	QuickstartID uint           `json:"QuickstartID,omitempty"`
+	Quickstart   *Quickstart    `json:"Quickstart,omitempty"`
+	Progress     datatypes.JSON `json:"Progress,omitempty" gorm:"type: JSONB"`
+	AccountId    int            `json:"AccountId,omitempty"`
 }

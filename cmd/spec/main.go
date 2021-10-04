@@ -8,7 +8,6 @@ import (
 	"github.com/RedHatInsights/quickstarts/pkg/models"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/getkin/kin-openapi/openapi3gen"
-	"github.com/ghodss/yaml"
 )
 
 type Swagger struct {
@@ -30,15 +29,11 @@ func main() {
 
 	swagger := Swagger{}
 	swagger.Components = components
+	checkErr(err)
 
 	b := &bytes.Buffer{}
 	err = json.NewEncoder(b).Encode(swagger)
 	checkErr(err)
-
-	schema, err := yaml.JSONToYAML(b.Bytes())
-	checkErr((err))
-
-	b.Write(schema)
 
 	doc, err := openapi3.NewLoader().LoadFromData(b.Bytes())
 	checkErr(err)

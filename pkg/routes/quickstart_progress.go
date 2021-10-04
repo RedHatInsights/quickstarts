@@ -57,7 +57,7 @@ func createQuickstartProgress(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"msg": err})
 	}
 
-	progress.Quickstart = quickStart
+	progress.Quickstart = &quickStart
 
 	database.DB.Create(&progress)
 	c.JSON(http.StatusOK, gin.H{"id": progress.ID})
