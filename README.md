@@ -24,7 +24,7 @@ curl --location --request GET 'http://localhost:8000/api/quickstarts/v1/quicksta
 ### Create progress
 
 ```sh
-curl --location --request POST 'http://localhost:8000/api/quickstarts/v1/progress/{quikcstartId}' --header 'Content-Type: application/json' --data-raw '{
+curl --location --request POST 'http://localhost:8000/api/quickstarts/v1/progress/2' --header 'Content-Type: application/json' --data-raw '{
 "AccountId": 1, "Progress": {"Some": "Progress"}
 }'
 ```

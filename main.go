@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/RedHatInsights/quickstarts/config"
@@ -8,11 +9,19 @@ import (
 	"github.com/RedHatInsights/quickstarts/pkg/routes"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/sirupsen/logrus"
 )
 
 func initDependecies() {
 	database.Init()
+}
+
+func prometheusHandler() gin.HandlerFunc {
+	h := promhttp.Handler()
+	return func(c *gin.Context) {
+		h.ServeHTTP(c.Writer, c.Request)
+	}
 }
 
 func main() {
@@ -44,10 +53,30 @@ func main() {
 	quickstartsProgressGroup := versionGroup.Group("/progress")
 	routes.MakeQuickstartsRouter(quickstartsGroup)
 	routes.MakeQuickstartsProgressRouter(quickstartsProgressGroup)
+
 	server := http.Server{
 		Addr:    cfg.ServerAddr,
 		Handler: engine,
 	}
+
+	metricsEngine := gin.Default()
+	metricsEngine.GET("/", func(context *gin.Context) {
+		context.JSON(200, gin.H{
+			"message": "OK",
+		})
+	})
+	metricsEngine.GET("/metrics", prometheusHandler())
+
+	metricsServer := http.Server{
+		Addr:    fmt.Sprintf(":%d", cfg.MetricsPort),
+		Handler: metricsEngine,
+	}
+
+	go func() {
+		if err := metricsServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			logrus.Fatal("Metrics server stopped: : %s\n", err)
+		}
+	}()
 
 	if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		logrus.Fatal("listen: %s\n", err)

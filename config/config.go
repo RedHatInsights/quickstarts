@@ -15,6 +15,7 @@ type QuickstartsConfig struct {
 	DbPassword      string
 	DbPort          int
 	DbName          string
+	MetricsPort     int
 }
 
 var config *QuickstartsConfig
@@ -30,6 +31,7 @@ func Init() {
 		config.DbUser = cfg.Database.Username
 		config.DbPassword = cfg.Database.Password
 		config.DbName = cfg.Database.Name
+		config.MetricsPort = cfg.MetricsPort
 	} else {
 		config.DbUser = os.Getenv("PGSQL_USER")
 		config.DbPassword = os.Getenv("PGSQL_PASSWORD")
@@ -37,6 +39,7 @@ func Init() {
 		port, _ := strconv.Atoi(os.Getenv("PGSQL_PORT"))
 		config.DbPort = port
 		config.DbName = os.Getenv("PGSQL_DATABASE")
+		config.MetricsPort = 8080
 	}
 }
 
