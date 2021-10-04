@@ -65,7 +65,13 @@ func main() {
 			"message": "OK",
 		})
 	})
+
+	/**Find a handle for all http request types*/
 	metricsEngine.GET("/metrics", prometheusHandler())
+	metricsEngine.POST("/metrics", prometheusHandler())
+	metricsEngine.PUT("/metrics", prometheusHandler())
+	metricsEngine.PATCH("/metrics", prometheusHandler())
+	metricsEngine.DELETE("/metrics", prometheusHandler())
 
 	metricsServer := http.Server{
 		Addr:    fmt.Sprintf(":%d", cfg.MetricsPort),
