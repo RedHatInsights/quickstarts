@@ -17,7 +17,7 @@ func FindQuickstartById(id string) (models.Quickstart, error) {
 	return quickStart, err
 }
 
-func getAllQuickstarts(c *gin.Context) {
+func GetAllQuickstarts(c *gin.Context) {
 	var quickStarts []models.Quickstart
 	database.DB.Find(&quickStarts)
 	c.JSON(http.StatusOK, gin.H{"data": quickStarts})
@@ -71,7 +71,7 @@ func updateQuickstartById(c *gin.Context) {
 // MakeQuickstartsRouter creates a router handles for /quickstarts group
 func MakeQuickstartsRouter(subRouter *gin.RouterGroup) {
 	subRouter.POST("", createQuickstart)
-	subRouter.GET("", getAllQuickstarts)
+	subRouter.GET("", GetAllQuickstarts)
 	subRouter.GET("/:id", getQuickstartById)
 	subRouter.DELETE("/:id", deleteQuickstartById)
 	subRouter.PATCH("/:id", updateQuickstartById)
