@@ -3,9 +3,11 @@ module github.com/RedHatInsights/quickstarts
 go 1.16
 
 require (
+	github.com/Valiben/gin_unit_test v0.0.0-20181205064931-674aee46d090
 	github.com/getkin/kin-openapi v0.76.0
 	github.com/ghodss/yaml v1.0.0
 	github.com/gin-gonic/gin v1.7.4
+	github.com/go-pg/pg v8.0.7+incompatible
 	github.com/go-playground/validator/v10 v10.9.0 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/joho/godotenv v1.3.0
@@ -14,11 +16,14 @@ require (
 	github.com/prometheus/client_golang v1.11.0
 	github.com/redhatinsights/app-common-go v1.5.2
 	github.com/sirupsen/logrus v1.8.1
+	github.com/stretchr/testify v1.7.0
 	github.com/ugorji/go v1.2.6 // indirect
 	golang.org/x/sys v0.0.0-20210910150752-751e447fb3d0 // indirect
 	google.golang.org/protobuf v1.27.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gorm.io/datatypes v1.0.2
 	gorm.io/driver/postgres v1.1.1
+	gorm.io/driver/sqlite v1.1.5
 	gorm.io/gorm v1.21.15
+	mellium.im/sasl v0.2.1 // indirect
 )

@@ -7,6 +7,7 @@ import (
 	"github.com/RedHatInsights/quickstarts/pkg/models"
 	"github.com/sirupsen/logrus"
 	"gorm.io/driver/postgres"
+	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 
@@ -18,9 +19,14 @@ func Init() {
 
 	cfg := config.Get()
 
-	dbdns := fmt.Sprintf("host=%v user=%v password=%v dbname=%v port=%v sslmode=disable", cfg.DbHost, cfg.DbUser, cfg.DbPassword, cfg.DbName, cfg.DbPort)
+	var dbdns string
+	if cfg.Test {
+		dia = sqlite.Open(cfg.DbName)
+	} else {
+		dbdns = fmt.Sprintf("host=%v user=%v password=%v dbname=%v port=%v sslmode=disable", cfg.DbHost, cfg.DbUser, cfg.DbPassword, cfg.DbName, cfg.DbPort)
+		dia = postgres.Open(dbdns)
+	}
 
-	dia = postgres.Open(dbdns)
 	DB, err = gorm.Open(dia, &gorm.Config{})
 
 	if !DB.Migrator().HasTable(&models.Quickstart{}) {

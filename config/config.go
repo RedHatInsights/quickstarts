@@ -16,6 +16,7 @@ type QuickstartsConfig struct {
 	DbPort          int
 	DbName          string
 	MetricsPort     int
+	Test            bool
 }
 
 var config *QuickstartsConfig
@@ -24,6 +25,7 @@ func Init() {
 	config = &QuickstartsConfig{}
 	config.ServerAddr = ":8000"
 	config.OpenApiSpecPath = "./spec/openapi.json"
+	config.Test = false
 	if clowder.IsClowderEnabled() {
 		cfg := clowder.LoadedConfig
 		config.DbHost = cfg.Database.Hostname

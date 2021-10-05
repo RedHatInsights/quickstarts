@@ -24,19 +24,7 @@ func prometheusHandler() gin.HandlerFunc {
 	}
 }
 
-func main() {
-	godotenv.Load()
-	config.Init()
-	initDependecies()
-	cfg := config.Get()
-	logrus.WithFields(logrus.Fields{
-		"ServerAddr": cfg.ServerAddr,
-	})
-
-	// done := make(chan struct{})
-	// sigint := make(chan os.Signal, 1)
-	// signal.Notify(sigint)
-
+func setupRouter(cfg *config.QuickstartsConfig) *gin.Engine {
 	engine := gin.Default()
 	engine.GET("/test", func(context *gin.Context) {
 		context.JSON(200, gin.H{
@@ -53,6 +41,24 @@ func main() {
 	quickstartsProgressGroup := versionGroup.Group("/progress")
 	routes.MakeQuickstartsRouter(quickstartsGroup)
 	routes.MakeQuickstartsProgressRouter(quickstartsProgressGroup)
+
+	return engine
+}
+
+func main() {
+	godotenv.Load()
+	config.Init()
+	cfg := config.Get()
+	initDependecies()
+	logrus.WithFields(logrus.Fields{
+		"ServerAddr": cfg.ServerAddr,
+	})
+
+	// done := make(chan struct{})
+	// sigint := make(chan os.Signal, 1)
+	// signal.Notify(sigint)
+
+	engine := setupRouter(cfg)
 
 	server := http.Server{
 		Addr:    cfg.ServerAddr,
@@ -80,12 +86,12 @@ func main() {
 
 	go func() {
 		if err := metricsServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			logrus.Fatal("Metrics server stopped: : %s\n", err)
+			logrus.Fatal("Metrics server stopped")
 		}
 	}()
 
 	if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-		logrus.Fatal("listen: %s\n", err)
+		logrus.Fatal("Api server has stopped")
 	}
 
 	// <-done
