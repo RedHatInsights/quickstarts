@@ -2,7 +2,9 @@ package routes
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/RedHatInsights/quickstarts/pkg/database"
 	"github.com/RedHatInsights/quickstarts/pkg/models"
@@ -19,7 +21,23 @@ func FindQuickstartById(id string) (models.Quickstart, error) {
 
 func GetAllQuickstarts(c *gin.Context) {
 	var quickStarts []models.Quickstart
-	database.DB.Find(&quickStarts)
+	var bundlesQuery, bundlesExists = c.GetQueryArray("[]bundles")
+	var bundleQuery, bundleExists = c.GetQuery("bundle")
+
+	// Look for gorm supported APi instead of using RAW query
+	// sample query /api/quickstarts/v1/quickstarts?[]bundles=settings&[]bundles=insights
+	if bundlesExists {
+		var conditions []string
+		for _, s := range bundlesQuery {
+			conditions = append(conditions, fmt.Sprintf("(bundles)::jsonb ? '%s'", s))
+		}
+		where := strings.Join(conditions, "OR ")
+		database.DB.Raw(fmt.Sprintf("SELECT * FROM quickstarts WHERE %s", where)).Scan(&quickStarts)
+	} else if bundleExists {
+		database.DB.Raw(fmt.Sprintf("SELECT * FROM quickstarts WHERE (bundles)::jsonb ? '%s'", bundleQuery)).Scan(&quickStarts)
+	} else {
+		database.DB.Find(&quickStarts)
+	}
 	c.JSON(http.StatusOK, gin.H{"data": quickStarts})
 }
 

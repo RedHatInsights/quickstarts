@@ -8,7 +8,6 @@ import (
 	"github.com/RedHatInsights/quickstarts/pkg/database"
 	"github.com/RedHatInsights/quickstarts/pkg/models"
 	"github.com/gin-gonic/gin"
-	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
 
@@ -20,8 +19,6 @@ func getAllQuickstartsProgress(c *gin.Context) {
 
 func getQuickstartProgress(c *gin.Context) {
 	queries := c.Request.URL.Query()
-	logrus.Info(queries)
-
 	var accountId int
 	var quickstartId int
 	accountId, _ = strconv.Atoi(queries.Get("account"))
