@@ -30,9 +30,19 @@ func GetAllQuickstarts(c *gin.Context) {
 			conditions = append(conditions, fmt.Sprintf("(bundles)::jsonb ? '%s'", s))
 		}
 		where := strings.Join(conditions, "OR ")
-		database.DB.Raw(fmt.Sprintf("SELECT * FROM quickstarts WHERE %s", where)).Scan(&quickStarts)
+		err := database.DB.Raw(fmt.Sprintf("SELECT * FROM quickstarts WHERE %s", where)).Scan(&quickStarts).Error
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"msg": err.Error()})
+			c.Abort()
+			return
+		}
 	} else if bundleExists {
-		database.DB.Raw(fmt.Sprintf("SELECT * FROM quickstarts WHERE (bundles)::jsonb ? '%s'", bundleQuery)).Scan(&quickStarts)
+		err := database.DB.Raw(fmt.Sprintf("SELECT * FROM quickstarts WHERE (bundles)::jsonb ? '%s'", bundleQuery)).Scan(&quickStarts).Error
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"msg": err.Error()})
+			c.Abort()
+			return
+		}
 	} else {
 		database.DB.Find(&quickStarts)
 	}
