@@ -9,7 +9,6 @@ import (
 	"github.com/RedHatInsights/quickstarts/pkg/database"
 	"github.com/RedHatInsights/quickstarts/pkg/models"
 	"github.com/gin-gonic/gin"
-	"github.com/sirupsen/logrus"
 )
 
 func FindQuickstartById(id int) (models.Quickstart, error) {
@@ -43,8 +42,9 @@ func GetAllQuickstarts(c *gin.Context) {
 func createQuickstart(c *gin.Context) {
 	var quickStart *models.Quickstart
 	if err := c.ShouldBindJSON(&quickStart); err != nil {
-		logrus.Error(err)
 		c.JSON(http.StatusBadRequest, gin.H{"msg": err})
+		c.Abort()
+		return
 	}
 
 	database.DB.Create(&quickStart)
@@ -61,6 +61,7 @@ func deleteQuickstartById(c *gin.Context) {
 	err := database.DB.Delete(quickStart).Error
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"msg": err.Error()})
+		c.Abort()
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"msg": "Quickstart successfully removed"})
@@ -69,11 +70,16 @@ func deleteQuickstartById(c *gin.Context) {
 func updateQuickstartById(c *gin.Context) {
 	quickStart, _ := c.Get("quickstart")
 	if err := c.ShouldBindJSON(&quickStart); err != nil {
-		logrus.Error(err)
 		c.JSON(http.StatusBadRequest, gin.H{"msg": err})
+		c.Abort()
 		return
 	}
-	database.DB.Save(quickStart)
+	err := database.DB.Save(quickStart).Error
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"msg": err.Error()})
+		c.Abort()
+		return
+	}
 	c.JSON(http.StatusOK, gin.H{"data": quickStart})
 }
 
