@@ -11,7 +11,7 @@ test:
 	go test ./... -coverprofile=c.out
 
 coverage:
-	go test -coverprofile=c.out
+	go tool cover -html=c.out
 
 migrate:
 	go run cmd/migrate/migrate.go 
