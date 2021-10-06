@@ -51,7 +51,7 @@ func createQuickstart(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"id": quickStart.ID})
 }
 
-func getQuickstartById(c *gin.Context) {
+func GetQuickstartById(c *gin.Context) {
 	quickStart, _ := c.Get("quickstart")
 	c.JSON(http.StatusOK, gin.H{"data": quickStart})
 }
@@ -83,7 +83,7 @@ func updateQuickstartById(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": quickStart})
 }
 
-func entityContext() gin.HandlerFunc {
+func QuickstartEntityContext() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if quickstartId := c.Param("id"); quickstartId != "" {
 			id, err := strconv.Atoi(quickstartId)
@@ -110,8 +110,8 @@ func MakeQuickstartsRouter(subRouter *gin.RouterGroup) {
 	subRouter.POST("", createQuickstart)
 	subRouter.GET("", GetAllQuickstarts)
 	entityRouter := subRouter.Group("/:id")
-	entityRouter.Use(entityContext())
-	entityRouter.GET("", getQuickstartById)
+	entityRouter.Use(QuickstartEntityContext())
+	entityRouter.GET("", GetQuickstartById)
 	entityRouter.DELETE("", deleteQuickstartById)
 	entityRouter.PATCH("", updateQuickstartById)
 }
