@@ -2,6 +2,7 @@ package routes
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -18,6 +19,16 @@ func mockQuickstart() {
 	quickstart.ID = 123
 	quickstart.Title = "test title"
 	database.DB.Create(&quickstart)
+}
+
+func mockBundleQuickstarts(bundles ...string) {
+	quickstart.ID = 222
+	quickstart.Title = "bundle title"
+	quickstart.Bundles, _ = json.Marshal(bundles)
+	database.DB.Create(quickstart)
+	quickstart.ID = 333
+	database.DB.Create(quickstart)
+	fmt.Println(quickstart.Bundles)
 }
 
 type responseBody struct {
@@ -48,6 +59,7 @@ func setupRouter() *gin.Engine {
 func TestGetAll(t *testing.T) {
 	router := setupRouter()
 	mockQuickstart()
+	mockBundleQuickstarts("foo", "bar")
 	t.Run("returns GET all quickstarts successfully", func(t *testing.T) {
 		request, _ := http.NewRequest(http.MethodGet, "/", nil)
 		response := httptest.NewRecorder()
@@ -56,8 +68,35 @@ func TestGetAll(t *testing.T) {
 		var payload *responsePayload
 		json.NewDecoder(response.Body).Decode(&payload)
 		assert.Equal(t, 200, response.Code)
-		assert.Equal(t, 1, len(payload.Data))
+		assert.Equal(t, 3, len(payload.Data))
 		assert.Equal(t, "test title", payload.Data[0].Title)
+	})
+
+	/**
+	* Before we can query JSONS in SQLite, we need to use gorm build in JSON queries instead of RAW questions based on postgres
+	 */
+	t.Run("Should return an empty array when filtering non existing bundle", func(t *testing.T) {
+		t.Skip()
+		request, _ := http.NewRequest(http.MethodGet, "/?bundle=nonsense", nil)
+		response := httptest.NewRecorder()
+		router.ServeHTTP(response, request)
+
+		var payload *responsePayload
+		json.NewDecoder(response.Body).Decode(&payload)
+		assert.Equal(t, 200, response.Code)
+		assert.Equal(t, 0, len(payload.Data))
+	})
+
+	t.Run("Should an array of quickstarts within 'foo' bundle", func(t *testing.T) {
+		t.Skip()
+		request, _ := http.NewRequest(http.MethodGet, "/?bundle=foo", nil)
+		response := httptest.NewRecorder()
+		router.ServeHTTP(response, request)
+
+		var payload *responsePayload
+		json.NewDecoder(response.Body).Decode(&payload)
+		assert.Equal(t, 200, response.Code)
+		assert.Equal(t, 2, len(payload.Data))
 	})
 }
 
