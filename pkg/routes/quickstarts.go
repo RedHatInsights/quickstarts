@@ -1,19 +1,18 @@
 package routes
 
 import (
-	"errors"
 	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/RedHatInsights/quickstarts/pkg/database"
 	"github.com/RedHatInsights/quickstarts/pkg/models"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
-	"gorm.io/gorm"
 )
 
-func FindQuickstartById(id string) (models.Quickstart, error) {
+func FindQuickstartById(id int) (models.Quickstart, error) {
 	var quickStart models.Quickstart
 	err := database.DB.First(&quickStart, id).Error
 	return quickStart, err
@@ -53,30 +52,22 @@ func createQuickstart(c *gin.Context) {
 }
 
 func getQuickstartById(c *gin.Context) {
-	quickStart, err := FindQuickstartById(c.Param("id"))
-	if errors.Is(err, gorm.ErrRecordNotFound) {
-		c.JSON(http.StatusBadRequest, gin.H{"msg": "Not found"})
-		return
-	}
+	quickStart, _ := c.Get("quickstart")
 	c.JSON(http.StatusOK, gin.H{"data": quickStart})
 }
 
 func deleteQuickstartById(c *gin.Context) {
-	quickStart, err := FindQuickstartById(c.Param("id"))
-	if errors.Is(err, gorm.ErrRecordNotFound) {
-		c.JSON(http.StatusBadRequest, gin.H{"msg": "Not found"})
+	quickStart, _ := c.Get("quickstart")
+	err := database.DB.Delete(quickStart).Error
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"msg": err.Error()})
 		return
 	}
-	database.DB.Delete(&quickStart)
 	c.JSON(http.StatusOK, gin.H{"msg": "Quickstart successfully removed"})
 }
 
 func updateQuickstartById(c *gin.Context) {
-	quickStart, err := FindQuickstartById(c.Param("id"))
-	if errors.Is(err, gorm.ErrRecordNotFound) {
-		c.JSON(http.StatusBadRequest, gin.H{"msg": "Not found"})
-		return
-	}
+	quickStart, _ := c.Get("quickstart")
 	if err := c.ShouldBindJSON(&quickStart); err != nil {
 		logrus.Error(err)
 		c.JSON(http.StatusBadRequest, gin.H{"msg": err})
@@ -86,11 +77,35 @@ func updateQuickstartById(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": quickStart})
 }
 
+func entityContext() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		if quickstartId := c.Param("id"); quickstartId != "" {
+			id, err := strconv.Atoi(quickstartId)
+			if err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{"msg": err.Error()})
+				c.Abort()
+				return
+			}
+			quickstart, err := FindQuickstartById(id)
+			if err != nil {
+				c.JSON(http.StatusNotFound, gin.H{"msg": err.Error()})
+				c.Abort()
+				return
+			}
+
+			c.Set("quickstart", &quickstart)
+			c.Next()
+		}
+	}
+}
+
 // MakeQuickstartsRouter creates a router handles for /quickstarts group
 func MakeQuickstartsRouter(subRouter *gin.RouterGroup) {
 	subRouter.POST("", createQuickstart)
 	subRouter.GET("", GetAllQuickstarts)
-	subRouter.GET("/:id", getQuickstartById)
-	subRouter.DELETE("/:id", deleteQuickstartById)
-	subRouter.PATCH("/:id", updateQuickstartById)
+	entityRouter := subRouter.Group("/:id")
+	entityRouter.Use(entityContext())
+	entityRouter.GET("", getQuickstartById)
+	entityRouter.DELETE("", deleteQuickstartById)
+	entityRouter.PATCH("", updateQuickstartById)
 }

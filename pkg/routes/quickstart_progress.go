@@ -44,7 +44,8 @@ func getQuickstartProgress(c *gin.Context) {
 }
 
 func createQuickstartProgress(c *gin.Context) {
-	quickStart, err := FindQuickstartById(c.Param("quickstartId"))
+	id, _ := strconv.Atoi(c.Param("quickstartId"))
+	quickStart, err := FindQuickstartById(id)
 	var progress *models.QuickstartProgress
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		c.JSON(http.StatusBadRequest, gin.H{"msg": "Not found"})
