@@ -16,3 +16,5 @@
 
 .env
 fmtcoverage.html
+# Sqlite databases used for testing purposes.
+*.db
