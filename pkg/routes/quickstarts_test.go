@@ -16,10 +16,15 @@ import (
 
 var quickstart models.Quickstart
 
-func mockQuickstart() {
-	quickstart.ID = 123
-	quickstart.Title = "test title"
+func mockQuickstart(id uint, title string) *models.Quickstart {
+	quickstart.ID = 123 + id
+	if title == "" {
+		quickstart.Title = "test title"
+	} else {
+		quickstart.Title = title
+	}
 	database.DB.Create(&quickstart)
+	return &quickstart
 }
 
 func mockBundleQuickstarts(bundles ...string) {
@@ -62,7 +67,7 @@ func setupRouter() *gin.Engine {
 
 func TestGetAll(t *testing.T) {
 	router := setupRouter()
-	mockQuickstart()
+	mockQuickstart(1, "")
 	mockBundleQuickstarts("foo", "bar")
 	t.Run("returns GET all quickstarts successfully", func(t *testing.T) {
 		request, _ := http.NewRequest(http.MethodGet, "/", nil)
@@ -106,7 +111,7 @@ func TestGetAll(t *testing.T) {
 
 func TestGetOneById(t *testing.T) {
 	router := setupRouter()
-	mockQuickstart()
+	mockQuickstart(0, "get title")
 	t.Run("returns a quickstart object with ID 123", func(t *testing.T) {
 		request, _ := http.NewRequest(http.MethodGet, "/123", nil)
 		response := httptest.NewRecorder()
@@ -169,8 +174,7 @@ func TestCRUDRoutes(t *testing.T) {
 	})
 
 	t.Run("should delete existing record from database", func(t *testing.T) {
-		var deleteQuickstart models.Quickstart
-		deleteQuickstart.ID = 999999
+		deleteQuickstart := mockQuickstart(123, "Delete quickstart")
 		database.DB.Create(&deleteQuickstart)
 		request, _ := http.NewRequest(http.MethodDelete, fmt.Sprintf("/%d", deleteQuickstart.ID), nil)
 		response := httptest.NewRecorder()
@@ -181,7 +185,7 @@ func TestCRUDRoutes(t *testing.T) {
 		assert.Equal(t, 200, response.Code)
 		assert.Equal(t, "Quickstart successfully removed", payload.Msg)
 
-		_, err := FindQuickstartById(999999)
+		_, err := FindQuickstartById(int(deleteQuickstart.ID))
 		assert.Equal(t, "record not found", err.Error())
 	})
 
@@ -197,15 +201,14 @@ func TestCRUDRoutes(t *testing.T) {
 	})
 
 	t.Run("should update existing record", func(t *testing.T) {
-		var updatedQuickstart models.Quickstart
-		updatedQuickstart.ID = 777
+		updatedQuickstart := mockQuickstart(777, "")
 		database.DB.Create(&updatedQuickstart)
 		jsonParam := `{"title":"Update test title"}`
 
 		var dbRecord models.Quickstart
-		dbRecord, _ = FindQuickstartById(777)
-		assert.Equal(t, int(dbRecord.ID), 777)
-		assert.Equal(t, dbRecord.Title, "")
+		dbRecord, _ = FindQuickstartById(int(updatedQuickstart.ID))
+		assert.Equal(t, dbRecord.ID, updatedQuickstart.ID)
+		assert.Equal(t, dbRecord.Title, "test title")
 
 		request, _ := http.NewRequest(http.MethodPatch, fmt.Sprintf("/%d", updatedQuickstart.ID), strings.NewReader(string(jsonParam)))
 		response := httptest.NewRecorder()
@@ -215,7 +218,7 @@ func TestCRUDRoutes(t *testing.T) {
 		json.NewDecoder(response.Body).Decode(&payload)
 		assert.Equal(t, 200, response.Code)
 
-		dbRecord, _ = FindQuickstartById(777)
+		dbRecord, _ = FindQuickstartById(int(updatedQuickstart.ID))
 		assert.Equal(t, "Update test title", dbRecord.Title)
 	})
 
@@ -233,12 +236,11 @@ func TestCRUDRoutes(t *testing.T) {
 	})
 
 	t.Run("should return 400 when updating record with invalid data", func(t *testing.T) {
-		var updatedQuickstart models.Quickstart
-		updatedQuickstart.ID = 777
+		updatedQuickstart := mockQuickstart(865, "")
 		database.DB.Create(&updatedQuickstart)
 		jsonParam := `[]`
 
-		request, _ := http.NewRequest(http.MethodPatch, fmt.Sprintf("/%d", 777), strings.NewReader(string(jsonParam)))
+		request, _ := http.NewRequest(http.MethodPatch, fmt.Sprintf("/%d", updatedQuickstart.ID), strings.NewReader(string(jsonParam)))
 		response := httptest.NewRecorder()
 		router.ServeHTTP(response, request)
 
