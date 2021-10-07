@@ -49,16 +49,16 @@ func GetAllQuickstarts(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": quickStarts})
 }
 
-func createQuickstart(c *gin.Context) {
+func CreateQuickstart(c *gin.Context) {
 	var quickStart *models.Quickstart
 	if err := c.ShouldBindJSON(&quickStart); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"msg": err})
+		c.JSON(http.StatusBadRequest, gin.H{"msg": err.Error()})
 		c.Abort()
 		return
 	}
 
 	database.DB.Create(&quickStart)
-	c.JSON(http.StatusOK, gin.H{"id": quickStart.ID})
+	c.JSON(http.StatusOK, gin.H{"data": quickStart})
 }
 
 func GetQuickstartById(c *gin.Context) {
@@ -66,7 +66,7 @@ func GetQuickstartById(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": quickStart})
 }
 
-func deleteQuickstartById(c *gin.Context) {
+func DeleteQuickstartById(c *gin.Context) {
 	quickStart, _ := c.Get("quickstart")
 	err := database.DB.Delete(quickStart).Error
 	if err != nil {
@@ -77,10 +77,10 @@ func deleteQuickstartById(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"msg": "Quickstart successfully removed"})
 }
 
-func updateQuickstartById(c *gin.Context) {
+func UpdateQuickstartById(c *gin.Context) {
 	quickStart, _ := c.Get("quickstart")
 	if err := c.ShouldBindJSON(&quickStart); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"msg": err})
+		c.JSON(http.StatusBadRequest, gin.H{"msg": err.Error()})
 		c.Abort()
 		return
 	}
@@ -117,11 +117,11 @@ func QuickstartEntityContext() gin.HandlerFunc {
 
 // MakeQuickstartsRouter creates a router handles for /quickstarts group
 func MakeQuickstartsRouter(subRouter *gin.RouterGroup) {
-	subRouter.POST("", createQuickstart)
+	subRouter.POST("", CreateQuickstart)
 	subRouter.GET("", GetAllQuickstarts)
 	entityRouter := subRouter.Group("/:id")
 	entityRouter.Use(QuickstartEntityContext())
 	entityRouter.GET("", GetQuickstartById)
-	entityRouter.DELETE("", deleteQuickstartById)
-	entityRouter.PATCH("", updateQuickstartById)
+	entityRouter.DELETE("", DeleteQuickstartById)
+	entityRouter.PATCH("", UpdateQuickstartById)
 }

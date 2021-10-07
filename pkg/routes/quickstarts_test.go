@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/RedHatInsights/quickstarts/pkg/database"
@@ -44,7 +45,7 @@ type singleResponsePayload struct {
 	Data responseBody
 }
 
-type errorResponsePayload struct {
+type messageResponsePayload struct {
 	Msg string `json:"msg"`
 }
 
@@ -53,6 +54,9 @@ func setupRouter() *gin.Engine {
 	r.Use(QuickstartEntityContext())
 	r.GET("/", GetAllQuickstarts)
 	r.GET("/:id", GetQuickstartById)
+	r.POST("/", CreateQuickstart)
+	r.PATCH("/:id", UpdateQuickstartById)
+	r.DELETE("/:id", DeleteQuickstartById)
 	return r
 }
 
@@ -117,7 +121,7 @@ func TestGetOneById(t *testing.T) {
 		request, _ := http.NewRequest(http.MethodGet, "/999", nil)
 		response := httptest.NewRecorder()
 		router.ServeHTTP(response, request)
-		var payload *errorResponsePayload
+		var payload *messageResponsePayload
 		json.NewDecoder(response.Body).Decode(&payload)
 		assert.Equal(t, 404, response.Code)
 		assert.Equal(t, "record not found", payload.Msg)
@@ -127,9 +131,120 @@ func TestGetOneById(t *testing.T) {
 		request, _ := http.NewRequest(http.MethodGet, "/notanid", nil)
 		response := httptest.NewRecorder()
 		router.ServeHTTP(response, request)
-		var payload *errorResponsePayload
+		var payload *messageResponsePayload
 		json.NewDecoder(response.Body).Decode(&payload)
 		assert.Equal(t, 400, response.Code)
 		assert.Equal(t, "strconv.Atoi: parsing \"notanid\": invalid syntax", payload.Msg)
+	})
+}
+
+func TestCRUDRoutes(t *testing.T) {
+	router := setupRouter()
+	t.Run("should create new quickstart record", func(t *testing.T) {
+		jsonParam := `{"title":"Create test title"}`
+		request, _ := http.NewRequest(http.MethodPost, "/", strings.NewReader(string(jsonParam)))
+		response := httptest.NewRecorder()
+		router.ServeHTTP(response, request)
+
+		var payload *singleResponsePayload
+		json.NewDecoder(response.Body).Decode(&payload)
+		assert.Equal(t, 200, response.Code)
+		assert.Equal(t, "Create test title", payload.Data.Title)
+
+		var dbRecord models.Quickstart
+		dbRecord, _ = FindQuickstartById(payload.Data.Id)
+		assert.Equal(t, int(dbRecord.ID), payload.Data.Id)
+	})
+
+	t.Run("should return 400 response for invalid payload", func(t *testing.T) {
+		jsonParam := `[]`
+		request, _ := http.NewRequest(http.MethodPost, "/", strings.NewReader(string(jsonParam)))
+		response := httptest.NewRecorder()
+		router.ServeHTTP(response, request)
+
+		var payload *messageResponsePayload
+		json.NewDecoder(response.Body).Decode(&payload)
+		assert.Equal(t, 400, response.Code)
+		assert.Equal(t, "json: cannot unmarshal array into Go value of type models.Quickstart", payload.Msg)
+	})
+
+	t.Run("should delete existing record from database", func(t *testing.T) {
+		var deleteQuickstart models.Quickstart
+		deleteQuickstart.ID = 999999
+		database.DB.Create(&deleteQuickstart)
+		request, _ := http.NewRequest(http.MethodDelete, fmt.Sprintf("/%d", deleteQuickstart.ID), nil)
+		response := httptest.NewRecorder()
+		router.ServeHTTP(response, request)
+
+		var payload *messageResponsePayload
+		json.NewDecoder(response.Body).Decode(&payload)
+		assert.Equal(t, 200, response.Code)
+		assert.Equal(t, "Quickstart successfully removed", payload.Msg)
+
+		_, err := FindQuickstartById(999999)
+		assert.Equal(t, "record not found", err.Error())
+	})
+
+	t.Run("should return 404 response when deleting non existing record", func(t *testing.T) {
+		request, _ := http.NewRequest(http.MethodDelete, fmt.Sprintf("/%d", 888), nil)
+		response := httptest.NewRecorder()
+		router.ServeHTTP(response, request)
+
+		var payload *messageResponsePayload
+		json.NewDecoder(response.Body).Decode(&payload)
+		assert.Equal(t, 404, response.Code)
+		assert.Equal(t, "record not found", payload.Msg)
+	})
+
+	t.Run("should update existing record", func(t *testing.T) {
+		var updatedQuickstart models.Quickstart
+		updatedQuickstart.ID = 777
+		database.DB.Create(&updatedQuickstart)
+		jsonParam := `{"title":"Update test title"}`
+
+		var dbRecord models.Quickstart
+		dbRecord, _ = FindQuickstartById(777)
+		assert.Equal(t, int(dbRecord.ID), 777)
+		assert.Equal(t, dbRecord.Title, "")
+
+		request, _ := http.NewRequest(http.MethodPatch, fmt.Sprintf("/%d", updatedQuickstart.ID), strings.NewReader(string(jsonParam)))
+		response := httptest.NewRecorder()
+		router.ServeHTTP(response, request)
+
+		var payload *singleResponsePayload
+		json.NewDecoder(response.Body).Decode(&payload)
+		assert.Equal(t, 200, response.Code)
+
+		dbRecord, _ = FindQuickstartById(777)
+		assert.Equal(t, "Update test title", dbRecord.Title)
+	})
+
+	t.Run("should return 404 when updating non existing record", func(t *testing.T) {
+		jsonParam := `{"title":"Update test title"}`
+
+		request, _ := http.NewRequest(http.MethodPatch, fmt.Sprintf("/%d", 123456), strings.NewReader(string(jsonParam)))
+		response := httptest.NewRecorder()
+		router.ServeHTTP(response, request)
+
+		var payload *messageResponsePayload
+		json.NewDecoder(response.Body).Decode(&payload)
+		assert.Equal(t, 404, response.Code)
+		assert.Equal(t, "record not found", payload.Msg)
+	})
+
+	t.Run("should return 400 when updating record with invalid data", func(t *testing.T) {
+		var updatedQuickstart models.Quickstart
+		updatedQuickstart.ID = 777
+		database.DB.Create(&updatedQuickstart)
+		jsonParam := `[]`
+
+		request, _ := http.NewRequest(http.MethodPatch, fmt.Sprintf("/%d", 777), strings.NewReader(string(jsonParam)))
+		response := httptest.NewRecorder()
+		router.ServeHTTP(response, request)
+
+		var payload *messageResponsePayload
+		json.NewDecoder(response.Body).Decode(&payload)
+		assert.Equal(t, 400, response.Code)
+		assert.Equal(t, "json: cannot unmarshal array into Go value of type models.Quickstart", payload.Msg)
 	})
 }
