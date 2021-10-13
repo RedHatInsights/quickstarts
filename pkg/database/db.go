@@ -23,7 +23,11 @@ func Init() {
 	if cfg.Test {
 		dia = sqlite.Open(cfg.DbName)
 	} else {
-		dbdns = fmt.Sprintf("host=%v user=%v password=%v dbname=%v port=%v sslmode=disable", cfg.DbHost, cfg.DbUser, cfg.DbPassword, cfg.DbName, cfg.DbPort)
+		dbdns = fmt.Sprintf("host=%v user=%v password=%v dbname=%v port=%v sslmode=%v", cfg.DbHost, cfg.DbUser, cfg.DbPassword, cfg.DbName, cfg.DbPort, cfg.DbSSLMode)
+		if cfg.DbSSLRootCert != "" {
+			dbdns = fmt.Sprintf("%s  sslrootcert=%s", dbdns, cfg.DbSSLRootCert)
+		}
+
 		dia = postgres.Open(dbdns)
 	}
 

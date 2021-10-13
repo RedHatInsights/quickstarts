@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	clowder "github.com/redhatinsights/app-common-go/pkg/api/v1"
+	"github.com/sirupsen/logrus"
 )
 
 type QuickstartsConfig struct {
@@ -17,6 +18,8 @@ type QuickstartsConfig struct {
 	DbName          string
 	MetricsPort     int
 	Test            bool
+	DbSSLMode       string
+	DbSSLRootCert   string
 }
 
 var config *QuickstartsConfig
@@ -34,6 +37,16 @@ func Init() {
 		config.DbPassword = cfg.Database.Password
 		config.DbName = cfg.Database.Name
 		config.MetricsPort = cfg.MetricsPort
+		config.DbSSLMode = cfg.Database.SslMode
+		certPath, err := cfg.RdsCa()
+		if err != nil {
+			logrus.Info("Failed to load DB cert path")
+			config.DbSSLMode = "disable"
+			config.DbSSLRootCert = ""
+		} else {
+			config.DbSSLRootCert = certPath
+		}
+
 	} else {
 		config.DbUser = os.Getenv("PGSQL_USER")
 		config.DbPassword = os.Getenv("PGSQL_PASSWORD")
@@ -42,6 +55,8 @@ func Init() {
 		config.DbPort = port
 		config.DbName = os.Getenv("PGSQL_DATABASE")
 		config.MetricsPort = 8080
+		config.DbSSLMode = "disable"
+		config.DbSSLRootCert = ""
 	}
 }
 
