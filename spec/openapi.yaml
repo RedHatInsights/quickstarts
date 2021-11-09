@@ -1,0 +1,61 @@
+components:
+  schemas:
+    v1.Quickstart:
+      properties:
+        bundles:
+          format: byte
+          type: string
+        content:
+          format: byte
+          type: string
+        createdAt:
+          format: date-time
+          type: string
+        deletedAt: {}
+        id:
+          minimum: 0
+          type: integer
+        title:
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+      type: object
+    v1.QuickstartProgress:
+      properties:
+        accountId:
+          type: integer
+        progress:
+          format: byte
+          type: string
+        quickstart:
+          properties:
+            bundles:
+              format: byte
+              type: string
+            content:
+              format: byte
+              type: string
+            createdAt:
+              format: date-time
+              type: string
+            deletedAt: {}
+            id:
+              minimum: 0
+              type: integer
+            title:
+              type: string
+            updatedAt:
+              format: date-time
+              type: string
+          type: object
+        quickstartID:
+          minimum: 0
+          type: integer
+      type: object
+info:
+  license:
+    name: MIT
+  title: quickstarts
+  version: 1.0.0
+openapi: 3.0.0

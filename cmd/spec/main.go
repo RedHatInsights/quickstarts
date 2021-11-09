@@ -4,7 +4,9 @@ import (
 	"bytes"
 	"encoding/json"
 	"io/ioutil"
+	"fmt"
 
+	"github.com/ghodss/yaml"
 	"github.com/RedHatInsights/quickstarts/pkg/models"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/getkin/kin-openapi/openapi3gen"
@@ -35,14 +37,28 @@ func main() {
 	err = json.NewEncoder(b).Encode(swagger)
 	checkErr(err)
 
+	schema, err := yaml.JSONToYAML(b.Bytes())
+	checkErr(err)
+
+	paths, err := ioutil.ReadFile("./cmd/spec/path.yaml")
+	checkErr(err)
+
+	b = &bytes.Buffer{}
+	b.Write(schema)
+	b.Write(paths)
+
 	doc, err := openapi3.NewLoader().LoadFromData(b.Bytes())
 	checkErr(err)
 
-	jsonB, err := doc.MarshalJSON()
+	jsonB, err := json.MarshalIndent(doc, "", "  ")
 	checkErr(err)
 
 	err = ioutil.WriteFile("./spec/openapi.json", jsonB, 0666)
 	checkErr(err)
+	err = ioutil.WriteFile("./spec/openapi.yaml", b.Bytes(), 0666)
+	checkErr(err)
+
+	fmt.Println("Spec was generated successfully")
 }
 
 func checkErr(err error) {
