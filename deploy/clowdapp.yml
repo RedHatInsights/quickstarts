@@ -48,17 +48,9 @@ objects:
           periodSeconds: 5
           successThreshold: 1
           timeoutSeconds: 120
-        env: # add .env stuff here
+        env:
         - name: CLOWDER_ENABLED
           value: ${CLOWDER_ENABLED}
-        - name: DABATASE_HOST
-          value: localhost
-        - name: DATABASE_USERNAME
-          value: postgres
-        - name: DATABASE_PASSWORD
-          value: postgres
-        - name: DATABASE_NAME
-          value: quickstarts
         resources:
           limits:
             cpu: ${CPU_LIMIT}
