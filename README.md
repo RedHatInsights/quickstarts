@@ -2,7 +2,7 @@
 
 Backed service for integrated quickstarts.
 
-## TO test
+## To test
 1. star the server `go run main.go `
 2. insert some data 
 ```sh
