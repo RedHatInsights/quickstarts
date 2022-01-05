@@ -3,9 +3,11 @@
 # --------------------------------------------
 # Options that must be configured by app owner
 # --------------------------------------------
-APP_NAME="quickstarts"  # name of app-sre "application" folder this component lives in
-COMPONENT_NAME="quickstarts"  # name of app-sre "resourceTemplate" in deploy.yaml for this component
-IMAGE="quay.io/cloudservices/quickstarts"
+export APP_NAME="quickstarts"  # name of app-sre "application" folder this component lives in
+export COMPONENT_NAME="quickstarts"  # name of app-sre "resourceTemplate" in deploy.yaml for this component
+export IMAGE="quay.io/cloudservices/quickstarts"
+export WORKSPACE=${WORKSPACE:-$APP_ROOT}  # if running in jenkins, use the build's workspace
+export APP_ROOT=$(pwd)
 
 # IQE_PLUGINS="e2e"
 # IQE_MARKER_EXPRESSION="smoke"
@@ -20,9 +22,8 @@ source $CICD_ROOT/build.sh
 source $CICD_ROOT/deploy_ephemeral_env.sh
 
 # Need to make a dummy results file to make tests pass
-cd ../..
-mkdir -p artifacts
-cat << EOF > artifacts/junit-dummy.xml
+mkdir -p $WORKSPACE/artifacts
+cat << EOF > $WORKSPACE/artifacts/junit-dummy.xml
 <testsuite tests="1">
     <testcase classname="dummy" name="dummytest"/>
 </testsuite>
