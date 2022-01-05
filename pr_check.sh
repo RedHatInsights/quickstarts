@@ -18,15 +18,15 @@ export APP_ROOT=$(pwd)
 CICD_URL=https://raw.githubusercontent.com/RedHatInsights/bonfire/master/cicd
 curl -s $CICD_URL/bootstrap.sh > .cicd_bootstrap.sh && source .cicd_bootstrap.sh
 
-source $CICD_ROOT/build.sh
-# temporarily exit early to sucesfully deploy the image to quay
-exit 0
-source $CICD_ROOT/deploy_ephemeral_env.sh
-
 # Need to make a dummy results file to make tests pass
-mkdir -p $WORKSPACE/artifacts
+mkdir -p $WORKSPACE
 cat << EOF > $WORKSPACE/artifacts/junit-dummy.xml
 <testsuite tests="1">
     <testcase classname="dummy" name="dummytest"/>
 </testsuite>
 EOF
+
+source $CICD_ROOT/build.sh
+# temporarily exit early to sucesfully deploy the image to quay
+exit 0
+source $CICD_ROOT/deploy_ephemeral_env.sh
