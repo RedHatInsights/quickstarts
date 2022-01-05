@@ -2,8 +2,9 @@
 
 set -exv
 
-IMAGE="quay.io/cloudservices/insights-ingress"
+IMAGE="quay.io/cloudservices/quickstarts"
 IMAGE_TAG=$(git rev-parse --short=7 HEAD)
+SMOKE_TEST_TAG="latest"
 
 if [[ -z "$QUAY_USER" || -z "$QUAY_TOKEN" ]]; then
     echo "QUAY_USER and QUAY_TOKEN must be set"
@@ -17,9 +18,9 @@ fi
 
 DOCKER_CONF="$PWD/.docker"
 mkdir -p "$DOCKER_CONF"
-docker --config="$DOCKER_CONF" login -u="$QUAY_USER" -p="$QUAY_TOKEN" quay.io
-docker --config="$DOCKER_CONF" login -u="$RH_REGISTRY_USER" -p="$RH_REGISTRY_TOKEN" registry.redhat.io
-docker --config="$DOCKER_CONF" build -t "${IMAGE}:${IMAGE_TAG}" .
-docker --config="$DOCKER_CONF" push "${IMAGE}:${IMAGE_TAG}"
-docker --config="$DOCKER_CONF" tag "${IMAGE}:${IMAGE_TAG}" "${IMAGE}:qa"
-docker --config="$DOCKER_CONF" push "${IMAGE}:qa"
+DOCKER_CONFIG=$DOCKER_CONF docker login -u="$QUAY_USER" -p="$QUAY_TOKEN" quay.io
+DOCKER_CONFIG=$DOCKER_CONF docker login -u="$RH_REGISTRY_USER" -p="$RH_REGISTRY_TOKEN" registry.redhat.io
+DOCKER_CONFIG=$DOCKER_CONF docker build -t "${IMAGE}:${IMAGE_TAG}" .
+DOCKER_CONFIG=$DOCKER_CONF docker push "${IMAGE}:${IMAGE_TAG}"
+DOCKER_CONFIG=$DOCKER_CONF docker tag "${IMAGE}:${IMAGE_TAG}" "${IMAGE}:${SMOKE_TEST_TAG}"
+DOCKER_CONFIG=$DOCKER_CONF docker push "${IMAGE}:${SMOKE_TEST_TAG}"
