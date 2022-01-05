@@ -1,4 +1,4 @@
-# quickstarts
+# Quickstarts
 
 Backed service for integrated quickstarts.
 
