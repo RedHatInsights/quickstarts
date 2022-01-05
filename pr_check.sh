@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# Run unit tests first since it activates/deactives its own virtual env
-source unit_test.sh
-
 # --------------------------------------------
 # Options that must be configured by app owner
 # --------------------------------------------
