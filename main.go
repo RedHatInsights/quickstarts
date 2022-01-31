@@ -7,9 +7,11 @@ import (
 	"github.com/RedHatInsights/quickstarts/config"
 	"github.com/RedHatInsights/quickstarts/pkg/database"
 	"github.com/RedHatInsights/quickstarts/pkg/routes"
-	"github.com/gin-gonic/gin"
+	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/middleware"
 	"github.com/joho/godotenv"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/redhatinsights/platform-go-middlewares/request_id"
 	"github.com/sirupsen/logrus"
 )
 
@@ -17,32 +19,10 @@ func initDependecies() {
 	database.Init()
 }
 
-func prometheusHandler() gin.HandlerFunc {
-	h := promhttp.Handler()
-	return func(c *gin.Context) {
-		h.ServeHTTP(c.Writer, c.Request)
-	}
-}
-
-func setupRouter(cfg *config.QuickstartsConfig) *gin.Engine {
-	engine := gin.Default()
-	engine.GET("/test", func(context *gin.Context) {
-		context.JSON(200, gin.H{
-			"message": "This is a test response",
-		})
-	})
-
-	engine.GET("/api/quickstarts/v1/openapi.json", func(c *gin.Context) {
-		c.File(cfg.OpenApiSpecPath)
-	})
-
-	versionGroup := engine.Group("/api/quickstarts/v1")
-	quickstartsGroup := versionGroup.Group("/quickstarts")
-	quickstartsProgressGroup := versionGroup.Group("/progress")
-	routes.MakeQuickstartsRouter(quickstartsGroup)
-	routes.MakeQuickstartsProgressRouter(quickstartsProgressGroup)
-
-	return engine
+func probe(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("OK"))
 }
 
 func main() {
@@ -54,34 +34,32 @@ func main() {
 		"ServerAddr": cfg.ServerAddr,
 	})
 
-	// done := make(chan struct{})
-	// sigint := make(chan os.Signal, 1)
-	// signal.Notify(sigint)
+	r := chi.NewRouter()
+	mr := chi.NewRouter()
 
-	engine := setupRouter(cfg)
+	r.Use(
+		request_id.ConfiguredRequestID("x-rh-insights-request-id"),
+		middleware.RealIP,
+		middleware.Recoverer,
+		middleware.Logger,
+	)
+
+	r.Get("/test", probe)
+	r.With(routes.PrometheusMiddleware).Route("/api/quickstarts/v1", func(sub chi.Router) {
+		sub.Route("/quickstarts", routes.MakeQuickstartsRouter)
+		sub.Route("/progress", routes.MakeQuickstartsProgressRouter)
+	})
+	mr.Get("/", probe)
+	mr.Handle("/metrics", promhttp.Handler())
 
 	server := http.Server{
 		Addr:    cfg.ServerAddr,
-		Handler: engine,
+		Handler: r,
 	}
-
-	metricsEngine := gin.Default()
-	metricsEngine.GET("/", func(context *gin.Context) {
-		context.JSON(200, gin.H{
-			"message": "OK",
-		})
-	})
-
-	/**Find a handle for all http request types*/
-	metricsEngine.GET("/metrics", prometheusHandler())
-	metricsEngine.POST("/metrics", prometheusHandler())
-	metricsEngine.PUT("/metrics", prometheusHandler())
-	metricsEngine.PATCH("/metrics", prometheusHandler())
-	metricsEngine.DELETE("/metrics", prometheusHandler())
 
 	metricsServer := http.Server{
 		Addr:    fmt.Sprintf(":%d", cfg.MetricsPort),
-		Handler: metricsEngine,
+		Handler: mr,
 	}
 
 	go func() {
@@ -90,6 +68,7 @@ func main() {
 		}
 	}()
 
+	logrus.Infoln("Starting http server")
 	if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		logrus.Fatal("Api server has stopped")
 	}

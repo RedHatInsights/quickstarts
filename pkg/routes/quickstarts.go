@@ -1,14 +1,15 @@
 package routes
 
 import (
+	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"strconv"
-	"strings"
 
 	"github.com/RedHatInsights/quickstarts/pkg/database"
 	"github.com/RedHatInsights/quickstarts/pkg/models"
-	"github.com/gin-gonic/gin"
+	"github.com/go-chi/chi"
 )
 
 func FindQuickstartById(id int) (models.Quickstart, error) {
@@ -17,111 +18,146 @@ func FindQuickstartById(id int) (models.Quickstart, error) {
 	return quickStart, err
 }
 
-func GetAllQuickstarts(c *gin.Context) {
+func GetAllQuickstarts(w http.ResponseWriter, r *http.Request) {
 	var quickStarts []models.Quickstart
-	var bundlesQuery, bundlesExists = c.GetQueryArray("[]bundles")
-	var bundleQuery, bundleExists = c.GetQuery("bundle")
+	// var bundlesQuery = r.URL.Query().Get("[]bundles")
+	var bundleQuery = r.URL.Query().Get("bundle")
 
 	// Look for gorm supported APi instead of using RAW query
 	// sample query /api/quickstarts/v1/quickstarts?[]bundles=settings&[]bundles=insights
-	if bundlesExists {
-		var conditions []string
-		for _, s := range bundlesQuery {
-			conditions = append(conditions, fmt.Sprintf("(bundles)::jsonb ? '%s'", s))
-		}
-		where := strings.Join(conditions, "OR ")
-		err := database.DB.Raw(fmt.Sprintf("SELECT * FROM quickstarts WHERE %s", where)).Scan(&quickStarts).Error
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"msg": err.Error()})
-			c.Abort()
-			return
-		}
-	} else if bundleExists {
+	if bundleQuery != "" {
 		err := database.DB.Raw(fmt.Sprintf("SELECT * FROM quickstarts WHERE (bundles)::jsonb ? '%s'", bundleQuery)).Scan(&quickStarts).Error
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"msg": err.Error()})
-			c.Abort()
+			w.WriteHeader(http.StatusBadRequest)
+			w.Header().Set("Content-Type", "application/json")
+			resp := make(map[string]string)
+
+			resp["msg"] = err.Error()
+			json.NewEncoder(w).Encode(resp)
 			return
 		}
 	} else {
 		database.DB.Find(&quickStarts)
 	}
-	c.JSON(http.StatusOK, gin.H{"data": quickStarts})
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	resp := make(map[string][]models.Quickstart)
+	resp["data"] = quickStarts
+	json.NewEncoder(w).Encode(&resp)
 }
 
-func CreateQuickstart(c *gin.Context) {
+func CreateQuickstart(w http.ResponseWriter, r *http.Request) {
 	var quickStart *models.Quickstart
-	if err := c.ShouldBindJSON(&quickStart); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"msg": err.Error()})
-		c.Abort()
+	if err := json.NewDecoder(r.Body).Decode(&quickStart); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Header().Set("Content-Type", "application/json")
+		resp := make(map[string]string)
+
+		resp["msg"] = err.Error()
+		json.NewEncoder(w).Encode(resp)
 		return
 	}
 
 	database.DB.Create(&quickStart)
-	c.JSON(http.StatusOK, gin.H{"data": quickStart})
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	resp := make(map[string]*models.Quickstart)
+	resp["data"] = quickStart
+	json.NewEncoder(w).Encode(resp)
 }
 
-func GetQuickstartById(c *gin.Context) {
-	quickStart, _ := c.Get("quickstart")
-	c.JSON(http.StatusOK, gin.H{"data": quickStart})
+func GetQuickstartById(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	resp := make(map[string]models.Quickstart)
+	resp["data"] = r.Context().Value("quickstart").(models.Quickstart)
+	json.NewEncoder(w).Encode(resp)
 }
 
-func DeleteQuickstartById(c *gin.Context) {
-	quickStart, _ := c.Get("quickstart")
-	err := database.DB.Delete(quickStart).Error
+func DeleteQuickstartById(w http.ResponseWriter, r *http.Request) {
+	quickStart := r.Context().Value("quickstart").(models.Quickstart)
+	err := database.DB.Delete(&quickStart, quickStart.ID).Error
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"msg": err.Error()})
-		c.Abort()
+		w.WriteHeader(http.StatusBadRequest)
+		w.Header().Set("Content-Type", "application/json")
+		resp := make(map[string]string)
+
+		resp["msg"] = err.Error()
+		json.NewEncoder(w).Encode(resp)
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"msg": "Quickstart successfully removed"})
+	w.WriteHeader(http.StatusOK)
+	resp := make(map[string]string)
+	resp["msg"] = "Quickstart successfully removed"
+	json.NewEncoder(w).Encode(resp)
 }
 
-func UpdateQuickstartById(c *gin.Context) {
-	quickStart, _ := c.Get("quickstart")
-	if err := c.ShouldBindJSON(&quickStart); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"msg": err.Error()})
-		c.Abort()
+func UpdateQuickstartById(w http.ResponseWriter, r *http.Request) {
+	quickStart := r.Context().Value("quickstart").(models.Quickstart)
+	if err := json.NewDecoder(r.Body).Decode(&quickStart); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Header().Set("Content-Type", "application/json")
+		resp := make(map[string]string)
+
+		resp["msg"] = err.Error()
+		json.NewEncoder(w).Encode(resp)
 		return
 	}
 	err := database.DB.Save(quickStart).Error
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"msg": err.Error()})
-		c.Abort()
+		w.WriteHeader(http.StatusBadRequest)
+		w.Header().Set("Content-Type", "application/json")
+		resp := make(map[string]string)
+
+		resp["msg"] = err.Error()
+		json.NewEncoder(w).Encode(resp)
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"data": quickStart})
+
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+	resp := make(map[string]*models.Quickstart)
+	resp["data"] = &quickStart
+	json.NewEncoder(w).Encode(resp)
 }
 
-func QuickstartEntityContext() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		if quickstartId := c.Param("id"); quickstartId != "" {
+func QuickstartEntityContext(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if quickstartId := chi.URLParam(r, "id"); quickstartId != "" {
 			id, err := strconv.Atoi(quickstartId)
 			if err != nil {
-				c.JSON(http.StatusBadRequest, gin.H{"msg": err.Error()})
-				c.Abort()
+				w.WriteHeader(http.StatusBadRequest)
+				w.Header().Set("Content-Type", "application/json")
+				resp := make(map[string]string)
+				resp["msg"] = err.Error()
+				json.NewEncoder(w).Encode(resp)
 				return
 			}
 			quickstart, err := FindQuickstartById(id)
 			if err != nil {
-				c.JSON(http.StatusNotFound, gin.H{"msg": err.Error()})
-				c.Abort()
+				w.WriteHeader(http.StatusNotFound)
+				w.Header().Set("Content-Type", "application/json")
+				resp := make(map[string]string)
+				resp["msg"] = err.Error()
+				json.NewEncoder(w).Encode(resp)
 				return
 			}
 
-			c.Set("quickstart", &quickstart)
-			c.Next()
+			ctx := context.WithValue(r.Context(), "quickstart", quickstart)
+			next.ServeHTTP(w, r.WithContext(ctx))
 		}
-	}
+
+	})
 }
 
 // MakeQuickstartsRouter creates a router handles for /quickstarts group
-func MakeQuickstartsRouter(subRouter *gin.RouterGroup) {
-	subRouter.POST("", CreateQuickstart)
-	subRouter.GET("", GetAllQuickstarts)
-	entityRouter := subRouter.Group("/:id")
-	entityRouter.Use(QuickstartEntityContext())
-	entityRouter.GET("", GetQuickstartById)
-	entityRouter.DELETE("", DeleteQuickstartById)
-	entityRouter.PATCH("", UpdateQuickstartById)
+func MakeQuickstartsRouter(sub chi.Router) {
+	sub.Post("/", CreateQuickstart)
+	sub.Get("/", GetAllQuickstarts)
+	sub.Route("/{id}", func(r chi.Router) {
+		r.Use(QuickstartEntityContext)
+		r.Get("/", GetQuickstartById)
+		r.Delete("/", DeleteQuickstartById)
+		r.Patch("/", UpdateQuickstartById)
+	})
 }

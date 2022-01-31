@@ -10,7 +10,8 @@ import (
 
 	"github.com/RedHatInsights/quickstarts/pkg/database"
 	"github.com/RedHatInsights/quickstarts/pkg/models"
-	"github.com/gin-gonic/gin"
+	"github.com/go-chi/chi"
+	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -34,7 +35,6 @@ func mockBundleQuickstarts(bundles ...string) {
 	database.DB.Create(quickstart)
 	quickstart.ID = 333
 	database.DB.Create(quickstart)
-	fmt.Println(quickstart.Bundles)
 }
 
 type responseBody struct {
@@ -54,14 +54,16 @@ type messageResponsePayload struct {
 	Msg string `json:"msg"`
 }
 
-func setupRouter() *gin.Engine {
-	r := gin.Default()
-	r.Use(QuickstartEntityContext())
-	r.GET("/", GetAllQuickstarts)
-	r.GET("/:id", GetQuickstartById)
-	r.POST("/", CreateQuickstart)
-	r.PATCH("/:id", UpdateQuickstartById)
-	r.DELETE("/:id", DeleteQuickstartById)
+func setupRouter() *chi.Mux {
+	r := chi.NewRouter()
+	r.Get("/", GetAllQuickstarts)
+	r.Post("/", CreateQuickstart)
+	r.Route("/{id}", func(sub chi.Router) {
+		sub.Use(QuickstartEntityContext)
+		sub.Get("/", GetQuickstartById)
+		sub.Patch("/", UpdateQuickstartById)
+		sub.Delete("/", DeleteQuickstartById)
+	})
 	return r
 }
 
@@ -78,7 +80,9 @@ func TestGetAll(t *testing.T) {
 		json.NewDecoder(response.Body).Decode(&payload)
 		assert.Equal(t, 200, response.Code)
 		assert.Equal(t, 3, len(payload.Data))
+		logrus.Info("90")
 		assert.Equal(t, "test title", payload.Data[0].Title)
+		logrus.Info("92")
 	})
 
 	/**

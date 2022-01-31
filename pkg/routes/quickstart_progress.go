@@ -1,24 +1,29 @@
 package routes
 
 import (
+	"encoding/json"
 	"errors"
 	"net/http"
 	"strconv"
 
 	"github.com/RedHatInsights/quickstarts/pkg/database"
 	"github.com/RedHatInsights/quickstarts/pkg/models"
-	"github.com/gin-gonic/gin"
+	"github.com/go-chi/chi"
 	"gorm.io/gorm"
 )
 
-func getAllQuickstartsProgress(c *gin.Context) {
+func getAllQuickstartsProgress(w http.ResponseWriter, r *http.Request) {
 	var progress []models.QuickstartProgress
 	database.DB.Find(&progress)
-	c.JSON(http.StatusOK, gin.H{"data": progress})
+
+	resp := make(map[string][]models.QuickstartProgress)
+	resp["data"] = progress
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(resp)
 }
 
-func getQuickstartProgress(c *gin.Context) {
-	queries := c.Request.URL.Query()
+func getQuickstartProgress(w http.ResponseWriter, r *http.Request) {
+	queries := r.URL.Query()
 	var accountId int
 	var quickstartId int
 	accountId, _ = strconv.Atoi(queries.Get("account"))
@@ -35,33 +40,50 @@ func getQuickstartProgress(c *gin.Context) {
 			where.QuickstartID = uint(quickstartId)
 		}
 		database.DB.Where(where).Find(&progresses)
-		c.JSON(http.StatusOK, gin.H{"data": progresses})
+		resp := make(map[string][]models.QuickstartProgress)
+		resp["data"] = progresses
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(resp)
 		return
 	} else {
-		getAllQuickstartsProgress(c)
+		getAllQuickstartsProgress(w, r)
 	}
 
 }
 
-func createQuickstartProgress(c *gin.Context) {
-	id, _ := strconv.Atoi(c.Param("quickstartId"))
+func createQuickstartProgress(w http.ResponseWriter, r *http.Request) {
+	id, _ := strconv.Atoi(r.URL.Query().Get("quickstartId"))
 	quickStart, err := FindQuickstartById(id)
 	var progress *models.QuickstartProgress
 	if errors.Is(err, gorm.ErrRecordNotFound) {
-		c.JSON(http.StatusBadRequest, gin.H{"msg": "Not found"})
+		w.WriteHeader(http.StatusBadRequest)
+		w.Header().Set("Content-Type", "application/json")
+		resp := make(map[string]string)
+
+		resp["msg"] = err.Error()
+		json.NewEncoder(w).Encode(resp)
 		return
 	}
-	if err := c.ShouldBindJSON(&progress); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"msg": err})
+	if err := json.NewDecoder(r.Body).Decode(&progress); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Header().Set("Content-Type", "application/json")
+		resp := make(map[string]string)
+
+		resp["msg"] = err.Error()
+		json.NewEncoder(w).Encode(resp)
+		return
 	}
 
 	progress.Quickstart = &quickStart
 
 	database.DB.Create(&progress)
-	c.JSON(http.StatusOK, gin.H{"id": progress.ID})
+	resp := make(map[string]*models.QuickstartProgress)
+	resp["data"] = progress
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(resp)
 }
 
-func MakeQuickstartsProgressRouter(subRouter *gin.RouterGroup) {
-	subRouter.GET("", getQuickstartProgress)
-	subRouter.POST("/:quickstartId", createQuickstartProgress)
+func MakeQuickstartsProgressRouter(sub chi.Router) {
+	sub.Get("/", getQuickstartProgress)
+	sub.Post("/{quickstartId}", createQuickstartProgress)
 }
