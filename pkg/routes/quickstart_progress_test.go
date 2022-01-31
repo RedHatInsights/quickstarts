@@ -26,9 +26,8 @@ func mockQuickstartProgress(id uint) *models.QuickstartProgress {
 
 func setupQuickstartProgressRouter() *chi.Mux {
 	r := chi.NewRouter()
-	r.Use(QuickstartEntityContext)
 	r.Get("/", getAllQuickstartsProgress)
-	r.Post("/:quickstartId", createQuickstartProgress)
+	r.Post("/{quickstartId}", createQuickstartProgress)
 	r.Get("/get", getQuickstartProgress)
 	return r
 }

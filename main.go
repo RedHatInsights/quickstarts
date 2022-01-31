@@ -41,6 +41,7 @@ func main() {
 		request_id.ConfiguredRequestID("x-rh-insights-request-id"),
 		middleware.RealIP,
 		middleware.Recoverer,
+		middleware.Logger,
 	)
 
 	r.Get("/test", probe)
@@ -67,6 +68,7 @@ func main() {
 		}
 	}()
 
+	logrus.Infoln("Starting http server")
 	if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		logrus.Fatal("Api server has stopped")
 	}

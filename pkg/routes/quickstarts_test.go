@@ -11,6 +11,7 @@ import (
 	"github.com/RedHatInsights/quickstarts/pkg/database"
 	"github.com/RedHatInsights/quickstarts/pkg/models"
 	"github.com/go-chi/chi"
+	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -34,7 +35,6 @@ func mockBundleQuickstarts(bundles ...string) {
 	database.DB.Create(quickstart)
 	quickstart.ID = 333
 	database.DB.Create(quickstart)
-	fmt.Println(quickstart.Bundles)
 }
 
 type responseBody struct {
@@ -56,12 +56,14 @@ type messageResponsePayload struct {
 
 func setupRouter() *chi.Mux {
 	r := chi.NewRouter()
-	r.Use(QuickstartEntityContext)
 	r.Get("/", GetAllQuickstarts)
-	r.Get("/:id", GetQuickstartById)
 	r.Post("/", CreateQuickstart)
-	r.Patch("/:id", UpdateQuickstartById)
-	r.Delete("/:id", DeleteQuickstartById)
+	r.Route("/{id}", func(sub chi.Router) {
+		sub.Use(QuickstartEntityContext)
+		sub.Get("/", GetQuickstartById)
+		sub.Patch("/", UpdateQuickstartById)
+		sub.Delete("/", DeleteQuickstartById)
+	})
 	return r
 }
 
@@ -78,7 +80,9 @@ func TestGetAll(t *testing.T) {
 		json.NewDecoder(response.Body).Decode(&payload)
 		assert.Equal(t, 200, response.Code)
 		assert.Equal(t, 3, len(payload.Data))
+		logrus.Info("90")
 		assert.Equal(t, "test title", payload.Data[0].Title)
+		logrus.Info("92")
 	})
 
 	/**

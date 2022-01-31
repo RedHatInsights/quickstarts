@@ -9,7 +9,6 @@ import (
 	"github.com/RedHatInsights/quickstarts/pkg/database"
 	"github.com/RedHatInsights/quickstarts/pkg/models"
 	"github.com/go-chi/chi"
-	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
 
@@ -58,28 +57,18 @@ func createQuickstartProgress(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Header().Set("Content-Type", "application/json")
 		resp := make(map[string]string)
-		resp["message"] = "Not found"
 
-		jsonResp, err := json.Marshal(resp)
-		if err != nil {
-			logrus.Fatalf("Error happened in JSON marshal. Err: %s", err)
-		}
-		w.Write(jsonResp)
-		r.Body.Close()
+		resp["msg"] = err.Error()
+		json.NewEncoder(w).Encode(resp)
 		return
 	}
 	if err := json.NewDecoder(r.Body).Decode(&progress); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Header().Set("Content-Type", "application/json")
 		resp := make(map[string]string)
-		resp["message"] = err.Error()
 
-		jsonResp, err := json.Marshal(resp)
-		if err != nil {
-			logrus.Fatalf("Error happened in JSON marshal. Err: %s", err)
-		}
-		w.Write(jsonResp)
-		r.Body.Close()
+		resp["msg"] = err.Error()
+		json.NewEncoder(w).Encode(resp)
 		return
 	}
 
@@ -92,6 +81,6 @@ func createQuickstartProgress(w http.ResponseWriter, r *http.Request) {
 }
 
 func MakeQuickstartsProgressRouter(sub chi.Router) {
-	sub.Get("", getQuickstartProgress)
-	sub.Post("/:quickstartId", createQuickstartProgress)
+	sub.Get("/", getQuickstartProgress)
+	sub.Post("/{quickstartId}", createQuickstartProgress)
 }
