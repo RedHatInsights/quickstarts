@@ -26,7 +26,7 @@ data:
       "gnetId": null,
       "graphTooltip": 0,
       "id": 223,
-      "iteration": 1643640458998,
+      "iteration": 1643642612926,
       "links": [],
       "liveNow": false,
       "panels": [
@@ -60,7 +60,7 @@ data:
             "x": 0,
             "y": 0
           },
-          "id": 2,
+          "id": 6,
           "options": {
             "orientation": "auto",
             "reduceOptions": {
@@ -77,15 +77,71 @@ data:
           "pluginVersion": "8.2.7",
           "targets": [
             {
-              "exemplar": false,
-              "expr": "rate(quickstarts_responses{code!~\"2.*\"}[24h])",
-              "instant": false,
+              "exemplar": true,
+              "expr": "sum(api_3scale_gateway_api_time_bucket{exported_service=\"quickstarts\",le=\"2000\"})\n/\nsum(api_3scale_gateway_api_time_bucket{exported_service=\"quickstarts\",le=\"+Inf\"})",
               "interval": "",
               "legendFormat": "",
               "refId": "A"
             }
           ],
-          "title": "Non 2xx responses",
+          "title": "2000+ms Response count",
+          "type": "gauge"
+        },
+        {
+          "datasource": "crcs02ue1-prometheus",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 0
+          },
+          "id": 4,
+          "options": {
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showThresholdLabels": false,
+            "showThresholdMarkers": true,
+            "text": {}
+          },
+          "pluginVersion": "8.2.7",
+          "targets": [
+            {
+              "exemplar": true,
+              "expr": "sum(api_3scale_gateway_api_time_bucket{exported_service=\"quickstarts\", le=\"2000\"}) / sum(api_3scale_gateway_api_time_bucket{exported_service=\"quickstarts\", le=\"+Inf\"})",
+              "interval": "",
+              "legendFormat": "",
+              "refId": "A"
+            }
+          ],
+          "title": "2000ms+ Response latency",
           "type": "gauge"
         },
         {
@@ -177,6 +233,64 @@ data:
             "align": false,
             "alignLevel": null
           }
+        },
+        {
+          "datasource": "crcs02ue1-prometheus",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 16
+          },
+          "id": 2,
+          "options": {
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showThresholdLabels": false,
+            "showThresholdMarkers": true,
+            "text": {}
+          },
+          "pluginVersion": "8.2.7",
+          "targets": [
+            {
+              "exemplar": false,
+              "expr": "1-(quickstarts_responses{code=\"5xx\"} / quickstarts_responses)",
+              "instant": false,
+              "interval": "",
+              "legendFormat": "",
+              "refId": "A"
+            }
+          ],
+          "title": "Non 2xx responses",
+          "type": "gauge"
         }
       ],
       "refresh": "",
@@ -209,14 +323,14 @@ data:
         ]
       },
       "time": {
-        "from": "now-15m",
+        "from": "now-6h",
         "to": "now"
       },
       "timepicker": {},
       "timezone": "",
       "title": "quickstarts",
       "uid": "aqaixAb7k",
-      "version": 5
+      "version": 7
     }
 kind: ConfigMap
 metadata:
