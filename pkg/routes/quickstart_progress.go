@@ -18,6 +18,7 @@ func getAllQuickstartsProgress(w http.ResponseWriter, r *http.Request) {
 
 	resp := make(map[string][]models.QuickstartProgress)
 	resp["data"] = progress
+	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(resp)
 }
 
@@ -41,6 +42,7 @@ func getQuickstartProgress(w http.ResponseWriter, r *http.Request) {
 		database.DB.Where(where).Find(&progresses)
 		resp := make(map[string][]models.QuickstartProgress)
 		resp["data"] = progresses
+		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(resp)
 		return
 	} else {
@@ -77,6 +79,7 @@ func createQuickstartProgress(w http.ResponseWriter, r *http.Request) {
 	database.DB.Create(&progress)
 	resp := make(map[string]*models.QuickstartProgress)
 	resp["data"] = progress
+	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(resp)
 }
 

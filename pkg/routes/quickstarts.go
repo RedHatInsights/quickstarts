@@ -40,6 +40,7 @@ func GetAllQuickstarts(w http.ResponseWriter, r *http.Request) {
 		database.DB.Find(&quickStarts)
 	}
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
 	resp := make(map[string][]models.Quickstart)
 	resp["data"] = quickStarts
 	json.NewEncoder(w).Encode(&resp)
@@ -59,6 +60,7 @@ func CreateQuickstart(w http.ResponseWriter, r *http.Request) {
 
 	database.DB.Create(&quickStart)
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
 	resp := make(map[string]*models.Quickstart)
 	resp["data"] = quickStart
 	json.NewEncoder(w).Encode(resp)
@@ -66,6 +68,7 @@ func CreateQuickstart(w http.ResponseWriter, r *http.Request) {
 
 func GetQuickstartById(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
 	resp := make(map[string]models.Quickstart)
 	resp["data"] = r.Context().Value("quickstart").(models.Quickstart)
 	json.NewEncoder(w).Encode(resp)
@@ -83,6 +86,7 @@ func DeleteQuickstartById(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(resp)
 		return
 	}
+	w.WriteHeader(http.StatusOK)
 	resp := make(map[string]string)
 	resp["msg"] = "Quickstart successfully removed"
 	json.NewEncoder(w).Encode(resp)
@@ -110,6 +114,7 @@ func UpdateQuickstartById(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
 	resp := make(map[string]*models.Quickstart)
 	resp["data"] = &quickStart

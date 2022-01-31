@@ -1,0 +1,107 @@
+---
+annotations:
+  list:
+  - builtIn: 1
+    datasource: "-- Grafana --"
+    enable: true
+    hide: true
+    iconColor: rgba(0, 211, 255, 1)
+    name: Annotations & Alerts
+    target:
+      limit: 100
+      matchAny: false
+      tags: []
+      type: dashboard
+    type: dashboard
+editable: true
+fiscalYearStartMonth: 0
+gnetId:
+graphTooltip: 0
+id: 223
+iteration: 1643291345577
+links: []
+liveNow: false
+panels:
+- datasource:
+  fieldConfig:
+    defaults:
+      color:
+        mode: palette-classic
+      custom:
+        axisLabel: ''
+        axisPlacement: auto
+        barAlignment: 0
+        drawStyle: line
+        fillOpacity: 0
+        gradientMode: none
+        hideFrom:
+          legend: false
+          tooltip: false
+          viz: false
+        lineInterpolation: linear
+        lineWidth: 1
+        pointSize: 5
+        scaleDistribution:
+          type: linear
+        showPoints: auto
+        spanNulls: false
+        stacking:
+          group: A
+          mode: none
+        thresholdsStyle:
+          mode: 'off'
+      mappings: []
+      thresholds:
+        mode: absolute
+        steps:
+        - color: green
+          value:
+        - color: red
+          value: 80
+    overrides: []
+  gridPos:
+    h: 8
+    w: 12
+    x: 0
+    y: 0
+  id: 2
+  options:
+    legend:
+      calcs: []
+      displayMode: list
+      placement: bottom
+    tooltip:
+      mode: single
+  title: Panel Title
+  type: timeseries
+schemaVersion: 32
+style: dark
+tags: []
+templating:
+  list:
+  - current:
+      selected: true
+      text: crcs02ue1-prometheus
+      value: crcs02ue1-prometheus
+    description:
+    error:
+    hide: 0
+    includeAll: false
+    label: Datasource
+    multi: false
+    name: datasource
+    options: []
+    query: prometheus
+    queryValue: ''
+    refresh: 1
+    regex: "/^crcs02ue1-prometheus$/"
+    skipUrlSync: false
+    type: datasource
+time:
+  from: now-6h
+  to: now
+timepicker: {}
+timezone: ''
+title: quickstarts
+uid: aqaixAb7k
+version: 2

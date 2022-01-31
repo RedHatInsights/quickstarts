@@ -45,7 +45,7 @@ func main() {
 	)
 
 	r.Get("/test", probe)
-	r.Route("/api/quickstarts/v1", func(sub chi.Router) {
+	r.With(routes.PrometheusMiddleware).Route("/api/quickstarts/v1", func(sub chi.Router) {
 		sub.Route("/quickstarts", routes.MakeQuickstartsRouter)
 		sub.Route("/progress", routes.MakeQuickstartsProgressRouter)
 	})
