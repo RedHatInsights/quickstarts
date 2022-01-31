@@ -18,38 +18,15 @@ fiscalYearStartMonth: 0
 gnetId:
 graphTooltip: 0
 id: 223
-iteration: 1643291345577
+iteration: 1643637094790
 links: []
 liveNow: false
 panels:
-- datasource:
+- datasource: crcs02ue1-prometheus
   fieldConfig:
     defaults:
       color:
-        mode: palette-classic
-      custom:
-        axisLabel: ''
-        axisPlacement: auto
-        barAlignment: 0
-        drawStyle: line
-        fillOpacity: 0
-        gradientMode: none
-        hideFrom:
-          legend: false
-          tooltip: false
-          viz: false
-        lineInterpolation: linear
-        lineWidth: 1
-        pointSize: 5
-        scaleDistribution:
-          type: linear
-        showPoints: auto
-        spanNulls: false
-        stacking:
-          group: A
-          mode: none
-        thresholdsStyle:
-          mode: 'off'
+        mode: thresholds
       mappings: []
       thresholds:
         mode: absolute
@@ -66,14 +43,25 @@ panels:
     y: 0
   id: 2
   options:
-    legend:
-      calcs: []
-      displayMode: list
-      placement: bottom
-    tooltip:
-      mode: single
-  title: Panel Title
-  type: timeseries
+    orientation: auto
+    reduceOptions:
+      calcs:
+      - lastNotNull
+      fields: ''
+      values: false
+    showThresholdLabels: false
+    showThresholdMarkers: true
+    text: {}
+  pluginVersion: 8.2.7
+  targets:
+  - exemplar: false
+    expr: rate(quickstarts_responses{code!~"2.*"}[24h])
+    instant: false
+    interval: ''
+    legendFormat: ''
+    refId: A
+  title: Non 2xx responses
+  type: gauge
 schemaVersion: 32
 style: dark
 tags: []
@@ -104,4 +92,11 @@ timepicker: {}
 timezone: ''
 title: quickstarts
 uid: aqaixAb7k
-version: 2
+version: 4
+kind: ConfigMap
+metadata:
+  name: grafana-dashboard-clouddot-insights-quickstarts
+  labels:
+    grafana_dashboard: "true"
+  annotations:
+    grafana-folder: /grafana-dashboard-definitions/quickstarts
