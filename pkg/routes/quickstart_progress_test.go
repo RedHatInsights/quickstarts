@@ -8,7 +8,7 @@ import (
 
 	"github.com/RedHatInsights/quickstarts/pkg/database"
 	"github.com/RedHatInsights/quickstarts/pkg/models"
-	"github.com/gin-gonic/gin"
+	"github.com/go-chi/chi"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -24,12 +24,12 @@ func mockQuickstartProgress(id uint) *models.QuickstartProgress {
 	return &quickstartProgress
 }
 
-func setupQuickstartProgressRouter() *gin.Engine {
-	r := gin.Default()
-	r.Use(QuickstartEntityContext())
-	r.GET("/", getAllQuickstartsProgress)
-	r.POST("/:quickstartId", createQuickstartProgress)
-	r.GET("/get", getQuickstartProgress)
+func setupQuickstartProgressRouter() *chi.Mux {
+	r := chi.NewRouter()
+	r.Use(QuickstartEntityContext)
+	r.Get("/", getAllQuickstartsProgress)
+	r.Post("/:quickstartId", createQuickstartProgress)
+	r.Get("/get", getQuickstartProgress)
 	return r
 }
 

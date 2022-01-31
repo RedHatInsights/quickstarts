@@ -10,7 +10,7 @@ import (
 
 	"github.com/RedHatInsights/quickstarts/pkg/database"
 	"github.com/RedHatInsights/quickstarts/pkg/models"
-	"github.com/gin-gonic/gin"
+	"github.com/go-chi/chi"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -54,14 +54,14 @@ type messageResponsePayload struct {
 	Msg string `json:"msg"`
 }
 
-func setupRouter() *gin.Engine {
-	r := gin.Default()
-	r.Use(QuickstartEntityContext())
-	r.GET("/", GetAllQuickstarts)
-	r.GET("/:id", GetQuickstartById)
-	r.POST("/", CreateQuickstart)
-	r.PATCH("/:id", UpdateQuickstartById)
-	r.DELETE("/:id", DeleteQuickstartById)
+func setupRouter() *chi.Mux {
+	r := chi.NewRouter()
+	r.Use(QuickstartEntityContext)
+	r.Get("/", GetAllQuickstarts)
+	r.Get("/:id", GetQuickstartById)
+	r.Post("/", CreateQuickstart)
+	r.Patch("/:id", UpdateQuickstartById)
+	r.Delete("/:id", DeleteQuickstartById)
 	return r
 }
 

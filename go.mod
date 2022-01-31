@@ -4,7 +4,10 @@ go 1.16
 
 require (
 	github.com/getkin/kin-openapi v0.76.0
+	github.com/ghodss/yaml v1.0.0 // indirect
 	github.com/gin-gonic/gin v1.7.4
+	github.com/go-chi/chi v4.0.2+incompatible
+	github.com/go-chi/chi/v5 v5.0.7 // indirect
 	github.com/go-playground/validator/v10 v10.9.0 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/joho/godotenv v1.3.0
@@ -12,6 +15,7 @@ require (
 	github.com/mattn/go-isatty v0.0.14 // indirect
 	github.com/prometheus/client_golang v1.11.0
 	github.com/redhatinsights/app-common-go v1.5.2
+	github.com/redhatinsights/platform-go-middlewares v0.10.0
 	github.com/sirupsen/logrus v1.8.1
 	github.com/stretchr/testify v1.7.0
 	github.com/ugorji/go v1.2.6 // indirect
