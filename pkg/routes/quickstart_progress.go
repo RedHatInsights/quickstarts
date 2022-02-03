@@ -78,7 +78,45 @@ func createQuickstartProgress(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(resp)
 }
 
+func deleteQuickstartProgress(w http.ResponseWriter, r *http.Request) {
+	if progressId := chi.URLParam(r, "id"); progressId != "" {
+		id, err := strconv.Atoi(progressId)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			w.Header().Set("Content-Type", "application/json")
+			resp := make(map[string]string)
+			resp["msg"] = err.Error()
+			json.NewEncoder(w).Encode(resp)
+			return
+		}
+		var quickStartProgress models.QuickstartProgress
+		err = database.DB.First(&quickStartProgress, id).Error
+		if err != nil {
+			w.WriteHeader(http.StatusNotFound)
+			w.Header().Set("Content-Type", "application/json")
+			resp := make(map[string]string)
+			resp["msg"] = err.Error()
+			json.NewEncoder(w).Encode(resp)
+			return
+		}
+		err = database.DB.Delete(&quickStartProgress).Error
+		if err != nil {
+			w.WriteHeader(http.StatusNotFound)
+			w.Header().Set("Content-Type", "application/json")
+			resp := make(map[string]string)
+			resp["msg"] = err.Error()
+			json.NewEncoder(w).Encode(resp)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+		resp := make(map[string]string)
+		resp["msg"] = "Quickstart progress successfully removed"
+		json.NewEncoder(w).Encode(resp)
+	}
+}
+
 func MakeQuickstartsProgressRouter(sub chi.Router) {
 	sub.Get("/", getQuickstartProgress)
 	sub.Post("/", createQuickstartProgress)
+	sub.Delete("/{id}", deleteQuickstartProgress)
 }

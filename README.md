@@ -27,3 +27,9 @@ curl --location --request POST 'http://localhost:8000/api/quickstarts/v1/progres
 "accountId": 1, "quickstart": 666, "progress": {"Some": "Progress"}
 }'
 ```
+
+### Delete progress
+
+```sh
+curl --location --request DELETE 'http://localhost:8000/api/quickstarts/v1/progress/14'
+```

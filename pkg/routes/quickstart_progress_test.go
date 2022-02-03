@@ -27,8 +27,8 @@ func mockQuickstartProgress(id uint) *models.QuickstartProgress {
 func setupQuickstartProgressRouter() *chi.Mux {
 	r := chi.NewRouter()
 	r.Get("/", getAllQuickstartsProgress)
-	r.Post("/{quickstartId}", createQuickstartProgress)
-	r.Get("/get", getQuickstartProgress)
+	r.Post("/", createQuickstartProgress)
+	r.Delete("/{id}", deleteQuickstartProgress)
 	return r
 }
 
@@ -56,4 +56,40 @@ func TestGetAllQuickstartProgresses(t *testing.T) {
 		assert.Equal(t, qp2.AccountId, payload.Data[1].AccountId)
 		assert.Equal(t, qp2.Quickstart, payload.Data[1].Quickstart)
 	})
+}
+
+func TestDeleteQuickstartProgress(t *testing.T) {
+	router := setupQuickstartProgressRouter()
+
+	mockQuickstartProgress(10)
+
+	t.Run("deletes quickstart progress successfuly", func(t *testing.T) {
+		request, _ := http.NewRequest(http.MethodDelete, "/10", nil)
+		response := httptest.NewRecorder()
+		router.ServeHTTP(response, request)
+		type responsePayload struct {
+			msg string
+		}
+
+		var payload *responsePayload
+		json.NewDecoder(response.Body).Decode(&payload)
+		assert.Equal(t, 200, response.Code)
+		var removedProgress models.QuickstartProgress
+		err := database.DB.First(&removedProgress, 10).Error
+		assert.Equal(t, "record not found", err.Error())
+	})
+
+	t.Run("return 404 if quickstart does not exists", func(t *testing.T) {
+		request, _ := http.NewRequest(http.MethodDelete, "/666", nil)
+		response := httptest.NewRecorder()
+		router.ServeHTTP(response, request)
+		type responsePayload struct {
+			msg string
+		}
+
+		var payload *responsePayload
+		json.NewDecoder(response.Body).Decode(&payload)
+		assert.Equal(t, 404, response.Code)
+	})
+
 }
