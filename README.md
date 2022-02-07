@@ -24,8 +24,9 @@ curl --location --request GET 'http://localhost:8000/api/quickstarts/v1/quicksta
 
 ```sh
 curl --location --request POST 'http://localhost:8000/api/quickstarts/v1/progress' --header 'Content-Type: application/json' --data-raw '{
-"accountId": 1, "quickstart": 666, "progress": {"Some": "Progress"}
+"accountId": 123, "quickstartName": "some-name", "progress": {"Some": "Progress-updated"}
 }'
+
 ```
 
 ### Delete progress

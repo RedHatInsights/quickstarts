@@ -4,19 +4,22 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"strconv"
+	"strings"
 	"testing"
 
 	"github.com/RedHatInsights/quickstarts/pkg/database"
 	"github.com/RedHatInsights/quickstarts/pkg/models"
 	"github.com/go-chi/chi"
 	"github.com/stretchr/testify/assert"
+	"gorm.io/datatypes"
 )
 
 func mockQuickstartProgress(id uint) *models.QuickstartProgress {
 	var quickstartProgress models.QuickstartProgress
 
 	quickstartProgress.ID = id
-	quickstartProgress.Quickstart = 1234 + id
+	quickstartProgress.QuickstartName = strconv.Itoa(1234 + int(id))
 	quickstartProgress.AccountId = 4321
 
 	database.DB.Create(&quickstartProgress)
@@ -27,7 +30,7 @@ func mockQuickstartProgress(id uint) *models.QuickstartProgress {
 func setupQuickstartProgressRouter() *chi.Mux {
 	r := chi.NewRouter()
 	r.Get("/", getAllQuickstartsProgress)
-	r.Post("/", createQuickstartProgress)
+	r.Post("/", updateQuickstartProgress)
 	r.Delete("/{id}", deleteQuickstartProgress)
 	return r
 }
@@ -52,10 +55,76 @@ func TestGetAllQuickstartProgresses(t *testing.T) {
 		assert.Equal(t, 200, response.Code)
 		assert.Equal(t, 2, len(payload.Data))
 		assert.Equal(t, qp1.AccountId, payload.Data[0].AccountId)
-		assert.Equal(t, qp1.Quickstart, payload.Data[0].Quickstart)
+		assert.Equal(t, qp1.QuickstartName, payload.Data[0].QuickstartName)
 		assert.Equal(t, qp2.AccountId, payload.Data[1].AccountId)
-		assert.Equal(t, qp2.Quickstart, payload.Data[1].Quickstart)
+		assert.Equal(t, qp2.QuickstartName, payload.Data[1].QuickstartName)
 	})
+}
+
+func TestUpdateQuickstartsProgress(t *testing.T) {
+	router := setupQuickstartProgressRouter()
+	qp1 := mockQuickstartProgress(11)
+	type responsePayload struct {
+		Data models.QuickstartProgress
+	}
+
+	t.Run("should return bad request if no accountId or quickstartName was provided", func(t *testing.T) {
+		jsonParams := `{"progress": { "foo": "bar" }}`
+		request, _ := http.NewRequest(http.MethodPost, "/", strings.NewReader(string(jsonParams)))
+		response := httptest.NewRecorder()
+
+		router.ServeHTTP(response, request)
+
+		var payload *messageResponsePayload
+
+		json.NewDecoder(response.Body).Decode(&payload)
+		assert.Equal(t, 400, response.Code)
+		assert.Equal(t, "Bad request! Missing accountId or quickstartName.", payload.Msg)
+	})
+
+	t.Run("should create new entity", func(t *testing.T) {
+		jsonParams := `{"accountId": 666, "quickstartName": "foo-bar", "progress": { "foo": "bar" }}`
+		request, _ := http.NewRequest(http.MethodPost, "/", strings.NewReader(string(jsonParams)))
+		response := httptest.NewRecorder()
+
+		router.ServeHTTP(response, request)
+
+		var payload *responsePayload
+
+		json.NewDecoder(response.Body).Decode(&payload)
+		assert.Equal(t, 200, response.Code)
+		assert.Equal(t, 666, payload.Data.AccountId)
+		assert.Equal(t, "foo-bar", payload.Data.QuickstartName)
+
+		err := database.DB.Where(&payload.Data).Error
+		assert.Equal(t, err, nil)
+	})
+
+	t.Run("should update existing entity", func(t *testing.T) {
+		var tempProgress *datatypes.JSON
+		json.Unmarshal([]byte(`{"bar": "barz"}`), &tempProgress)
+
+		qp1.Progress = tempProgress
+		jsonParams := `{"accountId": 666, "quickstartName": "foo-bar", "progress": { "foo": "bar" }}`
+		request, _ := http.NewRequest(http.MethodPost, "/", strings.NewReader(string(jsonParams)))
+		response := httptest.NewRecorder()
+
+		router.ServeHTTP(response, request)
+
+		var payload *responsePayload
+
+		dbLen := database.DB.Find(&models.QuickstartProgress{}).RowsAffected
+
+		json.NewDecoder(response.Body).Decode(&payload)
+		assert.Equal(t, 200, response.Code)
+		assert.Equal(t, 666, payload.Data.AccountId)
+		assert.Equal(t, "foo-bar", payload.Data.QuickstartName)
+		assert.Equal(t, dbLen, database.DB.Find(&models.QuickstartProgress{}).RowsAffected)
+
+		err := database.DB.Where(&payload.Data).Error
+		assert.Equal(t, err, nil)
+	})
+
 }
 
 func TestDeleteQuickstartProgress(t *testing.T) {

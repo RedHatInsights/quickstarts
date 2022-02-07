@@ -10,6 +10,15 @@ import (
 	"github.com/go-chi/chi"
 )
 
+func getExistingProgress(name string, accountId int) (models.QuickstartProgress, error) {
+	var progress models.QuickstartProgress
+	var where models.QuickstartProgress
+	where.QuickstartName = name
+	where.AccountId = accountId
+	err := database.DB.Where(where).First(&progress).Error
+	return progress, err
+}
+
 func getAllQuickstartsProgress(w http.ResponseWriter, r *http.Request) {
 	var progress []models.QuickstartProgress
 	database.DB.Find(&progress)
@@ -23,19 +32,19 @@ func getAllQuickstartsProgress(w http.ResponseWriter, r *http.Request) {
 func getQuickstartProgress(w http.ResponseWriter, r *http.Request) {
 	queries := r.URL.Query()
 	var accountId int
-	var quickstart int
+	var quickstart string
 	accountId, _ = strconv.Atoi(queries.Get("account"))
-	quickstart, _ = strconv.Atoi(queries.Get("quickstart"))
+	quickstart = queries.Get("quickstart")
 
-	if accountId != 0 && quickstart != 0 {
+	if accountId != 0 || quickstart != "" {
 		var where models.QuickstartProgress
 		var progresses []models.QuickstartProgress
 		if accountId != 0 {
 			where.AccountId = accountId
 		}
 
-		if quickstart != 0 {
-			where.Quickstart = uint(quickstart)
+		if quickstart != "" {
+			where.QuickstartName = quickstart
 		}
 		database.DB.Where(where).Find(&progresses)
 		resp := make(map[string][]models.QuickstartProgress)
@@ -49,8 +58,9 @@ func getQuickstartProgress(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func createQuickstartProgress(w http.ResponseWriter, r *http.Request) {
+func updateQuickstartProgress(w http.ResponseWriter, r *http.Request) {
 	var progress *models.QuickstartProgress
+	var currentProgress models.QuickstartProgress
 	if err := json.NewDecoder(r.Body).Decode(&progress); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Header().Set("Content-Type", "application/json")
@@ -61,7 +71,28 @@ func createQuickstartProgress(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := database.DB.Create(&progress).Error
+	if progress.AccountId == 0 || progress.QuickstartName == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Header().Set("Content-Type", "application/json")
+		resp := make(map[string]string)
+
+		resp["msg"] = "Bad request! Missing accountId or quickstartName."
+		json.NewEncoder(w).Encode(resp)
+		return
+	}
+
+	currentProgress, err := getExistingProgress(progress.QuickstartName, progress.AccountId)
+	/**
+	* if no progress is set for the name and account, create new
+	* else update the exising progress
+	 */
+	if err != nil {
+		err = database.DB.Create(&progress).Error
+	} else {
+		currentProgress.Progress = progress.Progress
+		err = database.DB.Save(&currentProgress).Error
+		progress = &currentProgress
+	}
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Header().Set("Content-Type", "application/json")
@@ -117,6 +148,6 @@ func deleteQuickstartProgress(w http.ResponseWriter, r *http.Request) {
 
 func MakeQuickstartsProgressRouter(sub chi.Router) {
 	sub.Get("/", getQuickstartProgress)
-	sub.Post("/", createQuickstartProgress)
+	sub.Post("/", updateQuickstartProgress)
 	sub.Delete("/{id}", deleteQuickstartProgress)
 }
