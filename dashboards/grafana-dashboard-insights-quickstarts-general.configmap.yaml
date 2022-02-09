@@ -25,8 +25,7 @@ data:
       "fiscalYearStartMonth": 0,
       "gnetId": null,
       "graphTooltip": 0,
-      "id": 223,
-      "iteration": 1643642612926,
+      "iteration": 1644411022056,
       "links": [],
       "liveNow": false,
       "panels": [
@@ -37,7 +36,10 @@ data:
               "color": {
                 "mode": "thresholds"
               },
+              "decimals": 2,
               "mappings": [],
+              "max": 1,
+              "min": 0,
               "thresholds": {
                 "mode": "absolute",
                 "steps": [
@@ -47,10 +49,11 @@ data:
                   },
                   {
                     "color": "red",
-                    "value": 80
+                    "value": 90
                   }
                 ]
-              }
+              },
+              "unit": "percentunit"
             },
             "overrides": []
           },
@@ -65,7 +68,7 @@ data:
             "orientation": "auto",
             "reduceOptions": {
               "calcs": [
-                "lastNotNull"
+                "mean"
               ],
               "fields": "",
               "values": false
@@ -78,13 +81,13 @@ data:
           "targets": [
             {
               "exemplar": true,
-              "expr": "sum(api_3scale_gateway_api_time_bucket{exported_service=\"quickstarts\",le=\"2000\"})\n/\nsum(api_3scale_gateway_api_time_bucket{exported_service=\"quickstarts\",le=\"+Inf\"})",
+              "expr": "sum(rate(api_3scale_gateway_api_time_bucket{le=\"2000.0\", exported_service=\"quickstarts\"}[24h])) / sum(rate(api_3scale_gateway_api_time_bucket{le=\"+Inf\", exported_service=\"quickstarts\"}[24h]))",
               "interval": "",
               "legendFormat": "",
               "refId": "A"
             }
           ],
-          "title": "2000+ms Response count",
+          "title": "Latency <= 2000ms",
           "type": "gauge"
         },
         {
@@ -241,7 +244,10 @@ data:
               "color": {
                 "mode": "thresholds"
               },
+              "decimals": 2,
               "mappings": [],
+              "max": 1,
+              "min": 0,
               "thresholds": {
                 "mode": "absolute",
                 "steps": [
@@ -251,10 +257,11 @@ data:
                   },
                   {
                     "color": "red",
-                    "value": 80
+                    "value": 90
                   }
                 ]
-              }
+              },
+              "unit": "percentunit"
             },
             "overrides": []
           },
@@ -269,7 +276,7 @@ data:
             "orientation": "auto",
             "reduceOptions": {
               "calcs": [
-                "lastNotNull"
+                "mean"
               ],
               "fields": "",
               "values": false
@@ -282,7 +289,7 @@ data:
           "targets": [
             {
               "exemplar": false,
-              "expr": "1-(quickstarts_responses{code=\"5xx\"} / quickstarts_responses)",
+              "expr": "sum(increase(quickstarts_responses{code!~\"2.*\"}[24h])) / sum(increase(quickstarts_responses[24h]))",
               "instant": false,
               "interval": "",
               "legendFormat": "",
@@ -323,14 +330,14 @@ data:
         ]
       },
       "time": {
-        "from": "now-6h",
+        "from": "now-24h",
         "to": "now"
       },
       "timepicker": {},
       "timezone": "",
       "title": "quickstarts",
       "uid": "aqaixAb7k",
-      "version": 7
+      "version": 2
     }
 kind: ConfigMap
 metadata:
