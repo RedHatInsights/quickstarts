@@ -23,14 +23,17 @@ data:
       },
       "editable": true,
       "fiscalYearStartMonth": 0,
-      "gnetId": null,
       "graphTooltip": 0,
-      "iteration": 1644411022056,
+      "id": 83,
+      "iteration": 1647351521865,
       "links": [],
       "liveNow": false,
       "panels": [
         {
-          "datasource": "crcs02ue1-prometheus",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -77,9 +80,13 @@ data:
             "showThresholdMarkers": true,
             "text": {}
           },
-          "pluginVersion": "8.2.7",
+          "pluginVersion": "8.4.1",
           "targets": [
             {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
               "exemplar": true,
               "expr": "sum(rate(api_3scale_gateway_api_time_bucket{le=\"2000.0\", exported_service=\"quickstarts\"}[24h])) / sum(rate(api_3scale_gateway_api_time_bucket{le=\"+Inf\", exported_service=\"quickstarts\"}[24h]))",
               "interval": "",
@@ -91,68 +98,14 @@ data:
           "type": "gauge"
         },
         {
-          "datasource": "crcs02ue1-prometheus",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "thresholds"
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 8,
-            "w": 12,
-            "x": 0,
-            "y": 0
-          },
-          "id": 4,
-          "options": {
-            "orientation": "auto",
-            "reduceOptions": {
-              "calcs": [
-                "lastNotNull"
-              ],
-              "fields": "",
-              "values": false
-            },
-            "showThresholdLabels": false,
-            "showThresholdMarkers": true,
-            "text": {}
-          },
-          "pluginVersion": "8.2.7",
-          "targets": [
-            {
-              "exemplar": true,
-              "expr": "sum(api_3scale_gateway_api_time_bucket{exported_service=\"quickstarts\", le=\"2000\"}) / sum(api_3scale_gateway_api_time_bucket{exported_service=\"quickstarts\", le=\"+Inf\"})",
-              "interval": "",
-              "legendFormat": "",
-              "refId": "A"
-            }
-          ],
-          "title": "2000ms+ Response latency",
-          "type": "gauge"
-        },
-        {
           "aliasColors": {},
           "bars": true,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "crcs02ue1-prometheus",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
           "fill": 1,
           "fillGradient": 0,
           "gridPos": {
@@ -179,7 +132,7 @@ data:
             "alertThreshold": true
           },
           "percentage": false,
-          "pluginVersion": "8.2.7",
+          "pluginVersion": "8.4.1",
           "pointradius": 2,
           "points": false,
           "renderer": "flot",
@@ -189,6 +142,10 @@ data:
           "steppedLine": false,
           "targets": [
             {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
               "exemplar": true,
               "expr": "sum(increase(quickstarts_responses[5m])) by (code)",
               "interval": "",
@@ -197,9 +154,7 @@ data:
             }
           ],
           "thresholds": [],
-          "timeFrom": null,
           "timeRegions": [],
-          "timeShift": null,
           "title": "Responses by status",
           "tooltip": {
             "shared": true,
@@ -208,37 +163,31 @@ data:
           },
           "type": "graph",
           "xaxis": {
-            "buckets": null,
             "mode": "time",
-            "name": null,
             "show": true,
             "values": []
           },
           "yaxes": [
             {
               "format": "short",
-              "label": null,
               "logBase": 1,
-              "max": null,
-              "min": null,
               "show": true
             },
             {
               "format": "short",
-              "label": null,
               "logBase": 1,
-              "max": null,
-              "min": null,
               "show": true
             }
           ],
           "yaxis": {
-            "align": false,
-            "alignLevel": null
+            "align": false
           }
         },
         {
-          "datasource": "crcs02ue1-prometheus",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -285,11 +234,15 @@ data:
             "showThresholdMarkers": true,
             "text": {}
           },
-          "pluginVersion": "8.2.7",
+          "pluginVersion": "8.4.1",
           "targets": [
             {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
               "exemplar": false,
-              "expr": "sum(increase(quickstarts_responses{code!~\"2.*\"}[24h])) / sum(increase(quickstarts_responses[24h]))",
+              "expr": "sum(increase(quickstarts_responses{code=~\"2.*\"}[24h])) / sum(increase(quickstarts_responses[24h]))",
               "instant": false,
               "interval": "",
               "legendFormat": "",
@@ -301,19 +254,17 @@ data:
         }
       ],
       "refresh": "",
-      "schemaVersion": 32,
+      "schemaVersion": 35,
       "style": "dark",
       "tags": [],
       "templating": {
         "list": [
           {
             "current": {
-              "selected": false,
+              "selected": true,
               "text": "crcs02ue1-prometheus",
               "value": "crcs02ue1-prometheus"
             },
-            "description": null,
-            "error": null,
             "hide": 0,
             "includeAll": false,
             "label": "Datasource",
@@ -323,7 +274,7 @@ data:
             "query": "prometheus",
             "queryValue": "",
             "refresh": 1,
-            "regex": "/^crcs02ue1-prometheus$/",
+            "regex": "/^(crcs02ue1-prometheus|crcp01ue1-prometheus)$/",
             "skipUrlSync": false,
             "type": "datasource"
           }
@@ -337,7 +288,8 @@ data:
       "timezone": "",
       "title": "quickstarts",
       "uid": "aqaixAb7k",
-      "version": 2
+      "version": 1,
+      "weekStart": ""
     }
 kind: ConfigMap
 metadata:
