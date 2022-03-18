@@ -13,6 +13,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/redhatinsights/platform-go-middlewares/request_id"
 	"github.com/sirupsen/logrus"
+	_ "github.com/joho/godotenv/autoload"
 )
 
 func initDependecies() {
