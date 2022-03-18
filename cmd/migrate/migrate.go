@@ -12,9 +12,10 @@ func main() {
 	godotenv.Load()
 	config.Init()
 	database.Init()
-	err := database.DB.AutoMigrate(&models.Quickstart{}, &models.QuickstartProgress{})
+	err := database.DB.AutoMigrate(&models.Quickstart{}, &models.QuickstartProgress{}, &models.Tag{})
 	if err != nil {
 		panic(err)
 	}
 	logrus.Info("Migration complete")
+	database.SeedTags()
 }
