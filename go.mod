@@ -9,7 +9,7 @@ require (
 	github.com/go-chi/chi v4.0.2+incompatible
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/go-cmp v0.5.6 // indirect
-	github.com/joho/godotenv v1.3.0
+	github.com/joho/godotenv v1.4.0
 	github.com/kr/pretty v0.3.0 // indirect
 	github.com/prometheus/client_golang v1.11.0
 	github.com/redhatinsights/app-common-go v1.5.2
