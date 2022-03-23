@@ -120,9 +120,6 @@ func TestGetAll(t *testing.T) {
 		json.NewDecoder(response.Body).Decode(&payload)
 		assert.Equal(t, 200, response.Code)
 		assert.Equal(t, 3, len(payload.Data))
-		assert.Equal(t, "tagged-quickstart", payload.Data[0].Name)
-		assert.Equal(t, "rhel-quickstart", payload.Data[1].Name)
-		assert.Equal(t, "settings-quickstart", payload.Data[2].Name)
 	})
 
 	t.Run("should get all quickstarts with 'rhel' bundle tag", func(t *testing.T) {
@@ -134,8 +131,6 @@ func TestGetAll(t *testing.T) {
 		json.NewDecoder(response.Body).Decode(&payload)
 		assert.Equal(t, 200, response.Code)
 		assert.Equal(t, 2, len(payload.Data))
-		assert.Equal(t, "tagged-quickstart", payload.Data[0].Name)
-		assert.Equal(t, "rhel-quickstart", payload.Data[1].Name)
 	})
 
 	t.Run("should get all quickstarts with 'settings' bundle tag", func(t *testing.T) {

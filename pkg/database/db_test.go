@@ -29,14 +29,14 @@ func TestCreateTags(t *testing.T) {
 		tag.Type = "nonsense"
 		tag.Value = "foo"
 		error := DB.Create(&tag).Error
-		assert.Equal(t, "sql: converting argument $4 type: invalid bundle type", error.Error())
+		assert.Equal(t, "sql: converting argument $4 type: invalid tag value", error.Error())
 	})
 
 	t.Run("fail to create tag with empty tag type", func(t *testing.T) {
 		var tag models.Tag
 		tag.Value = "foo"
 		error := DB.Create(&tag).Error
-		assert.Equal(t, "sql: converting argument $4 type: invalid bundle type", error.Error())
+		assert.Equal(t, "sql: converting argument $4 type: invalid tag value", error.Error())
 	})
 
 	t.Run("fail to create tag with empty tag value", func(t *testing.T) {

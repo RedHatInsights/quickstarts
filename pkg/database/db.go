@@ -39,6 +39,9 @@ func Init() {
 	if !DB.Migrator().HasTable(&models.Tag{}) {
 		DB.Migrator().CreateTable(&models.Tag{})
 	}
+	if !DB.Migrator().HasTable(&models.HelpTopic{}) {
+		DB.Migrator().CreateTable(&models.HelpTopic{})
+	}
 
 	if err != nil {
 		panic(fmt.Sprintf("failed to connect database: %s", err.Error()))

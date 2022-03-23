@@ -40,7 +40,7 @@ func (t TagType) Value() (driver.Value, error) {
 	case BundleTag, ApplicationTag, ContentKind:
 		return string(t), nil
 	}
-	return nil, errors.New("invalid bundle type")
+	return nil, errors.New("invalid tag value")
 }
 
 // Tag is used for additional entity filtrations
@@ -49,4 +49,5 @@ type Tag struct {
 	Type        TagType      `json:"type" sql:"type:text" gorm:"not null"`
 	Value       string       `json:"value" gorm:"not null;default:null"`
 	Quickstarts []Quickstart `gorm:"many2many:quickstart_tags;"`
+	HelpTopics  []HelpTopic  `gorm:"many2many:help_topic_tags;"`
 }
