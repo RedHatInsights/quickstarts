@@ -18,4 +18,5 @@ func main() {
 	}
 	logrus.Info("Migration complete")
 	database.SeedTags()
+	logrus.Info("Seeding complete")
 }
