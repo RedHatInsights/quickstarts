@@ -5,41 +5,33 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
-	"strings"
 	"testing"
 
 	"github.com/RedHatInsights/quickstarts/pkg/database"
 	"github.com/RedHatInsights/quickstarts/pkg/models"
 	"github.com/go-chi/chi"
-	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 )
 
 var quickstart models.Quickstart
+var taggedQuickstart models.Quickstart
+var settingsQuickstart models.Quickstart
+var rhelQuickstart models.Quickstart
+var rbacQuickstart models.Quickstart
+var rhelBudleTag models.Tag
+var settingsBundleTag models.Tag
+var rbacApplicationTag models.Tag
+var unusedTag models.Tag
 
-func mockQuickstart(id uint, title string) *models.Quickstart {
-	quickstart.ID = 123 + id
-	if title == "" {
-		quickstart.Title = "test title"
-	} else {
-		quickstart.Title = title
-	}
+func mockQuickstart(name string) *models.Quickstart {
+	quickstart.Name = name
 	database.DB.Create(&quickstart)
 	return &quickstart
 }
 
-func mockBundleQuickstarts(bundles ...string) {
-	quickstart.ID = 222
-	quickstart.Title = "bundle title"
-	quickstart.Bundles, _ = json.Marshal(bundles)
-	database.DB.Create(quickstart)
-	quickstart.ID = 333
-	database.DB.Create(quickstart)
-}
-
 type responseBody struct {
-	Id    int    `json:"id"`
-	Title string `json:"title"`
+	Id   uint   `json:"id"`
+	Name string `json:"name"`
 }
 
 type responsePayload struct {
@@ -57,22 +49,70 @@ type messageResponsePayload struct {
 func setupRouter() *chi.Mux {
 	r := chi.NewRouter()
 	r.Get("/", GetAllQuickstarts)
-	r.Post("/", CreateQuickstart)
 	r.Route("/{id}", func(sub chi.Router) {
 		sub.Use(QuickstartEntityContext)
 		sub.Get("/", GetQuickstartById)
-		sub.Patch("/", UpdateQuickstartById)
-		sub.Delete("/", DeleteQuickstartById)
 	})
 	return r
 }
 
+func setupTags() {
+	rhelBudleTag.Type = models.BundleTag
+	rhelBudleTag.Value = "rhel"
+
+	settingsBundleTag.Type = models.BundleTag
+	settingsBundleTag.Value = "settings"
+
+	rbacApplicationTag.Type = models.ApplicationTag
+	rbacApplicationTag.Value = "rbac"
+
+	unusedTag.Type = models.BundleTag
+	unusedTag.Value = "unused"
+
+	database.DB.Create(&rhelBudleTag)
+	database.DB.Create(&settingsBundleTag)
+	database.DB.Create(&rbacApplicationTag)
+	database.DB.Create(&unusedTag)
+}
+
+func setupTaggedQuickstarts() {
+	taggedQuickstart.Name = "tagged-quickstart"
+	taggedQuickstart.Content = []byte(`{"tags": "all-tags"}`)
+
+	database.DB.Create(&taggedQuickstart)
+	database.DB.Model(&taggedQuickstart).Association("Tags").Append(&rhelBudleTag, &settingsBundleTag, &rbacApplicationTag)
+	database.DB.Save(&taggedQuickstart)
+
+	settingsQuickstart.Name = "settings-quickstart"
+	settingsQuickstart.Content = []byte(`{"tags": "settings"}`)
+
+	database.DB.Create(&settingsQuickstart)
+	database.DB.Model(&settingsQuickstart).Association("Tags").Append(&settingsBundleTag)
+	database.DB.Save(&settingsQuickstart)
+
+	rhelQuickstart.Name = "rhel-quickstart"
+	rhelQuickstart.Content = []byte(`{"tags": "rhel"}`)
+
+	database.DB.Create(&rhelQuickstart)
+	database.DB.Model(&rhelQuickstart).Association("Tags").Append(&rhelBudleTag)
+	database.DB.Save(&rhelQuickstart)
+
+	rbacQuickstart.Name = "rbac-quickstart"
+	rbacQuickstart.Content = []byte(`{"tags": "rbac"}`)
+
+	database.DB.Create(&rbacQuickstart)
+	database.DB.Model(&rbacQuickstart).Association("Tags").Append(&rbacApplicationTag)
+	database.DB.Save(&rbacQuickstart)
+}
+
 func TestGetAll(t *testing.T) {
 	router := setupRouter()
-	mockQuickstart(1, "")
-	mockBundleQuickstarts("foo", "bar")
-	t.Run("returns GET all quickstarts successfully", func(t *testing.T) {
-		request, _ := http.NewRequest(http.MethodGet, "/", nil)
+	setupTags()
+	setupTaggedQuickstarts()
+	leafQuickstart := mockQuickstart("non-tags-quickstart")
+
+	t.Run("should get all quickstarts with 'rhel' or 'settings' bundle tags", func(t *testing.T) {
+		request, _ := http.NewRequest(http.MethodGet, "/?bundle[]=rhel&bundle[]=settings", nil)
 		response := httptest.NewRecorder()
 		router.ServeHTTP(response, request)
 
@@ -80,29 +120,13 @@ func TestGetAll(t *testing.T) {
 		json.NewDecoder(response.Body).Decode(&payload)
 		assert.Equal(t, 200, response.Code)
 		assert.Equal(t, 3, len(payload.Data))
-		logrus.Info("90")
-		assert.Equal(t, "test title", payload.Data[0].Title)
-		logrus.Info("92")
+		assert.Equal(t, "tagged-quickstart", payload.Data[0].Name)
+		assert.Equal(t, "rhel-quickstart", payload.Data[1].Name)
+		assert.Equal(t, "settings-quickstart", payload.Data[2].Name)
 	})
 
-	/**
-	* Before we can query JSONS in SQLite, we need to use gorm build in JSON queries instead of RAW questions based on postgres
-	 */
-	t.Run("Should return an empty array when filtering non existing bundle", func(t *testing.T) {
-		t.Skip()
-		request, _ := http.NewRequest(http.MethodGet, "/?bundle=nonsense", nil)
-		response := httptest.NewRecorder()
-		router.ServeHTTP(response, request)
-
-		var payload *responsePayload
-		json.NewDecoder(response.Body).Decode(&payload)
-		assert.Equal(t, 200, response.Code)
-		assert.Equal(t, 0, len(payload.Data))
-	})
-
-	t.Run("Should an array of quickstarts within 'foo' bundle", func(t *testing.T) {
-		t.Skip()
-		request, _ := http.NewRequest(http.MethodGet, "/?bundle=foo", nil)
+	t.Run("should get all quickstarts with 'rhel' bundle tag", func(t *testing.T) {
+		request, _ := http.NewRequest(http.MethodGet, "/?bundle=rhel", nil)
 		response := httptest.NewRecorder()
 		router.ServeHTTP(response, request)
 
@@ -110,147 +134,56 @@ func TestGetAll(t *testing.T) {
 		json.NewDecoder(response.Body).Decode(&payload)
 		assert.Equal(t, 200, response.Code)
 		assert.Equal(t, 2, len(payload.Data))
+		assert.Equal(t, "tagged-quickstart", payload.Data[0].Name)
+		assert.Equal(t, "rhel-quickstart", payload.Data[1].Name)
 	})
-}
 
-func TestGetOneById(t *testing.T) {
-	router := setupRouter()
-	mockQuickstart(0, "get title")
-	t.Run("returns a quickstart object with ID 123", func(t *testing.T) {
-		request, _ := http.NewRequest(http.MethodGet, "/123", nil)
+	t.Run("should get all quickstarts with 'settings' bundle tag", func(t *testing.T) {
+		request, _ := http.NewRequest(http.MethodGet, "/?bundle=settings", nil)
 		response := httptest.NewRecorder()
 		router.ServeHTTP(response, request)
-		var payload *singleResponsePayload
+
+		var payload *responsePayload
 		json.NewDecoder(response.Body).Decode(&payload)
 		assert.Equal(t, 200, response.Code)
-		assert.Equal(t, 123, payload.Data.Id)
+		assert.Equal(t, 2, len(payload.Data))
+		assert.Equal(t, "tagged-quickstart", payload.Data[0].Name)
+		assert.Equal(t, "settings-quickstart", payload.Data[1].Name)
 	})
 
-	t.Run("returns 404 error response if record does not exists", func(t *testing.T) {
-		request, _ := http.NewRequest(http.MethodGet, "/999", nil)
-		response := httptest.NewRecorder()
-		router.ServeHTTP(response, request)
-		var payload *messageResponsePayload
-		json.NewDecoder(response.Body).Decode(&payload)
-		assert.Equal(t, 404, response.Code)
-		assert.Equal(t, "record not found", payload.Msg)
-	})
-
-	t.Run("return 400 error response if bad request was sent", func(t *testing.T) {
-		request, _ := http.NewRequest(http.MethodGet, "/notanid", nil)
-		response := httptest.NewRecorder()
-		router.ServeHTTP(response, request)
-		var payload *messageResponsePayload
-		json.NewDecoder(response.Body).Decode(&payload)
-		assert.Equal(t, 400, response.Code)
-		assert.Equal(t, "strconv.Atoi: parsing \"notanid\": invalid syntax", payload.Msg)
-	})
-}
-
-func TestCRUDRoutes(t *testing.T) {
-	router := setupRouter()
-	t.Run("should create new quickstart record", func(t *testing.T) {
-		jsonParam := `{"title":"Create test title"}`
-		request, _ := http.NewRequest(http.MethodPost, "/", strings.NewReader(string(jsonParam)))
+	t.Run("should get all quickstarts with 'rbac' application tag", func(t *testing.T) {
+		request, _ := http.NewRequest(http.MethodGet, "/?application=rbac", nil)
 		response := httptest.NewRecorder()
 		router.ServeHTTP(response, request)
 
-		var payload *singleResponsePayload
+		var payload *responsePayload
 		json.NewDecoder(response.Body).Decode(&payload)
 		assert.Equal(t, 200, response.Code)
-		assert.Equal(t, "Create test title", payload.Data.Title)
-
-		var dbRecord models.Quickstart
-		dbRecord, _ = FindQuickstartById(payload.Data.Id)
-		assert.Equal(t, int(dbRecord.ID), payload.Data.Id)
+		assert.Equal(t, 2, len(payload.Data))
+		assert.Equal(t, "tagged-quickstart", payload.Data[0].Name)
+		assert.Equal(t, "rbac-quickstart", payload.Data[1].Name)
 	})
 
-	t.Run("should return 400 response for invalid payload", func(t *testing.T) {
-		jsonParam := `[]`
-		request, _ := http.NewRequest(http.MethodPost, "/", strings.NewReader(string(jsonParam)))
+	t.Run("should get all quickstarts if no tags given", func(t *testing.T) {
+		request, _ := http.NewRequest(http.MethodGet, "/", nil)
 		response := httptest.NewRecorder()
 		router.ServeHTTP(response, request)
 
-		var payload *messageResponsePayload
-		json.NewDecoder(response.Body).Decode(&payload)
-		assert.Equal(t, 400, response.Code)
-		assert.Equal(t, "json: cannot unmarshal array into Go value of type models.Quickstart", payload.Msg)
-	})
-
-	t.Run("should delete existing record from database", func(t *testing.T) {
-		deleteQuickstart := mockQuickstart(123, "Delete quickstart")
-		database.DB.Create(&deleteQuickstart)
-		request, _ := http.NewRequest(http.MethodDelete, fmt.Sprintf("/%d", deleteQuickstart.ID), nil)
-		response := httptest.NewRecorder()
-		router.ServeHTTP(response, request)
-
-		var payload *messageResponsePayload
+		var payload *responsePayload
 		json.NewDecoder(response.Body).Decode(&payload)
 		assert.Equal(t, 200, response.Code)
-		assert.Equal(t, "Quickstart successfully removed", payload.Msg)
-
-		_, err := FindQuickstartById(int(deleteQuickstart.ID))
-		assert.Equal(t, "record not found", err.Error())
+		assert.Equal(t, 5, len(payload.Data))
 	})
 
-	t.Run("should return 404 response when deleting non existing record", func(t *testing.T) {
-		request, _ := http.NewRequest(http.MethodDelete, fmt.Sprintf("/%d", 888), nil)
-		response := httptest.NewRecorder()
-		router.ServeHTTP(response, request)
-
-		var payload *messageResponsePayload
-		json.NewDecoder(response.Body).Decode(&payload)
-		assert.Equal(t, 404, response.Code)
-		assert.Equal(t, "record not found", payload.Msg)
-	})
-
-	t.Run("should update existing record", func(t *testing.T) {
-		updatedQuickstart := mockQuickstart(777, "")
-		database.DB.Create(&updatedQuickstart)
-		jsonParam := `{"title":"Update test title"}`
-
-		var dbRecord models.Quickstart
-		dbRecord, _ = FindQuickstartById(int(updatedQuickstart.ID))
-		assert.Equal(t, dbRecord.ID, updatedQuickstart.ID)
-		assert.Equal(t, dbRecord.Title, "test title")
-
-		request, _ := http.NewRequest(http.MethodPatch, fmt.Sprintf("/%d", updatedQuickstart.ID), strings.NewReader(string(jsonParam)))
+	t.Run("should get quikctart by ID", func(t *testing.T) {
+		request, _ := http.NewRequest(http.MethodGet, "/"+fmt.Sprint(leafQuickstart.ID), nil)
 		response := httptest.NewRecorder()
 		router.ServeHTTP(response, request)
 
 		var payload *singleResponsePayload
 		json.NewDecoder(response.Body).Decode(&payload)
 		assert.Equal(t, 200, response.Code)
-
-		dbRecord, _ = FindQuickstartById(int(updatedQuickstart.ID))
-		assert.Equal(t, "Update test title", dbRecord.Title)
-	})
-
-	t.Run("should return 404 when updating non existing record", func(t *testing.T) {
-		jsonParam := `{"title":"Update test title"}`
-
-		request, _ := http.NewRequest(http.MethodPatch, fmt.Sprintf("/%d", 123456), strings.NewReader(string(jsonParam)))
-		response := httptest.NewRecorder()
-		router.ServeHTTP(response, request)
-
-		var payload *messageResponsePayload
-		json.NewDecoder(response.Body).Decode(&payload)
-		assert.Equal(t, 404, response.Code)
-		assert.Equal(t, "record not found", payload.Msg)
-	})
-
-	t.Run("should return 400 when updating record with invalid data", func(t *testing.T) {
-		updatedQuickstart := mockQuickstart(865, "")
-		database.DB.Create(&updatedQuickstart)
-		jsonParam := `[]`
-
-		request, _ := http.NewRequest(http.MethodPatch, fmt.Sprintf("/%d", updatedQuickstart.ID), strings.NewReader(string(jsonParam)))
-		response := httptest.NewRecorder()
-		router.ServeHTTP(response, request)
-
-		var payload *messageResponsePayload
-		json.NewDecoder(response.Body).Decode(&payload)
-		assert.Equal(t, 400, response.Code)
-		assert.Equal(t, "json: cannot unmarshal array into Go value of type models.Quickstart", payload.Msg)
+		assert.Equal(t, leafQuickstart.ID, payload.Data.Id)
+		assert.Equal(t, "non-tags-quickstart", payload.Data.Name)
 	})
 }
