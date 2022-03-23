@@ -15,6 +15,7 @@ FROM registry.redhat.io/ubi8-minimal:latest
 COPY --from=builder /go/bin/quickstarts /usr/bin
 COPY --from=builder /go/bin/quickstarts-migrate /usr/bin
 COPY --from=builder /src/mypackage/myapp/spec/openapi.json /var/tmp
+COPY --from=builder /src/mypackage/myapp/docs /usr/bin/docs
 
 USER 1001
 
