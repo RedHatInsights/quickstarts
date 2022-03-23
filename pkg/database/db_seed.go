@@ -61,7 +61,7 @@ func findTags() []MetadataTemplate {
 	return MetadataTemplates
 }
 
-func seedQuickstart(t MetadataTemplate) (models.Quickstart, error) {
+func seedQuickstart(t MetadataTemplate, defaultTag models.Tag) (models.Quickstart, error) {
 	yamlfile, err := ioutil.ReadFile(t.QuickstartPath)
 	var newQuickstart models.Quickstart
 	var originalQuickstart models.Quickstart
@@ -82,19 +82,64 @@ func seedQuickstart(t MetadataTemplate) (models.Quickstart, error) {
 		newQuickstart.Content = jsonContent
 		newQuickstart.Name = name
 		DB.Create(&newQuickstart)
+		err = DB.Model(&defaultTag).Association("Quickstarts").Append(&newQuickstart)
+		if err != nil {
+			fmt.Println("Failed creating quickstarts default tag associations", err.Error())
+		}
+		DB.Save(&defaultTag)
 		return newQuickstart, nil
 	} else {
 		// Update existing quickstart
 		originalQuickstart.Content = jsonContent
+		// Clear all tags associations
+		err := DB.Model(&originalQuickstart).Association("Tags").Clear()
+		if err != nil {
+			fmt.Println("Failed clearing quickstarts tags associations", err.Error())
+		}
 		DB.Save(&originalQuickstart)
+		err = DB.Model(&defaultTag).Association("Quickstarts").Append(&originalQuickstart)
+		if err != nil {
+			fmt.Println("Failed creating quickstarts default tag associations", err.Error())
+		}
+		DB.Save(&defaultTag)
 		return originalQuickstart, nil
 	}
 }
 
+func seedDefaultTags() map[string]models.Tag {
+	quickstartsKindTag := models.Tag{
+		Type:  models.ContentKind,
+		Value: "quickstart",
+	}
+	helpTopicKindTag := models.Tag{
+		Type:  models.ContentKind,
+		Value: "helptopic",
+	}
+	err := DB.Where("type = ? AND value = ?", &quickstartsKindTag.Type, &quickstartsKindTag.Value).FirstOrCreate(&quickstartsKindTag).Error
+	if err != nil {
+		fmt.Println("Unable to create quickstarts kind tag!")
+	}
+
+	err = DB.Where("type = ? AND value = ?", &helpTopicKindTag.Type, &helpTopicKindTag.Value).FirstOrCreate(&helpTopicKindTag).Error
+	if err != nil {
+		fmt.Println("Unable to create help topic kind tag!")
+	}
+
+	DB.Save(&quickstartsKindTag)
+	DB.Save(&helpTopicKindTag)
+
+	result := make(map[string]models.Tag)
+	result["quickstart"] = quickstartsKindTag
+	result["helptopic"] = helpTopicKindTag
+
+	return result
+}
+
 func SeedTags() {
+	defaultTags := seedDefaultTags()
 	MetadataTemplates := findTags()
 	for _, template := range MetadataTemplates {
-		quickstart, quickstartErr := seedQuickstart(template)
+		quickstart, quickstartErr := seedQuickstart(template, defaultTags["quickstart"])
 		if quickstartErr != nil {
 			fmt.Println("Unable to seed quickstart: ", quickstartErr.Error(), template.QuickstartPath)
 		}

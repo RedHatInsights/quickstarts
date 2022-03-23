@@ -1,0 +1,5 @@
+kind: HelpTopic
+name: poc-topic
+tags:
+  - kind: bundle
+    value: insights
