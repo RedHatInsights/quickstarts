@@ -24,13 +24,15 @@ data:
       "editable": true,
       "fiscalYearStartMonth": 0,
       "graphTooltip": 0,
-      "id": 83,
-      "iteration": 1648036387648,
+      "iteration": 1648111595202,
       "links": [],
       "liveNow": false,
       "panels": [
         {
-          "datasource": "${datasource}"
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -80,7 +82,10 @@ data:
           "pluginVersion": "8.4.1",
           "targets": [
             {
-              "datasource": "${datasource}"
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
               "exemplar": true,
               "expr": "sum(rate(api_3scale_gateway_api_time_bucket{le=\"2000.0\", exported_service=\"quickstarts\"}[24h])) / sum(rate(api_3scale_gateway_api_time_bucket{le=\"+Inf\", exported_service=\"quickstarts\"}[24h]))",
               "interval": "",
@@ -96,7 +101,10 @@ data:
           "bars": true,
           "dashLength": 10,
           "dashes": false,
-          "datasource": "${datasource}"
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
           "fill": 1,
           "fillGradient": 0,
           "gridPos": {
@@ -133,7 +141,10 @@ data:
           "steppedLine": false,
           "targets": [
             {
-              "datasource": "${datasource}"
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
               "exemplar": true,
               "expr": "sum(increase(quickstarts_responses[5m])) by (code)",
               "interval": "",
@@ -172,7 +183,10 @@ data:
           }
         },
         {
-          "datasource": "${datasource}"
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -222,9 +236,12 @@ data:
           "pluginVersion": "8.4.1",
           "targets": [
             {
-              "datasource": "${datasource}"
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
               "exemplar": false,
-              "expr": "sum(increase(quickstarts_responses{code=~\"2.*\"}[24h])) / sum(increase(quickstarts_responses[24h]))",
+              "expr": "round(sum(rate(api_3scale_gateway_api_status{exported_service=\"quickstarts\", status=~\"[234]xx\"}[24h])) \n    /\n    sum(rate(api_3scale_gateway_api_status{exported_service=\"quickstarts\"}[24h])), 0.0001)",
               "instant": false,
               "interval": "",
               "legendFormat": "",
@@ -259,21 +276,6 @@ data:
             "regex": "/^(crcs02ue1-prometheus|crcp01ue1-prometheus)$/",
             "skipUrlSync": false,
             "type": "datasource"
-          },
-          {
-            "current": {},
-            "definition": "",
-            "hide": 0,
-            "includeAll": false,
-            "multi": false,
-            "name": "query0",
-            "options": [],
-            "query": "",
-            "refresh": 1,
-            "regex": "",
-            "skipUrlSync": false,
-            "sort": 0,
-            "type": "query"
           }
         ]
       },
