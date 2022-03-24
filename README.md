@@ -2,6 +2,9 @@
 
 Backed service for integrated quickstarts.
 
+## [Help Topics contribution guide](https://github.com/RedHatInsights/quickstarts/blob/main/docs/help-topics/README.md)
+
+
 ## Run the service locally
 1. There are environment variables required for the application to start. It's
 recommended you copy `.env.example` to `.env` and set these appropriately for local development.
