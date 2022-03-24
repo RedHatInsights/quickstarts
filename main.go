@@ -10,10 +10,10 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/joho/godotenv"
+	_ "github.com/joho/godotenv/autoload"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/redhatinsights/platform-go-middlewares/request_id"
 	"github.com/sirupsen/logrus"
-	_ "github.com/joho/godotenv/autoload"
 )
 
 func initDependecies() {
@@ -49,6 +49,7 @@ func main() {
 	r.With(routes.PrometheusMiddleware).Route("/api/quickstarts/v1", func(sub chi.Router) {
 		sub.Route("/quickstarts", routes.MakeQuickstartsRouter)
 		sub.Route("/progress", routes.MakeQuickstartsProgressRouter)
+		sub.Route("/helptopics", routes.MakeHelpTopicsRouter)
 	})
 	mr.Get("/", probe)
 	mr.Handle("/metrics", promhttp.Handler())
