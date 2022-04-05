@@ -37,7 +37,7 @@
 # Authorization section, option 2, Authorization
 - name: Authorize container registry
   tags:
-  title: : Container registry authorization
+  title: Container registry authorization
   content: |-
     You can sign in to your private container registry, a login window will open in a separate tab. Alternatively, you can use API token authentication. Maybe a list of supported container registries?
   links:
