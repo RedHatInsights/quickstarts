@@ -1,10 +1,17 @@
 components:
   schemas:
-    v1.Quickstart:
+    BadRequest:
       properties:
-        bundles:
-          format: byte
+        msg:
           type: string
+      type: object
+    NotFound:
+      properties:
+        msg:
+          type: string
+      type: object
+    v1.HelpTopic:
+      properties:
         content:
           format: byte
           type: string
@@ -15,7 +22,25 @@ components:
         id:
           minimum: 0
           type: integer
-        title:
+        name:
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+      type: object
+    v1.Quickstart:
+      properties:
+        content:
+          format: byte
+          type: string
+        createdAt:
+          format: date-time
+          type: string
+        deletedAt: {}
+        id:
+          minimum: 0
+          type: integer
+        name:
           type: string
         updatedAt:
           format: date-time
@@ -28,34 +53,117 @@ components:
         progress:
           format: byte
           type: string
-        quickstart:
-          properties:
-            bundles:
-              format: byte
-              type: string
-            content:
-              format: byte
-              type: string
-            createdAt:
-              format: date-time
-              type: string
-            deletedAt: {}
-            id:
-              minimum: 0
-              type: integer
-            title:
-              type: string
-            updatedAt:
-              format: date-time
-              type: string
-          type: object
-        quickstartID:
-          minimum: 0
-          type: integer
+        quickstartName:
+          type: string
       type: object
+# It is necessary to have the initial indetation!
+    queryParams:
+      Bundle:
+        name: bundle
+        description: If set, content is associated with a specific CRC bundle
+        in: query
+        required: false
+        schema:
+          type: string
+        explode: true
+        style: form
+      Application:
+        name: application
+        description: If set, content is associated with a specific CRC application
+        in: query
+        required: false
+        schema:
+          type: string
+        explode: true
+        style: form
 info:
   license:
     name: MIT
   title: quickstarts
   version: 1.0.0
 openapi: 3.0.0
+paths:
+  /api/quickstarts/v1/quickstarts:
+    get:
+      summary: Returns list of all quickstarts
+      responses:
+        '200':
+          description: A JSON array of all quickstarts
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/v1.Quickstart'
+      parameters:
+      - $ref: '#/components/schemas/queryParams/Bundle'
+      - $ref: '#/components/schemas/queryParams/Application'
+  /api/quickstarts/v1/quickstarts/{id}:
+    get:
+      summary: Return a quickstarts by ID
+      responses:
+        '200':
+          description: A JSON object with a single quickstart content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1.Quickstart'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+  /api/quickstarts/v1/helptopics:
+    get:
+      summary: Returns list of all help topics
+      responses:
+        '200':
+          description: A JSON array of all help topics
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/v1.HelpTopic'
+      parameters:
+      - $ref: '#/components/schemas/queryParams/Bundle'
+      - $ref: '#/components/schemas/queryParams/Application'
+  /api/quickstarts/v1/helptopics/{name}:
+    get:
+      summary: Return a help topics set by topic name
+      responses:
+        '200':
+          description: A JSON of a help topic set
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/v1.HelpTopic'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+
