@@ -3,7 +3,6 @@ package routes
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/RedHatInsights/quickstarts/pkg/database"
@@ -52,11 +51,6 @@ func GetAllHelpTopics(w http.ResponseWriter, r *http.Request) {
 		applicationQueries = r.URL.Query()["application[]"]
 	}
 
-	topicQueries := r.URL.Query()["topic"]
-	if len(topicQueries) == 0 {
-		topicQueries = r.URL.Query()["topic[]"]
-	}
-
 	var err error
 	if len(bundleQueries) > 0 {
 		tagTypes = append(tagTypes, models.BundleTag)
@@ -65,17 +59,13 @@ func GetAllHelpTopics(w http.ResponseWriter, r *http.Request) {
 		tagTypes = append(tagTypes, models.ApplicationTag)
 	}
 
-	if len(topicQueries) > 0 {
-		tagTypes = append(tagTypes, models.TopicTag)
-	}
-
-	fmt.Println(tagTypes)
-
 	if len(tagTypes) > 0 {
-		tagQueries := make([][]string, 3)
+		/**
+		 * future proofing more than 2 tag queries
+		 */
+		tagQueries := make([][]string, 2)
 		tagQueries[0] = bundleQueries
 		tagQueries[1] = applicationQueries
-		tagQueries[2] = topicQueries
 		helpTopic, err = findHelpTopicsByTags(tagTypes, concatAppendTags(tagQueries))
 	} else {
 		database.DB.Find(&helpTopic)
@@ -94,8 +84,12 @@ func GetAllHelpTopics(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	resp := make(map[string][]models.HelpTopic)
-	resp["data"] = helpTopic
+	type tResp struct {
+		Data []models.HelpTopic `json:"data"`
+	}
+	var resp tResp
+
+	resp.Data = helpTopic
 	json.NewEncoder(w).Encode(&resp)
 }
 

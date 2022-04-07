@@ -143,72 +143,65 @@ func seedDefaultTags() map[string]models.Tag {
 	return result
 }
 
-func seedHelpTopic(t MetadataTemplate, defaultTag models.Tag) (models.HelpTopic, error) {
+func seedHelpTopic(t MetadataTemplate, defaultTag models.Tag) ([]models.HelpTopic, error) {
 	yamlfile, err := ioutil.ReadFile(t.ContentPath)
-	var newHelpTopic models.HelpTopic
-	var originalHelpTopic models.HelpTopic
+	returnValue := make([]models.HelpTopic, 0)
 	if err != nil {
-		return newHelpTopic, err
+		return returnValue, err
 	}
 
 	jsonContent, err := yaml.YAMLToJSON(yamlfile)
-	var data map[string]map[string]string
-	json.Unmarshal(jsonContent, &data)
-	name := t.Name
-	r := DB.Where("name = ?", name).Find(&originalHelpTopic)
-
-	if r.Error != nil {
-		// check for DB error
-		return newHelpTopic, err
-	} else if r.RowsAffected == 0 {
-		// Create new help topic
-		newHelpTopic.Content = jsonContent
-		newHelpTopic.Name = name
-		DB.Create(&newHelpTopic)
-		err = DB.Model(&defaultTag).Association("HelpTopics").Append(&newHelpTopic)
-		if err != nil {
-			fmt.Println("Failed creating help topic default tag associations", err.Error())
-		}
-		DB.Save(&defaultTag)
-		return newHelpTopic, nil
-	} else {
-		// Update existing help topic
-		originalHelpTopic.Content = jsonContent
-		// Clear all tags associations
-		err := DB.Model(&originalHelpTopic).Association("Tags").Clear()
-		if err != nil {
-			fmt.Println("Failed clearing quickstarts tags associations", err.Error())
-		}
-		DB.Save(&originalHelpTopic)
-		err = DB.Model(&defaultTag).Association("HelpTopics").Append(&originalHelpTopic)
-		if err != nil {
-			fmt.Println("Failed creating help topic default tag associations", err.Error())
-		}
-		DB.Save(&defaultTag)
-		return originalHelpTopic, nil
-	}
-}
-
-type topic struct {
-	Name string `json:"name"`
-}
-
-func seedHelpTopicTags(helpTopic models.HelpTopic) {
-	var topics []topic
-	json.Unmarshal(helpTopic.Content, &topics)
-
-	for _, s := range topics {
-		topicTag := models.Tag{
-			Type:  models.TopicTag,
-			Value: s.Name,
-		}
-		DB.Create(&topicTag)
-		err := DB.Model(&topicTag).Association("HelpTopics").Append(&helpTopic)
-		if err != nil {
-			fmt.Println("Failed appending Topic tag to:", helpTopic.Name, err.Error())
-		}
+	var d []map[string]interface{}
+	if err := json.Unmarshal(jsonContent, &d); err != nil {
+		return returnValue, err
 	}
 
+	for _, c := range d {
+		var newHelpTopic models.HelpTopic
+		var originalHelpTopic models.HelpTopic
+		name := c["name"]
+		r := DB.Where("name = ?", name).Find(&originalHelpTopic)
+
+		if r.Error != nil {
+			// check for DB error
+			return returnValue, err
+		} else if r.RowsAffected == 0 {
+			// Create new help topic
+			newHelpTopic.GroupName = t.Name
+			newHelpTopic.Content, err = json.Marshal(c)
+			if err != nil {
+				return returnValue, err
+			}
+			newHelpTopic.Name = fmt.Sprintf("%v", name)
+			DB.Create(&newHelpTopic)
+			err = DB.Model(&defaultTag).Association("HelpTopics").Append(&newHelpTopic)
+			if err != nil {
+				fmt.Println("Failed creating help topic default tag associations", err.Error())
+			}
+			DB.Save(&defaultTag)
+			returnValue = append(returnValue, newHelpTopic)
+		} else {
+			// Update existing help topic
+			originalHelpTopic.Content, err = json.Marshal(c)
+			originalHelpTopic.GroupName = t.Name
+			if err != nil {
+				return returnValue, err
+			}
+			// Clear all tags associations
+			err := DB.Model(&originalHelpTopic).Association("Tags").Clear()
+			if err != nil {
+				fmt.Println("Failed clearing quickstarts tags associations", err.Error())
+			}
+			DB.Save(&originalHelpTopic)
+			err = DB.Model(&defaultTag).Association("HelpTopics").Append(&originalHelpTopic)
+			if err != nil {
+				fmt.Println("Failed creating help topic default tag associations", err.Error())
+			}
+			DB.Save(&defaultTag)
+			returnValue = append(returnValue, originalHelpTopic)
+		}
+	}
+	return returnValue, nil
 }
 
 func SeedTags() {
@@ -286,7 +279,6 @@ func SeedTags() {
 
 				DB.Save(&originalTag)
 			}
-			seedHelpTopicTags(helpTopic)
 		}
 	}
 }
