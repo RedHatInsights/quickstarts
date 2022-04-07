@@ -19,12 +19,24 @@ func FindHelpTopicByName(name string) (models.HelpTopic, error) {
 func findHelpTopics(tagTypes []models.TagType, tagValues []string, names []string) ([]models.HelpTopic, error) {
 	var helpTopic []models.HelpTopic
 	var tagsArray []models.Tag
-	database.DB.Where("type IN ? AND value IN ?", tagTypes, tagValues).Find(&tagsArray)
-	query := database.DB.Model(&tagsArray).Distinct("id, name, content")
-	if len(names) > 0 {
-		query.Where("name IN ?", names)
+	query := database.DB
+
+	if len(tagTypes) > 0 {
+		query.Where("type IN ? AND value IN ?", tagTypes, tagValues).Find(&tagsArray)
+		query = database.DB.Model(&tagsArray).Distinct("id, name, content")
 	}
-	err := query.Association("HelpTopics").Find(&helpTopic)
+
+	if len(names) > 0 {
+		query = query.Where("name IN ?", names)
+	}
+
+	var err error
+	if len(tagTypes) > 0 {
+		query.Association("HelpTopics").Find(&helpTopic)
+	} else {
+		query.Find(&helpTopic)
+	}
+
 	if err != nil {
 		return helpTopic, err
 	}
@@ -68,7 +80,7 @@ func GetAllHelpTopics(w http.ResponseWriter, r *http.Request) {
 		tagTypes = append(tagTypes, models.ApplicationTag)
 	}
 
-	if len(tagTypes) > 0 {
+	if len(tagTypes) > 0 || len(nameQueries) > 0 {
 		/**
 		 * future proofing more than 2 tag queries
 		 */
