@@ -61,9 +61,10 @@ func GetAllQuickstarts(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Header().Set("Content-Type", "application/json")
-		resp := make(map[string]string)
+		resp := models.BadRequest{
+			Msg: err.Error(),
+		}
 
-		resp["msg"] = err.Error()
 		json.NewEncoder(w).Encode(resp)
 		return
 	}
@@ -90,8 +91,9 @@ func QuickstartEntityContext(next http.Handler) http.Handler {
 			if err != nil {
 				w.WriteHeader(http.StatusBadRequest)
 				w.Header().Set("Content-Type", "application/json")
-				resp := make(map[string]string)
-				resp["msg"] = err.Error()
+				resp := models.BadRequest{
+					Msg: err.Error(),
+				}
 				json.NewEncoder(w).Encode(resp)
 				return
 			}
@@ -99,8 +101,9 @@ func QuickstartEntityContext(next http.Handler) http.Handler {
 			if err != nil {
 				w.WriteHeader(http.StatusNotFound)
 				w.Header().Set("Content-Type", "application/json")
-				resp := make(map[string]string)
-				resp["msg"] = err.Error()
+				resp := models.NotFound{
+					Msg: err.Error(),
+				}
 				json.NewEncoder(w).Encode(resp)
 				return
 			}

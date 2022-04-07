@@ -3,13 +3,13 @@ package main
 import (
 	"bytes"
 	"encoding/json"
-	"io/ioutil"
 	"fmt"
+	"io/ioutil"
 
-	"github.com/ghodss/yaml"
 	"github.com/RedHatInsights/quickstarts/pkg/models"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/getkin/kin-openapi/openapi3gen"
+	"github.com/ghodss/yaml"
 )
 
 type Swagger struct {
@@ -29,6 +29,18 @@ func main() {
 	checkErr(err)
 	components.Schemas["v1.QuickstartProgress"] = quickstartProgress
 
+	helpTopic, _, err := openapi3gen.NewSchemaRefForValue(&models.HelpTopic{})
+	checkErr(err)
+	components.Schemas["v1.HelpTopic"] = helpTopic
+
+	badRequest, _, err := openapi3gen.NewSchemaRefForValue(&models.BadRequest{})
+	checkErr(err)
+	components.Schemas["BadRequest"] = badRequest
+
+	notFound, _, err := openapi3gen.NewSchemaRefForValue(&models.NotFound{})
+	checkErr(err)
+	components.Schemas["NotFound"] = notFound
+
 	swagger := Swagger{}
 	swagger.Components = components
 	checkErr(err)
@@ -37,9 +49,13 @@ func main() {
 	err = json.NewEncoder(b).Encode(swagger)
 	checkErr(err)
 
+	parameters, err := ioutil.ReadFile("./cmd/spec/parameters.yaml")
+	checkErr(err)
+
 	schema, err := yaml.JSONToYAML(b.Bytes())
 	checkErr(err)
 
+	schema = append(schema, parameters...)
 	paths, err := ioutil.ReadFile("./cmd/spec/path.yaml")
 	checkErr(err)
 

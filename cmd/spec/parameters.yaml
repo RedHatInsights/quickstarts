@@ -1,0 +1,20 @@
+# It is necessary to have the initial indetation!
+    queryParams:
+      Bundle:
+        name: bundle
+        description: If set, content is associated with a specific CRC bundle
+        in: query
+        required: false
+        schema:
+          type: string
+        explode: true
+        style: form
+      Application:
+        name: application
+        description: If set, content is associated with a specific CRC application
+        in: query
+        required: false
+        schema:
+          type: string
+        explode: true
+        style: form
