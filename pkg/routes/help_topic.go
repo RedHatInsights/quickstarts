@@ -3,6 +3,7 @@ package routes
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/RedHatInsights/quickstarts/pkg/database"
@@ -28,6 +29,14 @@ func findHelpTopicsByTags(tagTypes []models.TagType, tagValues []string) ([]mode
 	return helpTopic, nil
 }
 
+func concatAppendTags(slices [][]string) []string {
+	var tmp []string
+	for _, s := range slices {
+		tmp = append(tmp, s...)
+	}
+	return tmp
+}
+
 func GetAllHelpTopics(w http.ResponseWriter, r *http.Request) {
 	var helpTopic []models.HelpTopic
 	var tagTypes []models.TagType
@@ -43,6 +52,11 @@ func GetAllHelpTopics(w http.ResponseWriter, r *http.Request) {
 		applicationQueries = r.URL.Query()["application[]"]
 	}
 
+	topicQueries := r.URL.Query()["topic"]
+	if len(topicQueries) == 0 {
+		topicQueries = r.URL.Query()["topic[]"]
+	}
+
 	var err error
 	if len(bundleQueries) > 0 {
 		tagTypes = append(tagTypes, models.BundleTag)
@@ -51,8 +65,18 @@ func GetAllHelpTopics(w http.ResponseWriter, r *http.Request) {
 		tagTypes = append(tagTypes, models.ApplicationTag)
 	}
 
+	if len(topicQueries) > 0 {
+		tagTypes = append(tagTypes, models.TopicTag)
+	}
+
+	fmt.Println(tagTypes)
+
 	if len(tagTypes) > 0 {
-		helpTopic, err = findHelpTopicsByTags(tagTypes, append(bundleQueries, applicationQueries...))
+		tagQueries := make([][]string, 3)
+		tagQueries[0] = bundleQueries
+		tagQueries[1] = applicationQueries
+		tagQueries[2] = topicQueries
+		helpTopic, err = findHelpTopicsByTags(tagTypes, concatAppendTags(tagQueries))
 	} else {
 		database.DB.Find(&helpTopic)
 	}
