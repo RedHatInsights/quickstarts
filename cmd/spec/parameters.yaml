@@ -18,3 +18,12 @@
           type: string
         explode: true
         style: form
+      Name:
+        name: name
+        description: Search content by name
+        in: query
+        required: false
+        schema:
+          type: string
+        explode: true
+        style: form

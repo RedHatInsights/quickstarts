@@ -16,11 +16,15 @@ func FindHelpTopicByName(name string) (models.HelpTopic, error) {
 	return helpTopic, err
 }
 
-func findHelpTopicsByTags(tagTypes []models.TagType, tagValues []string) ([]models.HelpTopic, error) {
+func findHelpTopics(tagTypes []models.TagType, tagValues []string, names []string) ([]models.HelpTopic, error) {
 	var helpTopic []models.HelpTopic
 	var tagsArray []models.Tag
 	database.DB.Where("type IN ? AND value IN ?", tagTypes, tagValues).Find(&tagsArray)
-	err := database.DB.Model(&tagsArray).Distinct("id, name, content").Association("HelpTopics").Find(&helpTopic)
+	query := database.DB.Model(&tagsArray).Distinct("id, name, content")
+	if len(names) > 0 {
+		query.Where("name IN ?", names)
+	}
+	err := query.Association("HelpTopics").Find(&helpTopic)
 	if err != nil {
 		return helpTopic, err
 	}
@@ -51,6 +55,11 @@ func GetAllHelpTopics(w http.ResponseWriter, r *http.Request) {
 		applicationQueries = r.URL.Query()["application[]"]
 	}
 
+	nameQueries := r.URL.Query()["name"]
+	if len(nameQueries) == 0 {
+		nameQueries = r.URL.Query()["name[]"]
+	}
+
 	var err error
 	if len(bundleQueries) > 0 {
 		tagTypes = append(tagTypes, models.BundleTag)
@@ -66,7 +75,7 @@ func GetAllHelpTopics(w http.ResponseWriter, r *http.Request) {
 		tagQueries := make([][]string, 2)
 		tagQueries[0] = bundleQueries
 		tagQueries[1] = applicationQueries
-		helpTopic, err = findHelpTopicsByTags(tagTypes, concatAppendTags(tagQueries))
+		helpTopic, err = findHelpTopics(tagTypes, concatAppendTags(tagQueries), nameQueries)
 	} else {
 		database.DB.Find(&helpTopic)
 	}

@@ -19,11 +19,32 @@ components:
           format: date-time
           type: string
         deletedAt: {}
+        groupName:
+          type: string
         id:
           minimum: 0
           type: integer
         name:
           type: string
+        tags:
+          items:
+            properties:
+              createdAt:
+                format: date-time
+                type: string
+              deletedAt: {}
+              id:
+                minimum: 0
+                type: integer
+              type:
+                type: string
+              updatedAt:
+                format: date-time
+                type: string
+              value:
+                type: string
+            type: object
+          type: array
         updatedAt:
           format: date-time
           type: string
@@ -70,6 +91,15 @@ components:
       Application:
         name: application
         description: If set, content is associated with a specific CRC application
+        in: query
+        required: false
+        schema:
+          type: string
+        explode: true
+        style: form
+      Name:
+        name: name
+        description: Search content by name
         in: query
         required: false
         schema:
@@ -141,6 +171,7 @@ paths:
       parameters:
       - $ref: '#/components/schemas/queryParams/Bundle'
       - $ref: '#/components/schemas/queryParams/Application'
+      - $ref: '#/components/schemas/queryParams/Name'
   /api/quickstarts/v1/helptopics/{name}:
     get:
       summary: Return a help topics set by topic name

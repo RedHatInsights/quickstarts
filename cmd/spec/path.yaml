@@ -63,6 +63,7 @@ paths:
       parameters:
       - $ref: '#/components/schemas/queryParams/Bundle'
       - $ref: '#/components/schemas/queryParams/Application'
+      - $ref: '#/components/schemas/queryParams/Name'
   /api/quickstarts/v1/helptopics/{name}:
     get:
       summary: Return a help topics set by topic name

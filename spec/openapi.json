@@ -39,6 +39,17 @@
             "type": "string"
           },
           "style": "form"
+        },
+        "Name": {
+          "description": "Search content by name",
+          "explode": true,
+          "in": "query",
+          "name": "name",
+          "required": false,
+          "schema": {
+            "type": "string"
+          },
+          "style": "form"
         }
       },
       "v1.HelpTopic": {
@@ -52,12 +63,42 @@
             "type": "string"
           },
           "deletedAt": {},
+          "groupName": {
+            "type": "string"
+          },
           "id": {
             "minimum": 0,
             "type": "integer"
           },
           "name": {
             "type": "string"
+          },
+          "tags": {
+            "items": {
+              "properties": {
+                "createdAt": {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                "deletedAt": {},
+                "id": {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "type": {
+                  "type": "string"
+                },
+                "updatedAt": {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
           },
           "updatedAt": {
             "format": "date-time",
@@ -125,6 +166,9 @@
           },
           {
             "$ref": "#/components/schemas/queryParams/Application"
+          },
+          {
+            "$ref": "#/components/schemas/queryParams/Name"
           }
         ],
         "responses": {
