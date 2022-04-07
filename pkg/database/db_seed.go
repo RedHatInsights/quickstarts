@@ -144,7 +144,6 @@ func seedDefaultTags() map[string]models.Tag {
 }
 
 func seedHelpTopic(t MetadataTemplate, defaultTag models.Tag) (models.HelpTopic, error) {
-	fmt.Println(t)
 	yamlfile, err := ioutil.ReadFile(t.ContentPath)
 	var newHelpTopic models.HelpTopic
 	var originalHelpTopic models.HelpTopic
@@ -188,6 +187,28 @@ func seedHelpTopic(t MetadataTemplate, defaultTag models.Tag) (models.HelpTopic,
 		DB.Save(&defaultTag)
 		return originalHelpTopic, nil
 	}
+}
+
+type topic struct {
+	Name string `json:"name"`
+}
+
+func seedHelpTopicTags(helpTopic models.HelpTopic) {
+	var topics []topic
+	json.Unmarshal(helpTopic.Content, &topics)
+
+	for _, s := range topics {
+		topicTag := models.Tag{
+			Type:  models.TopicTag,
+			Value: s.Name,
+		}
+		DB.Create(&topicTag)
+		err := DB.Model(&topicTag).Association("HelpTopics").Append(&helpTopic)
+		if err != nil {
+			fmt.Println("Failed appending Topic tag to:", helpTopic.Name, err.Error())
+		}
+	}
+
 }
 
 func SeedTags() {
@@ -265,6 +286,7 @@ func SeedTags() {
 
 				DB.Save(&originalTag)
 			}
+			seedHelpTopicTags(helpTopic)
 		}
 	}
 }
