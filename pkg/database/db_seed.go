@@ -194,9 +194,8 @@ func SeedTags() {
 	defaultTags := seedDefaultTags()
 	MetadataTemplates := findTags()
 	for _, template := range MetadataTemplates {
-		fmt.Println("-----------------------------------------\n", template)
 		kind := template.Kind
-		if kind == "QuickStart" {
+		if kind == "QuickStarts" {
 			var quickstart models.Quickstart
 			var quickstartErr error
 			quickstart, quickstartErr = seedQuickstart(template, defaultTags["quickstart"])
