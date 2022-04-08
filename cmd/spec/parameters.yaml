@@ -27,3 +27,21 @@
           type: string
         explode: true
         style: form
+      Limit:
+        name: limit
+        description: Pagination limit
+        in: query
+        required: false
+        schema:
+          type: integer
+        explode: true
+        style: form
+      Offset:
+        name: offset
+        description: Pagination offset
+        in: query
+        required: false
+        schema:
+          type: integer
+        explode: true
+        style: form

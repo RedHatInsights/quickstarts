@@ -23,6 +23,8 @@ paths:
       parameters:
       - $ref: '#/components/schemas/queryParams/Bundle'
       - $ref: '#/components/schemas/queryParams/Application'
+      - $ref: '#/components/schemas/queryParams/Limit'
+      - $ref: '#/components/schemas/queryParams/Offset'      
   /api/quickstarts/v1/quickstarts/{id}:
     get:
       summary: Return a quickstarts by ID
