@@ -48,6 +48,7 @@ type messageResponsePayload struct {
 
 func setupRouter() *chi.Mux {
 	r := chi.NewRouter()
+	r.Use(PaginationContext)
 	r.Get("/", GetAllQuickstarts)
 	r.Route("/{id}", func(sub chi.Router) {
 		sub.Use(QuickstartEntityContext)
@@ -180,5 +181,69 @@ func TestGetAll(t *testing.T) {
 		assert.Equal(t, 200, response.Code)
 		assert.Equal(t, leafQuickstart.ID, payload.Data.Id)
 		assert.Equal(t, "non-tags-quickstart", payload.Data.Name)
+	})
+
+	t.Run("should limit response to one record", func(t *testing.T) {
+		request, _ := http.NewRequest(http.MethodGet, "/?limit=1", nil)
+		response := httptest.NewRecorder()
+		router.ServeHTTP(response, request)
+
+		var payload *responsePayload
+		json.NewDecoder(response.Body).Decode(&payload)
+		assert.Equal(t, 200, response.Code)
+		assert.Equal(t, 1, len(payload.Data))
+	})
+
+	t.Run("should limit response to more than the number of records", func(t *testing.T) {
+		request, _ := http.NewRequest(http.MethodGet, "/?limit=100", nil)
+		response := httptest.NewRecorder()
+		router.ServeHTTP(response, request)
+
+		var payload *responsePayload
+		json.NewDecoder(response.Body).Decode(&payload)
+		assert.Equal(t, 200, response.Code)
+		assert.Equal(t, 5, len(payload.Data))
+	})
+
+	t.Run("should offset response by 2 and recover 3 records", func(t *testing.T) {
+		request, _ := http.NewRequest(http.MethodGet, "/?offset=2", nil)
+		response := httptest.NewRecorder()
+		router.ServeHTTP(response, request)
+
+		var payload *responsePayload
+		json.NewDecoder(response.Body).Decode(&payload)
+		assert.Equal(t, 200, response.Code)
+		assert.Equal(t, 3, len(payload.Data))
+	})
+
+	t.Run("should limit response by 2 offset response by 2 and recover 2 records", func(t *testing.T) {
+		request, _ := http.NewRequest(http.MethodGet, "/?limit=2&offset=2", nil)
+		response := httptest.NewRecorder()
+		router.ServeHTTP(response, request)
+
+		var payload *responsePayload
+		json.NewDecoder(response.Body).Decode(&payload)
+		assert.Equal(t, 200, response.Code)
+		assert.Equal(t, 2, len(payload.Data))
+	})
+
+	t.Run("should return a bad request if limit is not a number", func(t *testing.T) {
+		request, _ := http.NewRequest(http.MethodGet, "/?limit=foo", nil)
+		response := httptest.NewRecorder()
+		router.ServeHTTP(response, request)
+
+		var payload *responsePayload
+		json.NewDecoder(response.Body).Decode(&payload)
+		assert.Equal(t, 400, response.Code)
+	})
+
+	t.Run("should return a bad request if offset is not a number", func(t *testing.T) {
+		request, _ := http.NewRequest(http.MethodGet, "/?offset=foo", nil)
+		response := httptest.NewRecorder()
+		router.ServeHTTP(response, request)
+
+		var payload *responsePayload
+		json.NewDecoder(response.Body).Decode(&payload)
+		assert.Equal(t, 400, response.Code)
 	})
 }

@@ -40,6 +40,17 @@
           },
           "style": "form"
         },
+        "Limit": {
+          "description": "Pagination limit",
+          "explode": true,
+          "in": "query",
+          "name": "limit",
+          "required": false,
+          "schema": {
+            "type": "integer"
+          },
+          "style": "form"
+        },
         "Name": {
           "description": "Search content by name",
           "explode": true,
@@ -48,6 +59,17 @@
           "required": false,
           "schema": {
             "type": "string"
+          },
+          "style": "form"
+        },
+        "Offset": {
+          "description": "Pagination offset",
+          "explode": true,
+          "in": "query",
+          "name": "offset",
+          "required": false,
+          "schema": {
+            "type": "integer"
           },
           "style": "form"
         }
@@ -244,6 +266,12 @@
           },
           {
             "$ref": "#/components/schemas/queryParams/Application"
+          },
+          {
+            "$ref": "#/components/schemas/queryParams/Limit"
+          },
+          {
+            "$ref": "#/components/schemas/queryParams/Offset"
           }
         ],
         "responses": {

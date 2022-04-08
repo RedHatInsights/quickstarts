@@ -106,6 +106,24 @@ components:
           type: string
         explode: true
         style: form
+      Limit:
+        name: limit
+        description: Pagination limit
+        in: query
+        required: false
+        schema:
+          type: integer
+        explode: true
+        style: form
+      Offset:
+        name: offset
+        description: Pagination offset
+        in: query
+        required: false
+        schema:
+          type: integer
+        explode: true
+        style: form
 info:
   license:
     name: MIT
@@ -131,6 +149,8 @@ paths:
       parameters:
       - $ref: '#/components/schemas/queryParams/Bundle'
       - $ref: '#/components/schemas/queryParams/Application'
+      - $ref: '#/components/schemas/queryParams/Limit'
+      - $ref: '#/components/schemas/queryParams/Offset'      
   /api/quickstarts/v1/quickstarts/{id}:
     get:
       summary: Return a quickstarts by ID
