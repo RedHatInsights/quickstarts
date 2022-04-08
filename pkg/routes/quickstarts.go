@@ -17,11 +17,11 @@ func FindQuickstartById(id int) (models.Quickstart, error) {
 	return quickStart, err
 }
 
-func findQuickstartsByTags(tagTypes []models.TagType, tagValues []string) ([]models.Quickstart, error) {
+func findQuickstartsByTags(tagTypes []models.TagType, tagValues []string, pagination Pagination) ([]models.Quickstart, error) {
 	var quickstarts []models.Quickstart
 	var tagsArray []models.Tag
 	database.DB.Where("type IN ? AND value IN ?", tagTypes, tagValues).Find(&tagsArray)
-	err := database.DB.Model(&tagsArray).Distinct("id, name, content").Association("Quickstarts").Find(&quickstarts)
+	err := database.DB.Model(&tagsArray).Limit(pagination.Limit).Offset(pagination.Offset).Distinct("id, name, content").Association("Quickstarts").Find(&quickstarts)
 	if err != nil {
 		return quickstarts, err
 	}
@@ -32,6 +32,7 @@ func findQuickstartsByTags(tagTypes []models.TagType, tagValues []string) ([]mod
 func GetAllQuickstarts(w http.ResponseWriter, r *http.Request) {
 	var quickStarts []models.Quickstart
 	var tagTypes []models.TagType
+
 	// first try bundle query param
 	bundleQueries := r.URL.Query()["bundle"]
 	if len(bundleQueries) == 0 {
@@ -44,7 +45,6 @@ func GetAllQuickstarts(w http.ResponseWriter, r *http.Request) {
 		applicationQueries = r.URL.Query()["application[]"]
 	}
 
-	var err error
 	if len(bundleQueries) > 0 {
 		tagTypes = append(tagTypes, models.BundleTag)
 	}
@@ -52,10 +52,13 @@ func GetAllQuickstarts(w http.ResponseWriter, r *http.Request) {
 		tagTypes = append(tagTypes, models.ApplicationTag)
 	}
 
+	pagination := r.Context().Value(PaginationContextKey).(Pagination)
+	var err error
+
 	if len(tagTypes) > 0 {
-		quickStarts, err = findQuickstartsByTags(tagTypes, append(bundleQueries, applicationQueries...))
+		quickStarts, err = findQuickstartsByTags(tagTypes, append(bundleQueries, applicationQueries...), pagination)
 	} else {
-		database.DB.Find(&quickStarts)
+		database.DB.Limit(pagination.Limit).Offset(pagination.Offset).Find(&quickStarts)
 	}
 
 	if err != nil {
@@ -117,6 +120,7 @@ func QuickstartEntityContext(next http.Handler) http.Handler {
 
 // MakeQuickstartsRouter creates a router handles for /quickstarts group
 func MakeQuickstartsRouter(sub chi.Router) {
+	sub.Use(PaginationContext)
 	sub.Get("/", GetAllQuickstarts)
 	sub.Route("/{id}", func(r chi.Router) {
 		r.Use(QuickstartEntityContext)
