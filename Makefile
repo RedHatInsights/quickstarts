@@ -5,6 +5,7 @@ help:
 	@echo "coverage	- open browser with detailed test coverage report"
 	@echo "migrate		- run database migration"
 	@echo "generate-spec	- run openAPI3 generator"
+	@echo	"validate-topics - run help topics validator"
 
 	
 test:
@@ -18,3 +19,6 @@ migrate:
 
 generate-spec:
 	go run cmd/spec/main.go
+
+validate-topics:
+	go run cmd/validate/validate_topics.go
