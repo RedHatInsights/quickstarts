@@ -23,6 +23,13 @@ type TopicMetadata struct {
 	Tags []TopicTag `json:"tags,omitempty"`
 }
 
+type TopicContent struct {
+	Name    string   `json:"name,omitempty"`
+	Content string   `json:"content,omitempty"`
+	Title   string   `json:"title,omitempty"`
+	Tags    []string `json:"tags,omitempty"`
+}
+
 func handleErr(err error) {
 	if err != nil {
 		panic(err)
@@ -68,7 +75,8 @@ func validateStructure() {
 		jsonContent, err := yaml.YAMLToJSON(yamlfile)
 		handleFileErr(filePath, err)
 		var metadata TopicMetadata
-		json.Unmarshal(jsonContent, &metadata)
+		err = json.Unmarshal(jsonContent, &metadata)
+		handleFileErr(filePath, err)
 		err = validation.ValidateStruct(&metadata,
 			validation.Field(&metadata.Kind, validation.Required, validation.In("HelpTopic")),
 			validation.Field(&metadata.Name, validation.Required, validation.By(notMatch(`\s`, "name can't include whitespaces"))),
@@ -82,6 +90,28 @@ func validateStructure() {
 				validation.Field(&tag.Value, validation.Required),
 			)
 			handleFileErr(filePath, err)
+		}
+
+		// validate topic file existance
+		m := regexp.MustCompile("metadata.yml$")
+		topicFileName := filePath
+		topicFileName = m.ReplaceAllString(topicFileName, metadata.Name+".yml")
+		yamlfile, err = ioutil.ReadFile(topicFileName)
+		handleFileErr(topicFileName, err)
+		jsonContent, err = yaml.YAMLToJSON(yamlfile)
+		handleFileErr(topicFileName, err)
+		var content []TopicContent
+		err = json.Unmarshal(jsonContent, &content)
+		handleFileErr(topicFileName, err)
+
+		for _, c := range content {
+			err = validation.ValidateStruct(&c,
+				validation.Field(&c.Name, validation.Required, validation.By(notMatch(`\s`, "name can't include whitespaces"))),
+				validation.Field(&c.Content, validation.Required),
+				validation.Field(&c.Title, validation.Required),
+				validation.Field(&c.Tags, validation.Each(validation.Required)),
+			)
+			handleFileErr(topicFileName, err)
 		}
 	}
 }
