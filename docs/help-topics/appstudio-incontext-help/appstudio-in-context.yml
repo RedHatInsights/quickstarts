@@ -4,10 +4,20 @@
 
 - name: create-app
   tags:
-  title: Create a new application
+  title: Create your app
   content: |-
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-  # This array has currently required due to an internal quickstart bug. It always expect the array to be defined. https://github.com/patternfly/patternfly-quickstarts/pull/162  
+    Build and deploy your apps in minutes. Tell us where to find your code, and let App Studio do the rest.
+    Here are some possible sources for your code:
+    1. **GitHub repository**
+       App Studio can build apps written in the following languages: Python, Java, Go, and Node.js.
+       To get started, add a URL of your GitHub repo. Then, we’ll fetch your code, build a container image for you, and deploy it.
+    1. **Quay container image**
+       App Studio can use an existing image you already have stored in the Quay container registry. The advantage of an image is that you can code in any language and use any container image type, App Studio will deploy it for you to the Development environment.
+    1. **Sample code**
+       Try one of our samples to explore App Studio. Samples are great ways to test out different languages in App Studio.
+    Once you add your code, you can edit deployment settings, for example, a target port or environment variables. You can always change them later.
+    When everything looks good, click **Create**. Your app will automatically be deployed to the Development environment that is included with this Service Preview.
+  # This array has currently required due to an internal quickstart bug. It always expect the array to be defined. https://github.com/patternfly/patternfly-quickstarts/pull/162
   links: []
 
 - name: app-view
@@ -15,7 +25,7 @@
   title: Manage your application
   content: |-
     Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-  # This array has currently required due to an internal quickstart bug. It always expect the array to be defined. https://github.com/patternfly/patternfly-quickstarts/pull/162  
+  # This array has currently required due to an internal quickstart bug. It always expect the array to be defined. https://github.com/patternfly/patternfly-quickstarts/pull/162
   links: []
 
 - name: create-environment
@@ -23,7 +33,7 @@
   title: Create a new environment
   content: |-
     Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-  # This array has currently required due to an internal quickstart bug. It always expect the array to be defined. https://github.com/patternfly/patternfly-quickstarts/pull/162  
+  # This array has currently required due to an internal quickstart bug. It always expect the array to be defined. https://github.com/patternfly/patternfly-quickstarts/pull/162
   links: []
 
 - name: promote-component
@@ -31,6 +41,6 @@
   title: Promote your components
   content: |-
     Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-  # This array has currently required due to an internal quickstart bug. It always expect the array to be defined. https://github.com/patternfly/patternfly-quickstarts/pull/162  
+  # This array has currently required due to an internal quickstart bug. It always expect the array to be defined. https://github.com/patternfly/patternfly-quickstarts/pull/162
   links: []
 
