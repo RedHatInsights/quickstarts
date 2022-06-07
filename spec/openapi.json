@@ -78,13 +78,16 @@
         "properties": {
           "content": {
             "format": "byte",
-            "type": "string"
+            "type": "object"
           },
           "createdAt": {
             "format": "date-time",
             "type": "string"
           },
-          "deletedAt": {},
+          "deletedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
           "groupName": {
             "type": "string"
           },
@@ -102,7 +105,10 @@
                   "format": "date-time",
                   "type": "string"
                 },
-                "deletedAt": {},
+                "deletedAt": {
+                  "format": "date-time",
+                  "type": "string"
+                },
                 "id": {
                   "minimum": 0,
                   "type": "integer"
@@ -133,19 +139,52 @@
         "properties": {
           "content": {
             "format": "byte",
-            "type": "string"
+            "type": "object"
           },
           "createdAt": {
             "format": "date-time",
             "type": "string"
           },
-          "deletedAt": {},
+          "deletedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
           "id": {
             "minimum": 0,
             "type": "integer"
           },
           "name": {
             "type": "string"
+          },
+          "tags": {
+            "items": {
+              "properties": {
+                "createdAt": {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                "deletedAt": {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                "id": {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "type": {
+                  "type": "string"
+                },
+                "updatedAt": {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
           },
           "updatedAt": {
             "format": "date-time",
@@ -180,7 +219,7 @@
   },
   "openapi": "3.0.0",
   "paths": {
-    "/api/quickstarts/v1/helptopics": {
+    "/helptopics": {
       "get": {
         "parameters": [
           {
@@ -216,7 +255,7 @@
         "summary": "Returns list of all help topics"
       }
     },
-    "/api/quickstarts/v1/helptopics/{name}": {
+    "/helptopics/{name}": {
       "get": {
         "responses": {
           "200": {
@@ -258,7 +297,7 @@
         "summary": "Return a help topics set by topic name"
       }
     },
-    "/api/quickstarts/v1/quickstarts": {
+    "/quickstarts": {
       "get": {
         "parameters": [
           {
@@ -297,7 +336,7 @@
         "summary": "Returns list of all quickstarts"
       }
     },
-    "/api/quickstarts/v1/quickstarts/{id}": {
+    "/quickstarts/{id}": {
       "get": {
         "responses": {
           "200": {

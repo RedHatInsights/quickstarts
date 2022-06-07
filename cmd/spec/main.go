@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"reflect"
 
 	"github.com/RedHatInsights/quickstarts/pkg/models"
 	"github.com/getkin/kin-openapi/openapi3"
@@ -21,7 +22,16 @@ func main() {
 	components := openapi3.NewComponents()
 	components.Schemas = make(map[string]*openapi3.SchemaRef)
 
-	quickstart, _, err := openapi3gen.NewSchemaRefForValue(&models.Quickstart{})
+	quickstart, _, err := openapi3gen.NewSchemaRefForValue(&models.Quickstart{}, openapi3gen.SchemaCustomizer(func(name string, t reflect.Type, tag reflect.StructTag, schema *openapi3.Schema) error {
+		if name == "content" {
+			schema.Type = "object"
+		}
+		if name == "deletedAt" {
+			schema.Type = "string"
+			schema.Format = "date-time"
+		}
+		return nil
+	}))
 	checkErr(err)
 	components.Schemas["v1.Quickstart"] = quickstart
 
@@ -29,7 +39,16 @@ func main() {
 	checkErr(err)
 	components.Schemas["v1.QuickstartProgress"] = quickstartProgress
 
-	helpTopic, _, err := openapi3gen.NewSchemaRefForValue(&models.HelpTopic{})
+	helpTopic, _, err := openapi3gen.NewSchemaRefForValue(&models.HelpTopic{}, openapi3gen.SchemaCustomizer(func(name string, t reflect.Type, tag reflect.StructTag, schema *openapi3.Schema) error {
+		if name == "content" {
+			schema.Type = "object"
+		}
+		if name == "deletedAt" {
+			schema.Type = "string"
+			schema.Format = "date-time"
+		}
+		return nil
+	}))
 	checkErr(err)
 	components.Schemas["v1.HelpTopic"] = helpTopic
 
