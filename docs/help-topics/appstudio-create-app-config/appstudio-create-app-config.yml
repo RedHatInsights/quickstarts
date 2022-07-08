@@ -1,0 +1,16 @@
+# Tags to be kept empty for now. Tags will specify where in the app descriptions will be available.
+# Titles are "dictionary" articles titles.
+# Links to be external only. We don't know yet whether referencing to other side panels will be supported but referencing to in-depth docs is expected to be supported.
+
+- name: create-app-config
+  tags:
+  title: Configure your app
+  content: |-
+    Review the deployment settings. We did our best and suggested some default settings values and a runtime environment for your app.
+
+    You can change the settings now or later, after your component is deployed.
+
+    When everything looks good, click **Create**. Your app will automatically be deployed to the Development environment that is included with this Service Preview.
+  # This array has currently required due to an internal quickstart bug. It always expect the array to be defined. https://github.com/patternfly/patternfly-quickstarts/pull/162
+  links: []
+
