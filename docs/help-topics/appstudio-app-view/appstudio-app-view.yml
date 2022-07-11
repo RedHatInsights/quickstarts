@@ -1,0 +1,26 @@
+# Tags to be kept empty for now. Tags will specify where in the app descriptions will be available.
+# Titles are "dictionary" articles titles.
+# Links to be external only. We don't know yet whether referencing to other side panels will be supported but referencing to in-depth docs is expected to be supported.
+
+- name: app-view
+  tags:
+  title: Manage your apps
+  content: |-
+    As you build and scale your app, this view shows everything you need to know about your app and components in one place.
+
+    **Components**
+
+    You’ll discover a list of your components, their build statuses, and logs in a single view. We keep an eye on components built from your GitHub code and rebuild them whenever you change the source code.
+
+    From the **Actions menu**, you can tweak the settings, such as port value, at any time for each component.
+
+    - Changing global settings of any component overrides global settings across all the environments.
+
+    - Changing build settings only affects one component.
+
+    **Environments**
+
+    Your source code is automatically built and deployed to the Development environment that comes with your Service Preview. You can change the deployment settings for each component as you scale your app across environments from the **Actions menu**.
+  # This array has currently required due to an internal quickstart bug. It always expect the array to be defined. https://github.com/patternfly/patternfly-quickstarts/pull/162
+  links: []
+
