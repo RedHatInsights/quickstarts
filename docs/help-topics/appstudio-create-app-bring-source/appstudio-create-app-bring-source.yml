@@ -4,7 +4,7 @@
 
 - name: create-app-bring-source
   tags:
-  title: Create your app
+  title: Creating an application
   content: |-
     Build and deploy your apps in minutes. Tell us where to find your code, and let App Studio do the rest.
 
@@ -12,18 +12,34 @@
 
     1. **GitHub repository**
 
-       App Studio can build apps written in the following languages: Python, Java, Go, and Node.js.
-       To get started, add a URL of your GitHub repo. Then, we’ll fetch your code, build a container image for you, and deploy it.
+    Provide a URL of your GitHub repo. Then, we’ll fetch your code, build a container image with your app, and deploy it to the Development environment.
 
-    1. **Quay container image**
+    :::note
 
-       App Studio can use an existing image you already have stored in the Quay container registry. The advantage of an image is that you can code in any language and use any container image type. App Studio will deploy it for you to the Development environment.
+    Currently, App Studio can build apps written in the following languages:
 
-    1. **Sample code**
+    - Python
+    - Java
+    - Go
+    - Node.js languages
 
-       Try one of our samples to explore App Studio. Samples are great ways to test out different languages in App Studio.
+    :::
 
-    Once you add your code and click **Next**, you can review the deployment settings.
+    2. **Quay container image**
+
+    Give us a link to an existing container image stored in the [Quay container registry](https://quay.io/).
+
+    :::tip
+
+    An image can contain your pre-built app written in any existing programming language, we’ll deploy whatever you have.
+
+    :::
+
+    3. **Sample code**
+
+    Try one of our samples to explore App Studio. Samples are great ways to test out different languages in App Studio.
+
+    When you add your code and click **Next**, you will be able to edit the deployment settings.
   # This array has currently required due to an internal quickstart bug. It always expect the array to be defined. https://github.com/patternfly/patternfly-quickstarts/pull/162
   links: []
 
