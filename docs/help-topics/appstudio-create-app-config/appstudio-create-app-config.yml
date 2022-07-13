@@ -6,11 +6,23 @@
   tags:
   title: Configure your app
   content: |-
-    Review the deployment settings. We did our best and suggested some default settings values and a runtime environment for your app.
+    We've suggested some default setting values and a runtime environment based on your code. You can always change the settings later, after your component is deployed.
 
-    You can change the settings now or later, after your component is deployed.
+    1. Review the default values. The number of **CPUs**, **Memory** and **Replicas** you can request depends on the number of OpenShift clusters you're using (or the amount of resources available to you).
 
-    When everything looks good, click **Create**. Your app will automatically be deployed to the Development environment that is included with this Service Preview.
+    2. Keep the **health checks** that are relevant for you but we recommend to run them all. Click the **minus** sign to remove any health checks that do not apply. App Studio will perform the chosen checks after you create your app.
+
+    - Readiness probe checks if your container is ready to accept requests.
+    - Liveness probe checks if your container is running.
+    - Startup probe checks if an app inside a container image is running.
+
+    :::tip
+
+    When a check fails, App Studio deletes the pod and restarts the build.
+
+    :::
+
+    3. When everything looks good, click **Create**. Your app will automatically be deployed to the Development environment that is included with this Service Preview.
   # This array has currently required due to an internal quickstart bug. It always expect the array to be defined. https://github.com/patternfly/patternfly-quickstarts/pull/162
   links: []
 
