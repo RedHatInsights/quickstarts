@@ -10,32 +10,24 @@
 
     Here are some possible sources for your code:
 
-    1. **GitHub repository**
+    1) **GitHub repository**
 
     Provide a URL of your GitHub repo. Then, we’ll fetch your code, build a container image with your app, and deploy it to the Development environment.
 
-    :::note
-
-    Currently, App Studio can build apps written in the following languages:
+    > **NOTE**: Currently, App Studio can build apps written in the following languages:
 
     - Python
     - Java
     - Go
-    - Node.js languages
+    - .NET languages
 
-    :::
-
-    2. **Quay container image**
+    2) **Quay container image**
 
     Give us a link to an existing container image stored in the [Quay container registry](https://quay.io/).
 
-    :::tip
+    > **TIP**: An image can contain your pre-built app written in any existing programming language, we’ll deploy whatever you have.
 
-    An image can contain your pre-built app written in any existing programming language, we’ll deploy whatever you have.
-
-    :::
-
-    3. **Sample code**
+    3) **Sample code**
 
     Try one of our samples to explore App Studio. Samples are great ways to test out different languages in App Studio.
 
