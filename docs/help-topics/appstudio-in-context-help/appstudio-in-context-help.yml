@@ -44,21 +44,37 @@
   tags:
   title: Manage your apps
   content: |-
-    As you build and scale your app, this view shows everything you need to know about your app and components in one place.
+    Add components, configure component settings, view logs, and monitor build status - all from a single view.
 
-    **Components**
+    Switch between the **Components** and **Environment** views to explore different options.
 
-    You’ll discover a list of your components, their build statuses, and logs in a single view. We keep an eye on components built from your GitHub code and rebuild them whenever you change the source code.
+    **The Components view**
 
-    From the **Actions menu**, you can tweak the settings, such as port value, at any time for each component.
+    Click the **Components** card to access the following options:
 
-    - Changing global settings of any component overrides global settings across all the environments.
+    1. Review the list of components within your application including their build statuses and history.
 
-    - Changing build settings only affects one component.
+    2. Check the build logs by clicking **View log**.
 
-    **Environments**
+    3. Click the **Actions** menu across a component to tweak its settings or delete the component.
 
-    Your source code is automatically built and deployed to the Development environment that comes with your Service Preview. You can change the deployment settings for each component as you scale your app across environments from the **Actions menu**.
+    4. Click **Add component** to add a new component from GitHub, Quay or our samples.
+
+    >**NOTE**: We keep an eye on components built from your GitHub code and rebuild them whenever you change the source code.
+
+
+    **The Environment view**
+
+    Click the **Development** environment card to access the following options:
+
+    1. Review the list of deployed components including their deployment statuses and history.
+
+    2. Click the **Actions** menu across a component to tweak its settings.
+
+    3. Review the deployment strategy used for the selected environment. Click **Settings** in the main menu on the left to choose a deployment strategy.
+
+      - The **automatic** deployment strategy means all component updates are automatically deployed to the environment.
+      - The **manual** deployment strategy means that you need to manually redeploy a component every time you make some changes to it.
   # This array has currently required due to an internal quickstart bug. It always expect the array to be defined. https://github.com/patternfly/patternfly-quickstarts/pull/162
   links: []
 
