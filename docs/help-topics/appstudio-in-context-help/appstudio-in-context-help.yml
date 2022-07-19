@@ -50,28 +50,24 @@
 
     **The Components view**
 
-    Click the **Components** card to access the following options:
+    - Click the **Components** card to review the components and their details.
 
-    1. Review the list of components within your application including their build statuses and history.
+    - Review your application components build statuses, build logs and history.
 
-    2. Check the build logs by clicking **View log**.
+    - Change the component settings or delete the component in the **Actions** menu.
 
-    3. Click the **Actions** menu across a component to tweak its settings or delete the component.
+    - Add new components to your application. New components are automatically deployed to the Development environment.
 
-    4. Click **Add component** to add a new component from GitHub, Quay or our samples.
-
-    >**NOTE**: We keep an eye on components built from your GitHub code and rebuild them whenever you change the source code.
+    >**NOTE**: We rebuild components when you change the source code in Git repos to keep things in sync.
 
 
     **The Environment view**
 
-    Click the **Development** environment card to access the following options:
+    - Click the **Development** environment card to review deployed components, their deployment statuses and history.
 
-    1. Review the list of deployed components including their deployment statuses and history.
+    - Change the component settings in the **Actions** menu.
 
-    2. Click the **Actions** menu across a component to tweak its settings.
-
-    3. Review the deployment strategy used for the selected environment. Click **Settings** in the main menu on the left to choose a deployment strategy.
+    - Review the deployment strategy used for the selected environment. Click **Settings** in the main menu on the left to choose a deployment strategy.
 
       - The **automatic** deployment strategy means all component updates are automatically deployed to the environment.
       - The **manual** deployment strategy means that you need to manually redeploy a component every time you make some changes to it.
