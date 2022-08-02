@@ -7,7 +7,7 @@ Read more about help topics in the official [documentation](https://github.com/p
 
 To create a new help topic, follow these steps.
 
-### Create metadata.yml fr help topics
+### Create metadata.yml for help topics
 
 1. Create new directory in `docs/help-topics/<topic-name>`
 2. Create `metadata.yml` file in the new directory
