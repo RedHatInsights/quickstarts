@@ -40,6 +40,15 @@
           },
           "style": "form"
         },
+        "Id": {
+          "description": "identifier",
+          "in": "path",
+          "name": "id",
+          "required": true,
+          "schema": {
+            "type": "integer"
+          }
+        },
         "Limit": {
           "description": "Pagination limit",
           "explode": true,
@@ -72,6 +81,15 @@
             "type": "integer"
           },
           "style": "form"
+        },
+        "TopicName": {
+          "description": "identifier",
+          "in": "path",
+          "name": "topicname",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
         }
       },
       "v1.HelpTopic": {
@@ -86,6 +104,14 @@
           },
           "deletedAt": {
             "format": "date-time",
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string"
+              }
+            ],
             "type": "string"
           },
           "groupName": {
@@ -107,6 +133,14 @@
                 },
                 "deletedAt": {
                   "format": "date-time",
+                  "oneOf": [
+                    {
+                      "type": "null"
+                    },
+                    {
+                      "type": "string"
+                    }
+                  ],
                   "type": "string"
                 },
                 "id": {
@@ -147,6 +181,14 @@
           },
           "deletedAt": {
             "format": "date-time",
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string"
+              }
+            ],
             "type": "string"
           },
           "id": {
@@ -165,6 +207,14 @@
                 },
                 "deletedAt": {
                   "format": "date-time",
+                  "oneOf": [
+                    {
+                      "type": "null"
+                    },
+                    {
+                      "type": "string"
+                    }
+                  ],
                   "type": "string"
                 },
                 "id": {
@@ -257,6 +307,11 @@
     },
     "/helptopics/{name}": {
       "get": {
+        "parameters": [
+          {
+            "$ref": "#/components/schemas/queryParams/TopicName"
+          }
+        ],
         "responses": {
           "200": {
             "content": {
@@ -338,6 +393,11 @@
     },
     "/quickstarts/{id}": {
       "get": {
+        "parameters": [
+          {
+            "$ref": "#/components/schemas/queryParams/Id"
+          }
+        ],
         "responses": {
           "200": {
             "content": {

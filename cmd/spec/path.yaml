@@ -28,6 +28,8 @@ paths:
   /quickstarts/{id}:
     get:
       summary: Return a quickstarts by ID
+      parameters:
+      - $ref: '#/components/schemas/queryParams/Id'
       responses:
         '200':
           description: A JSON object with a single quickstart content
@@ -69,6 +71,8 @@ paths:
   /helptopics/{name}:
     get:
       summary: Return a help topics set by topic name
+      parameters:
+      - $ref: '#/components/schemas/queryParams/TopicName'
       responses:
         '200':
           description: A JSON of a help topic set

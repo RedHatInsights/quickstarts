@@ -29,6 +29,11 @@ func main() {
 		if name == "deletedAt" {
 			schema.Type = "string"
 			schema.Format = "date-time"
+			schema.OneOf = append(schema.OneOf, &openapi3.SchemaRef{Value: &openapi3.Schema{
+				Type: "null",
+			}}, &openapi3.SchemaRef{Value: &openapi3.Schema{
+				Type: "string",
+			}})
 		}
 		return nil
 	}))
@@ -46,6 +51,11 @@ func main() {
 		if name == "deletedAt" {
 			schema.Type = "string"
 			schema.Format = "date-time"
+			schema.OneOf = append(schema.OneOf, &openapi3.SchemaRef{Value: &openapi3.Schema{
+				Type: "null",
+			}}, &openapi3.SchemaRef{Value: &openapi3.Schema{
+				Type: "string",
+			}})
 		}
 		return nil
 	}))
