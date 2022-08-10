@@ -20,6 +20,9 @@ components:
           type: string
         deletedAt:
           format: date-time
+          oneOf:
+          - type: "null"
+          - type: string
           type: string
         groupName:
           type: string
@@ -36,6 +39,9 @@ components:
                 type: string
               deletedAt:
                 format: date-time
+                oneOf:
+                - type: "null"
+                - type: string
                 type: string
               id:
                 minimum: 0
@@ -63,6 +69,9 @@ components:
           type: string
         deletedAt:
           format: date-time
+          oneOf:
+          - type: "null"
+          - type: string
           type: string
         id:
           minimum: 0
@@ -77,6 +86,9 @@ components:
                 type: string
               deletedAt:
                 format: date-time
+                oneOf:
+                - type: "null"
+                - type: string
                 type: string
               id:
                 minimum: 0
@@ -151,6 +163,20 @@ components:
           type: integer
         explode: true
         style: form
+      Id:
+        name: id
+        description: identifier
+        in: path
+        required: true
+        schema:
+          type: integer
+      TopicName:
+        name: topicname
+        description: identifier
+        in: path
+        required: true
+        schema:
+          type: string
 info:
   license:
     name: MIT
@@ -181,6 +207,8 @@ paths:
   /quickstarts/{id}:
     get:
       summary: Return a quickstarts by ID
+      parameters:
+      - $ref: '#/components/schemas/queryParams/Id'
       responses:
         '200':
           description: A JSON object with a single quickstart content
@@ -222,6 +250,8 @@ paths:
   /helptopics/{name}:
     get:
       summary: Return a help topics set by topic name
+      parameters:
+      - $ref: '#/components/schemas/queryParams/TopicName'
       responses:
         '200':
           description: A JSON of a help topic set

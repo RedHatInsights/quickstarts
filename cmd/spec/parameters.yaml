@@ -45,3 +45,17 @@
           type: integer
         explode: true
         style: form
+      Id:
+        name: id
+        description: identifier
+        in: path
+        required: true
+        schema:
+          type: integer
+      TopicName:
+        name: topicname
+        description: identifier
+        in: path
+        required: true
+        schema:
+          type: string
