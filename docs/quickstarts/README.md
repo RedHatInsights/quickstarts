@@ -2,6 +2,10 @@
 
 Read more about the quickstarts UI module in the official [documentation](https://github.com/patternfly/patternfly-quickstarts/tree/main/packages/module#quick-starts-format)
 
+## Preview tool
+
+You can use a simple preview tool [here](https://quickstarts-content-preview.surge.sh/). Be aware the tool is not official and was hastily put together. If it crashes please refresh the page.
+
 ## Please read
 
 Quickstarts content in this repository is not validated by the content team. We are working on defining a formal process. Please be aware that you might be required to update/change the content.
