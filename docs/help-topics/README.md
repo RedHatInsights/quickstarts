@@ -2,6 +2,10 @@
 
 Read more about help topics in the official [documentation](https://github.com/patternfly/patternfly-quickstarts/tree/main/packages/module#in-app--in-context-help-panel)
 
+## Preview tool
+
+You can use a simple preview tool [here](https://help-topics-content-preview.surge.sh/). Be aware the tool is not official and was hastily put together. If it crashes please refresh the page.
+
 
 ## Add new help topic
 
