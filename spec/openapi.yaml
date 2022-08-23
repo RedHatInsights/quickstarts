@@ -183,6 +183,11 @@ info:
   title: quickstarts
   version: 1.0.0
 openapi: 3.0.0
+tags:
+  - description: A help topic
+    name: helptopic
+  - description: The content for a quickstart
+    name: quickstart
 paths:
   /quickstarts:
     get:
@@ -204,6 +209,8 @@ paths:
       - $ref: '#/components/schemas/queryParams/Application'
       - $ref: '#/components/schemas/queryParams/Limit'
       - $ref: '#/components/schemas/queryParams/Offset'      
+      tags:
+        - quickstart
   /quickstarts/{id}:
     get:
       summary: Return a quickstarts by ID
@@ -228,6 +235,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/NotFound'
+      tags:
+        - quickstart
   /helptopics:
     get:
       summary: Returns list of all help topics
@@ -247,6 +256,8 @@ paths:
       - $ref: '#/components/schemas/queryParams/Bundle'
       - $ref: '#/components/schemas/queryParams/Application'
       - $ref: '#/components/schemas/queryParams/Name'
+      tags:
+        - helptopic
   /helptopics/{name}:
     get:
       summary: Return a help topics set by topic name
@@ -274,4 +285,5 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/NotFound'
-
+      tags:
+        - helptopic
