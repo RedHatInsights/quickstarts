@@ -2,7 +2,7 @@
 # Titles are "dictionary" articles titles.
 # Links to be external only. We don't know yet whether referencing to other side panels will be supported but referencing to in-depth docs is expected to be supported.
 
-- name: create-app-bring-source
+- name: add-component
   tags:
   title: Creating an application
   content: |-
