@@ -4,23 +4,21 @@
 
 - name: add-component
   tags:
-  title: Creating an application
+  title: Adding components
   content: |-
-    Build and deploy your apps in minutes. Tell us where to find your code, and let App Studio do the rest.
+    An application is a collection of one or more components. To add a component, tell us where to find your code, and let App Studio do the rest.
 
     Here are some possible sources for your code:
 
     1. **GitHub repository**
 
-       Provide a URL of your GitHub repo. Then, we’ll fetch your code, build a container image with your app, and deploy it to the Development environment.
+       We'll analyze your code, create as many components as your app has, and deploy them to the Development environment included with the Service Preview.
 
-       >**NOTE**: Currently, App Studio can build apps written in the following languages: Python, Java, Go, and .NET languages.
+       >**NOTE**: Currently, App Studio can build apps written using the following language stacks and frameworks: Python, Java, Go, .NET, Node.js, Quarkus, and Spring.
 
     2. **Quay container image**
 
-       Give us a link to an existing container image stored in the [Quay container registry](https://quay.io/).
-
-       >**TIP**: An image can contain your pre-built app written in any existing programming language, we’ll deploy whatever you have.
+       Link a container image with your pre-built app, and App Studio will deploy it to the Development environment. With an image, you can use any programming language you prefer. Your image must be stored in the [Quay container registry](https://quay.io/).
 
     3) **Sample code**
 
