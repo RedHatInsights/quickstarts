@@ -14,7 +14,7 @@
 
     - Enter the **route** for your app. A route is the public URL for your published application.
 
-    - Define **environment variables** to customize how your components are deployed. **Environment variables** are typically defined in a [devfile](https://devfile.io/docs/2.0.0/defining-environment-variables) or a [Dockerfile](https://docs.docker.com/glossary/#dockerfile). If your app doesn't contain such files, App Studio tries to extract the needed information from your code with the [Alizer](https://github.com/redhat-developer/alizer) tool.
+    - Define **environment variables** to customize how your components are deployed. **Environment variables** are typically defined in a [devfile](https://devfile.io/docs/2.0.0/defining-environment-variables) or [Dockerfile](https://docs.docker.com/glossary/#dockerfile). If your app doesn't contain such files, App Studio tries to extract the needed information from your code with the [Alizer](https://github.com/redhat-developer/alizer) tool.
 
     >**NOTE**: After you app is created, you can always adjust configuration settings and values for your components in the Application view.
   # This array has currently required due to an internal quickstart bug. It always expect the array to be defined. https://github.com/patternfly/patternfly-quickstarts/pull/162

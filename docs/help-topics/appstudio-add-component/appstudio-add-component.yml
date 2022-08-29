@@ -12,7 +12,7 @@
 
        After you provide a Git repo URL, App Studio scans and analyzes the Git directory to determine how many components to add to your application. The number and type of components are determined by the file type in your Git repo, and also by your Git directory file hierarchy.
 
-       For example, your repo might contain a devfile or Dockerfile for defining a multicomponent application. Or maybe it contains various code sources for App Studio to use for creating a multicomponent application.
+       For example, your repo might contain in a [devfile](https://devfile.io/docs/2.0.0/defining-environment-variables) or [Dockerfile](https://docs.docker.com/glossary/#dockerfile) for defining a multicomponent application. Or maybe it contains various code sources for App Studio to use for creating a multicomponent application.
 
        After App Studio analyzes your repo, it builds a Quay container image for your components, then deploys that container to the App Studio Development environment.
 
