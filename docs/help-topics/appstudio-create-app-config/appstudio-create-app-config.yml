@@ -1,22 +1,22 @@
+# Name is an internal name. Title shows up in the UI as a side panel title.
 # Tags to be kept empty for now. Tags will specify where in the app descriptions will be available.
-# Titles are "dictionary" articles titles.
 # Links to be external only. We don't know yet whether referencing to other side panels will be supported but referencing to in-depth docs is expected to be supported.
 
 - name: create-app-config
   tags:
-  title: Configure your components
+  title: Configure components
   content: |-
-    We analyzed your code and defined deployment settings for each of your app components. Before we create and deploy your app, check the values in this view. You can also rename each component if you like.
+    App Studio analyzes your code and defines deployment settings for each of your app components. Before we create and deploy your app, check the values in this view. You can also rename each component if you like.
 
     - Verify the **target port** is correct.
 
     - Choose how many **CPUs**, **memory**, and **instances** you want for your app. Their number depends on the amount of resources available to you.
 
-    - Enter the **route** for your app. A route is the public URL for your public application.
+    - Enter the **route** for your app. A route is the public URL for your published application.
 
-    - Define **environment variables** to customize how your components are deployed. To add some sensitive data like passwords, click the **Add from ConfigMap or Secret** option.
+    - Define **environment variables** to customize how your components are deployed. **Environment variables** are typically defined in a [devfile](https://devfile.io/docs/2.0.0/defining-environment-variables) or a [Dockerfile](https://docs.docker.com/glossary/#dockerfile). If your app doesn't contain such files, App Studio tries to extract the needed information from your code with the [Alizer](https://github.com/redhat-developer/alizer) tool.
 
-    >**NOTE**: You can always reconfigure your app later from the Application view.
+    >**NOTE**: After you app is created, you can always adjust configuration settings and values for your components in the Application view.
   # This array has currently required due to an internal quickstart bug. It always expect the array to be defined. https://github.com/patternfly/patternfly-quickstarts/pull/162
   links: []
 

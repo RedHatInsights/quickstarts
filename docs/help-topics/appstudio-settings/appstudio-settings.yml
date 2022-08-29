@@ -14,7 +14,7 @@
 
     - Each environment is available for all your applications.
 
-    - Apps promotion across environments is linear, you cannot skip any of the environments.
+    - The promotion of components for your application occurs in the order the environments are listed in this view. You cannot skip any of the environments.
 
     - **Environment links** are generated automatically and allow access to your apps deployed to that environment.
 
@@ -23,7 +23,6 @@
     >**NOTE**: When you promote a component to the next environment, the current deployment strategy is used in the destination environment. However, you can change a strategy while promoting components.
 
     - **Environment status** shows how apps deployed to the environment are feeling, for example, a green status means that all apps are healthy and running.
-
   # This array has currently required due to an internal quickstart bug. It always expect the array to be defined. https://github.com/patternfly/patternfly-quickstarts/pull/162
   links: []
 

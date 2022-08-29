@@ -1,12 +1,12 @@
+# Name is an internal name. Title shows up in the UI as a side panel title.
 # Tags to be kept empty for now. Tags will specify where in the app descriptions will be available.
-# Titles are "dictionary" articles titles.
 # Links to be external only. We don't know yet whether referencing to other side panels will be supported but referencing to in-depth docs is expected to be supported.
 
 - name: add-component
   tags:
   title: Add components
   content: |-
-    An application is a collection of components. To add a component, tell us where to find your code. Here are some possible sources for your code:
+    An application is a collection of components. To add a component, tell App Studio where to find your code. Here are some possible sources for your code:
 
     1. **GitHub repository**
 
@@ -20,7 +20,7 @@
 
     2. **Quay container image**
 
-       Add a link to a container image with your prebuilt app, and App Studio will deploy it to the Development environment. With an image, you can use any programming language you prefer. Your image must be stored in the [Quay container registry](https://quay.io/).
+       Add a link to a container image with your prebuilt app so that App Studio can deploy it to the Development environments. With an image, you can use any programming language you prefer. Your image must be stored in the [Quay container registry](https://quay.io/).
 
     3) **Sample code**
 
