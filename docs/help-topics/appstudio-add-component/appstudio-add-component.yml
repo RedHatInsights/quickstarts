@@ -14,7 +14,7 @@
 
        For example, your repo might contain in a [devfile](https://devfile.io/docs/2.0.0/defining-environment-variables) or [Dockerfile](https://docs.docker.com/glossary/#dockerfile) for defining a multicomponent application. Or maybe it contains various code sources for App Studio to use for creating a multicomponent application.
 
-       After App Studio analyzes your repo, it builds a Quay container image for your components, then deploys that container to the App Studio Development environment.
+       After App Studio analyzes your repo, it builds container images for your components, stores them on Quay, and deploys components to the App Studio Development environment.
 
        >**NOTE**: App Studio can build apps that are written in the following language stacks and frameworks: Python, Java, Go, .NET, Node.js, Quarkus, and Spring.
 

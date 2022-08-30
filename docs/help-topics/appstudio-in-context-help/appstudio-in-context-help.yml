@@ -4,6 +4,8 @@
   tags:
   title: Create your application
   content: |-
+    **Add components**
+
     An application is a collection of components. To add a component, tell App Studio where to find your code. Here are some possible sources for your code:
 
     1. **GitHub repository**
