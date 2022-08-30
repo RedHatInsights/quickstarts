@@ -20,7 +20,7 @@
 
     2. **Quay container image**
 
-       Add a link to a container image with your prebuilt app so that App Studio can deploy it to the Development environments. With an image, you can use any programming language you prefer. Your image must be stored in the [Quay container registry](https://quay.io/).
+       Add a link to a container image with your prebuilt app so that App Studio can deploy it to the Development environments. With an image, you can use any programming language you prefer, but you must store it in the [Quay container registry](https://quay.io/).
 
     3) **Sample code**
 
