@@ -4,9 +4,25 @@
 
 - name: settings
   tags:
-  title: Manage the settings
+  title: Environments
   content: |-
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+    This view shows all available environments. Environments are abstract spaces where you can safely develop and test your code without breaking published apps that are running live in production.
+
+    What you might want to remember on your journey:
+
+    - The **Development environment** is included with App Studio by default. You can create as many other environments as you need.
+
+    - Each environment is available for all your applications.
+
+    - The promotion of components for your application occurs in the order the environments are listed in this view. You cannot skip any of the environments.
+
+    - **Environment links** are generated automatically and allow access to your apps deployed to that environment.
+
+    - Automatic and manual **deployment strategies** set how App Studio treats updates you make to your code. With the **automatic strategy**, all component updates are automatically deployed to the environment, then updated components are automatically promoted to the subsequent environments where they were deployed before. With the **manual strategy**, manual steps are required to redeploy and promote updated components.
+
+    >**NOTE**: When you promote a component to the next environment, the current deployment strategy is used in the destination environment. However, you can change a strategy while promoting components.
+
+    - **Environment status** shows how apps deployed to the environment are feeling, for example, a green status means that all apps are healthy and running.
   # This array has currently required due to an internal quickstart bug. It always expect the array to be defined. https://github.com/patternfly/patternfly-quickstarts/pull/162
   links: []
 

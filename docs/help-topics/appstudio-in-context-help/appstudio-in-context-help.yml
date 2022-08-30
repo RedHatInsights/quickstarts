@@ -1,42 +1,44 @@
-# Tags to be kept empty for now. Tags will specify where in the app descriptions will be available.
-# Titles are "dictionary" articles titles.
-# Links to be external only. We don't know yet whether referencing to other side panels will be supported but referencing to in-depth docs is expected to be supported.
+# This file is obsolete, don't update. Help topics have their own separate repos now.
 
 - name: create-app
   tags:
   title: Create your application
   content: |-
-    Build and deploy your apps in minutes. Tell us where to find your code, and let App Studio do the rest.
+    **Add components**
 
-    Here are some possible sources for your code:
+    An application is a collection of components. To add a component, tell App Studio where to find your code. Here are some possible sources for your code:
 
     1. **GitHub repository**
 
-       Provide a URL of your GitHub repo. Then, we’ll fetch your code, build a container image with your app, and deploy it to the Development environment.
+       After you provide a Git repo URL, App Studio scans and analyzes the Git directory to determine how many components to add to your application. The number and type of components are determined by the file type in your Git repo, and also by your Git directory file hierarchy.
 
-       >**NOTE**: Currently, App Studio can build apps written in the following languages: Python, Java, Go, and .NET languages.
+       For example, your repo might contain in a [devfile](https://devfile.io/docs/2.0.0/defining-environment-variables) or [Dockerfile](https://docs.docker.com/glossary/#dockerfile) for defining a multicomponent application. Or maybe it contains various code sources for App Studio to use for creating a multicomponent application.
+
+       After App Studio analyzes your repo, it builds a Quay container image for your components, then deploys that container to the App Studio Development environment.
+
+       >**NOTE**: App Studio can build apps that are written in the following language stacks and frameworks: Python, Java, Go, .NET, Node.js, Quarkus, and Spring.
 
     2. **Quay container image**
 
-       Give us a link to an existing container image stored in the [Quay container registry](https://quay.io/).
+       Add a link to a container image with your prebuilt app so that App Studio can deploy it to the Development environments. With an image, you can use any programming language you prefer. Your image must be stored in the [Quay container registry](https://quay.io/).
 
-       >**TIP**: An image can contain your pre-built app written in any existing programming language, we’ll deploy whatever you have.
+    3) **Sample code**
 
-    3. **Sample code**
-
-       Try one of our samples to explore App Studio. Samples are great ways to test out different languages in App Studio.
-
-    When you add your code and click **Next**, you will be able to edit the deployment settings.
+       Use one of our samples to explore App Studio. They're a great way to test out different languages and frameworks in App Studio.
 
     **Configure your application**
 
-    We've suggested some default setting values and a runtime environment based on your code. You can always change the settings later, after your component is deployed.
+    App Studio analyzes your code and defines deployment settings for each of your app components. Before we create and deploy your app, check the values in this view. You can also rename each component if you like.
 
-    1. Review the default values. The number of **CPUs**, **Memory** and **Replicas** you can request depends on the amount of resources available to you.
+    - Verify the **target port** is correct.
 
-    2. You can set any number of **Environment variables** that we will use during deployment. To add some sensitive data like passwords, click the **Add from ConfigMap or Secret** option.
+    - Choose how many **CPUs**, **memory**, and **instances** you want for your app. Their number depends on the amount of resources available to you.
 
-    3. When everything looks good, click **Create**. Your app will automatically be deployed to the Development environment that is included with this Service Preview.
+    - Enter the **route** for your app. A route is the public URL for your published application.
+
+    - Define **environment variables** to customize how your components are deployed. **Environment variables** are typically defined in a [devfile](https://devfile.io/docs/2.0.0/defining-environment-variables) or [Dockerfile](https://docs.docker.com/glossary/#dockerfile). If your app doesn't contain such files, App Studio tries to extract the needed information from your code with the [Alizer](https://github.com/redhat-developer/alizer) tool.
+
+    >**NOTE**: After you app is created, you can always adjust configuration settings and values for your components in the Application view.
   # This array has currently required due to an internal quickstart bug. It always expect the array to be defined. https://github.com/patternfly/patternfly-quickstarts/pull/162
   links: []
 
