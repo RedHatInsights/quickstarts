@@ -48,7 +48,7 @@ spec:
         
         4. In the **Roles** tab, find the role that you want to remove from the group – in this case, **Vulnerability administrator**.
         
-        5. Next to **Vulnerability administrator**, click  (more options) > **Remove** to revoke this permission from all users in your organization.
+        5. Next to **Vulnerability administrator**, click <i class="fas fa-ellipsis-v"></i> (more options) > **Remove** to revoke this permission from all users in your organization.
         
         6. Click **Remove role** to confirm.
         

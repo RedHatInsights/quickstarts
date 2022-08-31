@@ -7,3 +7,4 @@ tags: # If you want to use more granular filtering add tags to the quickstart
     value: settings
   - kind: application # use application tag for quickstart used by specific application
     value: sources
+    
