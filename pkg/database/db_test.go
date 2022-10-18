@@ -8,7 +8,7 @@ import (
 )
 
 func TestCreateTags(t *testing.T) {
-	t.Run("create TAG with corrent tag type", func(t *testing.T) {
+	t.Run("create TAG with correct tag type", func(t *testing.T) {
 		var tag models.Tag
 		tag.Type = models.ApplicationTag
 		tag.Value = "foo"

@@ -37,19 +37,27 @@ func readMetadata(loc string) (MetadataTemplate, error) {
 		return template, err
 	}
 	m := regexp.MustCompile("metadata.yml$")
-	template.ContentPath = m.ReplaceAllString(loc, template.Name+".yml")
+	log.Println(template)
+	log.Println(m)
+	log.Println(loc)
+	if filepath.Ext(loc) == ".yml" {
+		template.ContentPath = m.ReplaceAllString(loc, template.Name+".yml")
+	} else {
+		template.ContentPath = m.ReplaceAllString(loc, template.Name+".yaml")
+	}
+	// template.ContentPath = m.ReplaceAllString(loc, template.Name+".yml")
+	log.Println(template.ContentPath)
 	return template, nil
 }
 
 func findTags() []MetadataTemplate {
 	var MetadataTemplates []MetadataTemplate
-	quickstartsFiles, err := filepath.Glob("./docs/quickstarts/**/metadata.yml")
+	quickstartsFiles, err := filepath.Glob("./docs/quickstarts/**/metadata.y*")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	helpTopicsFiles, err := filepath.Glob("./docs/help-topics/**/metadata.yml")
-
+	helpTopicsFiles, err := filepath.Glob("./docs/help-topics/**/metadata.y*")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -63,7 +71,6 @@ func findTags() []MetadataTemplate {
 		} else {
 			MetadataTemplates = append(MetadataTemplates, tagMetadata)
 		}
-
 	}
 
 	return MetadataTemplates
@@ -145,6 +152,7 @@ func seedDefaultTags() map[string]models.Tag {
 
 func seedHelpTopic(t MetadataTemplate, defaultTag models.Tag) ([]models.HelpTopic, error) {
 	yamlfile, err := ioutil.ReadFile(t.ContentPath)
+	log.Println(t.ContentPath)
 	returnValue := make([]models.HelpTopic, 0)
 	if err != nil {
 		return returnValue, err
@@ -153,6 +161,7 @@ func seedHelpTopic(t MetadataTemplate, defaultTag models.Tag) ([]models.HelpTopi
 	jsonContent, err := yaml.YAMLToJSON(yamlfile)
 	var d []map[string]interface{}
 	if err := json.Unmarshal(jsonContent, &d); err != nil {
+		log.Println("this is where the error is")
 		return returnValue, err
 	}
 

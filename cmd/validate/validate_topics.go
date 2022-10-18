@@ -66,8 +66,8 @@ func validateStructure() {
 		handleErr(err)
 	}
 
-	metadataFiles, err = filepath.Glob("./docs/help-topics/**/metadata.yml")
-	handleErr(err)
+	// metadataFiles, err := filepath.Glob("./docs/help-topics/**/metadata.y*")
+	// handleErr(err)
 
 	for _, filePath := range metadataFiles {
 		yamlfile, err := ioutil.ReadFile(filePath)
