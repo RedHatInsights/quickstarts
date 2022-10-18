@@ -37,16 +37,11 @@ func readMetadata(loc string) (MetadataTemplate, error) {
 		return template, err
 	}
 	m := regexp.MustCompile("metadata.yml$")
-	log.Println(template)
-	log.Println(m)
-	log.Println(loc)
 	if filepath.Ext(loc) == ".yml" {
 		template.ContentPath = m.ReplaceAllString(loc, template.Name+".yml")
 	} else {
 		template.ContentPath = m.ReplaceAllString(loc, template.Name+".yaml")
 	}
-	// template.ContentPath = m.ReplaceAllString(loc, template.Name+".yml")
-	log.Println(template.ContentPath)
 	return template, nil
 }
 
