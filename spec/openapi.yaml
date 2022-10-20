@@ -20,9 +20,7 @@ components:
           type: string
         deletedAt:
           format: date-time
-          oneOf:
-          - type: "null"
-          - type: string
+          nullable: true
           type: string
         groupName:
           type: string
@@ -39,9 +37,7 @@ components:
                 type: string
               deletedAt:
                 format: date-time
-                oneOf:
-                - type: "null"
-                - type: string
+                nullable: true
                 type: string
               id:
                 minimum: 0
@@ -69,9 +65,7 @@ components:
           type: string
         deletedAt:
           format: date-time
-          oneOf:
-          - type: "null"
-          - type: string
+          nullable: true
           type: string
         id:
           minimum: 0
@@ -86,9 +80,7 @@ components:
                 type: string
               deletedAt:
                 format: date-time
-                oneOf:
-                - type: "null"
-                - type: string
+                nullable: true
                 type: string
               id:
                 minimum: 0
@@ -116,67 +108,66 @@ components:
         quickstartName:
           type: string
       type: object
-# It is necessary to have the initial indetation!
-    queryParams:
-      Bundle:
-        name: bundle
-        description: If set, content is associated with a specific CRC bundle
-        in: query
-        required: false
-        schema:
-          type: string
-        explode: true
-        style: form
-      Application:
-        name: application
-        description: If set, content is associated with a specific CRC application
-        in: query
-        required: false
-        schema:
-          type: string
-        explode: true
-        style: form
-      Name:
-        name: name
-        description: Search content by name
-        in: query
-        required: false
-        schema:
-          type: string
-        explode: true
-        style: form
-      Limit:
-        name: limit
-        description: Pagination limit
-        in: query
-        required: false
-        schema:
-          type: integer
-        explode: true
-        style: form
-      Offset:
-        name: offset
-        description: Pagination offset
-        in: query
-        required: false
-        schema:
-          type: integer
-        explode: true
-        style: form
-      Id:
-        name: id
-        description: identifier
-        in: path
-        required: true
-        schema:
-          type: integer
-      TopicName:
-        name: topicname
-        description: identifier
-        in: path
-        required: true
-        schema:
-          type: string
+  parameters:
+    Bundle:
+      name: bundle
+      description: If set, content is associated with a specific CRC bundle
+      in: query
+      required: false
+      schema:
+        type: string
+      explode: true
+      style: form
+    Application:
+      name: application
+      description: If set, content is associated with a specific CRC application
+      in: query
+      required: false
+      schema:
+        type: string
+      explode: true
+      style: form
+    Name:
+      name: name
+      description: Search content by name
+      in: query
+      required: false
+      schema:
+        type: string
+      explode: true
+      style: form
+    Limit:
+      name: limit
+      description: Pagination limit
+      in: query
+      required: false
+      schema:
+        type: integer
+      explode: true
+      style: form
+    Offset:
+      name: offset
+      description: Pagination offset
+      in: query
+      required: false
+      schema:
+        type: integer
+      explode: true
+      style: form
+    Id:
+      name: id
+      description: identifier
+      in: path
+      required: true
+      schema:
+        type: integer
+    TopicName:
+      name: name
+      description: identifier
+      in: path
+      required: true
+      schema:
+        type: string
 info:
   license:
     name: MIT
@@ -205,17 +196,17 @@ paths:
                     items:
                       $ref: '#/components/schemas/v1.Quickstart'
       parameters:
-      - $ref: '#/components/schemas/queryParams/Bundle'
-      - $ref: '#/components/schemas/queryParams/Application'
-      - $ref: '#/components/schemas/queryParams/Limit'
-      - $ref: '#/components/schemas/queryParams/Offset'      
+      - $ref: '#/components/parameters/Bundle'
+      - $ref: '#/components/parameters/Application'
+      - $ref: '#/components/parameters/Limit'
+      - $ref: '#/components/parameters/Offset'      
       tags:
         - quickstart
   /quickstarts/{id}:
     get:
       summary: Return a quickstarts by ID
       parameters:
-      - $ref: '#/components/schemas/queryParams/Id'
+      - $ref: '#/components/parameters/Id'
       responses:
         '200':
           description: A JSON object with a single quickstart content
@@ -253,16 +244,16 @@ paths:
                     items:
                       $ref: '#/components/schemas/v1.HelpTopic'
       parameters:
-      - $ref: '#/components/schemas/queryParams/Bundle'
-      - $ref: '#/components/schemas/queryParams/Application'
-      - $ref: '#/components/schemas/queryParams/Name'
+      - $ref: '#/components/parameters/Bundle'
+      - $ref: '#/components/parameters/Application'
+      - $ref: '#/components/parameters/Name'
       tags:
         - helptopic
   /helptopics/{name}:
     get:
       summary: Return a help topics set by topic name
       parameters:
-      - $ref: '#/components/schemas/queryParams/TopicName'
+      - $ref: '#/components/parameters/TopicName'
       responses:
         '200':
           description: A JSON of a help topic set
