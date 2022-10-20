@@ -17,81 +17,6 @@
         },
         "type": "object"
       },
-      "queryParams": {
-        "Application": {
-          "description": "If set, content is associated with a specific CRC application",
-          "explode": true,
-          "in": "query",
-          "name": "application",
-          "required": false,
-          "schema": {
-            "type": "string"
-          },
-          "style": "form"
-        },
-        "Bundle": {
-          "description": "If set, content is associated with a specific CRC bundle",
-          "explode": true,
-          "in": "query",
-          "name": "bundle",
-          "required": false,
-          "schema": {
-            "type": "string"
-          },
-          "style": "form"
-        },
-        "Id": {
-          "description": "identifier",
-          "in": "path",
-          "name": "id",
-          "required": true,
-          "schema": {
-            "type": "integer"
-          }
-        },
-        "Limit": {
-          "description": "Pagination limit",
-          "explode": true,
-          "in": "query",
-          "name": "limit",
-          "required": false,
-          "schema": {
-            "type": "integer"
-          },
-          "style": "form"
-        },
-        "Name": {
-          "description": "Search content by name",
-          "explode": true,
-          "in": "query",
-          "name": "name",
-          "required": false,
-          "schema": {
-            "type": "string"
-          },
-          "style": "form"
-        },
-        "Offset": {
-          "description": "Pagination offset",
-          "explode": true,
-          "in": "query",
-          "name": "offset",
-          "required": false,
-          "schema": {
-            "type": "integer"
-          },
-          "style": "form"
-        },
-        "TopicName": {
-          "description": "identifier",
-          "in": "path",
-          "name": "topicname",
-          "required": true,
-          "schema": {
-            "type": "string"
-          }
-        }
-      },
       "v1.HelpTopic": {
         "properties": {
           "content": {
@@ -104,14 +29,7 @@
           },
           "deletedAt": {
             "format": "date-time",
-            "oneOf": [
-              {
-                "type": "null"
-              },
-              {
-                "type": "string"
-              }
-            ],
+            "nullable": true,
             "type": "string"
           },
           "groupName": {
@@ -133,14 +51,7 @@
                 },
                 "deletedAt": {
                   "format": "date-time",
-                  "oneOf": [
-                    {
-                      "type": "null"
-                    },
-                    {
-                      "type": "string"
-                    }
-                  ],
+                  "nullable": true,
                   "type": "string"
                 },
                 "id": {
@@ -181,14 +92,7 @@
           },
           "deletedAt": {
             "format": "date-time",
-            "oneOf": [
-              {
-                "type": "null"
-              },
-              {
-                "type": "string"
-              }
-            ],
+            "nullable": true,
             "type": "string"
           },
           "id": {
@@ -207,14 +111,7 @@
                 },
                 "deletedAt": {
                   "format": "date-time",
-                  "oneOf": [
-                    {
-                      "type": "null"
-                    },
-                    {
-                      "type": "string"
-                    }
-                  ],
+                  "nullable": true,
                   "type": "string"
                 },
                 "id": {
@@ -258,6 +155,81 @@
         },
         "type": "object"
       }
+    },
+    "parameters": {
+      "Application": {
+        "description": "If set, content is associated with a specific CRC application",
+        "explode": true,
+        "in": "query",
+        "name": "application",
+        "required": false,
+        "schema": {
+          "type": "string"
+        },
+        "style": "form"
+      },
+      "Bundle": {
+        "description": "If set, content is associated with a specific CRC bundle",
+        "explode": true,
+        "in": "query",
+        "name": "bundle",
+        "required": false,
+        "schema": {
+          "type": "string"
+        },
+        "style": "form"
+      },
+      "Id": {
+        "description": "identifier",
+        "in": "path",
+        "name": "id",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      },
+      "Limit": {
+        "description": "Pagination limit",
+        "explode": true,
+        "in": "query",
+        "name": "limit",
+        "required": false,
+        "schema": {
+          "type": "integer"
+        },
+        "style": "form"
+      },
+      "Name": {
+        "description": "Search content by name",
+        "explode": true,
+        "in": "query",
+        "name": "name",
+        "required": false,
+        "schema": {
+          "type": "string"
+        },
+        "style": "form"
+      },
+      "Offset": {
+        "description": "Pagination offset",
+        "explode": true,
+        "in": "query",
+        "name": "offset",
+        "required": false,
+        "schema": {
+          "type": "integer"
+        },
+        "style": "form"
+      },
+      "TopicName": {
+        "description": "identifier",
+        "in": "path",
+        "name": "name",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      }
     }
   },
   "info": {
@@ -283,13 +255,13 @@
       "get": {
         "parameters": [
           {
-            "$ref": "#/components/schemas/queryParams/Bundle"
+            "$ref": "#/components/parameters/Bundle"
           },
           {
-            "$ref": "#/components/schemas/queryParams/Application"
+            "$ref": "#/components/parameters/Application"
           },
           {
-            "$ref": "#/components/schemas/queryParams/Name"
+            "$ref": "#/components/parameters/Name"
           }
         ],
         "responses": {
@@ -322,7 +294,7 @@
       "get": {
         "parameters": [
           {
-            "$ref": "#/components/schemas/queryParams/TopicName"
+            "$ref": "#/components/parameters/TopicName"
           }
         ],
         "responses": {
@@ -372,16 +344,16 @@
       "get": {
         "parameters": [
           {
-            "$ref": "#/components/schemas/queryParams/Bundle"
+            "$ref": "#/components/parameters/Bundle"
           },
           {
-            "$ref": "#/components/schemas/queryParams/Application"
+            "$ref": "#/components/parameters/Application"
           },
           {
-            "$ref": "#/components/schemas/queryParams/Limit"
+            "$ref": "#/components/parameters/Limit"
           },
           {
-            "$ref": "#/components/schemas/queryParams/Offset"
+            "$ref": "#/components/parameters/Offset"
           }
         ],
         "responses": {
@@ -414,7 +386,7 @@
       "get": {
         "parameters": [
           {
-            "$ref": "#/components/schemas/queryParams/Id"
+            "$ref": "#/components/parameters/Id"
           }
         ],
         "responses": {
