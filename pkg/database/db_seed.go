@@ -149,7 +149,6 @@ func seedDefaultTags() map[string]models.Tag {
 
 func seedHelpTopic(t MetadataTemplate, defaultTag models.Tag) ([]models.HelpTopic, error) {
 	yamlfile, err := ioutil.ReadFile(t.ContentPath)
-	log.Println("content path: " + t.ContentPath)
 	returnValue := make([]models.HelpTopic, 0)
 	if err != nil {
 		return returnValue, err

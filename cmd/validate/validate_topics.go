@@ -59,15 +59,8 @@ func notMatch(r string, msg string) validation.RuleFunc {
 }
 
 func validateStructure() {
-	metadataFiles, err := filepath.Glob("./docs/help-topics/**/metadata.yaml")
+	metadataFiles, err := filepath.Glob("./docs/help-topics/**/metadata.y*")
 	handleErr(err)
-	if len(metadataFiles) > 0 {
-		err = fmt.Errorf("yaml extenstions are not supported. Please use yml extenstions for: %v", metadataFiles)
-		handleErr(err)
-	}
-
-	// metadataFiles, err := filepath.Glob("./docs/help-topics/**/metadata.y*")
-	// handleErr(err)
 
 	for _, filePath := range metadataFiles {
 		yamlfile, err := ioutil.ReadFile(filePath)
