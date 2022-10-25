@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"os"
 	"path/filepath"
 	"regexp"
 
@@ -36,12 +37,13 @@ func readMetadata(loc string) (MetadataTemplate, error) {
 	if err != nil {
 		return template, err
 	}
-	m := regexp.MustCompile("metadata.yml$")
-	if filepath.Ext(loc) == ".yml" {
+	m := regexp.MustCompile("metadata.ya?ml$")
+	if _, err := os.Stat(m.ReplaceAllString(loc, template.Name+".yml")); err == nil {
 		template.ContentPath = m.ReplaceAllString(loc, template.Name+".yml")
 	} else {
 		template.ContentPath = m.ReplaceAllString(loc, template.Name+".yaml")
 	}
+
 	return template, nil
 }
 
@@ -147,7 +149,7 @@ func seedDefaultTags() map[string]models.Tag {
 
 func seedHelpTopic(t MetadataTemplate, defaultTag models.Tag) ([]models.HelpTopic, error) {
 	yamlfile, err := ioutil.ReadFile(t.ContentPath)
-	log.Println(t.ContentPath)
+	log.Println("content path: " + t.ContentPath)
 	returnValue := make([]models.HelpTopic, 0)
 	if err != nil {
 		return returnValue, err
