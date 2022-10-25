@@ -157,7 +157,6 @@ func seedHelpTopic(t MetadataTemplate, defaultTag models.Tag) ([]models.HelpTopi
 	jsonContent, err := yaml.YAMLToJSON(yamlfile)
 	var d []map[string]interface{}
 	if err := json.Unmarshal(jsonContent, &d); err != nil {
-		log.Println("this is where the error is")
 		return returnValue, err
 	}
 
