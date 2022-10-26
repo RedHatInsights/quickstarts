@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -90,7 +89,6 @@ func validateStructure() {
 		// validate topic file existance
 		m := regexp.MustCompile("metadata.ya?ml$")
 		topicFileName := filePath
-		log.Println("filename" + topicFileName)
 		if _, err := os.Stat(m.ReplaceAllString(topicFileName, metadata.Name+".yml")); err == nil {
 			topicFileName = m.ReplaceAllString(topicFileName, metadata.Name+".yml")
 		} else {
