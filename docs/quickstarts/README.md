@@ -4,6 +4,8 @@ These instructions explain how to create [quick starts](https://www.patternfly.o
 
 A *quick start* is a set of step-by-step instructions and tasks presented in a side panel embedded in a product’s user interface. Quick starts can help users get started with a product, and they often provide guidance around installation and setup. Quick starts also allow users to quickly complete a task without the need to refer to external documentation.
 
+As quick starts should be brief and simple to follow, Red Hat recommends quick starts take no longer than 10 minutes for a user to complete, and have a maximum of 5 tasks (2-7 steps per task is a good length). You can find more detailed guidelines in this guide under _Best practices for creating quick starts_.
+
 Use these steps to create quick starts for the Hybrid Cloud Console which have no content single-sourcing dependencies. 
 
 **IMPORTANT**:
@@ -135,10 +137,18 @@ You can also combine the tags:
 
 When your quick start is published in the Hybrid Cloud Console, close your original docs Jira and update any stakeholders about the completed work.
 
-## Tips for creating quick starts
+## Best practices for creating quick starts
 
+* Length of quick starts:
+  * 3-5 minutes in duration (maximum 10 minutes)
+  * Maximum 5 tasks
+  * 2-7 steps per task (maximum 10 steps)
 * Each step should have a “Check your work” section.
-* See [Creating quick start tutorials](https://docs.openshift.com/container-platform/4.11/web_console/creating-quick-start-tutorials.html) in the OpenShift documentation for tips and best practices.
+
+For more best practices and tips, see: 
+
+* [Creating quick start tutorials](https://docs.openshift.com/container-platform/4.11/web_console/creating-quick-start-tutorials.html) in the OpenShift documentation 
+* [Design guidelines for quick starts](https://www.patternfly.org/v4/extensions/quick-starts/design-guidelines/) in the Patternfly documentation
 
 ### Useful Markdown snippets
 
