@@ -1,9 +1,0 @@
-kind: QuickStarts
-name: poc-quickstart
-tags:
-  - kind: bundle
-    value: insights
-  - kind: bundle
-    value: settings
-  - kind: application
-    value: sources
