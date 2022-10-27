@@ -216,10 +216,14 @@ func SeedTags() {
 		if kind == "QuickStarts" {
 			var quickstart models.Quickstart
 			var quickstartErr error
+			var tags []models.Tag
 			quickstart, quickstartErr = seedQuickstart(template, defaultTags["quickstart"])
 			if quickstartErr != nil {
 				fmt.Println("Unable to seed quickstart: ", quickstartErr.Error(), template.ContentPath)
 			}
+			// Clear all tags associations
+			quickstart.Tags = tags
+			DB.Save(&quickstart)
 
 			for _, tag := range template.Tags {
 				var newTag models.Tag
@@ -234,18 +238,16 @@ func SeedTags() {
 					DB.Create(&newTag)
 					originalTag = newTag
 				}
-				// Clear all tags associations
-				err := DB.Model(&originalTag).Association("Quickstarts").Clear()
-				if err != nil {
-					fmt.Println("Failed clearing tags associations", err.Error())
-				}
 
 				// Create tags quickstarts associations
-				err = DB.Model(&originalTag).Association("Quickstarts").Append(&quickstart)
+				err := DB.Model(&originalTag).Association("Quickstarts").Append(&quickstart)
 				if err != nil {
 					fmt.Println("Failed creating tags associations", err.Error())
 				}
 
+				quickstart.Tags = append(quickstart.Tags, originalTag)
+
+				DB.Save(&quickstart)
 				DB.Save(&originalTag)
 			}
 		}
