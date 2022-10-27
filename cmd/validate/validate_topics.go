@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"os"
 	"path/filepath"
 	"regexp"
 
@@ -59,14 +60,7 @@ func notMatch(r string, msg string) validation.RuleFunc {
 }
 
 func validateStructure() {
-	metadataFiles, err := filepath.Glob("./docs/help-topics/**/metadata.yaml")
-	handleErr(err)
-	if len(metadataFiles) > 0 {
-		err = fmt.Errorf("yaml extenstions are not supported. Please use yml extenstions for: %v", metadataFiles)
-		handleErr(err)
-	}
-
-	metadataFiles, err = filepath.Glob("./docs/help-topics/**/metadata.yml")
+	metadataFiles, err := filepath.Glob("./docs/help-topics/**/metadata.y*")
 	handleErr(err)
 
 	for _, filePath := range metadataFiles {
@@ -93,9 +87,13 @@ func validateStructure() {
 		}
 
 		// validate topic file existance
-		m := regexp.MustCompile("metadata.yml$")
+		m := regexp.MustCompile("metadata.ya?ml$")
 		topicFileName := filePath
-		topicFileName = m.ReplaceAllString(topicFileName, metadata.Name+".yml")
+		if _, err := os.Stat(m.ReplaceAllString(topicFileName, metadata.Name+".yml")); err == nil {
+			topicFileName = m.ReplaceAllString(topicFileName, metadata.Name+".yml")
+		} else {
+			topicFileName = m.ReplaceAllString(topicFileName, metadata.Name+".yaml")
+		}
 		yamlfile, err = ioutil.ReadFile(topicFileName)
 		handleFileErr(topicFileName, err)
 		jsonContent, err = yaml.YAMLToJSON(yamlfile)

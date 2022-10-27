@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"os"
 	"path/filepath"
 	"regexp"
 
@@ -36,20 +37,24 @@ func readMetadata(loc string) (MetadataTemplate, error) {
 	if err != nil {
 		return template, err
 	}
-	m := regexp.MustCompile("metadata.yml$")
-	template.ContentPath = m.ReplaceAllString(loc, template.Name+".yml")
+	m := regexp.MustCompile("metadata.ya?ml$")
+	if _, err := os.Stat(m.ReplaceAllString(loc, template.Name+".yml")); err == nil {
+		template.ContentPath = m.ReplaceAllString(loc, template.Name+".yml")
+	} else {
+		template.ContentPath = m.ReplaceAllString(loc, template.Name+".yaml")
+	}
+
 	return template, nil
 }
 
 func findTags() []MetadataTemplate {
 	var MetadataTemplates []MetadataTemplate
-	quickstartsFiles, err := filepath.Glob("./docs/quickstarts/**/metadata.yml")
+	quickstartsFiles, err := filepath.Glob("./docs/quickstarts/**/metadata.y*")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	helpTopicsFiles, err := filepath.Glob("./docs/help-topics/**/metadata.yml")
-
+	helpTopicsFiles, err := filepath.Glob("./docs/help-topics/**/metadata.y*")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -63,7 +68,6 @@ func findTags() []MetadataTemplate {
 		} else {
 			MetadataTemplates = append(MetadataTemplates, tagMetadata)
 		}
-
 	}
 
 	return MetadataTemplates
