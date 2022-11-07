@@ -208,9 +208,42 @@ func seedHelpTopic(t MetadataTemplate, defaultTag models.Tag) ([]models.HelpTopi
 	return returnValue, nil
 }
 
+func clearOldContent() {
+	var staleQuickstartsTags []models.Tag
+	var staleTopicsTags []models.Tag
+
+	var staleQuickstarts []models.Quickstart
+	var staleHelpTopics []models.HelpTopic
+	DB.Model(&models.Quickstart{}).Find(&staleQuickstarts)
+	DB.Model(&models.HelpTopic{}).Find(&staleHelpTopics)
+
+	DB.Preload("Quickstarts").Find(&staleQuickstartsTags)
+	DB.Preload("HelpTopics").Find(&staleTopicsTags)
+
+	for _, tag := range append(staleQuickstartsTags, staleTopicsTags...) {
+		DB.Model(&tag).Association("Quickstarts").Clear()
+		DB.Model(&tag).Association("HelpTopics").Clear()
+		DB.Unscoped().Delete(&tag)
+	}
+
+	for _, q := range staleQuickstarts {
+		DB.Model(&q).Association("Tags").Clear()
+		DB.Unscoped().Delete(&q)
+	}
+
+	for _, h := range staleHelpTopics {
+		DB.Model(&h).Association("Tags").Clear()
+		DB.Unscoped().Delete(&h)
+	}
+}
+
 func SeedTags() {
+	// clear old content pahse
+	clearOldContent()
+	// seeding phase
 	defaultTags := seedDefaultTags()
 	MetadataTemplates := findTags()
+
 	for _, template := range MetadataTemplates {
 		kind := template.Kind
 		if kind == "QuickStarts" {
