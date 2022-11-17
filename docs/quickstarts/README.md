@@ -4,14 +4,16 @@ These instructions explain how to create [quick starts](https://www.patternfly.o
 
 A *quick start* is a set of step-by-step instructions and tasks presented in a side panel embedded in a product’s user interface. Quick starts can help users get started with a product, and they often provide guidance around installation and setup. Quick starts also allow users to quickly complete a task without the need to refer to external documentation.
 
-As quick starts should be brief and simple to follow, Red Hat recommends quick starts take no longer than 10 minutes for a user to complete, and have a maximum of 5 tasks (2-7 steps per task is a good length). You can find more detailed guidelines in this guide under _Best practices for creating quick starts_.
+Quick starts should be brief and simple to follow. Red Hat recommends quick starts take no longer than 10 minutes for a user to complete, and have a maximum of 5 tasks (2-7 steps per task is a good length). You can find more detailed guidelines in this guide under _Best practices for creating quick starts_.
 
-Use these steps to create quick starts for the Hybrid Cloud Console which have no content single-sourcing dependencies. 
+Use these steps to create quick starts for the Hybrid Cloud Console which have no content single-sourcing dependencies. You will create your quick start files in YAML.
+
+For information about creating a quick start using Asciidoc-formatted content instead, see the [contributor guide for Application Services](https://github.com/redhat-developer/app-services-guides/blob/main/CONTRIBUTING.adoc).
 
 **IMPORTANT**:
 The quickstarts content in this repository is not validated by the content team. We are working on defining a formal process. Please be aware that you might be required to update or change the content.
 
-You can read more about the quickstarts UI module in the official [Patternfly documentation](https://github.com/patternfly/patternfly-quickstarts/tree/main/packages/module#quick-starts-format).
+You can read more about the Patternfly quickstarts UI module in the official [Patternfly documentation](https://github.com/patternfly/patternfly-quickstarts/tree/main/packages/module#quick-starts-format).
 
 ## Preview tool
 
@@ -23,13 +25,14 @@ This is an overview of the steps you will need to complete to publish a quick st
 
 1. Write your draft quick start content, and get review and approval from product stakeholders.
 
-2. When the content is ready, create your quick start files in a new directory in the `docs` directory of [**Red Hat Insights quickstarts**](https://github.com/RedHatInsights/quickstarts/tree/main/docs/quickstarts), following the detailed instructions in this `README.md` file. 
+2. When the content is ready, create your YAML quick start files in a new directory in the `docs` directory of [**Red Hat Insights quickstarts**](https://github.com/RedHatInsights/quickstarts/tree/main/docs/quickstarts), following the detailed instructions in this `README.md` file. 
 
 3. Get your quick start added to the [Hybrid Cloud Console](console.redhat.com):
  
  a. Create a request in [the RHCLOUD Jira project](https://issues.redhat.com/projects/RHCLOUD/issues/) for engineering to merge the content. Add the `platform-experience` label to your Jira.
  
  b. Create a pull request (PR) to the `main` branch in the [**Red HatInsights/quickstarts**](https://github.com/RedHatInsights/quickstarts/) repository.
+ 
 4. The engineering team then merges the pull request to the Hybrid Cloud Console. The content will appear first on the [stage](https://console.stage.redhat.com/) of the Hybrid Cloud Console, and later in [production](https://console.redhat.com/).
 
 When these steps are complete, you will be able to view your quick start in the [Hybrid Cloud Console](https://console.redhat.com/).
@@ -144,6 +147,10 @@ When your quick start is published in the Hybrid Cloud Console, close your origi
   * Maximum 5 tasks
   * 2-7 steps per task (maximum 10 steps)
 * Each step should have a “Check your work” section.
+* Choosing an icon for the quick start card:
+  * If your quick start is specific to a product or service, use the relevant icon from the [Red Hat Brand product icons page](https://www.redhat.com/en/about/brand/standards/icons/product-icons).
+  * If your quick start does not relate to a specific product or service, use the default Patternfly rocket ship icon. See the [Patternfly quick starts documentation](https://www.patternfly.org/v4/extensions/quick-starts/design-guidelines/) for more details.
+  * You can find the markdown to point to an image in comments in the [quick starts template](https://github.com/patternfly/patternfly-quickstarts/blob/main/packages/dev/src/quickstarts-data/yaml/template.yaml).
 
 For more best practices and tips, see: 
 
