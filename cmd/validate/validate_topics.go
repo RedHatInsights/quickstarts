@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -29,34 +28,6 @@ type TopicContent struct {
 	Content string   `json:"content,omitempty"`
 	Title   string   `json:"title,omitempty"`
 	Tags    []string `json:"tags,omitempty"`
-}
-
-func handleErr(err error) {
-	if err != nil {
-		panic(err)
-	}
-}
-
-func handleFileErr(filepath string, err error) {
-	if err != nil {
-		fmt.Println("Help topic validation error. Error occured in: ", filepath)
-		handleErr(err)
-	}
-}
-
-func notMatch(r string, msg string) validation.RuleFunc {
-	return func(value interface{}) error {
-		s := value.(string)
-		matched, err := regexp.MatchString(r, s)
-		if err != nil {
-			return nil
-		}
-
-		if matched {
-			return errors.New(msg)
-		}
-		return nil
-	}
 }
 
 func validateStructure() {
@@ -118,5 +89,6 @@ func main() {
 	// Validate help topics yaml files
 	fmt.Println("Validating help topics")
 	validateStructure()
-
+	fmt.Println("Validating quickstarts")
+	validateQuickStartStructure()
 }
