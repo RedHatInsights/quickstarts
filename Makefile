@@ -21,4 +21,4 @@ generate-spec:
 	go run cmd/spec/main.go
 
 validate-topics:
-	go run cmd/validate/validate_topics.go
+	go run cmd/validate/*
