@@ -76,31 +76,20 @@ func validateQuickStartStructure() {
 		err = json.Unmarshal(jsonContent, &content)
 		handleFileErr(quickstartsFileName, err)
 
-		err = validation.ValidateStruct(&content,
-			validation.Field(&content.Kind, validation.Required, validation.In("QuickStarts")),
-			validation.Field(&content.ApiVersion, validation.Required),
-		)
-		handleFileErr(quickstartsFileName, err)
-
 		var spec = content.Spec
 		err = validation.ValidateStruct(&spec,
-			validation.Field(&spec.Version, validation.Required),
 			validation.Field(&spec.DisplayName, validation.Required),
 			validation.Field(&spec.Icon, validation.Required),
-			validation.Field(&spec.Description, validation.Required),
-		)
-		handleFileErr(quickstartsFileName, err)
-
-		var link = content.Spec.Link
-		err = validation.ValidateStruct(&link,
-			validation.Field(&link.Href, validation.Required),
-			validation.Field(&link.Text, validation.Required),
 		)
 		handleFileErr(quickstartsFileName, err)
 
 		var specType = content.Spec.Type
 		err = validation.ValidateStruct(&specType,
-			validation.Field(&specType.Color, validation.Required),
+			validation.Field(
+				&specType.Color,
+				validation.Required,
+				validation.In("blue", "cyan", "green", "orange", "purple", "red", "grey"),
+			),
 			validation.Field(&specType.Text, validation.Required),
 		)
 		handleFileErr(quickstartsFileName, err)
