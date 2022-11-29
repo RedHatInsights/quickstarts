@@ -80,6 +80,7 @@ func validateQuickStartStructure() {
 			validation.Field(&content.Kind, validation.Required, validation.In("QuickStarts")),
 			validation.Field(&content.ApiVersion, validation.Required),
 		)
+		handleFileErr(quickstartsFileName, err)
 
 		var spec = content.Spec
 		err = validation.ValidateStruct(&spec,
@@ -88,17 +89,20 @@ func validateQuickStartStructure() {
 			validation.Field(&spec.Icon, validation.Required),
 			validation.Field(&spec.Description, validation.Required),
 		)
+		handleFileErr(quickstartsFileName, err)
 
 		var link = content.Spec.Link
 		err = validation.ValidateStruct(&link,
 			validation.Field(&link.Href, validation.Required),
 			validation.Field(&link.Text, validation.Required),
 		)
+		handleFileErr(quickstartsFileName, err)
 
 		var specType = content.Spec.Type
 		err = validation.ValidateStruct(&specType,
 			validation.Field(&specType.Color, validation.Required),
 			validation.Field(&specType.Text, validation.Required),
 		)
+		handleFileErr(quickstartsFileName, err)
 	}
 }
