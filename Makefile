@@ -20,5 +20,5 @@ migrate:
 generate-spec:
 	go run cmd/spec/main.go
 
-validate-topics:
-	go run cmd/validate/validate_topics.go
+validate:
+	go run cmd/validate/*
