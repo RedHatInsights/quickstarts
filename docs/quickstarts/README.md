@@ -29,10 +29,10 @@ This is an overview of the steps you will need to complete to publish a quick st
 
 3. Get your quick start added to the [Hybrid Cloud Console](console.redhat.com):
  
- a. Create a request in [the RHCLOUD Jira project](https://issues.redhat.com/projects/RHCLOUD/issues/) for engineering to merge the content. Add the `platform-experience` label to your Jira.
- 
- b. Create a pull request (PR) to the `main` branch in the [**Red HatInsights/quickstarts**](https://github.com/RedHatInsights/quickstarts/) repository.
- 
+    a. Create a request in [the RHCLOUD Jira project](https://issues.redhat.com/projects/RHCLOUD/issues/) for engineering to merge the content. Add the `platform-experience` label to your Jira.
+    
+    b. Create a pull request (PR) to the `main` branch in the [**Red HatInsights/quickstarts**](https://github.com/RedHatInsights/quickstarts/) repository.
+    
 4. The engineering team then merges the pull request to the Hybrid Cloud Console. The content will appear first on the [stage](https://console.stage.redhat.com/) of the Hybrid Cloud Console, and later in [production](https://console.redhat.com/).
 
 When these steps are complete, you will be able to view your quick start in the [Hybrid Cloud Console](https://console.redhat.com/).
@@ -42,15 +42,27 @@ When these steps are complete, you will be able to view your quick start in the 
 ### Initial setup 
 You will need to complete these steps the first time you are contributing to the `quickstarts` repository. If you have already forked and cloned the `quickstarts` repository, continue to the next section, _Create a working branch and make your docs updates_.
 
+**Preqrequisites**
+- You have a GitHub account (https://github.com) 
+- You have configured your SSH keys on your system following the instructions here: https://help.github.com/articles/connecting-to-github-with-ssh/
+
 1. Create a fork of the `Red Hat Insights quick starts` repository:
-    - Navigate to https://github.com/RedHatInsights/quickstarts.
-    - Click **Fork** and follow the prompts to add the fork to your namespace.
-    - Click **Create fork** to confirm.
+
+    a. Navigate to https://github.com/RedHatInsights/quickstarts.
+
+    b. Click **Fork** and follow the prompts to add the fork to your namespace.
+
+    c. Click **Create fork** to confirm.
+
 2. Clone `https://github.com/<your-namespace>/quickstarts.git` in your terminal. For example:
     ```
     $ git clone git@github.com:nancydrew/quickstarts.git
     ```
-3. Add this repository as remote:
+3. Change to your local `quickstarts` directory: 
+    ```
+    $ cd quickstarts
+    ```
+4. Add this repository as remote:
     ```
     $ git remote add -f upstream git@github.com:RedHatInsights/quickstarts.git
     ```
@@ -78,30 +90,30 @@ If you have created quick starts in the Hybrid Cloud Console before, start here:
 
 5. Create the following quick start files and format your content into YAML:
 
-  a. Create a new directory with an identifiable name in `docs/quickstarts/<name>` in [**Red Hat Insights quick starts**](https://github.com/RedHatInsights/quickstarts/tree/main/docs/quickstarts) to contain your quick start files.
+    a. Create a new directory with an identifiable name in `docs/quickstarts/<name>` in [**Red Hat Insights quick starts**](https://github.com/RedHatInsights/quickstarts/tree/main/docs/quickstarts) to contain your quick start files.
 
-  b. In the new directory, create a `metadata.yml` file. Ensure you have a blank line at the end of the file:
+    b. In the new directory, create a `metadata.yml` file. Ensure you have a blank line at the end of the file:
   
-  ```yml
-  kind: QuickStarts # kind must always be "QuickStarts"
-  name: <name> # this name will be used as an identifier. The file with the content must use the same name `<name>.yml`
-  tags: # If you want to use more granular filtering add tags to the quickstart
-    - kind: bundle # use bundle tag for a topic to be accessed from a whole bundle eg. console.redhat.com/insights
-      value: insights
-    - kind: bundle
-      value: settings
-    - kind: application # use application tag for quickstart used by specific application
-      value: sources
+    ```yml
+    kind: QuickStarts # kind must always be "QuickStarts"
+    name: <name> # this name will be used as an identifier. The file with the content must use the same name `<name>.yml`
+    tags: # If you want to use more granular filtering add tags to the quickstart
+      - kind: bundle # use bundle tag for a topic to be accessed from a whole bundle eg. console.redhat.com/insights
+        value: insights
+      - kind: bundle
+        value: settings
+      - kind: application # use application tag for quickstart used by specific application
+        value: sources
 
-  ```
+    ```
 
-  c. In the new directory, create a `<name>.yml` file. The *name* must be equal to the `name` attribute from your `metadata.yml` file.
-   
-  d. Add your draft quickstart content to the new file. You can follow this [template](https://github.com/patternfly/patternfly-quickstarts/blob/main/packages/dev/src/quickstarts-data/yaml/template.yaml) and find more Markdown snippets in the _Useful Markdown snippets_ section of these instructions.
+    c. In the new directory, create a `<name>.yml` file. The *name* must be equal to the `name` attribute from your `metadata.yml` file.
+    
+    d. Add your draft quickstart content to the new file. You can follow this [template](https://github.com/patternfly/patternfly-quickstarts/blob/main/packages/dev/src/quickstarts-data/yaml/template.yaml) and find more Markdown snippets in the _Useful Markdown snippets_ section of these instructions.
 
-  d. Preview and validate the YAML content by copying and pasting your YAML into the [preview tool](https://quickstarts-content-preview.surge.sh/).
+    d. Preview and validate the YAML content by copying and pasting your YAML into the [preview tool](https://quickstarts-content-preview.surge.sh/).
 
-  e. Get your quick start reviewed by stakeholders as needed.
+    e. Get your quick start reviewed by stakeholders as needed.
 
 ### Adding your quick start to the Hybrid Cloud Console
 
@@ -110,14 +122,14 @@ Once you’re happy with the content and how the preview renders, open a Jira an
 1. Create a Jira for the platform development team in the [RHCLOUD Jira project](https://issues.redhat.com/projects/RHCLOUD/issues/RHCLOUD-15910?filter=allopenissues). Add the **platform-experience** label to the issue.
 2. Open a PR against the [GitHub repository](https://github.com/RedHatInsights/quickstarts) with your update. Add the developer contacts `@Hyperkid123` or `@ryelo` in the PR description, and add the Jira link in a comment.
 
-#### Engineering tasks
+### Engineering tasks
 
-From here, it's up to the engineering team to merge the PR to the Hybrid Cloud Console. If you are writing a quickstart, you can skip this information and continue to the next section, _Close the loop_.
+From here, it's up to the engineering team to merge the PR to the Hybrid Cloud Console. If you are writing a quickstart, you can continue to the next section, _Close the loop_.
 
 Your quick start will show up in the Hybrid Cloud Console [stage environment](https://console.stage.redhat.com/) first - 
 To publish live on the Hybrid Cloud Console [production environment](https://console.redhat.com/), engineering must create an `app-sre` pull request.
 
-##### Query quickstarts for a specific application `/api/v1/quickstarts?application={appname}`
+#### Query quickstarts for a specific application `/api/v1/quickstarts?application={appname}`
 
 To get quickstarts for the `new-application`, use the following query:
 
@@ -129,7 +141,7 @@ You can also query for multiple applications quickstarts:
 
 `/api/v1/quickstarts?application[]={appnameone}&application[]={appnametwo}`
 
-##### Query by multiple tags
+#### Query by multiple tags
 
 You can also combine the tags:
 ```
@@ -157,7 +169,7 @@ For more best practices and tips, see:
 * [Creating quick start tutorials](https://docs.openshift.com/container-platform/4.11/web_console/creating-quick-start-tutorials.html) in the OpenShift documentation 
 * [Design guidelines for quick starts](https://www.patternfly.org/v4/extensions/quick-starts/design-guidelines/) in the Patternfly documentation
 
-### Useful Markdown snippets
+## Useful Markdown snippets
 
 * A nice Markdown summary from the [Red Hat Customer Portal](https://access.redhat.com/help/markdown)
 * [Creating quick start tutorials](https://docs.openshift.com/container-platform/4.11/web_console/creating-quick-start-tutorials.html) in the OpenShift documentation
@@ -178,9 +190,9 @@ There are a few ways to include visual elements in a quick start.
 
 1. Find out the ID of the UI element in the console:
 
-  a. In your browser, right-click on the element, then click **Inspect**.
+    a. In your browser, right-click on the element, then click **Inspect**.
 
-  b. Copy the value of the `id`. For example, if you inspect the gear icon, you see `id=”SettingsMenu”`. 
+    b. Copy the value of the `id`. For example, if you inspect the gear icon, you see `id=”SettingsMenu”`. 
 
 2. In the quick start YAML, add the text to be highlighted and the ID of the element formatted like `[Quick starts nav item]{{highlight quick starts}}`. For example:
 
@@ -194,9 +206,9 @@ Use this method if you can’t point to a specific UI icon in the Hybrid Cloud C
 
 1. Find the name of the Patternfly icon in [this list](https://www.patternfly.org/v4/guidelines/icons/#font-awesome-solid-fas-vs-font-awesome-regular-far). All of these icons are included in the Patternfly code so you don’t need to upload an image, you can just point to it with HTML.
 2. Use the markup to specify the library the icon comes from (Patternfly, Font Awesome solid, Font Awesome regular) and the icon name. Here are [some examples from the Patternfly docs](https://www.patternfly.org/v4/guidelines/icons/#font-awesome-solid-fas-vs-font-awesome-regular-far):
-  - For Patternfly icons: `<i class="pf-icon [insert-icon-name]"></i>`
-  - For Font Awesome solid icons: `<i class="fas [insert-icon-name]"></i>`
-  - For Font Awesome regular icons: `<i class="far [insert-icon-name]"></i>`
+    - For Patternfly icons: `<i class="pf-icon [insert-icon-name]"></i>`
+    - For Font Awesome solid icons: `<i class="fas [insert-icon-name]"></i>`
+    - For Font Awesome regular icons: `<i class="far [insert-icon-name]"></i>`
 3. Add the name of the icon in brackets after the icon.
 4. Test that the icon renders correctly in the [React preview tool](https://quickstarts-content-preview.surge.sh/).
 
