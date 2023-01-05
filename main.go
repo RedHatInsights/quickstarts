@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/RedHatInsights/quickstarts/config"
 	"github.com/RedHatInsights/quickstarts/pkg/database"
@@ -26,6 +27,16 @@ func probe(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("OK"))
 }
 
+func specHandler(w http.ResponseWriter, r *http.Request) {
+	root := "./spec"
+	fs := http.FileServer(http.Dir(root))
+	if _, err := os.Stat(root + r.RequestURI); os.IsNotExist(err) {
+		http.StripPrefix(r.RequestURI, fs).ServeHTTP(w, r)
+	} else {
+		fs.ServeHTTP(w, r)
+	}
+}
+
 func main() {
 	godotenv.Load()
 	config.Init()
@@ -45,11 +56,14 @@ func main() {
 		middleware.Logger,
 	)
 
+	root := "./spec/"
+	fs := http.FileServer(http.Dir(root))
 	r.Get("/test", probe)
 	r.With(routes.PrometheusMiddleware).Route("/api/quickstarts/v1", func(sub chi.Router) {
 		sub.Route("/quickstarts", routes.MakeQuickstartsRouter)
 		sub.Route("/progress", routes.MakeQuickstartsProgressRouter)
 		sub.Route("/helptopics", routes.MakeHelpTopicsRouter)
+		sub.Handle("/spec/*", http.StripPrefix("/api/quickstarts/v1/spec", fs))
 	})
 	mr.Get("/", probe)
 	mr.Handle("/metrics", promhttp.Handler())
