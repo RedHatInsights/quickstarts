@@ -19,7 +19,7 @@ spec:
   # 3. compose - `icon: data:image/svg+xml;base64,<base64 string from step 2>`
   # - If empty string (icon: ''), will use a default rocket icon
   # - If set to null (icon: ~) will not show an icon
-  icon: data:image/svg+xml;base64,PCEtLSBHZW5lcmF0ZWQgYnkgSWNvTW9vbi5pbyAtLT4KPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KPHRpdGxlPjwvdGl0bGU+CjxnIGlkPSJpY29tb29uLWlnbm9yZSI+CjwvZz4KPHBhdGggZD0iTTQ0OCA2NHY0MTZoLTMzNmMtMjYuNTEzIDAtNDgtMjEuNDktNDgtNDhzMjEuNDg3LTQ4IDQ4LTQ4aDMwNHYtMzg0aC0zMjBjLTM1LjE5OSAwLTY0IDI4LjgtNjQgNjR2Mzg0YzAgMzUuMiAyOC44MDEgNjQgNjQgNjRoMzg0di00NDhoLTMyeiI+PC9wYXRoPgo8cGF0aCBkPSJNMTEyLjAyOCA0MTZ2MGMtMC4wMDkgMC4wMDEtMC4wMTkgMC0wLjAyOCAwLTguODM2IDAtMTYgNy4xNjMtMTYgMTZzNy4xNjQgMTYgMTYgMTZjMC4wMDkgMCAwLjAxOS0wLjAwMSAwLjAyOC0wLjAwMXYwLjAwMWgzMDMuOTQ1di0zMmgtMzAzLjk0NXoiPjwvcGF0aD4KPC9zdmc+Cg==
+  icon: ''
   prerequisites:
     - You are an Organization Administrator or have User Access administrator permissions
     - (Optional) Users in your organization
@@ -36,7 +36,7 @@ spec:
   tasks:
     - title: Removing the Vulnerability administrator role from the **Default access** group
       description: |-
-        Edit the **Default access** group and remove the groups or roles that you don’t want all users to have. This modifies the **Default access** group permanently.
+        Edit the **Default access** group and remove the roles that you don’t want all users to have. 
         
         For this example, remove the **Vulnerability administrator** role from the **Default access** group to revoke this access from all users in your organization.
 
@@ -52,9 +52,11 @@ spec:
         
         6. Click **Remove role** to confirm.
         
-        Users in the **Default access** group now no longer have **Vulnerability administrator** permissions.
+        Users in your organization now no longer have **Vulnerability administrator** permissions by default. 
         
-        [Modifying the Default access group automatically renames the group to Custom default access. Similarly, modifying the Default admin access group automatically renames this group, but any user-created group names will not change.]{{admonition note}}
+        The **Default access** group is now called **Custom default access**, but any user-created group names have not changed. 
+        
+        [You can undo any changes made to the **Default access** group by clicking **Restore to default** on the **Groups** page.]{{admonition note}}
       # optional - the task's Check your work module
       review:
         instructions: |-
