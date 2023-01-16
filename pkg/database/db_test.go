@@ -81,3 +81,18 @@ func TestCreateQuickstartWithBundle(t *testing.T) {
 		assert.Equal(t, quickStart.ID, quickStartsAssociations[0].ID)
 	})
 }
+
+func TestDBSeeding(t *testing.T) {
+	t.Run("create DB seeding", func(t *testing.T) {
+		// SeedTags()
+		// DB.Find(DB.Get())
+		var quickStarts []models.Quickstart
+		// var dbTag models.Tag
+		// var quickStartsAssociations []models.Quickstart
+		// var dbTag models.Tag
+		DB.Find(&quickStarts)
+		// DB.Model(&tag).Assocation("Quickstarts").Find(&quickStartsAssociations)
+		t.Log(quickStarts)
+		t.Log("Hello")
+	})
+}

@@ -50,6 +50,7 @@ func readMetadata(loc string) (MetadataTemplate, error) {
 func findTags() []MetadataTemplate {
 	var MetadataTemplates []MetadataTemplate
 	quickstartsFiles, err := filepath.Glob("./docs/quickstarts/**/metadata.y*")
+	println(filepath.Glob("./docs/quickstarts/**/metadata.y*"))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -149,6 +150,8 @@ func seedDefaultTags() map[string]models.Tag {
 
 func seedHelpTopic(t MetadataTemplate, defaultTag models.Tag) ([]models.HelpTopic, error) {
 	yamlfile, err := ioutil.ReadFile(t.ContentPath)
+	// fmt.Println(yamlfile)
+	// fmt.Println("I'm here")
 	returnValue := make([]models.HelpTopic, 0)
 	if err != nil {
 		return returnValue, err
@@ -243,6 +246,10 @@ func SeedTags() {
 	// seeding phase
 	defaultTags := seedDefaultTags()
 	MetadataTemplates := findTags()
+
+	fmt.Println()
+
+	fmt.Println("uh hello")
 
 	for _, template := range MetadataTemplates {
 		kind := template.Kind

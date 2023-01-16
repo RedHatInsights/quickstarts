@@ -8,6 +8,7 @@ import (
 
 	"github.com/RedHatInsights/quickstarts/config"
 	"github.com/RedHatInsights/quickstarts/pkg/models"
+	"github.com/joho/godotenv"
 )
 
 func TestMain(m *testing.M) {
@@ -20,6 +21,7 @@ func TestMain(m *testing.M) {
 var dbName string
 
 func setUp() {
+	godotenv.Load()
 	config.Init()
 	cfg := config.Get()
 	cfg.Test = true
@@ -28,10 +30,12 @@ func setUp() {
 	config.Get().DbName = dbName
 
 	Init()
-	err := DB.AutoMigrate(&models.Quickstart{}, &models.QuickstartProgress{}, &models.Tag{})
+	err := DB.AutoMigrate(&models.Quickstart{}, &models.QuickstartProgress{}, &models.Tag{}, &models.HelpTopic{})
 	if err != nil {
 		panic(err)
 	}
+	fmt.Println("Migration complete")
+	SeedTags()
 }
 
 func tearDown() {
