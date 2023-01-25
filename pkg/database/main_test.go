@@ -3,6 +3,8 @@ package database
 import (
 	"fmt"
 	"os"
+	"path"
+	"runtime"
 	"testing"
 	"time"
 
@@ -21,6 +23,12 @@ func TestMain(m *testing.M) {
 var dbName string
 
 func setUp() {
+	_, filename, _, _ := runtime.Caller(0)
+	dir := path.Join(path.Dir(filename), "..")
+	err := os.Chdir(dir)
+	if err != nil {
+		panic(err)
+	}
 	godotenv.Load()
 	config.Init()
 	cfg := config.Get()
@@ -30,7 +38,7 @@ func setUp() {
 	config.Get().DbName = dbName
 
 	Init()
-	err := DB.AutoMigrate(&models.Quickstart{}, &models.QuickstartProgress{}, &models.Tag{}, &models.HelpTopic{})
+	err = DB.AutoMigrate(&models.Quickstart{}, &models.QuickstartProgress{}, &models.Tag{}, &models.HelpTopic{})
 	if err != nil {
 		panic(err)
 	}

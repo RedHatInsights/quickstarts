@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"strings"
 
 	"github.com/RedHatInsights/quickstarts/pkg/models"
 	"github.com/ghodss/yaml"
@@ -49,18 +50,21 @@ func readMetadata(loc string) (MetadataTemplate, error) {
 
 func findTags() []MetadataTemplate {
 	var MetadataTemplates []MetadataTemplate
-	quickstartsFiles, err := filepath.Glob("./docs/quickstarts/**/metadata.y*")
-	println(filepath.Glob("./docs/quickstarts/**/metadata.y*"))
+	path, err := os.Getwd()
+	path = strings.TrimRight(path, "pkg")
+	quickstartsFiles, err := filepath.Glob(path + "/docs/quickstarts/**/metadata.y*")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	helpTopicsFiles, err := filepath.Glob("./docs/help-topics/**/metadata.y*")
+	helpTopicsFiles, err := filepath.Glob(path + "/docs/help-topics/**/metadata.y*")
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	files := append(quickstartsFiles, helpTopicsFiles...)
+
+	println(files)
 
 	for _, file := range files {
 		tagMetadata, err := readMetadata(file)
@@ -150,8 +154,6 @@ func seedDefaultTags() map[string]models.Tag {
 
 func seedHelpTopic(t MetadataTemplate, defaultTag models.Tag) ([]models.HelpTopic, error) {
 	yamlfile, err := ioutil.ReadFile(t.ContentPath)
-	// fmt.Println(yamlfile)
-	// fmt.Println("I'm here")
 	returnValue := make([]models.HelpTopic, 0)
 	if err != nil {
 		return returnValue, err
@@ -246,10 +248,6 @@ func SeedTags() {
 	// seeding phase
 	defaultTags := seedDefaultTags()
 	MetadataTemplates := findTags()
-
-	fmt.Println()
-
-	fmt.Println("uh hello")
 
 	for _, template := range MetadataTemplates {
 		kind := template.Kind

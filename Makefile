@@ -9,7 +9,7 @@ help:
 
 	
 test:
-	go test ./... -coverprofile=c.out
+	go test -v ./... -coverprofile=c.out
 
 coverage:
 	go tool cover -html=c.out
