@@ -176,19 +176,19 @@ func TestDBSeeding(t *testing.T) {
 				json.Unmarshal(jsonContent, &data)
 				for _, d := range data {
 					name := d["name"]
-					result := DB.Where("name = ?", name).Find(&helptopic)
-					assert.NotEmpty(t, result)
+					DB.Where("name = ?", name).Find(&helptopic)
+					// assert.NotEmpty(t, result)
 					content := d["content"]
-					result = DB.Where("content = ?", content).Find(&helptopic)
 					t.Log(content)
-					var db_data models.ContentJson
-					err := json.Unmarshal([]byte(helptopic.Content), &db_data)
-					if err != nil {
-						t.Log(err)
-					}
-					t.Log(helptopic.Content)
-					t.Log(db_data)
-					// assert.Equal(t, helptopic.Content, content)
+					// var s string
+					var db_data []map[string]interface{}
+					json.Unmarshal([]byte(helptopic.Content), db_data)
+					// t.Log(helptopic.Content)
+					// t.Log(content)
+
+					// t.Log(helptopic)
+					// t.Log(db_data)
+					assert.Equal(t, db_data, content) // assert file contents matches DB
 				}
 			}
 		}
