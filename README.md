@@ -32,7 +32,6 @@ curl --location --request POST 'http://localhost:8000/api/quickstarts/v1/progres
 }'
 
 ```
-
 ### Delete progress
 
 ```sh
