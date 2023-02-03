@@ -1,0 +1,17 @@
+# Name is an internal name. Title shows up in the UI as a side panel title.
+# Tags to be kept empty for now. Tags will specify where in the app descriptions will be available.
+# Links to be external only. We don't know yet whether referencing to other side panels will be supported but referencing to in-depth docs is expected to be supported.
+
+- name: stonesoup-install-the-stonesoup-github-app
+  tags:
+  title: Install the Stonesoup GitHub app 
+  content: |-
+To customize your build pipelines, install the GitHub app. After you install the GitHub app, it creates webhooks for your repositories and running builds. The GitHub app also tests your pull requests for you to view before merging your pull requests. 
+
+1. Go to the GitHub repository: https://github.com/apps/appstudio-staging-ci/.  
+ links: []
+2. Select **Install GitHub App**. 
+3. Select which of your repositories you want the GitHub app to have access to. 
+4. If you do not grant the GitHub app access to your repository, you must manually select each component for the GitHub app to access. 
+* Open **GitHub > Settings > Applications > Configure**.
+* Select each new component.   

@@ -1,0 +1,24 @@
+# Name is an internal name. Title shows up in the UI as a side panel title.
+# Tags to be kept empty for now. Tags will specify where in the app descriptions will be available.
+# Links to be external only. We don't know yet whether referencing to other side panels will be supported but referencing to in-depth docs is expected to be supported.
+
+- name: stonesoup-make-a-code-change
+  tags:
+  title: Make a code change
+  content: |-
+  Make a code change to your already configured components. In order to make a code change to your component, you must have:
+  * Installed the GitHub app
+  * Granted it permission to access your repository you want to change
+  * Customized your component’s pipeline
+  The commit that includes your changes automatically triggers a build pipeline. If that pipeline is successful, it triggers a deployment to your development environment. 
+
+Prerequisites 
+Complete the instructions for: 
+1. Add a component
+2. Install the GitHub app 
+3. Customize build pipelines 
+
+Procedure:
+1. To verify that your build is completed or that your build is deployed, open the **Activity > Commit** tab. 
+2. Monitor the build progress. 
+3. View your code change in your running application. 
