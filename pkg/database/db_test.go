@@ -25,7 +25,7 @@ func TestCreateTags(t *testing.T) {
 		var allTags []models.Tag
 		var newTag models.Tag
 		DB.Find(&allTags)
-		assert.Equal(t, 1, len(allTags))
+		assert.Equal(t, 7, len(allTags))
 		DB.Find(&newTag, tag.ID)
 		assert.Equal(t, models.ApplicationTag, newTag.Type)
 		assert.Equal(t, "foo", newTag.Value)
@@ -82,7 +82,7 @@ func TestCreateQuickstartWithBundle(t *testing.T) {
 		DB.Find(&quickStarts)
 		DB.Model(&tag).Association("Quickstarts").Find(&quickStartsAssociations)
 		assert.Equal(t, dbTag.ID, tag.ID)
-		assert.Equal(t, 1, len(quickStarts))
+		assert.Equal(t, 6, len(quickStarts))
 		assert.Equal(t, 1, len(quickStartsAssociations))
 		assert.Equal(t, "baz", quickStartsAssociations[0].Name)
 		assert.Equal(t, quickStart.ID, quickStartsAssociations[0].ID)
@@ -97,18 +97,12 @@ func TestDBSeeding(t *testing.T) {
 		log.Fatal(err)
 	}
 	helpTopicsFiles, err := filepath.Glob(path + "/docs/help-topics/**/metadata.y*")
-	t.Log(helpTopicsFiles)
 	files := append(quickstartsFiles, helpTopicsFiles...)
 	t.Log(files)
 
 	t.Run("create DB seeding", func(t *testing.T) {
-		// SeedTags()
-		// DB.Find(DB.Get())
-		t.Log(quickstartsFiles)
 		var quickStarts []models.Quickstart
 		DB.Find(&quickStarts)
-		// t.Log(quickStarts)
-		// t.Log("Hello")
 	})
 
 	// t.Run("tags match what is in DB", func(t *testing.T) {
@@ -154,9 +148,11 @@ func TestDBSeeding(t *testing.T) {
 				var data map[string]map[string]string
 				json.Unmarshal(jsonContent, &data)
 				name := data["metadata"]["name"]
-				result := DB.Where("name = ?", name).Find(&quickstart)
-				assert.NotEmpty(t, result)
-
+				DB.Where("name = ?", name).Find(&quickstart)
+				var db_data map[string]map[string]string
+				json.Unmarshal([]byte(quickstart.Content), &db_data)
+				assert.Equal(t, db_data["metadata"]["name"], name)
+				assert.Equal(t, db_data["metadata"]["content"], data["metadata"]["content"])
 			}
 		}
 	})
@@ -166,7 +162,6 @@ func TestDBSeeding(t *testing.T) {
 
 		for _, template := range metadataTemplates {
 			if template.Kind == "HelpTopic" {
-				var helptopic models.HelpTopic
 				yamlfile, err := ioutil.ReadFile(template.ContentPath)
 				if err != nil {
 					t.Log(err)
@@ -175,20 +170,14 @@ func TestDBSeeding(t *testing.T) {
 				var data []map[string]interface{}
 				json.Unmarshal(jsonContent, &data)
 				for _, d := range data {
+					var helptopic models.HelpTopic
 					name := d["name"]
 					DB.Where("name = ?", name).Find(&helptopic)
-					// assert.NotEmpty(t, result)
 					content := d["content"]
-					t.Log(content)
-					// var s string
-					var db_data []map[string]interface{}
-					json.Unmarshal([]byte(helptopic.Content), db_data)
-					// t.Log(helptopic.Content)
-					// t.Log(content)
-
-					// t.Log(helptopic)
-					// t.Log(db_data)
-					assert.Equal(t, db_data, content) // assert file contents matches DB
+					var db_data map[string]interface{}
+					json.Unmarshal([]byte(helptopic.Content), &db_data)
+					assert.Equal(t, db_data["content"], content)
+					assert.Equal(t, db_data["name"], d["name"])
 				}
 			}
 		}
