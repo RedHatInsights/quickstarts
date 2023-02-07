@@ -75,6 +75,9 @@ func TestCreateQuickstartWithBundle(t *testing.T) {
 		error = DB.Save(&tag).Error
 		assert.Equal(t, nil, error)
 
+		path, _ := os.Getwd()
+		quickstartFiles, _ := filepath.Glob(path + "/docs/quickstarts/**/metadata.y*")
+		quickstart_len := len(quickstartFiles)
 		var quickStarts []models.Quickstart
 		var quickStartsAssociations []models.Quickstart
 		var dbTag models.Tag
@@ -82,7 +85,7 @@ func TestCreateQuickstartWithBundle(t *testing.T) {
 		DB.Find(&quickStarts)
 		DB.Model(&tag).Association("Quickstarts").Find(&quickStartsAssociations)
 		assert.Equal(t, dbTag.ID, tag.ID)
-		assert.Equal(t, 6, len(quickStarts))
+		assert.Equal(t, quickstart_len+1, len(quickStarts))
 		assert.Equal(t, 1, len(quickStartsAssociations))
 		assert.Equal(t, "baz", quickStartsAssociations[0].Name)
 		assert.Equal(t, quickStart.ID, quickStartsAssociations[0].ID)
@@ -104,34 +107,6 @@ func TestDBSeeding(t *testing.T) {
 		var quickStarts []models.Quickstart
 		DB.Find(&quickStarts)
 	})
-
-	// t.Run("tags match what is in DB", func(t *testing.T) {
-	// 	var dbTag models.Tag
-	// 	var metadataTemplates []MetadataTemplate
-	// 	// for _, file := range files {
-	// 	// 	yamlfile, err := ioutil.ReadFile(file)
-	// 	// 	var template MetadataTemplate
-	// 	// 	err = yaml.Unmarshal(yamlfile, &template)
-	// 	// 	if err != nil {
-	// 	// 		log.Fatal(err)
-	// 	// 	}
-	// 	// 	metadataTemplates = append(metadataTemplates, template)
-	// 	// }
-	// 	metadataTemplates = findTags()
-	// 	// DB.Find(&dbTag)
-	// 	for _, template := range metadataTemplates {
-	// 		t.Log(template.Tags)
-	// 		for _, tag := range template.Tags {
-	// 			DB.Table("tags").Find(&dbTag, "value = ?", tag.Value)
-	// 			t.Log("tag.value: " + tag.Value)
-	// 			t.Log("dbTag.Value: " + dbTag.Value)
-	// 			// assert.Contains(t, dbTag.Value, tag.Value)
-	// 			assert.Equal(t, tag.Value, dbTag.Value)
-	// 		}
-	// 		// assert.Contains(t, dbTag, template.Tags)
-	// 		//only add unique tags to array then check the length and the contents
-	// 	}
-	// })
 
 	t.Run("DB contains correct quickstart data", func(t *testing.T) {
 		var metadataTemplates []MetadataTemplate
