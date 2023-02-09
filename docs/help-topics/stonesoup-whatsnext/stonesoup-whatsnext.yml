@@ -24,7 +24,7 @@
 
     Prerequisites 
     1. Install the GitHub application. 
-    2. Authorize the GitHub application for this component’s repository. 
+    2. Authorize the GitHub application for this component's repository. 
 
     Procedure 
     1. From the application dropdown, select **Customize build pipeline**.
@@ -38,12 +38,11 @@
 
 - name: stonesoup-whatsnext-install-github-app
   tags:
-  title: Install the Stonesoup GitHub app 
+  title: Install our GitHub app
   content: |-
     To customize your build pipelines, install the GitHub app. After you install the GitHub app, it creates webhooks for your repositories and running builds. The GitHub app also tests your pull requests for you to view before merging your pull requests. 
 
-    1. Go to the GitHub repository: https://github.com/apps/appstudio-staging-ci/.  
-    links: []
+    1. Go to the GitHub repository: [https://github.com/apps/appstudio-staging-ci/](https://github.com/apps/appstudio-staging-ci/). 
     2. Select **Install GitHub App**. 
     3. Select which of your repositories you want the GitHub app to have access to. 
     4. If you do not grant the GitHub app access to your repository, you must manually select each component for the GitHub app to access. 
