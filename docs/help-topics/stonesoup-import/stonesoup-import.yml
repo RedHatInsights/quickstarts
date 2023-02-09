@@ -7,51 +7,50 @@
   tags:
   title: Add components
   content: |-
-      A “component” is an image that {ProductName} builds from source code in a repository. An application is a collection of these components working together. To start building your app, add a component by importing your code repository to {ProductName}, or use one of the samples.
+    A “component” is an image that {Stonesoup} builds from source code in a repository. An application is a collection of these components working together. To start building your app, add a component by importing your code repository to {Stonesoup}, or use one of the samples.
 
-      * **Your GitHub repo**
-      ** To use your own code, enter the link to your repo in the **Git repo URL** field. {ProductName} verifies your repo URL right away. You don’t even have to press **Enter**.
-      ** When **Git options** displays, you can choose whether to make either of the following specifications:
-      *** Add a **Git reference** to point to code in a specific branch, tag, or commit that you want to use to build your app.
-      *** Indicate a **Context directory** to specify the subdirectory for the source code you want to use.
-      ** Click **Next**, then {ProductName} scans and analyzes your Git directory to determine how many components to add to your app. The types of files in your repo, and also your Git directory file hierarchy, determine the number and type of components to add. For example, {ProductName} looks for devfiles and Dockerfiles, and language-specific build configuration files like pom.xml for Java or package.json for Node.
+    * **Your GitHub repo**
+    ** To use your own code, enter the link to your repo in the **Git repo URL** field. {Stonesoup} verifies your repo URL right away. You don’t even have to press **Enter**.
+    ** When **Git options** displays, you can choose whether to make either of the following specifications:
+    *** Add a **Git reference** to point to code in a specific branch, tag, or commit that you want to use to build your app.
+    *** Indicate a **Context directory** to specify the subdirectory for the source code you want to use.
+    ** Click **Next**, then {Stonesoup} scans and analyzes your Git directory to determine how many components to add to your app. The types of files in your repo, and also your Git directory file hierarchy, determine the number and type of components to add. For example, {Stonesoup} looks for devfiles and Dockerfiles, and language-specific build configuration files like pom.xml for Java or package.json for Node.
 
-      [NOTE]
-      ====
-      {ProductName} can build apps that are written in the following language stacks and frameworks:
+    [NOTE]
+    ====
+    {Stonesoup} can build apps that are written in the following language stacks and frameworks:
 
-      * Python
-      * Java
-      * Go
-      * .NET
-      * Node.js
-      * Quarkus
-      * Spring Boot
-      ====
+    * Python
+    * Java
+    * Go
+    * .NET
+    * Node.js
+    * Quarkus
+    * Spring Boot
+    ====
 
-      * **A code sample**
-      ** Use a code sample to explore and test various languages and frameworks. To start with a code sample, click **Start with a sample**.
-      ** Click any of the options on the **Select a sample** page, then follow the resulting instructions.
+    * **A code sample**
+    ** Use a code sample to explore and test various languages and frameworks. To start with a code sample, click **Start with a sample**.
+    ** Click any of the options on the **Select a sample** page, then follow the resulting instructions.
 
-      - name: stonesoup-import-configure-component
-        tags:
-        title: Configure components
-        content: |-
+- name: stonesoup-import-configure-component
+  tags:
+  title: Configure components
+  content: |-
+    {Stonesoup} analyzes your code, then defines and applies deployment settings for each of your app components. Remember, a “component” is an image that {Stonesoup} builds from source code in a repository. An application is a collection of these components working together.
 
-        {ProductName} analyzes your code, then defines and applies deployment settings for each of your app components. Remember, a “component” is an image that {ProductName} builds from source code in a repository. An application is a collection of these components working together.
+    Before you create and deploy your app, look over the values that display here. You can rename any component from this view, too. In particular, pay attention to the following fields:
 
-        Before you create and deploy your app, look over the values that display here. You can rename any component from this view, too. In particular, pay attention to the following fields:
+    * **Target port**: Is it correct? If not, click in the port field to modify it.
+    * **CPUs**, **memory**, and **instances**: Choose how many of each of these you want for your app, depending on your subscription.
+    * **Route**: Enter the public URL for your published app.
+    * **Environment variables**: Define your environment variables to customize how {Stonesoup} deploys your app. Usually, you define these in a devfile or Dockerfile. If your app doesn’t contain either of these file types, {Stonesoup} uses an application analyzer to extract the necessary information from your code.
+    * **Runtime**: Did {Stonesoup} detect the right runtime? If so, you don’t have to do anything with this field. If you want to change your runtime, click the **Runtime** menu and make a selection.
+    * **Send pull request**: Select this option to create a custom pipeline in your Git repository.
 
-        * **Target port**: Is it correct? If not, click in the port field to modify it.
-        * **CPUs**, **memory**, and **instances**: Choose how many of each of these you want for your app, depending on your subscription.
-        * **Route**: Enter the public URL for your published app.
-        * **Environment variables**: Define your environment variables to customize how {ProductName} deploys your app. Usually, you define these in a devfile or Dockerfile. If your app doesn’t contain either of these file types, {ProductName} uses an application analyzer to extract the necessary information from your code.
-        * **Runtime**: Did {ProductName} detect the right runtime? If so, you don’t have to do anything with this field. If you want to change your runtime, click the **Runtime** menu and make a selection.
-        * **Send pull request**: Select this option to create a custom pipeline in your Git repository.
+    When you’re satisfied with your component configuration settings, click **Create**. While your component builds, go to **Applications > Overview** to check out lifecycle details for your app.
 
-        When you’re satisfied with your component configuration settings, click **Create**. While your component builds, go to **Applications > Overview** to check out lifecycle details for your app.
-
-        [NOTE]
-        ====
-        After you create your app, you can adjust your configuration settings from the **Application** view whenever you want.
-        ====
+    [NOTE]
+    ====
+    After you create your app, you can adjust your configuration settings from the **Application** view whenever you want.
+    ====
