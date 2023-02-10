@@ -76,8 +76,11 @@ func TestCreateQuickstartWithBundle(t *testing.T) {
 		assert.Equal(t, nil, error)
 
 		path, _ := os.Getwd()
+		path = strings.TrimRight(path, "pkg")
 		quickstartFiles, _ := filepath.Glob(path + "/docs/quickstarts/**/metadata.y*")
+		t.Log(quickstartFiles)
 		quickstart_len := len(quickstartFiles)
+		t.Log(quickstart_len)
 		var quickStarts []models.Quickstart
 		var quickStartsAssociations []models.Quickstart
 		var dbTag models.Tag

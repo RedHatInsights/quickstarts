@@ -5,6 +5,7 @@ ENV GO111MODULE=on
 USER root
 RUN go get -d -v
 RUN make validate
+RUN make test
 RUN CGO_ENABLED=0 go build -o /go/bin/quickstarts
 
 # Build the migration binary.
