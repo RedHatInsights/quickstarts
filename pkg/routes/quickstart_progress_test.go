@@ -1,6 +1,7 @@
 package routes
 
 import (
+  "fmt"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
@@ -27,9 +28,23 @@ func mockQuickstartProgress(id uint) *models.QuickstartProgress {
 	return &quickstartProgress
 }
 
+func mockQuickstartProgressWithSpecificName(id uint, qsName string) *models.QuickstartProgress {
+  var quickstartProgress models.QuickstartProgress
+
+  quickstartProgress.ID = id
+  quickstartProgress.QuickstartName = qsName
+  quickstartProgress.AccountId = 4321
+
+  database.DB.Create(&quickstartProgress)
+
+  return &quickstartProgress
+}
+
 func setupQuickstartProgressRouter() *chi.Mux {
 	r := chi.NewRouter()
 	r.Get("/", getAllQuickstartsProgress)
+  r.Get("/{id}", getQuickstartProgress)
+  r.Get("/{quickstart}", getQuickstartProgress)
 	r.Post("/", updateQuickstartProgress)
 	r.Delete("/{id}", deleteQuickstartProgress)
 	return r
@@ -37,28 +52,61 @@ func setupQuickstartProgressRouter() *chi.Mux {
 
 func TestGetAllQuickstartProgresses(t *testing.T) {
 	router := setupQuickstartProgressRouter()
+  
+  type responsePayload struct {
+	  Data []models.QuickstartProgress
+  }
+
+  type responseSinglePayload struct {
+    Data models.QuickstartProgress
+  }
 
 	qp1 := mockQuickstartProgress(1)
 	qp2 := mockQuickstartProgress(2)
+  qp3 := mockQuickstartProgressWithSpecificName(3, "TestingQS")
 
 	t.Run("returns GET all quickstarts successfully", func(t *testing.T) {
 		request, _ := http.NewRequest(http.MethodGet, "/", nil)
 		response := httptest.NewRecorder()
 		router.ServeHTTP(response, request)
 
-		type responsePayload struct {
-			Data []models.QuickstartProgress
-		}
-
 		var payload *responsePayload
+
 		json.NewDecoder(response.Body).Decode(&payload)
 		assert.Equal(t, 200, response.Code)
-		assert.Equal(t, 2, len(payload.Data))
+		assert.Equal(t, 3, len(payload.Data))
 		assert.Equal(t, qp1.AccountId, payload.Data[0].AccountId)
 		assert.Equal(t, qp1.QuickstartName, payload.Data[0].QuickstartName)
 		assert.Equal(t, qp2.AccountId, payload.Data[1].AccountId)
 		assert.Equal(t, qp2.QuickstartName, payload.Data[1].QuickstartName)
 	})
+  
+  t.Run("Returns all quickstart-progress for specific AccountID", func(t *testing.T) {
+    qpActID := fmt.Sprint(qp1.AccountId)
+    request, _  := http.NewRequest(http.MethodGet, fmt.Sprintf("/%s", qpActID), nil)
+    response    := httptest.NewRecorder()
+    router.ServeHTTP(response, request)
+
+    var payload *responsePayload
+
+    json.NewDecoder(response.Body).Decode(&payload)
+    assert.Equal(t, 200, response.Code)
+    assert.Equal(t, qpActID, fmt.Sprint(payload.Data[0].AccountId))
+    assert.Equal(t, 3, len(payload.Data))
+  })
+
+  t.Run("Returns quickstart-progress for specific matching quickstart name", func(t *testing.T) {
+    qsName := qp3.QuickstartName
+    request, _ := http.NewRequest(http.MethodGet, fmt.Sprintf("/%s", qsName), nil)
+    response := httptest.NewRecorder()
+    router.ServeHTTP(response, request)
+    
+    var payload *responseSinglePayload
+
+    json.NewDecoder(response.Body).Decode(&payload)
+    assert.Equal(t, 200, response.Code)
+    // assert.Equal(t, qp3.QuickstartName, payload.Data.QuickstartName)
+  })
 }
 
 func TestUpdateQuickstartsProgress(t *testing.T) {
@@ -124,6 +172,8 @@ func TestUpdateQuickstartsProgress(t *testing.T) {
 		err := database.DB.Where(&payload.Data).Error
 		assert.Equal(t, err, nil)
 	})
+
+  // t.Run("Should return error")
 
 }
 

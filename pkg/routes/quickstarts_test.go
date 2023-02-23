@@ -14,6 +14,7 @@ import (
 )
 
 var quickstart models.Quickstart
+var idQuickstart models.Quickstart
 var taggedQuickstart models.Quickstart
 var settingsQuickstart models.Quickstart
 var rhelQuickstart models.Quickstart
@@ -106,6 +107,32 @@ func setupTaggedQuickstarts() {
 	database.DB.Save(&rbacQuickstart)
 }
 
+func setupQuickstartsWithID() {
+  idQuickstart.Name = "id-quickstart"
+  idQuickstart.Content = []byte(`{"tags": ""}`)
+  idQuickstart.ID = 12345678
+
+  database.DB.Create(&idQuickstart)
+  database.DB.Save(&idQuickstart)
+}
+
+func TestGetByID(t *testing.T) {
+  router := setupRouter()
+  setupTags()
+  setupQuickstartsWithID()
+
+  t.Run("should get quickstart with matching ID", func(t *testing.T) {
+    request, _  := http.NewRequest(http.MethodGet, "/?id=12345678", nil)
+    response    := httptest.NewRecorder()
+    router.ServeHTTP(response, request)
+
+    var payload * responsePayload
+    json.NewDecoder(response.Body).Decode(&payload)
+    assert.Equal(t, 200, response.Code)
+    assert.Equal(t, 1, len(payload.Data))
+  })
+}
+
 func TestGetAll(t *testing.T) {
 	router := setupRouter()
 	setupTags()
@@ -168,7 +195,7 @@ func TestGetAll(t *testing.T) {
 		var payload *responsePayload
 		json.NewDecoder(response.Body).Decode(&payload)
 		assert.Equal(t, 200, response.Code)
-		assert.Equal(t, 5, len(payload.Data))
+		assert.Equal(t, 6, len(payload.Data))
 	})
 
 	t.Run("should get quikctart by ID", func(t *testing.T) {
@@ -202,7 +229,7 @@ func TestGetAll(t *testing.T) {
 		var payload *responsePayload
 		json.NewDecoder(response.Body).Decode(&payload)
 		assert.Equal(t, 200, response.Code)
-		assert.Equal(t, 5, len(payload.Data))
+		assert.Equal(t, 6, len(payload.Data))
 	})
 
 	t.Run("should offset response by 2 and recover 3 records", func(t *testing.T) {
@@ -213,7 +240,7 @@ func TestGetAll(t *testing.T) {
 		var payload *responsePayload
 		json.NewDecoder(response.Body).Decode(&payload)
 		assert.Equal(t, 200, response.Code)
-		assert.Equal(t, 3, len(payload.Data))
+		assert.Equal(t, 4, len(payload.Data))
 	})
 
 	t.Run("should limit response by 2 offset response by 2 and recover 2 records", func(t *testing.T) {
