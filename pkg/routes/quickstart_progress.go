@@ -66,8 +66,6 @@ func updateQuickstartProgress(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		resp := make(map[string]string)
 
-    println("This is our response: ", resp)
-
 		resp["msg"] = err.Error()
 		json.NewEncoder(w).Encode(resp)
 		return
