@@ -56,15 +56,15 @@ You will need to complete these steps the first time you are contributing to the
 
 2. Clone `https://github.com/<your-namespace>/quickstarts.git` in your terminal. For example:
     ```
-    $ git clone git@github.com:nancydrew/quickstarts.git
+    git clone git@github.com:nancydrew/quickstarts.git
     ```
 3. Change to your local `quickstarts` directory: 
     ```
-    $ cd quickstarts
+    cd quickstarts
     ```
 4. Add this repository as remote:
     ```
-    $ git remote add -f upstream git@github.com:RedHatInsights/quickstarts.git
+    git remote add -f upstream git@github.com:RedHatInsights/quickstarts.git
     ```
 
 
@@ -72,19 +72,19 @@ You will need to complete these steps the first time you are contributing to the
 If you have created quick starts in the Hybrid Cloud Console before, start here:
 1. Fetch the latest content from the upstream repository to make sure you are working with the latest code base:
     ```
-    $ git fetch upstream
+    git fetch upstream
     ```
 2. Add the changes to your copy of main branch (in your fork):
     ```
-    $ git rebase upstream/main
+    git rebase upstream/main
     ```
 3. Refresh your main branch (this step is optional but ensures main is fully up to date):
     ```
-    $ git push origin main
+    git push origin main
     ```
 4. Check out a topic branch from the upstream main branch. If the branch does not exist, this command will create one:
     ```
-    $ git checkout -b TOPIC_BRANCH_NAME upstream/main
+    git checkout -b TOPIC_BRANCH_NAME upstream/main
     ```
     **IMPORTANT**: Don’t forget to add `upstream/main` to the end of this command, otherwise you might not be working with the latest source from the upstream `main` branch.
 
