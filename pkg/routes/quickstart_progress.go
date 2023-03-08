@@ -21,7 +21,7 @@ func getExistingProgress(name string, accountId int) (models.QuickstartProgress,
 
 func getAllQuickstartsProgress(w http.ResponseWriter, r *http.Request) {
 	var progress []models.QuickstartProgress
-	database.DB.Find(&progress)
+  database.DB.Find(&progress)
 
 	resp := make(map[string][]models.QuickstartProgress)
 	resp["data"] = progress
@@ -43,8 +43,8 @@ func getQuickstartProgress(w http.ResponseWriter, r *http.Request) {
 			where.AccountId = accountId
 		}
 
-		if quickstart != "" {
-			where.QuickstartName = quickstart
+    if quickstart != "" {
+      where.QuickstartName = quickstart
 		}
 		database.DB.Where(where).Find(&progresses)
 		resp := make(map[string][]models.QuickstartProgress)
