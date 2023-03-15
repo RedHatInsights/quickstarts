@@ -17,15 +17,17 @@ import (
 func TestCreateTags(t *testing.T) {
 	t.Run("create TAG with correct tag type", func(t *testing.T) {
 		var tag models.Tag
+		var allTags []models.Tag
+		DB.Find(&allTags)
+		var initLen = len(allTags)
 		tag.Type = models.ApplicationTag
 		tag.Value = "foo"
 		error := DB.Save(&tag).Error
 		assert.Equal(t, nil, error)
 
-		var allTags []models.Tag
 		var newTag models.Tag
 		DB.Find(&allTags)
-		assert.Equal(t, 7, len(allTags))
+		assert.Equal(t, initLen+1, len(allTags))
 		DB.Find(&newTag, tag.ID)
 		assert.Equal(t, models.ApplicationTag, newTag.Type)
 		assert.Equal(t, "foo", newTag.Value)
