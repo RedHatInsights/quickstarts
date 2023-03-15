@@ -1,0 +1,138 @@
+# RBAC quickstart #2
+# Additional info: https://docs.openshift.com/container-platform/4.9/web_console/creating-quick-start-tutorials.html
+# Template from https://github.com/patternfly/patternfly-quickstarts/blob/main/packages/dev/src/quickstarts-data/yaml/template.yaml
+# See quick start instructions here https://github.com/RedHatInsights/quickstarts/tree/main/docs/quickstarts
+metadata:
+  name: rbac-read-only-permissions
+  # you can add additional metadata here
+  # instructional: true
+spec:
+  displayName: Configuring read-only permissions for a team
+  durationMinutes: 10
+  # Optional type section, will display as a tile on the card
+  type:
+    text: Quick start
+    # 'blue' | 'cyan' | 'green' | 'orange' | 'purple' | 'red' | 'grey'
+    color: grey
+  # - The icon defined as a base64 value. Example flow:
+  # 1. Find an .svg you want to use, like from here: https://www.patternfly.org/v4/guidelines/icons/#all-icons
+  # 2. Upload the file here and encode it (output format - plain text): https://base64.guru/converter/encode/image
+  # 3. compose - `icon: data:image/svg+xml;base64,<base64 string from step 2>`
+  # - If empty string (icon: ''), will use a default rocket icon
+  # - If set to null (icon: ~) will not show an icon
+  icon: data:image/svg+xml;base64,PCEtLSBHZW5lcmF0ZWQgYnkgSWNvTW9vbi5pbyAtLT4KPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KPHRpdGxlPjwvdGl0bGU+CjxnIGlkPSJpY29tb29uLWlnbm9yZSI+CjwvZz4KPHBhdGggZD0iTTQ0OCA2NHY0MTZoLTMzNmMtMjYuNTEzIDAtNDgtMjEuNDktNDgtNDhzMjEuNDg3LTQ4IDQ4LTQ4aDMwNHYtMzg0aC0zMjBjLTM1LjE5OSAwLTY0IDI4LjgtNjQgNjR2Mzg0YzAgMzUuMiAyOC44MDEgNjQgNjQgNjRoMzg0di00NDhoLTMyeiI+PC9wYXRoPgo8cGF0aCBkPSJNMTEyLjAyOCA0MTZ2MGMtMC4wMDkgMC4wMDEtMC4wMTkgMC0wLjAyOCAwLTguODM2IDAtMTYgNy4xNjMtMTYgMTZzNy4xNjQgMTYgMTYgMTZjMC4wMDkgMCAwLjAxOS0wLjAwMSAwLjAyOC0wLjAwMXYwLjAwMWgzMDMuOTQ1di0zMmgtMzAzLjk0NXoiPjwvcGF0aD4KPC9zdmc+Cg==
+  prerequisites:
+    - You are an Organization Administrator or have **User Access administrator** permissions
+    - Users whom you want to limit permissions to read-only for a service or group of services
+  description: |-
+    Restricting access to services for specific users 
+  introduction: |-
+    This quick start shows you how to assign read-only permissions to a group in the Hybrid Cloud Console (the console). 
+    
+    You can use this workflow when you don’t want certain teams or members to make changes in your environment – for example, if you want your security team to be aware of certain items but they don’t need to edit resources or take action. 
+    
+    To restrict users to read-only permissions on console services, you’ll remove **Administrator** and **Editor** roles from the default configuration in **User Access**. You can then configure additional permissions for specific users as desired.
+    
+    You can also use this example workflow to customize access to services within **User Access** and modify the **Default Access** group. 
+  tasks:
+    - title: Removing edit roles from the **Default access** group
+      description: |-
+        Edit the **Default access** group and remove the roles that you don’t want all users to have. (If the **Default access** group was previously modified, then it’s called the **Custom default access** group.)
+        
+        For this example, remove all roles that allow you to edit resources from the **Default access** group to remove this access from all users in your organization.
+        
+        1. Click **User Access** > **Groups**.
+        
+        2. Click the **Default access** (or **Custom default access**) group. 
+        
+        3. In the **Roles** tab,  find the roles that you want to remove from the group and select their checkboxes – in this case, all roles with **Administrator** or **Editor** in the name.
+        [You can quickly find roles by entering a search term in the Filter by name field above the roles list.]{{admonition note}}
+
+        4. Above the **Roles** list, click&nbsp;&nbsp;<i class="fas fa-ellipsis-v"></i> (more options) > **Remove** to remove these permissions from all users in the **Default access** group.
+        
+        5. Click **Remove roles**.
+
+        6. If you are modifying the **Default access** group for the first time, select the checkbox in the warning and click **Continue** to confirm.
+        
+        Users in your organization now no longer have these roles by default. The **Default access** group is now called **Custom default access**, but any user-created group names have not changed.
+
+        [You can undo any changes made to the **Default access** group by clicking **Restore to default** on the **Groups** page.]{{admonition note}}
+
+      # optional - the task's Check your work module
+      review:
+        instructions: |-
+          - Go to **Groups** > **Custom default access** and confirm that the roles you removed are no longer in the list of roles assigned to all users in your organization.
+
+        failedTaskHelp: Try completing the steps again.
+      # optional - the task's success and failure messages
+      summary:
+        success: Shows a success message in the task header
+        failed: Shows a failed message in the task header
+    - title: Creating a group with edit roles
+      description: |-
+        Create a new group for the users who need to manage resources in the console and add the roles you removed from the **Default Access** group. Add the team members to this group who need elevated permissions.
+        
+        1. Click **Groups** > **Create group**.
+
+        2. Enter a group name (for example, *Admins*) and description, and click **Next**.
+
+        3. Select the checkbox at the top of the list to add all roles to this group, and click **Next**.
+        [If you only want to add certain roles, you can quickly find a role in the Filter by role name field above the roles list.]{{admonition note}}
+
+        4. Add any users to the group who need permissions to edit resources. Select the checkboxes for those users and click **Next**.
+            [You can quickly find users by filtering by username, email, or status.]{{admonition note}}
+        5. Review the group details and click **Submit** to create the group.
+        
+        You now have a new group called *Admins* that can view and edit resources in the console.
+
+      # optional - the task's Check your work module
+      review:
+        instructions: |-
+          - Log in to the console as a member of the *Admins* group, and confirm you can edit a resource (such as an OpenShift cluster).
+          - Log in to the console as a user who is not part of the *Admins* group, and confirm you can view resources in the console, but cannot edit anything.
+
+        failedTaskHelp: Try completing the steps again.
+
+      # optional - the task's success and failure messages
+      summary:
+        success: Shows a success message in the task header
+        failed: Shows a failed message in the task header
+
+    - title: (Optional) Creating additional groups
+      description: |-
+        Create additional groups to fine-tune user access to specific services as needed. Add any team members to this group who need those permissions.
+        
+        1. Click **Groups** > **Create group**.
+
+        2. Enter a group name and description, and click **Next**.
+
+        3. Add the roles required per service and click **Next**.
+
+        4. Add any users to the group who need those permissions. Select the checkboxes for those users and click **Next**.
+
+        5. Review the group details and click **Submit** to create the group.
+
+      # optional - the task's Check your work module
+      review:
+        instructions: |-
+          - Log in to the console as a member of your new group and confirm the access you configured allows you to view or edit resources for the service as desired.
+
+        failedTaskHelp: Try completing the steps again.
+      # optional - the task's success and failure messages
+      summary:
+        success: Shows a success message in the task header
+        failed: Shows a failed message in the task header
+  
+  conclusion: |-
+    Congratulations! You’ve now configured read-only permissions for most users in your organization, while allowing edit access for only certain users.
+    
+    After completing this quick start:
+    - Users in the **Custom default access** group can view all resources and services in the console, but cannot make any changes. 
+    - Users in the *Admins* group can view and edit resources and services in the console.
+
+    A few tips:
+    - User access in the console is additive, meaning that each user has the default access permissions, plus permissions from any other groups they are assigned.
+    - You can undo any changes you make to the **Default access** group by clicking **Restore to default** on the **Groups** page.
+
+    **Learn more:**
+      - See the [User Access Configuration Guide for Role-based Access Control (RBAC)](https://access.redhat.com/documentation/en-us/red_hat_hybrid_cloud_console/2023/html/user_access_configuration_guide_for_role-based_access_control_rbac/index) 
