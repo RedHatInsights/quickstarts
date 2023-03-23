@@ -7,18 +7,18 @@
   tags:
   title: Add components
   content: |-
-    A “component” is an image that {Stonesoup} builds from source code in a repository. An application is a collection of these components working together. To start building your app, add a component by importing your code repository to {Stonesoup}, or use one of the samples.
+    A “component” is an image that App Studio builds from source code in a repository. An application is a collection of these components working together. To start building your app, add a component by importing your code repository to App Studio, or use one of the samples.
 
     * **Your GitHub repo**
-    ** To use your own code, enter the link to your repo in the **Git repo URL** field. {Stonesoup} verifies your repo URL right away. You don’t even have to press **Enter**.
+    ** To use your own code, enter the link to your repo in the **Git repo URL** field. App Studio verifies your repo URL right away. You don’t even have to press **Enter**.
     ** When **Git options** displays, you can choose whether to make either of the following specifications:
     *** Add a **Git reference** to point to code in a specific branch, tag, or commit that you want to use to build your app.
     *** Indicate a **Context directory** to specify the subdirectory for the source code you want to use.
-    ** Click **Next**, then {Stonesoup} scans and analyzes your Git directory to determine how many components to add to your app. The types of files in your repo, and also your Git directory file hierarchy, determine the number and type of components to add. For example, {Stonesoup} looks for devfiles and Dockerfiles, and language-specific build configuration files like pom.xml for Java or package.json for Node.
+    ** Click **Next**, then App Studio scans and analyzes your Git directory to determine how many components to add to your app. The types of files in your repo, and also your Git directory file hierarchy, determine the number and type of components to add. For example, App Studio looks for devfiles and Dockerfiles, and language-specific build configuration files like pom.xml for Java or package.json for Node.
 
     [NOTE]
     ====
-    {Stonesoup} can build apps that are written in the following language stacks and frameworks:
+    App Studio can build apps that are written in the following language stacks and frameworks:
 
     * Python
     * Java
@@ -37,15 +37,15 @@
   tags:
   title: Configure components
   content: |-
-    {Stonesoup} analyzes your code, then defines and applies deployment settings for each of your app components. Remember, a “component” is an image that {Stonesoup} builds from source code in a repository. An application is a collection of these components working together.
+    App Studio analyzes your code, then defines and applies deployment settings for each of your app components. Remember, a “component” is an image that App Studio builds from source code in a repository. An application is a collection of these components working together.
 
     Before you create and deploy your app, look over the values that display here. You can rename any component from this view, too. In particular, pay attention to the following fields:
 
     * **Target port**: Is it correct? If not, click in the port field to modify it.
     * **CPUs**, **memory**, and **instances**: Choose how many of each of these you want for your app, depending on your subscription.
     * **Route**: Enter the public URL for your published app.
-    * **Environment variables**: Define your environment variables to customize how {Stonesoup} deploys your app. Usually, you define these in a devfile or Dockerfile. If your app doesn’t contain either of these file types, {Stonesoup} uses an application analyzer to extract the necessary information from your code.
-    * **Runtime**: Did {Stonesoup} detect the right runtime? If so, you don’t have to do anything with this field. If you want to change your runtime, click the **Runtime** menu and make a selection.
+    * **Environment variables**: Define your environment variables to customize how App Studio deploys your app. Usually, you define these in a devfile or Dockerfile. If your app doesn’t contain either of these file types, App Studio uses an application analyzer to extract the necessary information from your code.
+    * **Runtime**: Did App Studio detect the right runtime? If so, you don’t have to do anything with this field. If you want to change your runtime, click the **Runtime** menu and make a selection.
     * **Send pull request**: Select this option to create a custom pipeline in your Git repository.
 
     When you’re satisfied with your component configuration settings, click **Create**. While your component builds, go to **Applications > Overview** to check out lifecycle details for your app.
