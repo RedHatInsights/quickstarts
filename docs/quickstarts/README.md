@@ -1,6 +1,6 @@
 # Creating quick starts for the Hybrid Cloud Console
 
-These instructions explain how to create [quick starts](https://www.patternfly.org/v4/extensions/quick-starts) in the [Red Hat Hybrid Cloud Console](console.redhat.com). 
+These instructions explain how to create [quick starts](https://www.patternfly.org/v4/extensions/quick-starts) in the [Red Hat Hybrid Cloud Console](https://console.redhat.com). 
 
 A *quick start* is a set of step-by-step instructions and tasks presented in a side panel embedded in a product’s user interface. Quick starts can help users get started with a product, and they often provide guidance around installation and setup. Quick starts also allow users to quickly complete a task without the need to refer to external documentation.
 
