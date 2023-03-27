@@ -16,8 +16,9 @@
     *** Indicate a **Context directory** to specify the subdirectory for the source code you want to use.
     ** Click **Next**, then App Studio scans and analyzes your Git directory to determine how many components to add to your app. The types of files in your repo, and also your Git directory file hierarchy, determine the number and type of components to add. For example, App Studio looks for devfiles and Dockerfiles, and language-specific build configuration files like pom.xml for Java or package.json for Node.
 
-    [NOTE]
-    ====
+    ***
+    **NOTE**
+    
     App Studio can build apps that are written in the following language stacks and frameworks:
 
     * Python
@@ -27,11 +28,12 @@
     * Node.js
     * Quarkus
     * Spring Boot
-    ====
+    
+   ***
 
-    * **A code sample**
-    ** Use a code sample to explore and test various languages and frameworks. To start with a code sample, click **Start with a sample**.
-    ** Click any of the options on the **Select a sample** page, then follow the resulting instructions.
+    - **A code sample**
+        - Use a code sample to explore and test various languages and frameworks. To start with a code sample, click **Start with a sample**.
+        - Click any of the options on the **Select a sample** page, then follow the resulting instructions.
 
 - name: stonesoup-import-configure-component
   tags:
@@ -50,7 +52,12 @@
 
     When you’re satisfied with your component configuration settings, click **Create**. While your component builds, go to **Applications > Overview** to check out lifecycle details for your app.
 
-    [NOTE]
-    ====
+    ***
+    **NOTE**
+
     After you create your app, you can adjust your configuration settings from the **Application** view whenever you want.
-    ====
+
+    ***
+
+
+        
