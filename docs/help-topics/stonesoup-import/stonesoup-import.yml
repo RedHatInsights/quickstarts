@@ -7,19 +7,19 @@
   tags:
   title: Add components
   content: |-
-    A “component” is an image that App Studio builds from source code in a repository. An application is a collection of these components working together. To start building your app, add a component by importing your code repository to App Studio, or use one of the samples.
+    A “component” is an image that we build from source code in a repository. An application is a collection of these components working together. To start building your application, add a component by importing your code repository, or use one of our samples.
 
-    * **Your GitHub repo**
-    ** To use your own code, enter the link to your repo in the **Git repo URL** field. App Studio verifies your repo URL right away. You don’t even have to press **Enter**.
-    ** When **Git options** displays, you can choose whether to make either of the following specifications:
-    *** Add a **Git reference** to point to code in a specific branch, tag, or commit that you want to use to build your app.
-    *** Indicate a **Context directory** to specify the subdirectory for the source code you want to use.
-    ** Click **Next**, then App Studio scans and analyzes your Git directory to determine how many components to add to your app. The types of files in your repo, and also your Git directory file hierarchy, determine the number and type of components to add. For example, App Studio looks for devfiles and Dockerfiles, and language-specific build configuration files like pom.xml for Java or package.json for Node.
+    **Using code from your GitHub repository**
+    1. To use your own code, enter the link to your repository in the **Git repo URL** field. We verify your URL right away. You don’t even have to press **Enter**.
+    2. Click **Git options** to expand it and choose whether to make either of the following specifications:
+      1. Add a **Git reference** to point to code in a specific branch, tag, or commit that you want to use to build your application.
+      2. Indicate a **Context dir** to specify the subdirectory for the source code you want to use.
+    3. Click **Next**, then we scan and analyze your Git directory to determine how many components to add to your application. The types of files in your repository, and also your Git directory file hierarchy, determine the number and type of components to add. For example, we look for devfiles and Dockerfiles, and language-specific build configuration files like pom.xml for Java or package.json for Node.js.
 
     ***
     **NOTE**
     
-    App Studio can build apps that are written in the following language stacks and frameworks:
+    We can build applications that are written in the following language stacks and frameworks:
 
     * Python
     * Java
@@ -30,31 +30,32 @@
     * Spring Boot
 
     ***
-    - **A code sample**
-        - Use a code sample to explore and test various languages and frameworks. To start with a code sample, click **Start with a sample**.
-        - Click any of the options on the **Select a sample** page, then follow the resulting instructions.
+    **Using a code sample**
+    1. To start with a code sample, click **Start with a sample**, then go ahead and explore or test various languages and frameworks.         
+    2. Click any of the options on the **Select a sample** page, then follow the resulting instructions.
+
 
 - name: stonesoup-import-configure-component
   tags:
   title: Configure components
   content: |-
-    App Studio analyzes your code, then defines and applies deployment settings for each of your app components. Remember, a “component” is an image that App Studio builds from source code in a repository. An application is a collection of these components working together.
+    We analyze your code, then define and apply deployment settings for each of your application components. Remember, a “component” is an image that we build from source code in a repository. An application is a collection of these components working together.
 
-    Before you create and deploy your app, look over the values that display here. You can rename any component from this view, too. In particular, pay attention to the following fields:
+    Before you create and deploy your application, look over the values that display here. You can rename any component from this view, too. In particular, pay attention to the following fields:
 
-    * **Target port**: Is it correct? If not, click in the port field to modify it.
-    * **CPUs**, **memory**, and **instances**: Choose how many of each of these you want for your app, depending on your subscription.
-    * **Route**: Enter the public URL for your published app.
-    * **Environment variables**: Define your environment variables to customize how App Studio deploys your app. Usually, you define these in a devfile or Dockerfile. If your app doesn’t contain either of these file types, App Studio uses an application analyzer to extract the necessary information from your code.
-    * **Runtime**: Did App Studio detect the right runtime? If so, you don’t have to do anything with this field. If you want to change your runtime, click the **Runtime** menu and make a selection.
-    * **Send pull request**: Select this option to create a custom pipeline in your Git repository.
+    - **Target port**: Is it correct? If not, click in the port field to modify it.
+    - **CPUs**, **memory**, and **instances**: Choose how many of each of these you want for your application, depending on your subscription.
+    - **Route**: Enter the public URL for your published application.
+    - **Environment variables**: Define your environment variables to customize how we deploy your application. Usually, you define these in a devfile or Dockerfile. If your application doesn’t contain either of these file types, we use an application analyzer to extract the necessary information from your code.
+    - **Runtime**: Did we detect the right runtime? If so, you don’t have to do anything with this field. If you want to change your runtime, click the **Runtime** menu and make a selection.
+    - **Send pull request**: Select this option to create a custom pipeline in your Git repository.
 
-    When you’re satisfied with your component configuration settings, click **Create**. While your component builds, go to **Applications > Overview** to check out lifecycle details for your app.
+    When you’re satisfied with your component configuration settings, click **Create**. While your component builds, go to **Applications > Overview** to check out lifecycle details for your application.
 
     ***
     **NOTE**
 
-    After you create your app, you can adjust your configuration settings from the **Application** view whenever you want.
+    After you create your application, you can adjust your configuration settings from the **Application** view whenever you want.
 
     ***
 
