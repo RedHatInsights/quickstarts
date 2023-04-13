@@ -1,0 +1,198 @@
+# Additional info: https://docs.openshift.com/container-platform/4.9/web_console/creating-quick-start-tutorials.html
+metadata:
+  name: insights-custom-repos
+  # you can add additional metadata here
+  instructional: true
+spec:
+  displayName: Build an Image with Custom Content
+  durationMinutes: 10
+  # Optional type section, will display as a tile on the card
+  type:
+    text: Quick start
+    # 'blue' | 'cyan' | 'green' | 'orange' | 'purple' | 'red' | 'grey'
+    color: green
+  # - The icon defined as a base64 value. Example flow:
+  # 1. Find an .svg you want to use, like from here: https://www.patternfly.org/v4/guidelines/icons/#all-icons
+  # 2. Upload the file here and encode it (output format - plain text): https://base64.guru/converter/encode/image
+  # 3. compose - `icon: data:image/svg+xml;base64,<base64 string from step 2>`
+  # - If empty string (icon: ''), will use a default rocket icon
+  # - If set to null (icon: ~) will not show an icon
+  icon: data:image/svg+xml;base64,PCEtLSBHZW5lcmF0ZWQgYnkgSWNvTW9vbi5pbyAtLT4KPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KPHRpdGxlPjwvdGl0bGU+CjxnIGlkPSJpY29tb29uLWlnbm9yZSI+CjwvZz4KPHBhdGggZD0iTTQ0OCA2NHY0MTZoLTMzNmMtMjYuNTEzIDAtNDgtMjEuNDktNDgtNDhzMjEuNDg3LTQ4IDQ4LTQ4aDMwNHYtMzg0aC0zMjBjLTM1LjE5OSAwLTY0IDI4LjgtNjQgNjR2Mzg0YzAgMzUuMiAyOC44MDEgNjQgNjQgNjRoMzg0di00NDhoLTMyeiI+PC9wYXRoPgo8cGF0aCBkPSJNMTEyLjAyOCA0MTZ2MGMtMC4wMDkgMC4wMDEtMC4wMTkgMC0wLjAyOCAwLTguODM2IDAtMTYgNy4xNjMtMTYgMTZzNy4xNjQgMTYgMTYgMTZjMC4wMDkgMCAwLjAxOS0wLjAwMSAwLjAyOC0wLjAwMXYwLjAwMWgzMDMuOTQ1di0zMmgtMzAzLjk0NXoiPjwvcGF0aD4KPC9zdmc+Cg==
+  description: |-
+    Learn how to add a custom repository and create an image with custom content.
+  introduction: |-
+    Welcome to the quick start for Custom Repositories.
+
+    In this quick start, you learn how to add a custom repository to console.redhat.com and create an image with custom conten
+
+  tasks:
+    - title: Add a Custom Repository
+      description: |-
+        
+        <h4 id="ib-add-custom"><b>Add a Custom Repository:</b></h4>
+
+        1. Click the Settings <i class="fas fa-cog"></i> icon in the top right corner.
+
+        1. In Settings, click **Repositories** in the left menu.
+
+        1. Navigate to the **Popular repositories** tab.
+
+        1. Locate “EPEL8 Everything x86_64” and click **Add**.
+
+        1. Navigate to the **Your repositories** tab. You should now see the added repository.
+        
+        The added repository is ready to use in Image Builder.
+        <br>
+        <br>
+        
+        <h4 id="ib-add-addl-custom-repo"><b>(Optional) Add Additional Custom Repositories:</b></h4>
+
+        1. Click the **Add repositories** button.
+
+        1. Add the name and URL for the repository. For example:
+
+            - Name: NVIDIA Drivers
+            
+            - URL: https://developer.download.nvidia.com/compute/cuda/repos/rhel8/x86_64/
+            
+            - Architecture: X86_64
+
+            - OS Version: el8
+
+        The repository will be retrospected and confirmed. After confirmation, the status will change to “valid,” and the repository will be ready.          
+        <br>
+
+      # optional - the task's Check your work module
+      review:
+        instructions: |-
+          - Did you complete the task successfully?
+        failedTaskHelp: This task isn't verified yet. Try the task again.
+      # optional - the task's success and failure messages
+      summary:
+        success: Shows a success message in the task header
+        failed: Shows a failed message in the task header
+
+    - title: Build an Image with Custom Repositories
+      description: |-
+          
+          <h4 id="ib-custom-repo-new-image"><b>Build an Image with Custom Reposities:</b></h4>
+          
+          1. Navigate to **Images**. 
+          
+          1. Click the **“Create Image”** button.
+          
+          1. On the “Image Output” step:
+              - **Release:** Select Red Hat Enterprise Linux (RHEL) 8 
+          
+              - **Target Environments:** Select the desired image output.
+          
+              - Click **Next.**
+                    
+          1. On the “Target Environment” Steps:
+              
+              - Enter additional information based on the target environment selected.
+                  
+                  - **AWS:** Choose one of the sharing methods :
+                      
+                      - Use the “Use an account configured from Sources” option and choose the recently created or edited AWS source.
+                      
+                      - Manually enter an account ID & provide the account ID where you plan to share this image.
+                  
+                  - **Google Cloud:** 
+                      
+                      - Provide a Google account, service account, Google group, or workspace domain to where you plan to share this image.
+                  
+                  - **Azure:**
+                      
+                      - Provide the Azure Tenant GUID, Subscription ID, and Resource Group to where you plan to share this image.
+                      
+                      - Image Builder must be authorized for a specific tenant ID. The “Authorize Image Builder” button will do this for the user.
+                 
+                  - Other environments require no additional data.
+               
+               - Click **Next.**
+                    
+          1. On the “Register” step:
+          
+              - **Registration method:** Select a registration level with Red Hat
+              
+              - **Activation key:** Select and use an activation key available to the account.
+              
+              - Click **Next.**
+          
+          1. On the “File system Configuration” step:
+              
+              - Use automatic partitioning
+              
+              - Click **Next.**  
+          
+          1. On the “Content - Additional Red Hat Packages” step:
+              
+              - Search and add the following packages:
+                  
+                  - Podman
+                  
+                  - Rhc
+                  
+                  - Rhc-worker-playbook
+                  
+                  - Ansible-core
+              
+              - Click **Next.**
+          
+          1. On the “Content - Custom Repositories” step:
+
+              - Locate “EPEL8 Everything x86_64” and **link** it to the image.
+                              
+              - Click **Next.**
+          
+          1. On the “Content - Additional Custom Packages” Step:
+             
+              - Search and add the "OpenVPN" package from the linked custom repositories.
+                 
+              - Click **Next.**
+          
+          1. On the “Name Image” Step:
+              
+              - **Name:** Enter a name for the image
+              
+              - Click **Next.**
+          
+          1. Review the configuration and click **Create Image.**
+
+          Note: Building the image can take some time.
+          <br>
+          
+        # optional - the task's Check your work module
+      review:
+        instructions: |-
+          - Did you complete the task successfully?
+        failedTaskHelp: This task isn't verified yet. Try the task again.
+      # optional - the task's success and failure messages
+      summary:
+        success: Shows a success message in the task header
+        failed: Shows a failed message in the task header
+  conclusion: |-
+   
+    <h4><b>Thank you for taking the time to explore this feature!</b></h4> 
+
+    We would love to learn more about your experience creating an Image with Custom Content.
+
+    
+    <br>
+    **<a id="qs-ib-custom-content-contact" href="">Let Red Hat to contact you <i class="fas fa-arrow-right"></i> </a>**
+    <br>
+    <br>
+    <br>
+    
+    If you need additional assistance:
+      
+      - [Custom repositories documentation](https://www.example.com)
+      
+      - [Open a support case](https://access.redhat.com/support)
+  
+  # you can link to the next quick start(s) here
+  nextQuickStart:
+    - mas-alert-note-prereq
+
+    
