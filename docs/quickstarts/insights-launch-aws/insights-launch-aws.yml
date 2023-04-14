@@ -23,7 +23,7 @@ spec:
   introduction: |-
     Welcome to the quick start for launching an Amazon Web Service (AWS) image.
 
-    In this quick start, you learn how to add or edit &nbsp;[AWS sources] (https://gitlab.cee.redhat.com/red-hat-enterprise-linux-documentation/host-management-services/-/blob/main/modules/provisioning/proc_connecting-aws-account-with-red-hat-hybrid-cloud-console.adoc), create an image, and launch it all on the Red Hat Hybrid Cloud Console.
+    In this quick start, you learn how to add or edit &nbsp;[AWS sources] (https://console.redhat.com/beta/settings/sources), create an image, and launch it all on the Red Hat Hybrid Cloud Console.
 
   tasks:
     - title: Add or edit an AWS Source
@@ -297,11 +297,7 @@ spec:
    
     If you need additional assistance:
       
-      - Learn more about [Sources](https://www.example.com)in our documentation.
-
-      - Learn more about [Launching](https://www.example.com)in our documentation.  
-      
-      - Open a [support case](https://access.redhat.com/support).
+        - Open a [support case](https://access.redhat.com/support).
   
   # you can link to the next quick start(s) here
   nextQuickStart:

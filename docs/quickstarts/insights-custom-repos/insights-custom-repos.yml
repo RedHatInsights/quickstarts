@@ -99,7 +99,7 @@ spec:
                   
                   - **AWS:** Choose one of the sharing methods:
                       
-                      - Use the “Use an account configured from [Sources] (https://gitlab.cee.redhat.com/red-hat-enterprise-linux-documentation/host-management-services/-/blob/main/modules/provisioning/proc_connecting-aws-account-with-red-hat-hybrid-cloud-console.adoc)” option and choose the recently created or edited AWS source.
+                      - Use the “Use an account configured from [Sources] (https://console.redhat.com/beta/settings/sources)” option and choose the recently created or edited AWS source.
                       
                       - Manually enter an account ID & provide the account ID where you plan to share this image.
                   
@@ -195,8 +195,6 @@ spec:
     <br>
     
     If you need additional assistance:
-      
-      - Learn more about [custom repositories](https://gitlab.cee.redhat.com/red-hat-enterprise-linux-documentation/host-management-services/-/blob/main/modules/content/proc_adding-custom-repository.adoc) in our documentation.
       
       - Open a [support case](https://access.redhat.com/support)
   
