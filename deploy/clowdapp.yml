@@ -21,6 +21,7 @@ objects:
       webServices:
         public:
           enabled: true
+          apiPaths: quickstarts
       podSpec:
         image: ${IMAGE}:${IMAGE_TAG}
         initContainers:
