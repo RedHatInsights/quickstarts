@@ -4,7 +4,7 @@ metadata:
   # you can add additional metadata here
   instructional: true
 spec:
-  displayName: Launch an Amazon Web Service Image
+  displayName: Launch an Amazon Web Service image
   durationMinutes: 10
   # Optional type section, will display as a tile on the card
   type:
@@ -21,12 +21,12 @@ spec:
   description: |-
     Learn how to add an Amazon Web Service source and launch an image.
   introduction: |-
-    Welcome to the quick start for launching an Amazon Web Service image.
+    Welcome to the quick start for launching an Amazon Web Service (AWS) image.
 
-    In this quick start, you learn how to add or edit AWS sources, create an image, and launch it all on the Red Hat Hybrid Cloud Console.
+    In this quick start, you learn how to add or edit &nbsp;[AWS sources] (https://gitlab.cee.redhat.com/red-hat-enterprise-linux-documentation/host-management-services/-/blob/main/modules/provisioning/proc_connecting-aws-account-with-red-hat-hybrid-cloud-console.adoc), create an image, and launch it all on the Red Hat Hybrid Cloud Console.
 
   tasks:
-    - title: Add or Edit an AWS Source
+    - title: Add or edit an AWS Source
       description: |-
         
         A source must be configured to connect your AWS account to Hybrid Cloud Console to launch an Image. Create a new source or [edit an existing one] (#edit-aws-source).
@@ -92,6 +92,8 @@ spec:
         1. Locate the “Applications” card.
         
         1. Toggle “Launch images” to **on**.
+        <br>
+        <br>
 
         It will take a few moments to apply the configuration.
         <br>
@@ -107,13 +109,13 @@ spec:
         success: Shows a success message in the task header
         failed: Shows a failed message in the task header
 
-    - title: Use Image Builder to build an AWS Image
+    - title: Use Image Builder to build an AWS image
       description: |-
-          Let's use the updated source to create a new AWS Image or [recreate an existing one] (#ib-aws-recreate-image).
+          Let's use the updated source to create a new AWS image or [recreate an existing one] (#ib-aws-recreate-image).
           <br>
           <br> 
 
-          <h4 id="ib-aws-new-image"><b>Use Image Builder to build an AWS Image:</B></h4>
+          <h4 id="ib-aws-new-image"><b>Build a new AWS Image:</B></h4>
 
           1. Navigate to **Images** in the left menu.
           
@@ -185,7 +187,7 @@ spec:
           <br>
           <br>
           
-          <h4 id="ib-aws-recreate-image"><b>Use Image Builder to recreate an existing AWS Image:</B></h4>
+          <h4 id="ib-aws-recreate-image"><b>Use Image Builder to recreate an existing AWS image:</B></h4>
 
           1. Navigate to **Images** in the left menu.
 
@@ -195,16 +197,21 @@ spec:
 
           1. Click **Recreate Image.**
 
+          1. A "Create image" wizard opens on the "Review" step with previous configuration added to the image.
+
           1. Click on the **Target environment - Amazon Web Services** step.
 
           1. On the "Target Environment - Amazon Web Services" step:
 
               - **Use an account configured from Sources:** Select an AWS source saved on the console. Choose the recently created or edited AWS source.
+          <br>
+          <br>
+
 
           1. Return to the **Review** step.
 
           1. Click **Create Image.**
-
+          
           Note: Building the image can take some time.
           <br>
           <br>
@@ -250,7 +257,7 @@ spec:
           
           1. In the "SSH keys authentication" step:
           
-              - Select or enter your own public SSH key for authentication.
+              - Enter your own public SSH key for authentication.
           
               - Click **Next.**
           
@@ -267,7 +274,7 @@ spec:
               - You can find the public IP address that you can use to access the running instance.
 
               - You can also copy the SSH command to access your instance via SSH in the CLI.
-
+          
           All launched systems will register with Red Hat and appear in the [Inventory] (https://console.redhat.com/beta/insights/inventory).
 
           A system's visibility in the console is based on the registration level selection during image creation. We have selected  “Register and connect image instances with Red Hat.” 
@@ -290,11 +297,11 @@ spec:
    
     If you need additional assistance:
       
-      - [Sources documentation](https://www.example.com)
+      - Learn more about [Sources](https://www.example.com)in our documentation.
 
-      - [Launching documentation](https://www.example.com)  
+      - Learn more about [Launching](https://www.example.com)in our documentation.  
       
-      - [Open a support case](https://access.redhat.com/support)
+      - Open a [support case](https://access.redhat.com/support).
   
   # you can link to the next quick start(s) here
   nextQuickStart:

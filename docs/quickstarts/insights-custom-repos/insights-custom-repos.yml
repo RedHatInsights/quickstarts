@@ -4,7 +4,7 @@ metadata:
   # you can add additional metadata here
   instructional: true
 spec:
-  displayName: Build an Image with Custom Content
+  displayName: Build an image with custom content
   durationMinutes: 10
   # Optional type section, will display as a tile on the card
   type:
@@ -21,15 +21,15 @@ spec:
   description: |-
     Learn how to add a custom repository and create an image with custom content.
   introduction: |-
-    Welcome to the quick start for Custom Repositories.
+    Welcome to the quick start for custom repositories.
 
-    In this quick start, you learn how to add a custom repository to console.redhat.com and create an image with custom conten
+    In this quick start, you will add a custom repository to the Red Hat Hybrid Cloud Console and create an image with custom content.
 
   tasks:
-    - title: Add a Custom Repository
+    - title: Add a custom repository
       description: |-
         
-        <h4 id="ib-add-custom"><b>Add a Custom Repository:</b></h4>
+        <h4 id="ib-add-custom"><b>Add a Custom Repository</b></h4>
 
         1. Click the Settings <i class="fas fa-cog"></i> icon in the top right corner.
 
@@ -51,15 +51,18 @@ spec:
 
         1. Add the name and URL for the repository. For example:
 
-            - Name: NVIDIA Drivers
+            - **Name:** NVIDIA Drivers
             
-            - URL: https://developer.download.nvidia.com/compute/cuda/repos/rhel8/x86_64/
+            - **URL:** https://developer.download.nvidia.com/compute/cuda/repos/rhel8/x86_64/
             
-            - Architecture: X86_64
+            - **Architecture:** X86_64
 
-            - OS Version: el8
+            - **OS Version:** el8
 
-        The repository will be retrospected and confirmed. After confirmation, the status will change to “valid,” and the repository will be ready.          
+        Note: Architecture and OS version will be suggested based on the URL link
+        
+        The repository will be retrospected and confirmed. After confirmation, the status will change to “valid,” and the repository will be ready to use in Image Builder.          
+
         <br>
 
       # optional - the task's Check your work module
@@ -72,11 +75,13 @@ spec:
         success: Shows a success message in the task header
         failed: Shows a failed message in the task header
 
-    - title: Build an Image with Custom Repositories
+    - title: Build an image with custom repositories
       description: |-
           
-          <h4 id="ib-custom-repo-new-image"><b>Build an Image with Custom Reposities:</b></h4>
+          <h4 id="ib-custom-repo-new-image"><b>Build an image with custom reposities:</b></h4>
           
+          1. Access **Hybrid Cloud Console > Red Hat Enterprise Linux > Red Hat Insights.**
+
           1. Navigate to **Images**. 
           
           1. Click the **“Create Image”** button.
@@ -92,16 +97,18 @@ spec:
               
               - Enter additional information based on the target environment selected.
                   
-                  - **AWS:** Choose one of the sharing methods :
+                  - **AWS:** Choose one of the sharing methods:
                       
-                      - Use the “Use an account configured from Sources” option and choose the recently created or edited AWS source.
+                      - Use the “Use an account configured from [Sources] (https://gitlab.cee.redhat.com/red-hat-enterprise-linux-documentation/host-management-services/-/blob/main/modules/provisioning/proc_connecting-aws-account-with-red-hat-hybrid-cloud-console.adoc)” option and choose the recently created or edited AWS source.
                       
                       - Manually enter an account ID & provide the account ID where you plan to share this image.
                   
                   - **Google Cloud:** 
                       
                       - Provide a Google account, service account, Google group, or workspace domain to where you plan to share this image.
-                  
+                      <br>
+                      <br>
+
                   - **Azure:**
                       
                       - Provide the Azure Tenant GUID, Subscription ID, and Resource Group to where you plan to share this image.
@@ -114,7 +121,7 @@ spec:
                     
           1. On the “Register” step:
           
-              - **Registration method:** Select a registration level with Red Hat
+              - **Registration method:** Select the registration level with Red Hat
               
               - **Activation key:** Select and use an activation key available to the account.
               
@@ -159,6 +166,8 @@ spec:
               - Click **Next.**
           
           1. Review the configuration and click **Create Image.**
+          <br>
+          <br>
 
           Note: Building the image can take some time.
           <br>
@@ -187,9 +196,9 @@ spec:
     
     If you need additional assistance:
       
-      - [Custom repositories documentation](https://www.example.com)
+      - Learn more about [custom repositories](https://gitlab.cee.redhat.com/red-hat-enterprise-linux-documentation/host-management-services/-/blob/main/modules/content/proc_adding-custom-repository.adoc) in our documentation.
       
-      - [Open a support case](https://access.redhat.com/support)
+      - Open a [support case](https://access.redhat.com/support)
   
   # you can link to the next quick start(s) here
   nextQuickStart:

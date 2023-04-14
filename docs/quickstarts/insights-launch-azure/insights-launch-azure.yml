@@ -4,7 +4,7 @@ metadata:
   # you can add additional metadata here
   instructional: true
 spec:
-  displayName: Launch an Microsoft Azure Image
+  displayName: Launch an Microsoft Azure image
   durationMinutes: 10
   # Optional type section, will display as a tile on the card
   type:
@@ -26,14 +26,14 @@ spec:
     In this quick start, you learn how to add or edit Azure sources, create an image, and launch it all on the Red Hat Hybrid Cloud Console.
 
   tasks:
-    - title: Add or Edit an Azure Source
+    - title: Add or Edit an Azure source
       description: |-
         
-        A source must be configured to connect your Azure account to Hybrid Cloud Console to launch an Image. Create a new source or [edit an existing one] (#edit-azure-source).
+        A source must be configured to connect your Azure account to Hybrid Cloud Console to launch an image. Create a new source or [edit an existing one] (#edit-azure-source).
         <br>
         <br>
 
-        <h4 id="add-azure-source"><b>Add an Azure Source:</B></h4> 
+        <h4 id="add-azure-source"><b>Add an Azure source:</B></h4> 
         
         1. Click the Settings <i class="fas fa-cog"></i> icon in the top right corner.
 
@@ -61,7 +61,7 @@ spec:
 
         1. On the “Credentials” step:
 
-            - **Subscription Id:** Enter your Subscription ID
+            - **Subscription ID:** Enter your Subscription ID
             
             - Click **Next**.
         
@@ -70,7 +70,7 @@ spec:
         It will take a few moments to apply the configuration.    
         <br>
 
-        <h4 id="edit-azure-source"><b>Edit an existing AWS Source:</B></h4>
+        <h4 id="edit-azure-source"><b>Edit an existing Azure source:</B></h4>
 
         1. Click the Settings icon in the top right corner.
 
@@ -98,13 +98,13 @@ spec:
         success: Shows a success message in the task header
         failed: Shows a failed message in the task header
 
-    - title: Use Image Builder to build an AWS Image
+    - title: Use Image Builder to build an Azure image
       description: |-
-          Let's use the updated source to create a new AWS Image or [recreate an existing one] (#ib-azure-recreate-image).
+          Let's use the updated source to create a new Azure image or [recreate an existing one] (#ib-azure-recreate-image).
           <br>
           <br> 
 
-          <h4 id="ib-azure-new-image"><b>Use Image Builder to build an Azure Image:</B></h4>
+          <h4 id="ib-azure-new-image"><b>Build a new Azure image:</B></h4>
 
           1. Navigate to **Images** in the left menu.
           
@@ -182,7 +182,7 @@ spec:
           <br>
           <br>
           
-          <h4 id="ib-azure-recreate-image"><b>Use Image Builder to recreate an existing Azure Image:</B></h4>
+          <h4 id="ib-azure-recreate-image"><b>Recreate an existing Azure image:</B></h4>
 
           1. Navigate to **Images** in the left menu.
 
@@ -192,12 +192,15 @@ spec:
 
           1. Click **Recreate Image.**
 
+          1. A "Create image" wizard opens on the "Review" step with previous configuration added to the image.
+
           1. Click on the **Target environment - Microsoft Azure** step.
 
           1. On the "Target Environment - Microsoft Azure" step:
 
-              - Need info
-              <br
+              - Check in how many days the image will expire.
+
+              - Choose from a different Source Name account, from the drop down menu.
 
           1. Return to the **Review** step.
 
@@ -223,25 +226,25 @@ spec:
           <br>
           <br>
 
-          <h4 id="ib-Azure-launch"><b>Launch an instance in the AWS environment:</B></h4>
+          <h4 id="ib-Azure-launch"><b>Launch an instance in the Azure environment:</B></h4>
 
           1. Navigate to **Images** in the left menu.
           
-          1. Locate an image created with an AWS source.
+          1. Locate an image created with an Azure source.
           
               - The image type is displayed in the “Target” column.
           
-              - Note: The source must be configured to launch instances. See Add or Edit an AWS Source.
+              - Note: The source must be configured to launch instances. See Add or Edit an Azure Source.
           
           1. From the “Instance” column, click **Launch.**
           
           1. In the "Accounts and Customizations | Azure" step:
           
-              - **Select account:**  “Your source” will be displayed.
-          
+              - **Select account:** Select your Azure account from the dropdown menu
+
               - **Select region:** Use the default region, “eastus.”
           
-              - **Select instance type:** Select “Need info.”
+              - **Select instance type:** Select “Standard_B1ms”
           
               - **Count:** Leave the number of instances you want to instantiate at 1. 
           
@@ -249,7 +252,7 @@ spec:
           
           1. In the "SSH keys authentication" step:
           
-              - Select or enter your own public SSH key for authentication.
+              - Enter your own public SSH key for authentication.
           
               - Click **Next.**
           
