@@ -1,0 +1,306 @@
+# Additional info: https://docs.openshift.com/container-platform/4.9/web_console/creating-quick-start-tutorials.html
+metadata:
+  name: insights-launch-aws
+  # you can add additional metadata here
+  instructional: true
+spec:
+  displayName: Launch an Amazon Web Service image
+  durationMinutes: 10
+  # Optional type section, will display as a tile on the card
+  type:
+    text: Quick start
+    # 'blue' | 'cyan' | 'green' | 'orange' | 'purple' | 'red' | 'grey'
+    color: green
+  # - The icon defined as a base64 value. Example flow:
+  # 1. Find an .svg you want to use, like from here: https://www.patternfly.org/v4/guidelines/icons/#all-icons
+  # 2. Upload the file here and encode it (output format - plain text): https://base64.guru/converter/encode/image
+  # 3. compose - `icon: data:image/svg+xml;base64,<base64 string from step 2>`
+  # - If empty string (icon: ''), will use a default rocket icon
+  # - If set to null (icon: ~) will not show an icon
+  icon: data:image/svg+xml;base64,PCEtLSBHZW5lcmF0ZWQgYnkgSWNvTW9vbi5pbyAtLT4KPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KPHRpdGxlPjwvdGl0bGU+CjxnIGlkPSJpY29tb29uLWlnbm9yZSI+CjwvZz4KPHBhdGggZD0iTTQ0OCA2NHY0MTZoLTMzNmMtMjYuNTEzIDAtNDgtMjEuNDktNDgtNDhzMjEuNDg3LTQ4IDQ4LTQ4aDMwNHYtMzg0aC0zMjBjLTM1LjE5OSAwLTY0IDI4LjgtNjQgNjR2Mzg0YzAgMzUuMiAyOC44MDEgNjQgNjQgNjRoMzg0di00NDhoLTMyeiI+PC9wYXRoPgo8cGF0aCBkPSJNMTEyLjAyOCA0MTZ2MGMtMC4wMDkgMC4wMDEtMC4wMTkgMC0wLjAyOCAwLTguODM2IDAtMTYgNy4xNjMtMTYgMTZzNy4xNjQgMTYgMTYgMTZjMC4wMDkgMCAwLjAxOS0wLjAwMSAwLjAyOC0wLjAwMXYwLjAwMWgzMDMuOTQ1di0zMmgtMzAzLjk0NXoiPjwvcGF0aD4KPC9zdmc+Cg==
+  description: |-
+    Learn how to add an Amazon Web Service source and launch an image.
+  introduction: |-
+    Welcome to the quick start for launching an Amazon Web Service (AWS) image.
+
+    In this quick start, you learn how to add or edit &nbsp;[AWS sources] (https://console.redhat.com/beta/settings/sources), create an image, and launch it all on the Red Hat Hybrid Cloud Console.
+
+  tasks:
+    - title: Add or edit an AWS Source
+      description: |-
+        
+        A source must be configured to connect your AWS account to Hybrid Cloud Console to launch an Image. Create a new source or [edit an existing one] (#edit-aws-source).
+        <br>
+        <br>
+
+        <h4 id="add-aws-source"><b>Add an AWS Source:</B></h4> 
+        
+        1. Click the Settings <i class="fas fa-cog"></i> icon in the top right corner.
+
+        1. In Settings, click **Sources** in the left menu.
+
+        1. Click **Add source**.
+
+        1. On the “Select source type” step:
+
+              - **Cloud provider:** Select Amazon Web Services.
+
+              - Click **Next.**
+
+        1. On the “Name source” step:
+              
+              - **Name:** Enter a name for your source
+              
+              - Click **Next**.
+
+        1. On the “Select configuration” step:
+
+              - **Select a configuration mode:** use Account authorization 
+              
+              - **Access key ID & Secret access key:** Enter this information from your AWS account.
+
+                  - In a different tab, access AWS [Security settings.](https://console.aws.amazon.com/billing/home#/account?nc2=h_m_ma) 
+
+                  - Create a [root access key](https://docs.aws.amazon.com/accounts/latest/reference/root-user-access-key.html) or an IAM user with an access key.
+
+                  - Return to the “Select configuration” step in Sources in Hybrid Cloud Console.
+
+                  - Add the access key data.
+
+            - Click **Next**.
+
+        1. On the “Select applications” step:
+
+            - Toggle “Launch images” to **on**.
+            
+            - Click **Next**.
+
+        It will take a few moments to apply the configuration.    
+        <br>
+        
+        
+        <h4 id="edit-aws-source"><b>Edit an existing AWS Source:</B></h4>
+
+        1. Click the Settings icon in the top right corner.
+
+        1. In Settings, click **Sources** in the left menu.
+        
+        1. Locate your existing AWS source in the cloud sources table
+        
+        1. Click **the existing source’s name** to go to its details.
+        
+        1. Locate the “Applications” card.
+        
+        1. Toggle “Launch images” to **on**.
+        <br>
+        <br>
+
+        It will take a few moments to apply the configuration.
+        <br>
+        <br>
+
+      # optional - the task's Check your work module
+      review:
+        instructions: |-
+          - Did you complete the task successfully?
+        failedTaskHelp: This task isn't verified yet. Try the task again.
+      # optional - the task's success and failure messages
+      summary:
+        success: Shows a success message in the task header
+        failed: Shows a failed message in the task header
+
+    - title: Use Image Builder to build an AWS image
+      description: |-
+          Let's use the updated source to create a new AWS image or [recreate an existing one] (#ib-aws-recreate-image).
+          <br>
+          <br> 
+
+          <h4 id="ib-aws-new-image"><b>Build a new AWS Image:</B></h4>
+
+          1. Navigate to **Images** in the left menu.
+          
+          1. On the Images page, click **Create Image**.
+          
+          1. On the “Image Output” step:
+
+              - **Release:** Select Red Hat Enterprise Linux (RHEL) 8  
+          
+              - **Target Environments:** Select Amazon Web Services.
+          
+              - Click **Next.**
+                    
+          1. On the "Target Environment - Amazon Web Services" step:
+              
+              - **Use an account configured from Sources:** Select an AWS source saved on the console. Choose the recently created or edited AWS source.
+                       
+              - Click **Next.**.
+                    
+          1. On the “Register” step:
+          
+              - **Registration method:** Select “Register and connect image instances with Red Hat.”
+              
+              - **Activation key:** Select an activation key available to the account.
+              
+              - Click **Next.**
+          
+          1. On the “File system Configuration” step:
+              
+              - Use automatic partitioning
+              
+              - Click **Next.**  
+          
+          1. On the “Content - Additional Red Hat Packages” step:
+              
+              - Search and add the following packages:
+                  
+                  - Podman
+                  
+                  - Rhc
+                  
+                  - Rhc-worker-playbook
+                  
+                  - Ansible-core
+              
+              - Click **Next.**
+          
+          1. On the “Content - Custom Repositories” step:
+
+              - Custom repositories are not required to launch
+                              
+              - Click **Next.**
+          
+          1. (Optional) On the "Content - Additional custom packages" step
+             
+              - Custom repository packages are not required to launch. This step is available if you linked a custom repository in the previous step.
+                 
+              - Click **Next.**
+          
+          1. On the “Name Image” Step:
+              
+              - **Name:** Enter a name for the image
+              
+              - Click **Next.**
+          
+          1. Review the configuration and click **Create Image.**
+
+          Note: Building the image can take some time.
+          <br>
+          <br>
+          
+          <h4 id="ib-aws-recreate-image"><b>Use Image Builder to recreate an existing AWS image:</B></h4>
+
+          1. Navigate to **Images** in the left menu.
+
+          1. Locate your existing AWS image in the Images table.
+
+          1. Click the “More actions” ellipsis <i class="fas fa-ellipsis-v"></i> icon at the end of the row. 
+
+          1. Click **Recreate Image.**
+
+          1. A "Create image" wizard opens on the "Review" step with previous configuration added to the image.
+
+          1. Click on the **Target environment - Amazon Web Services** step.
+
+          1. On the "Target Environment - Amazon Web Services" step:
+
+              - **Use an account configured from Sources:** Select an AWS source saved on the console. Choose the recently created or edited AWS source.
+          <br>
+          <br>
+
+
+          1. Return to the **Review** step.
+
+          1. Click **Create Image.**
+          
+          Note: Building the image can take some time.
+          <br>
+          <br>
+          
+        # optional - the task's Check your work module
+      review:
+        instructions: |-
+          - Did you complete the task successfully?
+        failedTaskHelp: This task isn't verified yet. Try the task again.
+      # optional - the task's success and failure messages
+      summary:
+        success: Shows a success message in the task header
+        failed: Shows a failed message in the task header
+    
+    - title: Launch an instance in the AWS environment.
+      description: |-  
+          Now let’s use our new AWS image to launch an environment from the console.
+          <br>
+
+          <h4 id="ib-aws-launch"><b>Launch an instance in the AWS environment:</B></h4>
+
+          1. Navigate to **Images** in the left menu.
+          
+          1. Locate an image created with an AWS source.
+          
+              - The image type is displayed in the “Target” column.
+          
+              - Note: The source must be configured to launch instances. See Add or Edit an AWS Source.
+          
+          1. From the “Instance” column, click **Launch.**
+          
+          1. In the "Accounts and Customizations | Amazon" step:
+          
+              - **Select account:**  “Your source” will be displayed.
+          
+              - **Select region:** Use the default region, “us-east-1.”
+          
+              - **Select instance type:** Select “t2.medium.”
+          
+              - **Count:** Leave the number of instances you want to instantiate at 1. 
+          
+              - Click **Next.**
+          
+          1. In the "SSH keys authentication" step:
+          
+              - Enter your own public SSH key for authentication.
+          
+              - Click **Next.**
+          
+          1. Review the details and click **Launch.** 
+          
+          1. Wait for the system to launch the new instances.
+          
+          1. After the Launch wizard shows the "System(s) launched successfully" message:
+              
+              - You can either click the Host URL link under ID or save the Host Instance ID link for later reference.
+              
+              - After you click the link from the Host card, the AWS console screen displays the Instance summary for the launched image.
+
+              - You can find the public IP address that you can use to access the running instance.
+
+              - You can also copy the SSH command to access your instance via SSH in the CLI.
+          
+          All launched systems will register with Red Hat and appear in the [Inventory] (https://console.redhat.com/beta/insights/inventory).
+
+          A system's visibility in the console is based on the registration level selection during image creation. We have selected  “Register and connect image instances with Red Hat.” 
+
+          Note that the newly launched instances will take several minutes to show in the inventory.
+          <br>
+
+  conclusion: |-
+   
+    <h4><b>Thank you for taking the time to explore this feature!</b></h4> 
+
+    We would love to learn more about your experience launching AWS images on the console. 
+    
+    
+    <br>
+    **<a id="qs-ib-aws-launch-contact" href="">Let Red Hat to contact you <i class="fas fa-arrow-right"></i> </a>**
+    <br>
+    <br>
+    <br>
+   
+    If you need additional assistance:
+      
+        - Open a [support case](https://access.redhat.com/support).
+  
+  # you can link to the next quick start(s) here
+  nextQuickStart:
+    - mas-alert-note-prereq
+
+    
