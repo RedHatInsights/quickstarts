@@ -17,6 +17,16 @@ func FindQuickstartById(id int) (models.Quickstart, error) {
 	return quickStart, err
 }
 
+func findQuickstartsByName(name string, pagination Pagination) ([]models.Quickstart, error) {
+	var quickStarts []models.Quickstart
+	err := database.DB.Limit(pagination.Limit).Offset(pagination.Offset).Where("name = ?", name).Find(&quickStarts).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return quickStarts, nil
+}
+
 func findQuickstartsByTags(tagTypes []models.TagType, tagValues []string, pagination Pagination) ([]models.Quickstart, error) {
 	var quickstarts []models.Quickstart
 	var tagsArray []models.Tag
@@ -29,9 +39,30 @@ func findQuickstartsByTags(tagTypes []models.TagType, tagValues []string, pagina
 	return quickstarts, nil
 }
 
+func findQuickstarts(tagTypes []models.TagType, tagValues []string, name string, pagination Pagination) ([]models.Quickstart, error) {
+	var quickstarts []models.Quickstart
+	var err error
+
+	if name != "" {
+		err = database.DB.Where("name = ?", name).Find(&quickstarts).Error
+	} else if len(tagTypes) > 0 {
+		quickstarts, err = findQuickstartsByTags(tagTypes, tagValues, pagination)
+	} else {
+		err = database.DB.Limit(pagination.Limit).Offset(pagination.Offset).Find(&quickstarts).Error
+	}
+
+	return quickstarts, err
+}
+
 func GetAllQuickstarts(w http.ResponseWriter, r *http.Request) {
 	var quickStarts []models.Quickstart
 	var tagTypes []models.TagType
+	quickstartName := ""
+	nameQuery := r.URL.Query()["name"]
+	if len(nameQuery) > 0 {
+		// array name query is not required and supported
+		quickstartName = nameQuery[0]
+	}
 
 	// first try bundle query param
 	bundleQueries := r.URL.Query()["bundle"]
@@ -55,11 +86,7 @@ func GetAllQuickstarts(w http.ResponseWriter, r *http.Request) {
 	pagination := r.Context().Value(PaginationContextKey).(Pagination)
 	var err error
 
-	if len(tagTypes) > 0 {
-		quickStarts, err = findQuickstartsByTags(tagTypes, append(bundleQueries, applicationQueries...), pagination)
-	} else {
-		database.DB.Limit(pagination.Limit).Offset(pagination.Offset).Find(&quickStarts)
-	}
+	quickStarts, err = findQuickstarts(tagTypes, append(bundleQueries, applicationQueries...), quickstartName, pagination)
 
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
