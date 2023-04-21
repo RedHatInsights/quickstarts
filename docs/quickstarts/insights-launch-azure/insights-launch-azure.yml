@@ -100,7 +100,7 @@ spec:
 
     - title: Use Image Builder to build an Azure image
       description: |-
-          Let's use the updated source to create a new Azure image or [recreate an existing one] (#ib-azure-recreate-image).
+          Let's use the updated source to create a new Azure image or recreate an existing one.
           <br>
           <br> 
 
@@ -285,7 +285,7 @@ spec:
     
     
     <br>
-    **<a id="qs-ib-azure-launch-contact" href="">Let Red Hat to contact you <i class="fas fa-arrow-right"></i> </a>**
+    **<a id="qs-ib-azure-launch-contact">Let Red Hat contact you <i class="fas fa-arrow-right"></i> </a>**
     <br>
     <br>
     <br>

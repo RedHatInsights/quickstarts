@@ -111,7 +111,7 @@ spec:
 
     - title: Use Image Builder to build an AWS image
       description: |-
-          Let's use the updated source to create a new AWS image or [recreate an existing one] (#ib-aws-recreate-image).
+          Let's use the updated source to create a new AWS image or recreate an existing one.
           <br>
           <br> 
 
@@ -290,7 +290,7 @@ spec:
     
     
     <br>
-    **<a id="qs-ib-aws-launch-contact" href="">Let Red Hat to contact you <i class="fas fa-arrow-right"></i> </a>**
+    **<a id="qs-ib-aws-launch-contact">Let Red Hat contact you <i class="fas fa-arrow-right"></i> </a>**
     <br>
     <br>
     <br>
