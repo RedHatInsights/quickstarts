@@ -10,7 +10,7 @@
 
     What you might want to remember on your journey:
 
-    - The **Development environment** is included with App Studio by default. You can create as many other environments as you need.
+    - The **Development environment** is included with our service by default. You can create as many other environments as you need.
 
     - Each environment is available for all your applications.
 
@@ -18,7 +18,7 @@
 
     - **Environment links** are generated automatically and allow access to your apps deployed to that environment.
 
-    - Automatic and manual **deployment strategies** set how App Studio treats updates you make to your code. With the **automatic strategy**, all component updates are automatically deployed to the environment, then updated components are automatically promoted to the subsequent environments where they were deployed before. With the **manual strategy**, manual steps are required to redeploy and promote updated components.
+    - Automatic and manual **deployment strategies** set how our service treats updates that you make to your code. With the **automatic strategy**, all component updates are automatically deployed to the environment, then updated components are automatically promoted to the subsequent environments where they were deployed before. With the **manual strategy**, manual steps are required to redeploy and promote updated components.
 
     >**NOTE**: When you promote a component to the next environment, the current deployment strategy is used in the destination environment. However, you can change a strategy while promoting components.
 

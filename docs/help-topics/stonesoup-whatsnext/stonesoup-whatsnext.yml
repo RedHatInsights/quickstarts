@@ -42,7 +42,7 @@
   content: |-
     To customize your build pipelines, install the GitHub app. After you install the GitHub app, it creates webhooks for your repositories and running builds. The GitHub app also tests your pull requests for you to view before merging your pull requests. 
 
-    1. Go to the GitHub repository: [https://github.com/apps/appstudio-staging-ci/](https://github.com/apps/appstudio-staging-ci/). 
+    1. Go to the GitHub repository: [https://github.com/apps/rh-trusted-application-pipeline](https://github.com/apps/rh-trusted-application-pipeline). 
     2. Select **Install GitHub App**. 
     3. Select which of your repositories you want the GitHub app to have access to. 
     4. If you do not grant the GitHub app access to your repository, you must manually select each component for the GitHub app to access. 
