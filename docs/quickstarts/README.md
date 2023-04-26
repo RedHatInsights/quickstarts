@@ -169,6 +169,38 @@ For more best practices and tips, see:
 * [Creating quick start tutorials](https://docs.openshift.com/container-platform/4.11/web_console/creating-quick-start-tutorials.html) in the OpenShift documentation 
 * [Design guidelines for quick starts](https://www.patternfly.org/v4/extensions/quick-starts/design-guidelines/) in the Patternfly documentation
 
+## Assigning your quick start to a console location using the `bundle` tag 
+
+The `bundle` tag in the quick start's `metadata.yml` file tells the console which **Learning Resources** page to show the quick start on. A bundle is a console-internal term that refers to a collection of services.
+
+You can use more than one `bundle` tag to show the quick start in multiple locations in the console. For example, this would show the quick start on **Learning Resources** pages for both **Insights** and **Settings**:
+  
+    ```yml
+    ...
+    tags: # If you want to use more granular filtering add tags to the quickstart
+      - kind: bundle # use bundle tag for a topic to be accessed from a whole bundle eg. console.redhat.com/insights
+        value: insights
+      - kind: bundle
+        value: settings
+    ...
+    ```
+
+See the below list for the value tags to use for each bundle:
+
+| Bundle  |  value tag |
+|---|---|
+|  Application & Data Services | application-services  |
+|  OpenShift |  OpenShift |
+|  Ansible Automation Platform | ansible  |
+| Red Hat Insights  | insights  |
+| Edge management  | edge  |
+|  Home |  landing |
+|  All Services | allservices  |
+| Identity & Access Management  | iam  |
+| Internal  |  internal |
+|  Settings | settings  |
+
+
 ## Useful Markdown snippets
 
 * A nice Markdown summary from the [Red Hat Customer Portal](https://access.redhat.com/help/markdown)
