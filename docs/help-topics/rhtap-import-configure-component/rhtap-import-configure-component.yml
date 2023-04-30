@@ -1,0 +1,31 @@
+# Name is an internal name. Title shows up in the UI as a side panel title.
+# Tags to be kept empty for now. Tags will specify where in the app descriptions will be available.
+# Links to be external only. We don't know yet whether referencing to other side panels will be supported but referencing to in-depth docs is expected to be supported.
+# Note that this topic is for LEARN MORE.
+
+- name: rhtap-import-configure-component
+  tags:
+  title: Configure components
+  content: |-
+    We analyze your code, then define and apply deployment settings for each of your application components. Remember, a “component” is an image that we build from source code in a repository. An application is a collection of these components working together.
+
+    Before you create and deploy your application, look over the values that display here. You can rename any component from this view, too. In particular, pay attention to the following fields:
+
+    - **Target port**: Is it correct? If not, click in the port field to modify it.
+    - **CPUs**, **memory**, and **instances**: Choose how many of each of these you want for your application, depending on your subscription.
+    - **Route**: Enter the public URL for your published application.
+    - **Environment variables**: Define your environment variables to customize how we deploy your application. Usually, you define these in a devfile or Dockerfile. If your application doesn’t contain either of these file types, we use an application analyzer to extract the necessary information from your code.
+    - **Runtime**: Did we detect the right runtime? If so, you don’t have to do anything with this field. If you want to change your runtime, click the **Runtime** menu and make a selection.
+    - **Send pull request**: Select this option to create a custom pipeline in your Git repository.
+
+    When you’re satisfied with your component configuration settings, click **Create**. While your component builds, go to **Applications > Overview** to check out lifecycle details for your application.
+
+    ***
+    **NOTE**
+
+    After you create your application, you can adjust your configuration settings from the **Application** view whenever you want.
+
+    ***
+
+
+        
