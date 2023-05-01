@@ -8,13 +8,13 @@
   title: Add components
   content: |-
     A “component” is an image that we build from source code in a repository. An application is a collection of these components working together. To start building your application, add a component by importing your code repository, or use one of our samples.
-
+    
     **Using code from your GitHub repository**
     1. To use your own code, enter the link to your repository in the **Git repo URL** field. We verify your URL right away. You don’t even have to press **Enter**.
     2. Click **Git options** to expand it and choose whether to make either of the following specifications:
         1. Add a **Git reference** to point to code in a specific branch, tag, or commit that you want to use to build your application.
         2. Indicate a **Context dir** to specify the subdirectory for the source code you want to use.
-    3. Click **Next**, then we scan and analyze your Git directory to determine how many components to add to your application. The types of files in your repository, and also your Git directory file hierarchy, determine the number and type of components to add. For example, we look for devfiles and Dockerfiles, and language-specific build configuration files like pom.xml for Java or package.json for Node.js.
+    3. Click **Import code**, then we scan and analyze your Git directory to determine how many components to add to your application. The types of files in your repository, and also your Git directory file hierarchy, determine the number and type of components to add. For example, we look for devfiles and Dockerfiles, and language-specific build configuration files like pom.xml for Java or package.json for Node.js.
 
     ***
     **NOTE**
@@ -31,7 +31,4 @@
 
     ***
     **Using a code sample**
-    1. To start with a code sample, click **Start with a sample**, then go ahead and explore or test various languages and frameworks.         
-    2. Click any of the options on the **Select a sample** page, then follow the resulting instructions.
-
-        
+    To start with a code sample, in the code sample **Search** field, enter the name of the code you want to work with, or click **Import sample** on any of the options displayed. Follow the resulting instructions to explore or test whatever language and framework you choose.
