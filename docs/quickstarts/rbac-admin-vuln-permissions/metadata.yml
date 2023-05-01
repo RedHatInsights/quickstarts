@@ -2,9 +2,5 @@ kind: QuickStarts # kind must always be "QuickStarts"
 name: rbac-customizing-access
 tags: # If you want to use more granular filtering add tags to the quickstart
   - kind: bundle # use bundle tag for a topic to be accessed from a whole bundle eg. console.redhat.com/insights
-    value: insights
-  - kind: bundle
-    value: settings
-  - kind: application # use application tag for quickstart used by specific application
-    value: sources
+    value: iam
     
