@@ -25,7 +25,7 @@ spec:
     - You are an Organization Administrator or have **User Access administrator** permissions
     - Users whom you want to limit permissions to read-only for a service
   description: |-
-    Limiting access to the vulnerability service to specific users 
+    Limiting access to the vulnerability service to read-only for specific users 
   introduction: |-
     This quick start shows you how to assign read-only permissions to certain users for a particular service in the Hybrid Cloud Console (the console). 
 
