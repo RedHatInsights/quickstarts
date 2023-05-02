@@ -2,11 +2,11 @@
 # Template from https://github.com/patternfly/patternfly-quickstarts/blob/main/packages/dev/src/quickstarts-data/yaml/template.yaml
 # See quick start instructions here https://github.com/RedHatInsights/quickstarts/tree/main/docs/quickstarts
 metadata:
-  name: rbac-customizing-access
+  name: rbac-admin-vuln-permissions
   # you can add additional metadata here
   # instructional: true
 spec:
-  displayName: Customizing Hybrid Cloud Console user access
+  displayName: Restricting access to a service to a team
   durationMinutes: 10
   # Optional type section, will display as a tile on the card
   type:
@@ -24,11 +24,9 @@ spec:
     - You are an Organization Administrator or have User Access administrator permissions
     - (Optional) Users in your organization
   description: |-
-    Limiting permissions for a service to a specific group of users 
+    Granting administrative permissions for the vulnerability service to a select group of users 
   introduction: |-
-    Welcome to the quick start for customizing user access in the Hybrid Cloud Console. 
-    
-    In this quick start, you’ll configure granular administrative access for the Insights for Red Hat Enterprise Linux (RHEL) vulnerability service. 
+    This quick start shows you how to configure granular administrative access for the Insights for Red Hat Enterprise Linux (RHEL) vulnerability service. 
     
     This will allow only your team to perform administrative tasks with the vulnerability service, like viewing and remediating security CVEs on your RHEL systems, and generating vulnerability reports.
     
@@ -36,31 +34,27 @@ spec:
   tasks:
     - title: Removing the Vulnerability administrator role from the **Default access** group
       description: |-
-        Edit the **Default access** group and remove the roles that you don’t want all users to have. 
+        Edit the **Default access** group and remove the roles that you don’t want all users to have. (If the **Default access** group was previously modified, then it’s called the **Custom default access** group.)
         
         For this example, remove the **Vulnerability administrator** role from the **Default access** group to revoke this access from all users in your organization.
-
-        1. Click the [Settings icon]{{highlight SettingsMenu}} to open **Settings**.
         
-        2. Click **User Access** > **Groups**.
+        1. Click **User Access** > **Groups**.
         
-        3. Click the **Default access** group. (If you previously modified this group, it's called **Custom default access**.)
+        2. Click the **Default access** (or **Custom default access**) group. 
         
-        4. In the **Roles** tab, find the role that you want to remove from the group – in this case, **Vulnerability administrator**.
+        3. In the **Roles** tab, find the role that you want to remove from the group – in this case, **Vulnerability administrator**.
         
-        5. Next to **Vulnerability administrator**, click&nbsp;&nbsp;<i class="fas fa-ellipsis-v"></i> (more options) > **Remove** to revoke this permission from all users in your organization.
+        4. Next to **Vulnerability administrator**, click&nbsp;&nbsp;<i class="fas fa-ellipsis-v"></i> (more options) > **Remove** to revoke this permission from all users in your organization.
         
-        6. Click **Remove role** to confirm.
+        5. Click **Remove role**.
         
-        Users in your organization now no longer have **Vulnerability administrator** permissions by default. 
-        
-        The **Default access** group is now called **Custom default access**, but any user-created group names have not changed. 
+        Users in your organization now no longer have **Vulnerability administrator** permissions by default. The **Default access** group is now called **Custom default access**, but any user-created group names have not changed.
         
         [You can undo any changes made to the **Default access** group by clicking **Restore to default** on the **Groups** page.]{{admonition note}}
       # optional - the task's Check your work module
       review:
         instructions: |-
-          - Go to **User Access** > **Groups** > **Custom default access** and confirm that **Vulnerability administrator** is no longer in the list of roles assigned to all users in your organization.
+          - Go to **Groups** > **Custom default access** and confirm that **Vulnerability administrator** is no longer in the list of roles assigned to all users in your organization.
 
         failedTaskHelp: Try completing the steps again.
 
@@ -78,7 +72,7 @@ spec:
         
         Now only the users in the *Vulnerability Admins* group have administrator permissions for the vulnerability service, but other users in your organization don't.
         
-        User access in the Hybrid Cloud Console is additive, meaning that each user has the default access permissions, plus permissions from any other groups they are assigned.
+        User access in the console is additive, meaning that each user has the default access permissions, plus permissions from any other groups they are assigned.
 
         After completing this quick start, the Organization Administrator now has all of the roles in these groups:
         - **Default admin access**
