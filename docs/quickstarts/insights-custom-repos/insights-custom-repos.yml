@@ -189,14 +189,14 @@ spec:
 
     
     <br>
-    **<a id="qs-ib-custom-content-contact" href="">Let Red Hat to contact you <i class="fas fa-arrow-right"></i> </a>**
+    **<a id="qs-ib-custom-content-contact">Let Red Hat contact you <i class="fas fa-arrow-right"></i> </a>**
     <br>
     <br>
     <br>
     
     If you need additional assistance:
       
-      - Open a [support case](https://access.redhat.com/support)
+      - [Open a support case](https://access.redhat.com/support)
   
   # you can link to the next quick start(s) here
   nextQuickStart:
