@@ -80,9 +80,11 @@ spec:
           
           <h4 id="ib-custom-repo-new-image"><b>Build an image with custom reposities:</b></h4>
           
-          1. Access **Hybrid Cloud Console > Red Hat Enterprise Linux > Red Hat Insights.**
+          1. Access **Hybrid Cloud Console.**
 
-          1. Navigate to **Images**. 
+          1. Click the search widget and type "Images". 
+
+          1. Select **Images** from the dropdown.
           
           1. Click the **“Create Image”** button.
           
