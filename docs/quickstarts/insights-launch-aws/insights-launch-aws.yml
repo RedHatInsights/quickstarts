@@ -29,7 +29,7 @@ spec:
     - title: Add or edit an AWS Source
       description: |-
         
-        A source must be configured to connect your AWS account to Hybrid Cloud Console to launch an Image. Create a new source or [edit an existing one] (#edit-aws-source).
+        A source must be configured to connect your AWS account to Hybrid Cloud Console to launch an Image. Create a new source or edit an existing one.
         <br>
         <br>
 
@@ -281,6 +281,10 @@ spec:
 
           Note that the newly launched instances will take several minutes to show in the inventory.
           <br>
+      review:
+        instructions: |-
+          - Did you complete the task successfully?
+        failedTaskHelp: This task isn't verified yet. Try the task again.
 
   conclusion: |-
    
@@ -297,7 +301,7 @@ spec:
    
     If you need additional assistance:
       
-        - Open a [support case](https://access.redhat.com/support).
+      - [Open a support case](https://access.redhat.com/support)
   
   # you can link to the next quick start(s) here
   nextQuickStart:

@@ -29,7 +29,7 @@ spec:
     - title: Add or Edit an Azure source
       description: |-
         
-        A source must be configured to connect your Azure account to Hybrid Cloud Console to launch an image. Create a new source or [edit an existing one] (#edit-azure-source).
+        A source must be configured to connect your Azure account to Hybrid Cloud Console to launch an image. Create a new source or edit an existing one.
         <br>
         <br>
 
@@ -59,7 +59,11 @@ spec:
             
             - Click **Next**.
 
-        1. On the “Credentials” step:
+        1. On the “Configure Azure Lighthouse” step:
+
+            - Click the **Take me to Lighthouse** button and complete the configuration.
+
+        1. On the “Subscription ID” step:
 
             - **Subscription ID:** Enter your Subscription ID
             
@@ -276,6 +280,10 @@ spec:
 
           Note that the newly launched instances will take several minutes to show in the inventory.
           <br>
+      review:
+        instructions: |-
+          - Did you complete the task successfully?
+        failedTaskHelp: This task isn't verified yet. Try the task again.
 
   conclusion: |-
    
