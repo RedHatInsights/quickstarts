@@ -110,9 +110,17 @@ spec:
 
           <h4 id="ib-azure-new-image"><b>Build a new Azure image:</B></h4>
 
-          1. Navigate to **Images** in the left menu.
-          
-          1. On the Images page, click **Create Image**.
+          1. Access **Hybrid Cloud Console.**
+
+          1. On the search bar menu at the top of the page, search by typing “Image builder” and click on the first result. 
+
+              - Optionally:
+
+              - Click **Services** at the top of the page.
+
+              - Click **Browse all services.** Look under “Deploy,” and click **Images**
+                    
+          1. On the Image Builder page, click **Create image**.
           
           1. On the “Image Output” step:
 
