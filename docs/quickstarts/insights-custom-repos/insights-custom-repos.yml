@@ -59,7 +59,7 @@ spec:
 
             - **OS Version:** el8
 
-        Note: Architecture and OS version will be suggested based on the URL link
+        Note: Architecture and OS versions will be suggested based on the URL link
         
         The repository will be retrospected and confirmed. After confirmation, the status will change to “valid,” and the repository will be ready to use in Image Builder.          
 
@@ -80,11 +80,17 @@ spec:
           
           <h4 id="ib-custom-repo-new-image"><b>Build an image with custom reposities:</b></h4>
           
-          1. Access **Hybrid Cloud Console > Red Hat Enterprise Linux > Red Hat Insights.**
+          1. Access **Hybrid Cloud Console.**
 
-          1. Navigate to **Images**. 
+          1. On the search bar menu at the top of the page, search by typing “Image builder” and click on the first result. 
+
+              - Optionally:
+
+              - Click **Services** at the top of the page.
+
+              - Click **Browse all services.** Look under “Deploy,” and click **Images**
           
-          1. Click the **“Create Image”** button.
+          1. Click the **“Create image”** button.
           
           1. On the “Image Output” step:
               - **Release:** Select Red Hat Enterprise Linux (RHEL) 8 
