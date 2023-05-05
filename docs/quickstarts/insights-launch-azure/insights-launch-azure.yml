@@ -33,7 +33,9 @@ spec:
         <br>
         <br>
 
-        <h4 id="add-azure-source"><b>Add an Azure source:</B></h4> 
+        [Please follow this [workaround guide](https://hackmd.io/@r_OtGlkHS2Kqa_AskNMGuw/S1dg53fEn#Creating-Azure-Source) to set up an Azure source.]{{admonition warning}}
+        
+        <h4 id="add-azure-source"><b>Add an Azure source:</b></h4> 
         
         1. Click the Settings <i class="fas fa-cog"></i> icon in the top right corner.
 
@@ -61,6 +63,8 @@ spec:
 
         1. On the “Configure Azure Lighthouse” step:
 
+            - [Please follow this [workaround guide](https://hackmd.io/@r_OtGlkHS2Kqa_AskNMGuw/S1dg53fEn#Creating-Azure-Source) to set up an Azure source.]{{admonition warning}}
+             
             - Click the **Take me to Lighthouse** button and complete the configuration.
 
         1. On the “Subscription ID” step:
@@ -106,7 +110,7 @@ spec:
       description: |-
           Let's use the updated source to create a new Azure image or recreate an existing one.
           <br>
-          <br> 
+          <br>        
 
           <h4 id="ib-azure-new-image"><b>Build a new Azure image:</B></h4>
 
