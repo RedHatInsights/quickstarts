@@ -1,0 +1,6 @@
+---
+kind: QuickStarts
+name: edge-custom-images
+tags:
+- kind: bundle
+  value: edge
