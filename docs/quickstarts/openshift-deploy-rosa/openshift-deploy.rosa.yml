@@ -1,0 +1,16 @@
+apiVersion: console.openshift.io/v1
+kind: QuickStarts
+metadata:
+  name: openshift-deploy-rosa
+  externalDocumentation: true
+spec:
+  version: 0.1
+  type:
+    text: Learning path
+    color: cyan
+  displayName: Deploying an application using Red Hat OpenShift Service on AWS
+  icon: 
+  description: Deploy an application on a cluster using Red Hat OpenShift Service on AWS (ROSA).
+  link:
+    href: https://developers.redhat.com/learn/openshift/how-deploy-application-using-red-hat-openshift-service-aws
+    text: View learning path
