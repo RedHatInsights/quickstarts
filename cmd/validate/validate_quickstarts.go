@@ -79,7 +79,7 @@ func validateQuickStartStructure() {
 		var spec = content.Spec
 		err = validation.ValidateStruct(&spec,
 			validation.Field(&spec.DisplayName, validation.Required),
-			validation.Field(&spec.Icon, validation.Required),
+			validation.Field(&spec.Icon, validation.NotNil),
 		)
 		handleFileErr(quickstartsFileName, err)
 
