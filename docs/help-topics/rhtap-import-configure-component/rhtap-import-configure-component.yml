@@ -27,7 +27,7 @@
     ***
     **WARNING**
     
-    Avoid adding secrets as environment variables because currently we store such variables in a `deployment.yaml` file in a public GitHub repository.
+    Avoid adding secrets as environment variables because we currently store them in `deployment.yaml` files in public GitHub repositories.
     
     ***
 
