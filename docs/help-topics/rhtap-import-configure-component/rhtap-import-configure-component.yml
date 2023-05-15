@@ -23,6 +23,13 @@
     - **CPU** and **Memory**: Choose how many of each of these you want for your application, and in what unit, depending on your deployment requirements.
 
     In the **Environment variables** section, enter a variable name and value to customize how we deploy your application.
+    
+    ***
+    **WARNING**
+    
+    Avoid adding secrets as environment variables because currently we store such variables in a `deployment.yaml` file in a public GitHub repository.
+    
+    ***
 
     When you’re satisfied with your component configuration settings, click **Create application**.
 
