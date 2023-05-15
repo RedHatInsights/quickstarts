@@ -1,0 +1,17 @@
+---
+apiVersion: console.openshift.io/v1
+kind: QuickStarts
+metadata:
+  name: edge-custom-images
+  externalDocumentation: true
+spec:
+  version: 0.1
+  type:
+    text: Documentation
+    color: orange
+  displayName: Creating customized images using the Image Builder service
+  icon: ~
+  description: Create a customized image and upload the image to target cloud environments.
+  link:
+    href: https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/creating_customized_rhel_images_using_the_image_builder_service
+    text: View documentation

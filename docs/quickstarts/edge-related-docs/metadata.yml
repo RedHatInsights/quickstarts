@@ -1,0 +1,6 @@
+---
+kind: QuickStarts
+name: edge-related-docs
+tags:
+- kind: bundle
+  value: edge
