@@ -6,7 +6,7 @@
   tags:
   title: Add more components 
   content: |-
-    To extend your application, add source code to your repository. We'll build a component or image from this source code. 
+    To extend your application, add source code to your repository. We'll build an image from this source code. 
 
     1. From the application dropdown, select **Add component**.
     2. When you add a component, the UI automatically starts a pipeline build. 
