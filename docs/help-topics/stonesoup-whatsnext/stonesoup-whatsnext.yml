@@ -6,12 +6,13 @@
   tags:
   title: Add more components 
   content: |-
-    To add more components to your application, just bring more source code. Remember, components are images that we build from source code. 
+    To extend your application, add source code to your repository. We'll build a component or image from this source code. 
 
-    1. In the **Overview** tab, select **Add component** and import your code. This automatically starts a pipeline build. 
-    2. Verify that the resulting pipeline builds successfully by going to the **Activity** tab and clicking **Pipeline runs**.
+    1. From the application dropdown, select **Add component**.
+    2. When you add a component, the UI automatically starts a pipeline build. 
+    3. To verify that the resulting pipeline builds successfully, open the **Activity > Pipeline runs** tab.
 
-    For more details, see our [Adding more components](https://redhat-appstudio.github.io/docs.stonesoup.io/Documentation/main/getting-started/get-started/#adding-more-components) how-to.
+    For more details, see the [Adding more components](https://redhat-appstudio.github.io/docs.stonesoup.io/Documentation/main/getting-started/get-started/#adding-more-components) how-to.
 
 
 - name: stonesoup-whatsnext-customize-build-pipeline
