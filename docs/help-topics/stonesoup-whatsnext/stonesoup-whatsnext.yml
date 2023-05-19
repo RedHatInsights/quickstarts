@@ -4,7 +4,7 @@
 
 - name: stonesoup-whatsnext-add-component 
   tags:
-  title: Add a component 
+  title: Add more components 
   content: |-
     To add more components to your application, just bring more source code. Remember, components are images that we build from source code. 
 
