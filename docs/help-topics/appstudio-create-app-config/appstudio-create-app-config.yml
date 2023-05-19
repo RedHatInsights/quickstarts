@@ -6,7 +6,7 @@
   tags:
   title: Configure components
   content: |-
-    App Studio analyzes your code and defines deployment settings for each of your app components. Before we create and deploy your app, check the values in this view. You can also rename each component if you like.
+    {{ env "PRODUCT_NAME" }} analyzes your code and defines deployment settings for each of your app components. Before we create and deploy your app, check the values in this view. You can also rename each component if you like.
 
     - Verify the **target port** is correct.
 
