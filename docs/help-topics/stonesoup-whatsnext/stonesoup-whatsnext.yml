@@ -4,13 +4,15 @@
 
 - name: stonesoup-whatsnext-add-component 
   tags:
-  title: Add a component 
+  title: Add more components 
   content: |-
-    To extend your application, add source code to your repository. Stonesoup then builds a component or image from this source code. 
+    To extend your application, add source code to your repository. We'll build an image from this source code. 
 
     1. From the application dropdown, select **Add component**.
     2. When you add a component, the UI automatically starts a pipeline build. 
     3. To verify that the resulting pipeline builds successfully, open the **Activity > Pipeline runs** tab.
+
+    For more details, see the [Adding more components](https://redhat-appstudio.github.io/docs.stonesoup.io/Documentation/main/getting-started/get-started/#adding-more-components) how-to.
 
 
 - name: stonesoup-whatsnext-customize-build-pipeline
