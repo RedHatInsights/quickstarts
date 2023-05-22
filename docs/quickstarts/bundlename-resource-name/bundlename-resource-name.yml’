@@ -1,0 +1,16 @@
+apiVersion: console.openshift.io/v1
+kind: QuickStarts
+metadata:
+  name: bundlename-resource-name
+  externalDocumentation: true
+spec:
+  version: 0.1
+  type:
+    text: Documentation
+    color: orange
+  displayName: Deploy and manage RHEL systems in hybrid clouds
+  icon: 
+  description: Define or use existing repositories, and launch and manage your customized RHEL system images in open hybrid cloud environments.
+  link:
+    href: https://access.redhat.com/documentation/en-us/red_hat_insights/2023/html/deploying_and_managing_rhel_systems_in_hybrid_clouds/index
+    text: Deploy and manage RHEL systems in hybrid clouds
