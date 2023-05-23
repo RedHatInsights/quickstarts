@@ -12,7 +12,7 @@
     2. When you add a component, the UI automatically starts a pipeline build. 
     3. To verify that the resulting pipeline builds successfully, open the **Activity > Pipeline runs** tab.
 
-    For more details, see the [Adding more components](https://redhat-appstudio.github.io/docs.stonesoup.io/Documentation/main/getting-started/get-started/#adding-more-components) how-to.
+    For more details, see the [Adding more components](https://redhat-appstudio.github.io/docs.appstudio.io/Documentation/main/getting-started/get-started/#adding-more-components) how-to.
 
 
 - name: stonesoup-whatsnext-customize-build-pipeline
