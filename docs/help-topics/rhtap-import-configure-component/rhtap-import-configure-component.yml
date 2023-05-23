@@ -12,7 +12,7 @@
     Before you create and deploy your application, look over the values and options that display here. You can rename any component from this view, too.
 
     - **Component name**: Is it correct? Click the GitHub link under this field if you want to check your repository URL.
-    - **Runtime**: Did we detect the right one? If so, you should notice that we suggest appropriate deployment options. If you want to change your runtime, expand the menu next to your runtime name and make a selection.
+    - **Runtime**: Did we detect the right one? If so, you should notice that we suggest suitable deployment options. If you want to change your runtime, expand the menu next to your runtime name and make a selection.
     
     In the **Build & deploy configuration** section, look over these items:
     - **Target port**: Is it correct? If not, click in the field to modify it.
@@ -22,7 +22,11 @@
         - **Custom build pipeline**: This is triggered when you make commits to your source code repository. This pipeline runs more checks and security scans than the default pipeline, but it takes a bit more time because it's more thorough. **NOTE:** To use a custom pipeline, you must be the owner of your repository so that you can authorize the installation of our application in your GitHub instance and then grant the app access to your repository. If someone else owns your repository, fork it, then go back to the Add components page and start again.
     - **CPU** and **Memory**: Choose how many of each of these you want for your application, and in what unit, depending on your deployment requirements.
 
-    In the **Environment variables** section, enter a variable name and value to customize how we deploy your application.
+    In the **Environment variables** section, enter a variable name and value to customize how we deploy your application. 
+    
+    If you defined your runtime environment variables in a devfile, we automatically extract them. Check that we detected them correctly when you configure your components for deployment.
+
+    If you don’t use a devfile or it doesn’t include environment variables, you can add them manually in the **Environment variables** section fields.
     
     ***
     **WARNING**
