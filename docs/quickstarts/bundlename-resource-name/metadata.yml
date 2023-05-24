@@ -1,0 +1,6 @@
+kind: QuickStarts 
+name: hms-deploy-rhel
+tags: # If you want to use more granular filtering add tags to the quickstart
+  - kind: bundle
+    value: insights
+    
