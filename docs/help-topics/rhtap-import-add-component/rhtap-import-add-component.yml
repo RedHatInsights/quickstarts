@@ -19,15 +19,12 @@
     ***
     **NOTE**
     
-    We can build applications that are written in the following language stacks and frameworks:
+    We can build applications that are written in the following languages and frameworks:
 
-    * Python
-    * Java
+    * Java: Spring Boot, Quarkus
+    * JavaScript: Node.js, Express
+    * Python: Flask
     * Go
-    * .NET
-    * Node.js
-    * Quarkus
-    * Spring Boot
 
     ***
     **Using a code sample**
