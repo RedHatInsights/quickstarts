@@ -1,0 +1,6 @@
+kind: QuickStarts
+name: iam-two-factor-auth
+tags:
+  - kind: bundle
+    value: iam
+    
