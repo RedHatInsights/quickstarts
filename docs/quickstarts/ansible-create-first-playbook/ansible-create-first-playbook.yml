@@ -1,4 +1,3 @@
----
 apiVersion: console.openshift.io/v1
 kind: QuickStarts
 metadata:
