@@ -1,5 +1,5 @@
 apiVersion: console.openshift.io/v1
-kind: Quickstarts
+kind: QuickStarts
 metadata:
   name: ansible-related-documentation
   externalDocumentation: true

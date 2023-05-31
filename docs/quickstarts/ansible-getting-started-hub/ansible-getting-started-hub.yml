@@ -1,8 +1,8 @@
 apiVersion: console.openshift.io/v1
-kind: Quickstarts
-metadat:
+kind: QuickStarts
+metadata:
   name: ansible-getting-started-hub
-  externaleDocumentation: true
+  externalDocumentation: true
 spec:
   version: 0.1
   type:

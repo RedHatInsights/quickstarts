@@ -2,4 +2,4 @@ kind: QuickStarts # kind must always be "Quickstarts"
 name: ansible-getting-started-hub
 tags: 
   - kind: bundle
-    value: Ansible
+    value: ansible
