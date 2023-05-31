@@ -1,0 +1,16 @@
+apiVersion: console.openshift.io/v1
+kind: QuickStarts
+metadata:
+  name: openshift-ocm
+  externalDocumentation: true
+spec:
+  version: 0.1
+  type:
+    text: Documentation
+    color: orange
+  displayName: Learn about OpenShift cluster services on the console
+  icon: 
+  description: Work with OpenShift clusters using Red Hat OpenShift Cluster Manager.
+  link:
+    href: https://access.redhat.com/documentation/en-us/openshift_cluster_manager
+    text: View documentation
