@@ -1,0 +1,16 @@
+apiVersion: console.openshift.io/v1
+kind: Quickstarts
+metadata:
+  name: ansible-viewing-reports
+  externalDocumentation: true
+spec:
+  version: 0.1
+  type:
+    text: Documentation
+    color: orange
+  displayName: Viewing automation environment reports
+  icon: ~
+  description: Generate an overview report to monitor your automation environment using the reports feature.
+  link:
+    href: https://access.redhat.com/documentation/en-us/red_hat_ansible_automation_platform/2.3/html/viewing_reports_about_your_ansible_automation_environment
+    text: View Documentation
