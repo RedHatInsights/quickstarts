@@ -1,0 +1,8 @@
+kind: QuickStarts # kind must always be "QuickStarts"
+name: hac-deploy-java-on-k8s
+tags: # If you want to use more granular filtering add tags to the quickstart
+  - kind: bundle
+    value: hac
+  - kind: bundle
+    value: application-studio
+    
