@@ -7,7 +7,7 @@ spec:
   version: 0.1
   type:
     text: Video
-    color: gray
+    color: grey
   displayName: Introduction to the OpenShift Developer Sandbox Series
   icon: ~
   description: ''
