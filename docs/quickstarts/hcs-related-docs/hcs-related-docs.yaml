@@ -1,0 +1,16 @@
+apiVersion: console.openshift.io/v1
+kind: QuickStarts
+metadata:
+  name: hcs-related-docs
+  externalDocumentation: true
+spec:
+  version: 0.1
+  type:
+    text: Documentation
+    color: orange
+  displayName: Related documentation for hybrid committed spend
+  icon: ~
+  description: A complete list of documentation related to hybrid committed spend.
+  link:
+    href: https://access.redhat.com/documentation/en-us/hybrid_committed_spend/
+    text: View documentation

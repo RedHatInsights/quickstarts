@@ -1,0 +1,16 @@
+apiVersion: console.openshift.io/v1
+kind: QuickStarts
+metadata:
+  name: subs-simple-content-access
+  externalDocumentation: true
+spec:
+  version: 0.1
+  type:
+    text: Documentation
+    color: orange
+  displayName: Getting started with simple content access
+  icon: ~
+  description: Streamline your subscription workflow by enabling simple content access.
+  link:
+    href: https://access.redhat.com/documentation/en-us/subscription_central/2023/html/getting_started_with_simple_content_access
+    text: View documentation

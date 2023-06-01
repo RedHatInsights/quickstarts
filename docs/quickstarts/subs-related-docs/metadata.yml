@@ -1,0 +1,6 @@
+kind: QuickStarts
+name: subs-related-docs
+tags:
+  - kind: bundle
+    value: subscriptions
+    

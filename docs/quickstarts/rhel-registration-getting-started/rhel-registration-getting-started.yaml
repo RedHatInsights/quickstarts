@@ -1,0 +1,16 @@
+apiVersion: console.openshift.io/v1
+kind: QuickStarts
+metadata:
+  name: rhel-registration-getting-started
+  externalDocumentation: true
+spec:
+  version: 0.1
+  type:
+    text: Documentation
+    color: orange
+  displayName: Getting started with RHEL system registration
+  icon: ~
+  description: Register your Red Hat Enterprise Linux system to enable features and capabilities for managing your system and reporting data.
+  link:
+    href: https://access.redhat.com/documentation/en-us/subscription_central/2023/html/getting_started_with_rhel_system_registration
+    text: View documentation

@@ -1,0 +1,17 @@
+apiVersion: console.openshift.io/v1
+kind: QuickStarts
+metadata:
+  name: subs-source-gcp
+  externalDocumentation: true
+spec:
+  version: 0.1
+  type:
+    text: Documentation
+    color: orange
+  displayName: |
+    Adding a source: GCP
+  icon: ~
+  description: Configure and add a GCP (Google Cloud Platform) source for hybrid committed spend.
+  link:
+    href: https://access.redhat.com/documentation/en-us/hybrid_committed_spend/2023/html/adding_a_google_cloud_source_to_hybrid_committed_spend
+    text: View documentation

@@ -1,0 +1,6 @@
+kind: QuickStarts
+name: subs-simple-content-access
+tags:
+  - kind: bundle
+    value: subscriptions
+    
