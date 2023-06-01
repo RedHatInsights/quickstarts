@@ -11,16 +11,17 @@
     
     Before you create and deploy your application, look over the values and options that display here. You can rename any component from this view, too.
 
-    - **Component name**: Is it correct? Click the GitHub link under this field if you want to check your repository URL.
+    - **Component name**: Is it correct? Click the GitHub link under this field if you want to check your repository URL. Save any changes to the name by clicking the checkmark. Discard the changes and exit editing mode by clicking the X.
     - **Runtime**: Did we detect the right one? If so, you should notice that we suggest suitable deployment options. If you want to change your runtime, expand the menu next to your runtime name and make a selection.
     
     In the **Build & deploy configuration** section, look over these items:
     - **Target port**: Is it correct? If not, click in the field to modify it.
     - **Dockerfile**: If you specified **Dockerfile** as your runtime, make sure we detected the right one. Click in the field if you need to modify it. Don't worry! We hide this field if you chose a different runtime.
-    - **Default build pipeline**: To specify how to trigger rebuilds, toggle to choose either the default build pipeline or a custom one.
-        - **Default build pipeline**: This runs faster because it makes only critical image checks. Consider starting here to make sure we can successfully build and deploy your component.
-        - **Custom build pipeline**: This is triggered when you make commits to your source code repository. This pipeline runs more checks and security scans than the default pipeline, but it takes a bit more time because it's more thorough. **NOTE:** To use a custom pipeline, you must be the owner of your repository so that you can authorize the installation of our application in your GitHub instance and then grant the app access to your repository. If someone else owns your repository, fork it, then go back to the Add components page and start again.
+    - **Default build pipeline**: This switch is on by default. Toggle the switch off to create a **Custom** build pipeline. **Default** and **Custom** build pipelines are triggered differently and include different tasks.
+        - **Default** build pipelines are triggered manually and run faster by skipping some security checks and tests.
+        - **Custom** build pipelines are triggered when you make commits to your source code repository. They run more tests than default pipelines, and you can customize which tasks are included. **NOTE:** To use a custom pipeline, you must be the owner of your repository so that you can authorize our application in your GitHub account and then grant it access to this repository. If someone else owns this repository, fork it, and use the new repo URL when adding the component.
     - **CPU** and **Memory**: Choose how many of each of these you want for your application, and in what unit, depending on your deployment requirements.
+    - **Instances**: How many instances of this image do you want to deploy into an environment? Each instance requires its own resources.
 
     In the **Environment variables** section, enter a variable name and value to customize how we deploy your application. 
     
