@@ -1,0 +1,16 @@
+apiVersion: console.openshift.io/v1
+kind: QuickStarts
+metadata:
+  name: openshift-rosa
+  externalDocumentation: true
+spec:
+  version: 0.1
+  type:
+    text: Documentation
+    color: orange
+  displayName: Learn about Red Hat OpenShift Service on AWS (ROSA)
+  icon: 
+  description: Use Red Hat OpenShift Service on AWS (ROSA).
+  link:
+    href: https://access.redhat.com/documentation/en-us/red_hat_openshift_service_on_aws
+    text: View documentation

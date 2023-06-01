@@ -1,0 +1,16 @@
+apiVersion: console.openshift.io/v1
+kind: QuickStarts
+metadata:
+  name: openshift-manage-clusters
+  externalDocumentation: true
+spec:
+  version: 0.1
+  type:
+    text: Documentation
+    color: orange
+  displayName: Managing clusters
+  icon: 
+  description: Set up and manage your OpenShift clusters.
+  link:
+    href: https://access.redhat.com/documentation/en-us/openshift_cluster_manager/2023/html/managing_clusters/index
+    text: View documentation

@@ -19,3 +19,6 @@
 fmtcoverage.html
 # Sqlite databases used for testing purposes.
 *.db
+
+# Mac OS specific files
+**/.DS_Store

@@ -1,0 +1,16 @@
+apiVersion: console.openshift.io/v1
+kind: QuickStarts
+metadata:
+  name: openshift-marketplace
+  externalDocumentation: true
+spec:
+  version: 0.1
+  type:
+    text: Documentation
+    color: orange
+  displayName: Using Red Hat Marketplace
+  icon: 
+  description: Learn about On-Demand subscriptions.
+  link:
+    href: https://marketplace.redhat.com/en-us/documentation/pay-as-you-go-products
+    text: View documentation
