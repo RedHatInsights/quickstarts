@@ -1,0 +1,5 @@
+kind: QuickStarts # kind must always be "Quickstarts"
+name: ansible-create-first-playbook
+tags: # If you want to use more granular filtering add tags to the quickstart
+  - kind: bundle
+    value: ansible

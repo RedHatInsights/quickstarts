@@ -1,0 +1,16 @@
+apiVersion: console.openshift.io/v1
+kind: QuickStarts
+metadata:
+  name: ansible-related-documentation
+  externalDocumentation: true
+spec:
+  version: 0.1
+  type:
+    text: Documentation
+    color: orange
+  displayName: Related documentation
+  icon: ~
+  description: A complete list of documentation related to  Ansible Automation Platform services.
+  link:
+    href: https://access.redhat.com/documentation/en-us/red_hat_ansible_automation_platform/2.3
+    text: View Documentation

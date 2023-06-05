@@ -1,0 +1,16 @@
+apiVersion: console.openshift.io/v1
+kind: QuickStarts
+metadata:
+  name: openshift-cost-management
+  externalDocumentation: true
+spec:
+  version: 0.1
+  type:
+    text: Documentation
+    color: orange
+  displayName: Configuring cost management
+  icon: 
+  description: Set up cost management by connecting your cloud environments, and configuring users and permissions.
+  link:
+    href: https://access.redhat.com/documentation/en-us/cost_management_service/2023/html/getting_started_with_cost_management
+    text: View documentation

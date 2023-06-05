@@ -1,0 +1,16 @@
+apiVersion: console.openshift.io/v1
+kind: QuickStarts
+metadata:
+  name: openshift-cost-explorer
+  externalDocumentation: true
+spec:
+  version: 0.1
+  type:
+    text: Documentation
+    color: orange
+  displayName: Visualizing costs
+  icon: 
+  description: Use Cost Explorer to manage your costs.
+  link:
+    href: https://access.redhat.com/documentation/en-us/cost_management_service/2023/html/visualizing_your_costs_using_cost_explorer
+    text: View documentation

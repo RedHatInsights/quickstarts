@@ -1,0 +1,16 @@
+apiVersion: console.openshift.io/v1
+kind: QuickStarts
+metadata:
+  name: openshift-source-gcp
+  externalDocumentation: true
+spec:
+  version: 0.1
+  type:
+    text: Documentation
+    color: orange
+  displayName: "Adding a source: Google Cloud Platform"
+  icon: 
+  description: Configure and add a Google Cloud Platform (GCP) source to cost management.
+  link:
+    href: https://access.redhat.com/documentation/en-us/cost_management_service/2023/html-single/adding_a_google_cloud_source_to_cost_management
+    text: View documentation

@@ -4,6 +4,7 @@
 *.dll
 *.so
 *.dylib
+*.vscode
 
 # Test binary, built with `go test -c`
 *.test
@@ -18,3 +19,6 @@
 fmtcoverage.html
 # Sqlite databases used for testing purposes.
 *.db
+
+# Mac OS specific files
+**/.DS_Store
