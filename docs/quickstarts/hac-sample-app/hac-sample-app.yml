@@ -1,0 +1,17 @@
+apiVersion: console.openshift.io/v1
+kind: QuickStarts
+metadata:
+  name: hac-sample-app
+  externalDocumentation: true
+spec:
+  version: 0.1
+  type:
+    text: Tutorial
+    color: grey
+  displayName: Deploy a sample application in the Developer Sandbox
+  icon: ~
+  description: |
+    You can follow along with this exercise using any of the following programming languages: C#, Go, Java, Node.js, PHP, Python, and Ruby. 
+  link:
+    href: https://developers.redhat.com/developer-sandbox/activities/get-started-with-your-developer-sandbox
+    text: View documentation

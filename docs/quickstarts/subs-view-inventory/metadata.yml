@@ -1,0 +1,6 @@
+kind: QuickStarts
+name: subs-view-inventory
+tags:
+  - kind: bundle
+    value: subscriptions
+    

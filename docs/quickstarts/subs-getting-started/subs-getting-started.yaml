@@ -1,0 +1,16 @@
+apiVersion: console.openshift.io/v1
+kind: QuickStarts
+metadata:
+  name: subs-getting-started
+  externalDocumentation: true
+spec:
+  version: 0.1
+  type:
+    text: Documentation
+    color: orange
+  displayName: Getting started with the subscriptions service
+  icon: ~
+  description: Review current and historical subscription usage against total capacity with the subscriptions service.
+  link:
+    href: https://access.redhat.com/documentation/en-us/subscription_central/2023/html/getting_started_with_the_subscriptions_service
+    text: View documentation

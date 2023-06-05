@@ -1,6 +1,3 @@
 kind: QuickStarts # kind must always be "QuickStarts"
 name: settings-hcc-getting-started
-tags: # If you want to use more granular filtering add tags to the quick start
-  - kind: bundle
-    value: settings
     

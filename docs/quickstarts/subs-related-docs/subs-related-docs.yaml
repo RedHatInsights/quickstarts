@@ -1,0 +1,16 @@
+apiVersion: console.openshift.io/v1
+kind: QuickStarts
+metadata:
+  name: subs-related-docs
+  externalDocumentation: true
+spec:
+  version: 0.1
+  type:
+    text: Documentation
+    color: orange
+  displayName: Related documentation for subscriptions
+  icon: ~
+  description: A complete list of documentation related to subscriptions.
+  link:
+    href: https://access.redhat.com/documentation/en-us/subscription_central
+    text: View documentation

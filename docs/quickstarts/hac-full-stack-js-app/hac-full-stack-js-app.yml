@@ -1,0 +1,17 @@
+apiVersion: console.openshift.io/v1
+kind: QuickStarts
+metadata:
+  name: hac-full-stack-js-app
+  externalDocumentation: true
+spec:
+  version: 0.1
+  type:
+    text: Tutorial
+    color: grey
+  displayName: Deploying full-stack JavaScript applications to the Developer Sandbox for Red Hat OpenShift
+  icon: ~
+  description: |
+    Starting from source code, you will take an application that runs locally and deploy it in the Developer Sandbox for Red Hat OpenShift.
+  link:
+    href: https://developers.redhat.com/developer-sandbox/activities/deploying-full-stack-javascript-applications-to-the-sandbox/part1
+    text: View documentation
