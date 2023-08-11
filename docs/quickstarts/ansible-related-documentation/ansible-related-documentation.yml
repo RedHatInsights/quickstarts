@@ -12,5 +12,5 @@ spec:
   icon: ~
   description: A complete list of documentation related to  Ansible Automation Platform services.
   link:
-    href: https://access.redhat.com/documentation/en-us/red_hat_ansible_automation_platform/2.3
+    href: https://access.redhat.com/documentation/en-us/red_hat_ansible_automation_platform/
     text: View Documentation
