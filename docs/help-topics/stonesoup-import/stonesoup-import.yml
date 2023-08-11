@@ -7,14 +7,13 @@
   tags:
   title: Add components
   content: |-
-    A “component” is an image that we build from source code in a repository. An application is a collection of these components working together. To start building your application, add a component by importing your code repository, or use one of our samples.
+    A “component” is a container image that we build from source code in a repository. An application is a collection of these components working together. To start building your application, add a component by importing your code repository, or use one of our samples.
 
     **Using code from your GitHub repository**
-    1. To use your own code, enter the link to your repository in the **Git repo URL** field. We verify your URL right away. You don’t even have to press **Enter**.
-    2. Click **Git options** to expand it and choose whether to make either of the following specifications:
-        1. Add a **Git reference** to point to code in a specific branch, tag, or commit that you want to use to build your application.
-        2. Indicate a **Context dir** to specify the subdirectory for the source code you want to use.
-    3. Click **Next**, then we scan and analyze your Git directory to determine how many components to add to your application. The types of files in your repository, and also your Git directory file hierarchy, determine the number and type of components to add. For example, we look for devfiles and Dockerfiles, and language-specific build configuration files like pom.xml for Java or package.json for Node.js.
+    1. To use your own code, type the link to your repository in the **Git repository URL** field. We verify your URL right away. You don’t even have to press **Enter**.
+    2. Add an optional **Git reference** to point to code in a specific branch, tag, or commit that you want to use to build your application.
+    3. Indicate a **Context directory** to specify the subdirectory for the source code you want to use.
+    4. Click **Next**, then we scan and analyze your Git directory to determine how many components to add to your application. The types of files in your repository and your Git directory file hierarchy determine the number and type of components to add. For example, we look for devfiles and Dockerfiles, and language-specific build configuration files like `pom.xml` for Java or `package.json` for Node.js.
 
     ***
     **NOTE**
@@ -30,32 +29,51 @@
     * Spring Boot
 
     ***
+
     **Using a code sample**
-    1. To start with a code sample, click **Start with a sample**, then go ahead and explore or test various languages and frameworks.         
-    2. Click any of the options on the **Select a sample** page, then follow the resulting instructions.
+    To start with a code sample, enter the name of the code you want to work with into the code sample **Filter by keyword** field, or click **Import sample** on any of the options displayed. Follow the resulting instructions to explore or test whatever language and framework you choose.
 
 
 - name: stonesoup-import-configure-component
   tags:
   title: Configure components
   content: |-
-    We analyze your code, then define and apply deployment settings for each of your application components. Remember, a “component” is an image that we build from source code in a repository. An application is a collection of these components working together.
+    We analyze your code, then define and apply deployment settings for each of your application components. Remember, a “component” is a container image that we build from source code in a repository. An application is a collection of these components working together.
 
-    Before you create and deploy your application, look over the values that display here. You can rename any component from this view, too. In particular, pay attention to the following fields:
+    Before you create and deploy your application, look over the values and options that display here. You can rename any component from this view, too.
+
+    - Under **Application details**, check **Name**. This is the application name we created for you, but you can change it in this field if you want.
+
+    In the **Components** section, look over these items:
+
+    - **Component name**: Is it correct? Click the GitHub link under this field if you want to check your repository URL.
+    - **Runtime**: Did we detect the right one? If so, you should notice that we suggest appropriate deployment options. If you want to change your runtime, expand the menu next to your runtime name and make a selection.
+
+    Under **Build & deploy configuration**, review these settings:
 
     - **Target port**: Is it correct? If not, click in the port field to modify it.
-    - **CPUs**, **memory**, and **instances**: Choose how many of each of these you want for your application, depending on your subscription.
+    - **Dockerfile**: If you specified **Dockerfile** as your runtime, make sure we detected the right one. Click in the field if you need to modify it. If you chose a different runtime, we hide this field.
+    - **Default build pipeline**: To specify how to trigger rebuilds, toggle to choose either the default build pipeline or a custom one.
+      - **Default build pipeline**: This runs faster because it makes only critical image checks. Consider starting here to make sure we can successfully build and deploy your component.
+      - **Custom build pipeline**: This is triggered when you make commits to your source code repository. This pipeline runs more checks and security scans than the default pipeline, but it takes a bit more time because it's more thorough. **NOTE**: To use a custom pipeline, you must be the owner of your repository so that you can authorize the installation of our application in your GitHub instance and then grant the app access to your repository. If someone else owns your repository, fork it, then go back to the Add components page and start again.
+    - **CPU**, **Memory**, and **Instances**: Choose how many of each of these you want for your application, and in what unit, depending on your deployment requirements.
     - **Route**: Enter the public URL for your published application.
-    - **Environment variables**: Define your environment variables to customize how we deploy your application. Usually, you define these in a devfile or Dockerfile. If your application doesn’t contain either of these file types, we use an application analyzer to extract the necessary information from your code.
-    - **Runtime**: Did we detect the right runtime? If so, you don’t have to do anything with this field. If you want to change your runtime, click the **Runtime** menu and make a selection.
-    - **Send pull request**: Select this option to create a custom pipeline in your Git repository.
 
-    When you’re satisfied with your component configuration settings, click **Create**. While your component builds, go to **Applications > Overview** to check out lifecycle details for your application.
+    In the **Environment variables** section, enter a variable name and value to customize how we deploy your application. 
+
+    ***
+    **WARNING**
+
+    Avoid adding secrets as environment variables because we currently store them in `deployment.yaml` files in public GitHub repositories.
+
+    ***
+  
+    When you’re satisfied with your component configuration settings, click **Create application**.
 
     ***
     **NOTE**
 
-    After you create your application, you can adjust your configuration settings from the **Application** view whenever you want.
+    After you create your application, you can adjust your configuration settings anytime you want from the **Application** view.
 
     ***
 
