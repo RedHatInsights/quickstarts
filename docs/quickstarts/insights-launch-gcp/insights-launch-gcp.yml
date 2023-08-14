@@ -33,7 +33,7 @@ spec:
         <br>
         <br>
 
-        <h4 id="add-GCP-source"><b>Add an GCP Source:</B></h4> 
+        <h4 id="add-GCP-source"><b>Add a GCP Source:</B></h4> 
         
         1. Click the Settings <i class="fas fa-cog"></i> icon in the top right corner.
 
@@ -105,7 +105,7 @@ spec:
         success: Shows a success message in the task header
         failed: Shows a failed message in the task header
 
-    - title: Use Image Builder to build an GCP image
+    - title: Use Image Builder to build a GCP image
       description: |-
           Let's use the updated source to create a new GCP image or recreate an existing one.
           <br>
@@ -238,11 +238,11 @@ spec:
 
           1. Navigate to **Images** in the left menu.
           
-          1. Locate an image created with an GCP source.
+          1. Locate a GCP image.
           
               - The image type is displayed in the “Target” column.
           
-              - Note: The source must be configured to launch instances. See Add or Edit an GCP Source.
+              - Note: The source must be configured to launch instances. See Add or Edit a GCP Source.
           
           1. From the “Instance” column, click **Launch.**
           
