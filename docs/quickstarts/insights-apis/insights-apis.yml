@@ -1,0 +1,16 @@
+apiVersion: console.openshift.io/v1
+kind: QuickStarts
+metadata:
+  name: insights-apis
+  externalDocumentation: true
+spec:
+  version: 0.1
+  type:
+    text: Documentation
+    color: orange
+  displayName: APIs
+  icon: ~
+  description: Explore the API catalog and documentation.
+  link:
+    href: https://developers.redhat.com/api-catalog
+    text: View documentation

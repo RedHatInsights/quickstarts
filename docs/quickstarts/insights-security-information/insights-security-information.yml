@@ -1,0 +1,16 @@
+apiVersion: console.openshift.io/v1
+kind: QuickStarts
+metadata:
+  name: insights-security-information
+  externalDocumentation: true
+spec:
+  version: 0.1
+  type:
+    text: Documentation
+    color: orange
+  displayName: Security information
+  icon: ~
+  description: Review data and application security details, including data features, data protection, and data collection. 
+  link:
+    href: https://www.redhat.com/en/technologies/management/insights/data-application-security
+    text: View documentation
