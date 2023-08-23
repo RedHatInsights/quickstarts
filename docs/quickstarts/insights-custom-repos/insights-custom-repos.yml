@@ -31,9 +31,9 @@ spec:
         
         <h4 id="ib-add-custom"><b>Add a Custom Repository:</b></h4>
 
-        1. Click the Settings <i class="fas fa-cog"></i> icon in the top right corner.
+        1. Click **Content** in the left menu.
 
-        1. In Settings, click **Repositories** in the left menu.
+        1. Under **Content**, click **Repositories**.
 
         1. Navigate to the **Popular repositories** tab.
 
