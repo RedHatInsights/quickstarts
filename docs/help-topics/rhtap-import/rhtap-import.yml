@@ -3,7 +3,7 @@
 # Links to be external only. We don't know yet whether referencing to other side panels will be supported but referencing to in-depth docs is expected to be supported.
 # Note that this topic is for LEARN MORE.
 
-- name: stonesoup-import-add-component
+- name: rhtap-import-add-component
   tags:
   title: Add components
   content: |-
@@ -34,7 +34,7 @@
     To start with a code sample, enter the name of the code you want to work with into the code sample **Filter by keyword** field, or click **Import sample** on any of the options displayed. Follow the resulting instructions to explore or test whatever language and framework you choose.
 
 
-- name: stonesoup-import-configure-component
+- name: rhtap-import-configure-component
   tags:
   title: Configure components
   content: |-
