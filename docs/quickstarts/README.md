@@ -113,7 +113,11 @@ If you have created quick starts in the Hybrid Cloud Console before, start here:
 
     d. Preview and validate the YAML content by copying and pasting your YAML into the [preview tool](https://quickstarts-content-preview.surge.sh/).
 
-    e. Get your quick start reviewed by stakeholders as needed.
+    e. Commit the changes to your branch:
+    ```
+    git rebase upstream/main
+    ```
+    Get your quick start reviewed by stakeholders as needed.
 
 ### Adding your quick start to the Hybrid Cloud Console
 
