@@ -1,18 +1,6 @@
-kind: QuickStarts
-name: insights-inventory-groups
-tags: 
-  - kind: bundle
-    value: insights
-  - kind: application
-    value: inventory
-  - kind: bundle
-    value: settings
-  - kind: application
-    value: user access
-
 # Additional info: https://docs.openshift.com/container-platform/4.9/web_console/creating-quick-start-tutorials.html
 metadata:
-  name: getting-started-with-quick-starts
+  name: insights-inventory-group-creation
   # you can add additional metadata here
   instructional: true
 spec:
