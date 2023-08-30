@@ -1,0 +1,13 @@
+kind: QuickStarts
+name: insights-inventory-groups
+tags: 
+  - kind: bundle
+    value: insights
+  - kind: application
+    value: inventory
+  - kind: bundle
+    value: settings
+  - kind: application
+    value: user access
+
+
