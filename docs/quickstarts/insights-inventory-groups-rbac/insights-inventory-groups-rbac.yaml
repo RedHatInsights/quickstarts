@@ -13,34 +13,87 @@ spec:
     color: blue
   icon: data:image/svg+xml;base64,PCEtLSBHZW5lcmF0ZWQgYnkgSWNvTW9vbi5pbyAtLT4KPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KPHRpdGxlPjwvdGl0bGU+CjxnIGlkPSJpY29tb29uLWlnbm9yZSI+CjwvZz4KPHBhdGggZD0iTTQ0OCA2NHY0MTZoLTMzNmMtMjYuNTEzIDAtNDgtMjEuNDktNDgtNDhzMjEuNDg3LTQ4IDQ4LTQ4aDMwNHYtMzg0aC0zMjBjLTM1LjE5OSAwLTY0IDI4LjgtNjQgNjR2Mzg0YzAgMzUuMiAyOC44MDEgNjQgNjQgNjRoMzg0di00NDhoLTMyeiI+PC9wYXRoPgo8cGF0aCBkPSJNMTEyLjAyOCA0MTZ2MGMtMC4wMDkgMC4wMDEtMC4wMTkgMC0wLjAyOCAwLTguODM2IDAtMTYgNy4xNjMtMTYgMTZzNy4xNjQgMTYgMTYgMTZjMC4wMDkgMCAwLjAxOS0wLjAwMSAwLjAyOC0wLjAwMXYwLjAwMWgzMDMuOTQ1di0zMmgtMzAzLjk0NXoiPjwvcGF0aD4KPC9zdmc+Cg==
   prerequisites:
-    - You can optionally list prerequisites
-    - Another prerequisite
-    - These prerequisites are also displayed on the introduction step
+    - Be an Organization Administrator or have the User Access Administrator role
+    - Have Inventory Groups created
   description: |-
     Learn how to create an Inventory groups, add systems to it, and remove systems from it.
   introduction: |-
-    **Welcome to the quickstart for managing user access using Inventory groups to enhance security within your organization.**
+    **Welcome to the quick start for managing user access using Inventory groups to enhance security within your organization.**
     
-    In this quickstart, you will use the User Access application to configure access to different Inventory groups using custom role functionality and user access groups.
+    In this quick start, you will use the User Access application to configure access to different Inventory groups using custom role functionality and user access groups.
     <br> <br>
-    Note: By default, everyone in your organization will be assigned the "Inventory host admin" role, and will have access to all systems, whether they are grouped or not. You will change these default permissions by completing the tasks in this Quick Start.
+    **IMPORTANT NOTE:** By default, everyone in your organization will be assigned the "Inventory Hosts Administrator" role, and will have access to all systems, whether they are grouped or not. You will change these default permissions by completing the tasks in this quick Start.
 
-    The scenario outlined in this Quick Start is as follows: you want to assign user-specific access to:
+    The scenario outlined in this quick start is as follows: you want to assign user-specific access to:
     - Certain groups of systems but not others, and/or
     - All ungrouped systems
     
   tasks:
-    - title: Create a group
+    - title: Create a custom role
       description: |- 
 
-        Inventory groups allow you to create groups, and select specific systems to add to these groups to better organize your inventory.
-        
-        ## Create a group
+        Configuring user access for your group must be done from the User Access application.
 
-        1. Navigate to Inventory > **Groups** using the left navigation.
-        2. To create a group, click the **Create group** button.
-        3. In the Create group modal, enter a name for the group. 
-        4. Click **Submit**.
+        **To create a custom role:**
+        
+        1. Navigate to the User Access application by clicking the Settings <i class="fas fa-cog"></i> icon in the top right corner. From there, click **Identity & Access Management**.
+        1. In Settings > User Access, click **Roles** in the left navigation.
+        1. Click **Create role**. This will open up a wizard.
+        1. On Step 1 (Create role), name your role, and add a description if you’d like.
+        1. Click **Next**.
+        1. On Step 2 (Add permissions), filter by Applications, and select “inventory” to narrow down all inventory permissions.
+            
+            **The four inventory permissions include:** <br>
+              1. **inventory:hosts:read** → Allows users to view systems (needed to view systems both inside and outside a group).
+              1. **inventory:hosts:write** → Allows users to Rename or Delete systems
+              1. **inventory:groups:read** → Allows users to view Groups, and general info (not including systems in it)
+              1. **inventory:group:write** → Allows users to edit system group membership (add and remove systems from groups)
+        1. Select inventory permissions as needed. Here are some possible variations: <br>
+            - If you want to give a user full access to the group and its hosts → select all 4 permissions
+            - If you want to give a user full access to the hosts inside a group → but not group editing access, give them inventory:hosts:read, inventory:hosts:write, and inventory:group:read, but NOT inventory:group:write
+            - If you want to give a user full access to ungrouped hosts → select all 4 permissions (ungrouped hosts are considered a group).
+        1. Click **Next**.
+        1. On Step 3 (Define inventory group access), for each permission, select groups you would like to apply the permissions to using the dropdown menus. <br>
+        
+            Possible scenarios include:
+            - You would like to give users ability to only see systems in specific groups and NOT ungrouped systems → Select those groups only
+            - You would like to give users the ability to see systems in specific groups AND any ungrouped systems → Select those groups AND “ungrouped” systems
+            - You would like to give users the ability to see everything in the inventory → There is no need to create a custom role then. You can cancel the creation flow.
+        1. Once you’ve made your selections, click **Next**.
+        1. Review your selections. Click **Submit**.
+
+        Repeat this process for every inventory group or groups of users you want to give specific group access to.
+        
+        **NOTE:** If you want to give a group of system administrators all the same access to groups A, B, C, you can create a single custom role and assign permissions to those 3 groups.
+        However, if you want to give different users access to different groups, you will need to create multiple custom roles - one for each group you would like to give access to.
+
+        
+      # optional - the task's Check your work module
+      review:
+        instructions: |-
+          - Did you complete the task successfully?
+        failedTaskHelp: This task isn't verified yet. Try the task again.
+      # optional - the task's success and failure messages
+      summary:
+        success: Shows a success message in the task header
+        failed: Shows a failed message in the task header
+
+    - title: Create a User Access group
+      description: |- 
+
+        To assign custom roles to a user or group of users, you must create a User Access group and place the corresponding role and users inside it. The users inside a group will be given the roles inside the group.
+
+        1. Click User Access > **Groups** in the left navigation.
+        1. Click **Create group**.
+        1. On Step 1 (Name and Description), input a group name.
+        1. Click **Next**.
+        1. On Step 2 (Add roles), select the custom role you created in Step 1.
+        1. Click **Next**.
+        1. On Step 3 (Add members), select the users you would like to give the custom role to.
+        1. Click **Next**.
+        1. Review the details of your selections, and click **Submit**.
+
+        Repeat this step for each custom role you would like to give to one or more users.
 
       # optional - the task's Check your work module
       review:
@@ -52,44 +105,77 @@ spec:
         success: Shows a success message in the task header
         failed: Shows a failed message in the task header
 
-    - title: Add systems to a group
+    - title: (Important) Remove "Inventory hosts admin” role from Default Access group
       description: |- 
-
-        **To add systems to a group from the Groups page:**
-        1. Click into a group of choice, to navigate to its page.
-        1. Click **Add systems** once on the group's page. This should open up a modal.
-        1. Select systems to add to your group. You may filter through systems using the filter toolbar.
-        1. Click **Submit**.
-  
-        To add systems to other groups, navigate back to the main Groups page, click into another group and repeat these steps.
-  
-        **To add systems to a group from the main System's page:**
-        
-        From this page, you can either add systems to a group one by one by clicking on “Add to group” in the row level menu, or add them in bulk by selecting multiple systems, and clicking “Add to group” in the menu action toolbar.
-        1. First, navigate to Inventory > **Systems** using the left navigation.
-  
-        1. Select systems you want to add to a group.
-  
-            NOTE:  Make sure you are only selecting systems that are not already part of a group, otherwise the action will be disabled.
-  
-        1. Click on <i class="fas fa-ellipsis-v"></i> in the toolbar, then click on **Add to group**
-        1. In the add to group modal either, you can either select an existing group, or create a new group (if  you have permissions to do so).
-    
-            - **To add to an existing group:**
-                1. Select a group from the dropdown menu
-                1. click **Add** to submit.
-            
+      
+        After completing the tasks this far, all users in your organization will still have full access to your inventory because they still have the “inventory hosts administrator” role assigned to them. This allows them to view and edit all hosts. This role is given to them by the default “Default Access” group which assigns roles to your whole organization.
         <br>
-        **To add to a new group:**
-        1. Click **Create a new group**
-        1. Enter a group name
-        1. Click **Create**
-        1. Open the Select a group dropdown, and select your new group
-        1. Click **Add**
-  
-  
-          
-         
-  
+        **To make sure your organization users' access is limited to the inventory groups/systems defined in your custom roles,  you must take away the “inventory hosts administrator” role from your users.**
+        
+        1. In the User Access > Groups page, click the **Default Access group**.
+        1. Select the Inventory Hosts Administrator role.
+        1. Click on the role’s row actions menu.
+        1. Click **Remove**.
+        1. Click **Remove role**.
+        1. A warning will appear. Check the **“I understand, and I want to continue”** box.
+        1. Click **Continue**.
 
+      # optional - the task's Check your work module
+      review:
+        instructions: |-
+          - Did you complete the task successfully?
+        failedTaskHelp: This task isn't verified yet. Try the task again.
+      # optional - the task's success and failure messages
+      summary:
+        success: Shows a success message in the task header
+        failed: Shows a failed message in the task header
+
+    - title: (Optional) Create a group to give back “inventory hosts admin” role to specific users
+      description: |- 
+      
+        There may be users that you’d still like to give full inventory access to. In this case, you will need to create another user access group to assign the “inventory hosts administrator” role back to those users.
+
+        1. In the User Access > **Groups** page, click **Create group**.
+        1. On Step 1 (Name and Description), name your group.
+        1. Click **Next**.
+        1. On Step 2 (Add roles), select the **Inventory Hosts Administrator** role.
+        1. Click **Next**.
+        1. On Step 3 (Add members), select the users you would like to give full inventory access to.
+        1. Click **Next**.
+        1. Review the details of your selections, and click **Submit**.
+        
+        Now, you will have specific users with full inventory access, and others with full inventory access.
+
+      # optional - the task's Check your work module
+      review:
+        instructions: |-
+          - Did you complete the task successfully?
+        failedTaskHelp: This task isn't verified yet. Try the task again.
+      # optional - the task's success and failure messages
+      summary:
+        success: Shows a success message in the task header
+        failed: Shows a failed message in the task header
+
+        conclusion: |-
+   
+  <h4><b>Thank you for taking the time to explore this feature!</b></h4> 
+
+    We would love to learn more about your experience launching AWS images on the console. 
+    
+    
+    <br>
+    **<a id="qs-ib-aws-launch-contact">Let Red Hat contact you <i class="fas fa-arrow-right"></i> </a>**
+    <br>
+    <br>
+    <br>
+   
+    If you need additional assistance:
+      
+      - [Open a support case](https://access.redhat.com/support)
+  
+  # you can link to the next quick start(s) here
+  nextQuickStart:
+    - mas-alert-note-prereq
+
+        
 
