@@ -28,9 +28,9 @@ spec:
     - title: Create a group
       description: |- 
 
-        Inventory groups allow you to create groups, and select specific systems to add to these groups to better organize your inventory.
+        Inventory groups allow you to create groups, and select specific systems to add to these groups to better organize your inventory. 
         
-        ## Create a group
+        **To create an inventory group:**
 
         1. Navigate to Inventory > **Groups** using the left navigation.
         2. To create a group, click the **Create group** button.
@@ -51,39 +51,71 @@ spec:
       description: |- 
 
         **To add systems to a group from the Groups page:**
+
         1. Click into a group of choice, to navigate to its page.
         1. Click **Add systems** once on the group's page. This should open up a modal.
         1. Select systems to add to your group. You may filter through systems using the filter toolbar.
         1. Click **Submit**.
-  
+
         To add systems to other groups, navigate back to the main Groups page, click into another group and repeat these steps.
-  
-        **To add systems to a group from the main System's page:**
-        
-        From this page, you can either add systems to a group one by one by clicking on “Add to group” in the row level menu, or add them in bulk by selecting multiple systems, and clicking “Add to group” in the menu action toolbar.
-        1. First, navigate to Inventory > **Systems** using the left navigation.
+
+        **To add systems to a group from the main Systems page:**
+
+        1. Navigate to Inventory > **Systems** using the left navigation.
   
         1. Select systems you want to add to a group.
+            
+            - **To add individual systems to a group**, click "Add to group" in the row level <i class="fas fa-ellipsis-v"></i> menu. 
+        
+            - **To add multiple systems to a group**, select multiple systems using the table checkboxes, Click on <i class="fas fa-ellipsis-v"></i> in the toolbar, then click on **Add to group**.
   
-            NOTE:  Make sure you are only selecting systems that are not already part of a group, otherwise the action will be disabled.
+            NOTE:  Selecting systems that already belong to a group will disable the action. 
   
-        1. Click on <i class="fas fa-ellipsis-v"></i> in the toolbar, then click on **Add to group**
-        1. In the add to group modal either, you can either select an existing group, or create a new group (if  you have permissions to do so).
+        1. In the add to group modal, you can either select an existing group, or create a new group (if you have permissions to do so).
     
             - **To add to an existing group:**
-                1. Select a group from the dropdown menu
-                1. click **Add** to submit.
-          
+              1. Select a group from the dropdown menu.
+              1. click **Add** to submit.
+              
             - **To add to a new group:**
-                1. Click **Create a new group**
-                1. Enter a group name
-                1. Click **Create**
-                1. Open the Select a group dropdown, and select your new group
-                1. Click **Add**
-  
-  
-          
-         
-  
+              1. Click **Create a new group**.
+              1. Enter a group name.
+              1. Click **Create**.
+              1. Open the Select a group dropdown, and select your new group.
+              1. Click **Add**.
 
+      # optional - the task's Check your work module
+      review:
+        instructions: |-
+          - Did you complete the task successfully?
+        failedTaskHelp: This task isn't verified yet. Try the task again.
+      # optional - the task's success and failure messages
+      summary:
+        success: Shows a success message in the task header
+        failed: Shows a failed message in the task header
+      
+    - title: Remove systems from a group
+      description: |- 
 
+        **To remove systems from a group from the Groups page**
+
+        1. Navigate to Inventory > **Groups** using the left navigation.
+        1. Select systems you want to remove from a group.
+            
+            - **To remove individual systems from a group**, click "Remove from group" in the row level <i class="fas fa-ellipsis-v"></i> menu. 
+        
+            - **To remove multiple systems from a group**, select multiple systems using the table checkboxes, Click on <i class="fas fa-ellipsis-v"></i> in the toolbar, then click on **Remove from group**.
+  
+            NOTE:  Selecting systems that already belong to a group will disable the action. 
+  
+        1. A modal will open. Click **Remove**.
+
+      # optional - the task's Check your work module
+      review:
+        instructions: |-
+          - Did you complete the task successfully?
+        failedTaskHelp: This task isn't verified yet. Try the task again.
+      # optional - the task's success and failure messages
+      summary:
+        success: Shows a success message in the task header
+        failed: Shows a failed message in the task header
