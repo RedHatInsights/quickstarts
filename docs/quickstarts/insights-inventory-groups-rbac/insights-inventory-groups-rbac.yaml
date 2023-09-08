@@ -156,26 +156,11 @@ spec:
         success: Shows a success message in the task header
         failed: Shows a failed message in the task header
 
-        conclusion: |-
+  conclusion: |-
    
-  <h4><b>Thank you for taking the time to explore this feature!</b></h4> 
+      <h4><b>Thank you for taking the time to explore this feature!</b></h4> 
 
-    We would love to learn more about your experience launching AWS images on the console. 
-    
-    
-    <br>
-    **<a id="qs-ib-aws-launch-contact">Let Red Hat contact you <i class="fas fa-arrow-right"></i> </a>**
-    <br>
-    <br>
-    <br>
-   
-    If you need additional assistance:
+      If you need additional assistance, [open a support case](https://access.redhat.com/support).
+
+
       
-      - [Open a support case](https://access.redhat.com/support)
-  
-  # you can link to the next quick start(s) here
-  nextQuickStart:
-    - mas-alert-note-prereq
-
-        
-
