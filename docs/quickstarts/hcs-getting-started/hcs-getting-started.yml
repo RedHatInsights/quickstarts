@@ -1,0 +1,16 @@
+apiVersion: console.openshift.io/v1
+kind: QuickStarts
+metadata:
+  name: hcs-getting-started
+  externalDocumentation: true
+spec:
+  version: 0.1
+  type:
+    text: Documentation
+    color: orange
+  displayName: Getting started with hybrid committed spend
+  icon: ~
+  description: Learn to set up hybrid committed spend. A hyperscaler drawdown agreement with Red Hat is required.
+  link:
+    href: https://access.redhat.com/documentation/en-us/hybrid_committed_spend/2023/html/getting_started_with_hybrid_committed_spend
+    text: View documentation
