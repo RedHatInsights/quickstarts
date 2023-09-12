@@ -8,12 +8,13 @@ spec:
   durationMinutes: 5
   # Optional type section, will display as a tile on the card
   type:
-    text: Type
+
+    text: Quick start
     # 'blue' | 'cyan' | 'green' | 'orange' | 'purple' | 'red' | 'grey'
-    color: blue
+    color: grey
   icon: data:image/svg+xml;base64,PCEtLSBHZW5lcmF0ZWQgYnkgSWNvTW9vbi5pbyAtLT4KPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KPHRpdGxlPjwvdGl0bGU+CjxnIGlkPSJpY29tb29uLWlnbm9yZSI+CjwvZz4KPHBhdGggZD0iTTQ0OCA2NHY0MTZoLTMzNmMtMjYuNTEzIDAtNDgtMjEuNDktNDgtNDhzMjEuNDg3LTQ4IDQ4LTQ4aDMwNHYtMzg0aC0zMjBjLTM1LjE5OSAwLTY0IDI4LjgtNjQgNjR2Mzg0YzAgMzUuMiAyOC44MDEgNjQgNjQgNjRoMzg0di00NDhoLTMyeiI+PC9wYXRoPgo8cGF0aCBkPSJNMTEyLjAyOCA0MTZ2MGMtMC4wMDkgMC4wMDEtMC4wMTkgMC0wLjAyOCAwLTguODM2IDAtMTYgNy4xNjMtMTYgMTZzNy4xNjQgMTYgMTYgMTZjMC4wMDkgMCAwLjAxOS0wLjAwMSAwLjAyOC0wLjAwMXYwLjAwMWgzMDMuOTQ1di0zMmgtMzAzLjk0NXoiPjwvcGF0aD4KPC9zdmc+Cg==
   description: |-
-    Learn how to create an Inventory groups, add systems to it, and remove systems from it.
+    Learn how to create an Inventory group and add and remove systems from it.
   introduction: |-
     
         **Welcome to the quickstart for creating and managing your systems using Inventory groups. In this quickstart, you will:**
@@ -118,3 +119,13 @@ spec:
       summary:
         success: Shows a success message in the task header
         failed: Shows a failed message in the task header
+
+  conclusion: |-
+   
+      <h4><b>Thank you for taking the time to explore this feature!</b></h4> 
+      
+      If you need additional assistance, [open a support case](https://access.redhat.com/support).
+  
+  # you can link to the next quick start(s) here
+  nextQuickStart:
+    - insights-inventory-groups-rbac
