@@ -1,6 +1,0 @@
-kind: QuickStarts
-name: subs-source-aws
-tags:
-  - kind: bundle
-    value: subscriptions
-    

@@ -1,5 +1,5 @@
 kind: QuickStarts
-name: subs-source-gcp
+name: hcs-getting-started
 tags:
   - kind: bundle
     value: subscriptions
