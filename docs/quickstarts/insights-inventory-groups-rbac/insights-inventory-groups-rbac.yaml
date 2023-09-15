@@ -57,7 +57,7 @@ spec:
         
             Possible scenarios include:
             - You would like to give users ability to only see systems in specific groups and NOT ungrouped systems → Select those groups only
-            - You would like to give users the ability to see systems in specific groups AND any ungrouped systems → Select those groups AND “ungrouped” systems
+            - You would like to give users the ability to see systems in specific groups AND any ungrouped systems → Select those groups for all permissions AND “ungrouped systems" for inventory:hosts permissions
             - You would like to give users the ability to see everything in the inventory → There is no need to create a custom role then. You can cancel the creation flow.
         1. Once you’ve made your selections, click **Next**.
         1. Review your selections. Click **Submit**.
