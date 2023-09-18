@@ -1,0 +1,5 @@
+kind: QuickStarts
+name: openshift-ai-rhods-launch
+tags:
+  - kind: bundle
+    value: application-services
