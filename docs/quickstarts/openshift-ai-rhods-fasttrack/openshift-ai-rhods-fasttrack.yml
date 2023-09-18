@@ -3,11 +3,6 @@ kind: QuickStarts
 metadata:
   name: openshift-ai-rhods-fasttrack
   externalDocumentation: true
-  annotations:
-    order: 1
-  labels:
-    service-category/data-services: "true"
-    product/rhods: "true"
 spec:
   version: 0.1
   type:
