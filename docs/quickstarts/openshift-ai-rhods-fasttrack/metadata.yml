@@ -2,5 +2,4 @@ kind: QuickStarts
 name: openshift-ai-rhods-fasttrack
 tags:
   - kind: bundle
-    value: openshift-ai
-    
+    value: application-services

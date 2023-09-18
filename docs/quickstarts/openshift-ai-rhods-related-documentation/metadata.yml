@@ -2,4 +2,4 @@ kind: QuickStarts
 name: openshift-ai-rhods-related-documentation
 tags:
   - kind: bundle
-    value: openshift-ai
+    value: application-services
