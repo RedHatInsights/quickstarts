@@ -9,7 +9,7 @@ spec:
   type:
     text: Documentation
     color: orange
-  displayName: Related documentation
+  displayName: Related documentation for edge management
   icon: ~
   description: A complete list of documentation related to edge management.
   link:
