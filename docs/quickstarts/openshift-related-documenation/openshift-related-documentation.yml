@@ -8,7 +8,7 @@ spec:
   type:
     text: Documentation
     color: orange
-  displayName: Related documentation
+  displayName: Related documentation for OpenShift
   icon: 
   description: Use Hybrid Cloud Console services to gain an understanding of your OpenShift clusters.
   link:
