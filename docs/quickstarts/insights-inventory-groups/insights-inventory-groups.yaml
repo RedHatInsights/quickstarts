@@ -17,8 +17,8 @@ spec:
   introduction: |-
     
         **Welcome to the quickstart for creating and managing your systems using Inventory groups. In this quickstart, you will:**
-        - Create an Inventory group
-        - Learn to add systems to the group
+        - Create an Inventory group.
+        - Learn to add systems to the group.
         - Learn how to remove systems from the group.
   
   tasks:
