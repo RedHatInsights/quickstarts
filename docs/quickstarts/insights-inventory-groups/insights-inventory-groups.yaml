@@ -101,7 +101,7 @@ spec:
         1. Navigate to Inventory > **Groups** using the left navigation.
         1. Select systems you want to remove from a group.
             
-            - **To remove individual systems from a group**, click on <i class="fas fa-ellipsis-v"></i> in the row level , then click **Remove from group**. 
+            - **To remove individual systems from a group**, click on <i class="fas fa-ellipsis-v"></i> in the row level, then click **Remove from group**. 
         
             - **To remove multiple systems from a group**, select multiple systems using the table checkboxes, Click on <i class="fas fa-ellipsis-v"></i> in the toolbar, then click on **Remove from group**.
   
