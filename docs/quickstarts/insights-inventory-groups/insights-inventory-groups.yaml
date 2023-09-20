@@ -106,6 +106,7 @@ spec:
             - **To remove multiple systems from a group**, select multiple systems using the table checkboxes, Click on <i class="fas fa-ellipsis-v"></i> in the toolbar, then click on **Remove from group**.
   
             **NOTE**:  Selecting systems that already belong to a group will disable the action. 
+
   
         1. A modal will open. Click **Remove**.
 

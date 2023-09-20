@@ -27,7 +27,7 @@ This is an overview of the steps you will need to complete to publish a quick st
 
 2. When the content is ready, create your YAML quick start files in a new directory in the `docs` directory of [**Red Hat Insights quickstarts**](https://github.com/RedHatInsights/quickstarts/tree/main/docs/quickstarts), following the detailed instructions in this `README.md` file. 
 
-3. Get your quick start added to the [Hybrid Cloud Console](console.redhat.com):
+3. Get your quick start added to the [Hybrid Cloud Console](https://console.redhat.com):
  
     a. Create a request in [the RHCLOUD Jira project](https://issues.redhat.com/projects/RHCLOUD/issues/) for engineering to merge the content. Add the `platform-experience` label to your Jira.
     

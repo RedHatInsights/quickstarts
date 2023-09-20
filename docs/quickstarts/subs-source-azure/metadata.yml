@@ -1,6 +1,0 @@
-kind: QuickStarts
-name: subs-source-azure
-tags:
-  - kind: bundle
-    value: subscriptions
-    
