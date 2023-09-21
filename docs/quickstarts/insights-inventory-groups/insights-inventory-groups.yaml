@@ -8,15 +8,15 @@ spec:
   durationMinutes: 5
   # Optional type section, will display as a tile on the card
   type:
-    text: Type
+    text: Quick start
     # 'blue' | 'cyan' | 'green' | 'orange' | 'purple' | 'red' | 'grey'
-    color: blue
+    color: grey
   icon: data:image/svg+xml;base64,PCEtLSBHZW5lcmF0ZWQgYnkgSWNvTW9vbi5pbyAtLT4KPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KPHRpdGxlPjwvdGl0bGU+CjxnIGlkPSJpY29tb29uLWlnbm9yZSI+CjwvZz4KPHBhdGggZD0iTTQ0OCA2NHY0MTZoLTMzNmMtMjYuNTEzIDAtNDgtMjEuNDktNDgtNDhzMjEuNDg3LTQ4IDQ4LTQ4aDMwNHYtMzg0aC0zMjBjLTM1LjE5OSAwLTY0IDI4LjgtNjQgNjR2Mzg0YzAgMzUuMiAyOC44MDEgNjQgNjQgNjRoMzg0di00NDhoLTMyeiI+PC9wYXRoPgo8cGF0aCBkPSJNMTEyLjAyOCA0MTZ2MGMtMC4wMDkgMC4wMDEtMC4wMTkgMC0wLjAyOCAwLTguODM2IDAtMTYgNy4xNjMtMTYgMTZzNy4xNjQgMTYgMTYgMTZjMC4wMDkgMCAwLjAxOS0wLjAwMSAwLjAyOC0wLjAwMXYwLjAwMWgzMDMuOTQ1di0zMmgtMzAzLjk0NXoiPjwvcGF0aD4KPC9zdmc+Cg==
   description: |-
-    Learn how to create an Inventory groups, add systems to it, and remove systems from it.
+    Learn how to create an Inventory group, add systems to it, and remove systems from it.
   introduction: |-
     
-        **Welcome to the quickstart for creating and managing your systems using Inventory groups. In this quickstart, you will:**
+        **Welcome to the quick start for creating and managing your systems using Inventory groups. In this quick start, you will:**
         - Create an Inventory group.
         - Learn to add systems to the group.
         - Learn how to remove systems from the group.
@@ -25,9 +25,9 @@ spec:
     - title: Create a group
       description: |- 
 
-        Inventory groups allow you to create groups, and select specific systems to add to these groups to better organize your inventory. 
+        Inventory Groups allow you to create groups, and select specific systems to add to these groups to better organize your Inventory. 
         
-        **To create an inventory group:**
+        **To create an Inventory group:**
 
         1. Navigate to Inventory > **Groups** using the left navigation.
         2. Click the **Create group** button.
@@ -68,7 +68,7 @@ spec:
         
             - **To add multiple systems to a group**, select multiple systems using the table checkboxes, Click on <i class="fas fa-ellipsis-v"></i> in the toolbar, then click on **Add to group**.
   
-            NOTE:  Selecting systems that already belong to a group will disable the action. 
+            **NOTE**:  Selecting systems that already belong to a group will disable the action. 
   
         1. In the add to group modal, you can either select an existing group, or create a new group (if you have permissions to do so).
     
