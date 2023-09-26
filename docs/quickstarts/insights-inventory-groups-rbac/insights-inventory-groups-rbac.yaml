@@ -162,10 +162,7 @@ spec:
       <h4><b>Thank you for taking the time to explore this feature!</b></h4> 
       
       If you need additional assistance, [open a support case](https://access.redhat.com/support).
-  
-  # you can link to the next quick start(s) here
-  nextQuickStart:
-    - insights-inventory-groups-rbac
+
 
 
 
