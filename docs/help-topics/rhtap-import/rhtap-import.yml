@@ -51,15 +51,17 @@
 
     Under **Build & deploy configuration**, review these settings:
 
+    - **Git reference**: Here you have the option to point to code in a specific branch, tag, or commit that you want to use to build your application.
+    - **Build context**: This is also optional. Here, you can specify a subdirectory for your component's build information.
     - **Target port**: Is it correct? If not, click in the port field to modify it.
     - **Dockerfile**: If you specified **Dockerfile** as your runtime, make sure we detected the right one. Click in the field if you need to modify it. If you chose a different runtime, we hide this field.
     - **Default build pipeline**: To specify how to trigger rebuilds, toggle to choose either the default build pipeline or a custom one.
       - **Default build pipeline**: This runs faster because it makes only critical image checks. Consider starting here to make sure we can successfully build and deploy your component.
       - **Custom build pipeline**: This is triggered when you make commits to your source code repository. This pipeline runs more checks and security scans than the default pipeline, but it takes a bit more time because it's more thorough. **NOTE**: To use a custom pipeline, you must be the owner of your repository so that you can authorize the installation of our application in your GitHub instance and then grant the app access to your repository. If someone else owns your repository, fork it, then go back to the Add components page and start again.
     - **CPU**, **Memory**, and **Instances**: Choose how many of each of these you want for your application, and in what unit, depending on your deployment requirements.
-    - **Route**: Enter the public URL for your published application.
-
-    In the **Environment variables** section, enter a variable name and value to customize how we deploy your application. 
+    <!-- - **Route**: Enter the public URL for your published application. -->
+    - Under **Environment variables**, enter a variable **Name** and **Value** to customize how we deploy your application. 
+    - **Secrets**: Click **Add secret** to keep your build data private. All secrets are stored using AWS Secrets Manager.  
 
     ***
     **WARNING**
