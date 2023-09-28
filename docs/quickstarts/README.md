@@ -115,6 +115,40 @@ If you have created quick starts in the Hybrid Cloud Console before, start here:
 
     e. Get your quick start reviewed by stakeholders as needed.
 
+6. On your issue branch, add new or changed quick start files to stage.
+
+    ```
+     $[issue-branch] git add -A 
+     
+    ```
+    (the espanso shortcut is `:add`)
+   
+    or
+
+    ```
+     $[issue-branch] git add <files>
+    ```
+
+7. Make sure you have no uncommitted changes on your issue branch.       
+
+    ```
+    $[issue-branch] git status
+    ``` 
+7. Commit your quick start files.
+
+    ```
+    $[issue-branch] git commit -am "descriptive commit message"
+    ```
+    (This command allows you to commit tracked and untracked changes and add a commit message inline.)
+    
+    **Note:** You can also use `git commit --amend` if you have already completed a commit prior to this commit.
+
+8. Push your quick start files to the remote branch.
+
+    ```
+    $[issue-branch] git push --set-upstream origin <HCCDOC Jira number here>
+    ```
+
 ### Adding your quick start to the Hybrid Cloud Console
 
 Once you’re happy with the content and how the preview renders, open a Jira and a pull request (PR) for the engineering team to add the quick start to the Hybrid Cloud Console source code.
