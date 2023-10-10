@@ -143,8 +143,9 @@ spec:
             <summary><span style="color:#0066CC">&nbsp**Why did the Pre-conversion analysis task fail to complete?**</span></summary>
             <br>
             After running the Pre-conversion analysis for converting to RHEL task, one or more systems can fail to generate a report with the error message Task failed to complete for an unknown reason. Retry this task at a later time. If this issue occurs, complete the following steps to troubleshoot:
-            - Verify if the affected system is unavailable, for example, because of a network accessibility issue or because the system is shut off.<br>
-            <br>
+
+            - Verify if the affected system is unavailable, for example, because of a network accessibility issue or because the system is shut off.
+            
             - Review the RHC systemd service (rhcd) for errors:
                 - Stop rhcd in your terminal:<br>
                 `# systemctl stop rhcd`{{copy}}<br>
@@ -182,5 +183,7 @@ spec:
   conclusion: |-
     <br>
     **Thank you for taking the time to explore this feature!**
+
+    For additonal guidance, [visit the conversion documentation](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/converting-from-a-linux-distribution-to-rhel-in-insights/preview/index). 
 
     If you need additional assistance, [open a support case](https://access.redhat.com/support). 
