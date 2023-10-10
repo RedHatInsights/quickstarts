@@ -4,7 +4,7 @@ metadata:
   # you can add additional metadata here
   instructional: true
 spec:
-  displayName: Analyzing CentOS Linux systems for conversion in Insights
+  displayName: (Preview) Analyzing CentOS Linux systems for conversion in Insights
   durationMinutes: 10
   # Optional type section, will display as a tile on the card
   type:
@@ -15,12 +15,14 @@ spec:
   description: |-
     Generate a pre-conversion analysis report that summarizes potential problems and suggests recommended solutions to help you convert to RHEL. 
   introduction: |-
-    [Red Hat Insights can be used only to run the pre-conversion analysis on **CentOS Linux 7** systems.]{{admonition important}}   
-    
+    [Red Hat Insights can be used only to run the pre-conversion analysis on CentOS Linux 7 systems.]{{admonition important}}   
+           
     In this quick start, you will connect and run a pre-conversion analysis on CentOS Linux machines on the Red Hat Hybrid Cloud Console. The task generates a report that summarizes potential problems and suggests recommended solutions to help you convert to RHEL.
     <br>
     <br>
     Additional information:
+
+    - **This feature is currently only available in Preview mode.**
 
     - It is possible to convert systems from other Linux distributions. [View supported conversion paths.](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/converting_from_an_rpm-based_linux_distribution_to_rhel/con_supported-conversion-paths_converting-from-a-linux-distribution-to-rhel)
 
@@ -41,27 +43,29 @@ spec:
             <summary><span style="color:#0066CC">&nbsp**Need to connect a CentOS Linux machine?**</span></summary>
             - Install the Red Hat client tools:
                 - Download the Red Hat GPG key:<br>
-                `# curl -o /etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release https://www.redhat.com/security/data/fd431d51.txt`{{copy}}
+                `# curl -o /etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release https://www.redhat.com/security/data/fd431d51.txt`{{copy}}<br>
                   
                 - Install the **client-tools** repository file:<br>
-                `# curl -o /etc/yum.repos.d/client-tools.repo https://ftp.redhat.com/redhat/client-tools/client-tools-for-rhel-7-server.repo`{{copy}}
+                `# curl -o /etc/yum.repos.d/client-tools.repo https://ftp.redhat.com/redhat/client-tools/client-tools-for-rhel-7-server.repo`{{copy}}<br>
                 
                 - Install the **client-tools** packages:<br>
                 `# yum -y install subscription-manager rhc rhc-worker-script insights-client`{{copy}}<br>
 
             - Enable Remote Host Configuration:<br>
-            `# rhc connect -a <activation_key> -o <organization_ID>`{{copy}}
+            `# rhc connect -a <activation_key> -o <organization_ID>`{{copy}}<br>
             
             - Register your systems with Red Hat Insights:<br>
-            `# insights-client --register`{{copy}}
+            `# insights-client --register`{{copy}}<br>
             
             - Connect the system to RHC:<br>
             `# rhc connect`{{copy}}<br>
-            <br> 
+           
           </details>
           
         1. Log in to the [Red Hat Hybrid Cloud Console](http://console.redhat.com) and go to **Red Hat Insights > RHEL > Inventory > Systems.**
 
+        1. Click the **Preview toggle** to turn on preview mode.
+        
         1. Verify that your CentOS Linux systems appear as expected.
                                    
       # optional - the task's Check your work module
@@ -83,6 +87,8 @@ spec:
 
         1. Log in to the Red Hat Hybrid Cloud Console and go to **Red Hat Insights > RHEL > Automation toolkit > Tasks.**
 
+        1. Click the **Preview toggle** to turn on preview mode.
+        
         1. Locate the **Pre-conversion analysis for converting to RHEL** task and click **Run task.**
 
         1. Select the CentOS Linux 7 systems you want to analyze for conversion and click **Execute task.**
@@ -92,32 +98,34 @@ spec:
             CentOS Linux 7 systems that appeared correctly in the Insights Inventory might not appear in the list of available systems on which to run the pre-conversion analysis.<br>
             <br>
             This issue occurs when the Remote Host Configuration (RHC)  is disconnected. To fix this issue, complete the following steps:
-            - Log in to the [Red Hat Hybrid Cloud Console](http://console.redhat.com) and go to **Red Hat Insights > RHEL > Inventory > Systems**<br>
-            <br>
-            - Select the affected system from the table.<br>
-            <br>
+
+            - Log in to the [Red Hat Hybrid Cloud Console](http://console.redhat.com) and go to **Red Hat Insights > RHEL > Inventory > Systems**
+            
+            - Select the affected system from the table.
+            
             - In the **General Information** tab, go to the **System Status** card and verify the RHC status:
+
                 -  If the RHC status is **Connected**, RHC is connected correctly
+
                 -  If the RHC status is **Not available**, RHC is disconnected. Proceed to the next step to reconnect RHC.
-            <br>
-            <br>
+            
             - Unregister the system in your terminal:<br>
             `# insights-client --unregister`{{copy}}<br>
             `# rhc disconnect`{{copy}}<br>
-            <br>
+          
             - To help with troubleshooting, set the RHC systemd service (rhcd) logging to the highest level:<br>
             `# sed -ie 's%error%trace%' /etc/rhc/config.toml`{{copy}}<br>
-            <br>
+            
             - Register your system with Red Hat Insights and re-enable RHC in your terminal:<br>
             `# insights-client --register`{{copy}}<br>
             `# rhc connect -a <activation_key> -o <organization_ID>`{{copy}}<br>
-            <br>
-            - Verify that you can select the system in the Pre-conversion analysis for converting to RHEL task.<br>
-            <br>
+          
+            - Verify that you can select the system in the Pre-conversion analysis for converting to RHEL task.
+            
             If the system still does not appear correctly, review error messages from rhcd and the **insights-client** tool.<br>
             `# journalctl -u read`{{copy}}<br>
             `# less /var/log/insights-client/insights-client.log`{{copy}}<br>
-            <br>   
+             
           </details>
  
         1. The pre-conversion analysis utility generates a new report in the **Activity tab**. Click the report to view a summary of issues found in each system. 
@@ -140,19 +148,19 @@ spec:
             - Review the RHC systemd service (rhcd) for errors:
                 - Stop rhcd in your terminal:<br>
                 `# systemctl stop rhcd`{{copy}}<br>
-                <br>
+                
                 - Set the RHC systemd service (rhcd) logging to the highest level:<br>
                 `# sed -ie 's%error%trace%' /etc/rhc/config.toml`{{copy}}<br>
-                <br>
+                
                 - Restart rhcd:<br>
                 `# systemctl start rhcd`{{copy}}<br>
-                <br>
+                
                 - Review error messages posted by rhcd:<br>
                 `# journalctl -u rhcd`{{copy}}<br>
-                <br>
+                
             - Review the **rhc-worker-script** log file for errors:<br>
             `# less /var/log/rhc-worker-script/rhc-worker-script.log`{{copy}}<br>
-            <br>
+            
           </details> 
 
         1. After reviewing the report and resolving all reported issues, click **Run task again** to rerun the analysis and confirm that no issues are outstanding.
