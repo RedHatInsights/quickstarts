@@ -41,6 +41,7 @@ spec:
         1. Connect CentOS Linux machines to Insights.
           <details>
             <summary><span style="color:#0066CC">&nbsp**Need to connect a CentOS Linux machine?**</span></summary>
+            - These commands assume root access. You may also use `sudo` command.
             - Install the Red Hat client tools:
                 - Download the Red Hat GPG key:<br>
                 `# curl -o /etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release https://www.redhat.com/security/data/fd431d51.txt`{{copy}}<br>
