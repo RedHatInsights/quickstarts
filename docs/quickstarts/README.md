@@ -1,4 +1,4 @@
-# Creating quick starts for the Hybrid Cloud Console
+# Creating quick starts (Learning resources) for the Hybrid Cloud Console
 
 These instructions explain how to create [quick starts](https://www.patternfly.org/v4/extensions/quick-starts) in the [Red Hat Hybrid Cloud Console](https://console.redhat.com). 
 
