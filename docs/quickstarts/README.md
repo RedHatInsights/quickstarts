@@ -1,4 +1,4 @@
-# Creating quick starts for the Hybrid Cloud Console
+# Creating quick starts (Learning resources) for the Hybrid Cloud Console
 
 These instructions explain how to create [quick starts](https://www.patternfly.org/v4/extensions/quick-starts) in the [Red Hat Hybrid Cloud Console](https://console.redhat.com). 
 
@@ -8,7 +8,7 @@ Quick starts should be brief and simple to follow. Red Hat recommends quick star
 
 Use these steps to create quick starts for the Hybrid Cloud Console which have no content single-sourcing dependencies. You will create your quick start files in YAML.
 
-For information about creating a quick start using Asciidoc-formatted content instead, see the [contributor guide for Application Services](https://github.com/redhat-developer/app-services-guides/blob/main/CONTRIBUTING.adoc).
+For information about creating a quick start using AsciiDoc-formatted content instead, see the [contributor guide for Application Services](https://github.com/redhat-developer/app-services-guides/blob/main/CONTRIBUTING.adoc).
 
 **IMPORTANT**:
 The quickstarts content in this repository is not validated by the content team. We are working on defining a formal process. Please be aware that you might be required to update or change the content.
@@ -111,20 +111,46 @@ If you have created quick starts in the Hybrid Cloud Console before, start here:
     
     d. Add your draft quickstart content to the new file. You can follow this [template](https://github.com/patternfly/patternfly-quickstarts/blob/main/packages/dev/src/quickstarts-data/yaml/template.yaml) and find more Markdown snippets in the _Useful Markdown snippets_ section of these instructions.
 
-    d. Preview and validate the YAML content by copying and pasting your YAML into the [preview tool](https://quickstarts-content-preview.surge.sh/).
+    d. Preview and validate the YAML content by copying and pasting your YAML into the [preview tool](https://quickstarts-content-preview.surge.sh/). Make changes as needed until you are ready to push your files to the remote branch for review.
 
-    e. Get your quick start reviewed by stakeholders as needed.
+6. Push your files to the remote branch for review by stakeholders as needed.
+
+    a. Add your files to tracked changes. 
+
+    ```
+    git add <files>
+    ```
+
+    b. Make sure you have no uncommitted changes on your issue branch.       
+
+    ```
+    git status
+    ``` 
+    c. Commit your quick start files.
+
+    ```
+    git commit -am "descriptive commit message"
+    ```
+    (This command allows you to commit tracked and untracked changes and add a commit message inline.)
+
+    d. Push your quick start files to the remote branch.
+
+    ```
+    git push origin <branch> 
+    ```
+9. Open a pull request (PR) in the [GitHub repository](https://github.com/RedHatInsights/quickstarts) for your update. Get your quick start reviewed by stakeholders and peer reviewers, as needed. Once you and any reviewers are happy with the content, work with engineering to add the content to the Hybrid Cloud Console.
+
 
 ### Adding your quick start to the Hybrid Cloud Console
 
-Once you’re happy with the content and how the preview renders, open a Jira and a pull request (PR) for the engineering team to add the quick start to the Hybrid Cloud Console source code.
+Open a Jira for the engineering team to add the quick start to the Hybrid Cloud Console source code.
 
 1. Create a Jira for the platform development team in the [RHCLOUD Jira project](https://issues.redhat.com/projects/RHCLOUD/issues/RHCLOUD-15910?filter=allopenissues). Add the **platform-experience** label to the issue.
-2. Open a PR against the [GitHub repository](https://github.com/RedHatInsights/quickstarts) with your update. Add the developer contacts `@Hyperkid123` or `@ryelo` in the PR description, and add the Jira link in a comment.
+2. In the PR you opened for the quick start, add the developer contacts `@Hyperkid123` or `@ryelo` in the PR description, and add the Jira link in a comment.
 
 ### Engineering tasks
 
-From here, it's up to the engineering team to merge the PR to the Hybrid Cloud Console. If you are writing a quickstart, you can continue to the next section, _Close the loop_.
+From here, it is up to the engineering team to merge the PR to the Hybrid Cloud Console. If you are writing a quickstart, you can continue to the next section, _Close the loop_.
 
 Your quick start will show up in the Hybrid Cloud Console [stage environment](https://console.stage.redhat.com/) first - 
 To publish live on the Hybrid Cloud Console [production environment](https://console.redhat.com/), engineering must create an `app-sre` pull request.
@@ -150,7 +176,7 @@ You can also combine the tags:
 
 ### Close the loop
 
-When your quick start is published in the Hybrid Cloud Console, close your original docs Jira and update any stakeholders about the completed work.
+When your quick start is live in the Hybrid Cloud Console, close your original docs Jira and update any stakeholders about the completed work.
 
 ## Best practices for creating quick starts
 

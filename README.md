@@ -4,7 +4,7 @@ Backed service for integrated quickstarts.
 
 ## [Help Topics contribution guide](https://github.com/RedHatInsights/quickstarts/blob/main/docs/help-topics/README.md)
 
-## [Quickstarts contribution guide](https://github.com/RedHatInsights/quickstarts/blob/main/docs/quickstarts/README.md)
+## [Quickstarts (Learning resources) contribution guide](https://github.com/RedHatInsights/quickstarts/blob/main/docs/quickstarts/README.md)
 
 
 ## Run the service locally
