@@ -9,7 +9,7 @@
   content: |-
     A “component” is a container image that we build from source code in a repository. An application is a collection of these components working together. To start building your application, add a component by importing your code repository, or use one of our samples.
 
-    **Using code from your GitHub repository**
+    ## Importing code from your GitHub repository
     1. To use your own code, type the link to your repository in the **Git repository URL** field. We verify your URL right away. You don’t even have to press **Enter**.
     2. Add an optional **Git reference** to point to code in a specific branch, tag, or commit that you want to use to build your application.
     3. Indicate a **Context directory** to specify the subdirectory for the source code you want to use.
@@ -30,7 +30,14 @@
 
     ***
 
-    **Using a code sample**
+    ## Importing code from a private GitHub repository
+    1. To use your code from a private repository, type the link to your repository in the **Git repository URL** field. The following message displays: “Looks like your repository is private, so we’re not able to access it.”
+    2. From the **Authorization** section, grant access to your repository by clicking **Sign in**. The **OAuth Redirection** page opens in a new tab and redirects you to **GitHub Authorize OAuth**. **NOTE:** If you’re not already logged in to GitHub, follow the login prompt. If you configured two-factor authentication, GitHub might prompt you to enter a one-time authentication code.
+    3. Click **Authorize redhat-appstudio**. A **Login successful** page opens, which you can close.
+    4. On the **Grab some code** page, enter your repository URL again to check access to your repository.
+    5. After access is validated, click **Import code**.
+
+    ## Using a code sample
     To start with a code sample, enter the name of the code you want to work with into the code sample **Filter by keyword** field, or click **Import sample** on any of the options displayed. Follow the resulting instructions to explore or test whatever language and framework you choose.
 
 
