@@ -1,11 +1,12 @@
 # Quickstarts
 
-Backed service for integrated quickstarts.
+Backend service for integrated quickstarts.
 
 ## [Help Topics contribution guide](https://github.com/RedHatInsights/quickstarts/blob/main/docs/help-topics/README.md)
 
 ## [Quickstarts (Learning resources) contribution guide](https://github.com/RedHatInsights/quickstarts/blob/main/docs/quickstarts/README.md)
 
+## [Quickstarts Common Issues](https://github.com/RedHatInsights/frontend-components/blob/master/packages/docs/pages/quickstarts/common-issues.mdx)
 
 ## Run the service locally
 1. There are environment variables required for the application to start. It's
