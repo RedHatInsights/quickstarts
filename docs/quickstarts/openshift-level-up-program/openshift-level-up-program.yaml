@@ -1,0 +1,16 @@
+apiVersion: console.openshift.io/v1
+kind: QuickStarts
+metadata:
+  name: openshift-level-up-program
+  externalDocumentation: true
+spec:
+  version: 0.1
+  type:
+    text: Documentation
+    color: orange
+  displayName: OpenShift Level Up Program
+  icon: 
+  description: Explore no-cost access to Red Hat OpenShift technologies.
+  link:
+    href: https://www.redhat.com/en/engage/level-up/openshift?intcmp=7013a000003SyOEAA0
+    text: Learn more
