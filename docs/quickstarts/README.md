@@ -216,7 +216,7 @@ See the below list for the value tags to use for each bundle:
 | Bundle  |  value tag |
 |---|---|
 |  Application & Data Services | application-services  |
-|  OpenShift |  OpenShift |
+|  OpenShift |  openshift |
 |  Ansible Automation Platform | ansible  |
 | Red Hat Insights  | insights  |
 | Edge management  | edge  |
