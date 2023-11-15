@@ -12,5 +12,5 @@ spec:
   icon: 
   description: Configure and add a Microsoft Azure source to cost management.
   link:
-    href: https://access.redhat.com/documentation/en-us/cost_management_service/2023/html/adding_a_microsoft_azure_source_to_cost_management
+    href: https://access.redhat.com/documentation/en-us/cost_management_service/1-latest/html/integrating_microsoft_azure_data_into_cost_management
     text: View documentation

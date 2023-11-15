@@ -12,5 +12,5 @@ spec:
   icon: 
   description: Use cost models to apply a price to usage in your hybrid cloud environment, then distribute the costs to resources.
   link:
-    href: https://access.redhat.com/documentation/en-us/cost_management_service/2023/html/using_cost_models
+    href: https://access.redhat.com/documentation/en-us/cost_management_service/1-latest/html/using_cost_models
     text: View documentation

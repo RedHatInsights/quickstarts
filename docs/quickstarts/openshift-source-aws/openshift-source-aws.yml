@@ -12,5 +12,5 @@ spec:
   icon: 
   description: Configure and add an Amazon Web Services (AWS) source to cost management.
   link:
-    href: https://access.redhat.com/documentation/en-us/cost_management_service/2023/html/adding_an_amazon_web_services_aws_source_to_cost_management
+    href: https://access.redhat.com/documentation/en-us/cost_management_service/1-latest/html/integrating_amazon_web_services_aws_data_into_cost_management/index
     text: View documentation

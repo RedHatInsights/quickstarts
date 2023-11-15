@@ -12,5 +12,5 @@ spec:
   icon: ~
   description: Learn to set up hybrid committed spend. A hyperscaler drawdown agreement with Red Hat is required.
   link:
-    href: https://access.redhat.com/documentation/en-us/hybrid_committed_spend/2023/html/getting_started_with_hybrid_committed_spend
+    href: https://access.redhat.com/documentation/en-us/hybrid_committed_spend/1-latest/html/getting_started_with_hybrid_committed_spend
     text: View documentation
