@@ -23,21 +23,21 @@ spec:
   introduction: |-
     Welcome to the quick start for launching a Google Cloud Platform (GCP) image.
 
-    In this quick start, you learn how to add or edit &nbsp;[GCP sources] (https://console.redhat.com/beta/settings/sources), create an image, and launch it all on the Red Hat Hybrid Cloud Console.
+    In this quick start, you learn how to add or edit &nbsp;[GCP integrations] (https://console.redhat.com/settings/integrations), create an image, and launch it all on the Red Hat Hybrid Cloud Console.
 
   tasks:
-    - title: Add or edit a GCP Source
+    - title: Add or edit a GCP Integration
       description: |-
         
-        A source must be configured to connect your GCP account to Hybrid Cloud Console to launch an Image. Create a new source or edit an existing one.
+        An Integration must be configured to connect your GCP account to Hybrid Cloud Console to launch an Image. Create a new integration or edit an existing one.
         <br>
         <br>
 
-        <h4 id="add-GCP-source"><b>Add a GCP Source:</B></h4> 
+        <h4 id="add-GCP-source"><b>Add a GCP Integration:</B></h4> 
         
         1. Click the Settings <i class="fas fa-cog"></i> icon in the top right corner.
 
-        1. In Settings, click **Sources** in the left menu.
+        1. In Settings, click **Integrations** in the left menu.
 
         1. Click **Add source**.
 
@@ -75,11 +75,11 @@ spec:
         <br>
         
         
-        <h4 id="edit-GCP-source"><b>Edit an existing GCP Source:</B></h4>
+        <h4 id="edit-GCP-source"><b>Edit an existing GCP Integration:</B></h4>
 
         1. Click the Settings icon in the top right corner.
 
-        1. In Settings, click **Sources** in the left menu.
+        1. In Settings, click **Integrations** in the left menu.
         
         1. Locate your existing GCP source in the cloud sources table
         
@@ -88,6 +88,12 @@ spec:
         1. Locate the “Applications” card.
         
         1. Toggle “Launch images” to **on**.
+
+        1. In the modal, fill out a GCP project ID you want to use and click **Next**.
+
+        1. Follow the guide on how to set-up the role in GCP project.
+
+        1. Confirm with **Add**
         <br>
         <br>
 
