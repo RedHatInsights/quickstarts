@@ -6,7 +6,7 @@ tags:
   - kind: application
     value: inventory
   - kind: bundle
-    value: settings
+    value: iam
   - kind: application
     value: user access
     
