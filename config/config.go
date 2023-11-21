@@ -20,6 +20,7 @@ type QuickstartsConfig struct {
 	Test            bool
 	DbSSLMode       string
 	DbSSLRootCert   string
+	ProductName		string // Placeholder for the product name
 }
 
 var config *QuickstartsConfig
@@ -29,6 +30,7 @@ func Init() {
 	config.ServerAddr = ":8000"
 	config.OpenApiSpecPath = "./spec/openapi.json"
 	config.Test = false
+	config.ProductName = os.Getenv("product_name") // Placeholder for the product name
 	if clowder.IsClowderEnabled() {
 		cfg := clowder.LoadedConfig
 		config.DbHost = cfg.Database.Hostname
