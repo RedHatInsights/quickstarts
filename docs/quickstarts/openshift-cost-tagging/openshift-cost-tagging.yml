@@ -12,5 +12,5 @@ spec:
   icon: 
   description: Manage your cost data with tags and labels.
   link:
-    href: https://access.redhat.com/documentation/en-us/cost_management_service/2023/html/managing_cost_data_using_tagging
+    href: https://access.redhat.com/documentation/en-us/cost_management_service/1-latest/html/managing_cost_data_using_tagging
     text: View documentation
