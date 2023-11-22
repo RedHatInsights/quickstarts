@@ -72,6 +72,7 @@ func main() {
 	mr.Handle("/metrics", promhttp.Handler())
 	r.Get("/test", probe)
 
+	// fmt.Println(cfg.ServerAddr)
 	server := http.Server{
 		Addr:    cfg.ServerAddr,
 		Handler: r,
