@@ -12,6 +12,6 @@ spec:
   icon: ~
   description: Automate simple infrastructure tasks by writing a Red Hat Ansible Automation Platform playbook.
   link:
-    href: https://developers.redhat.com/courses/ansible/getting-started
+    href: https://docs.ansible.com/ansible/latest/getting_started/get_started_playbook.html
     text: View documentation
 
