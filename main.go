@@ -7,9 +7,10 @@ import (
 
 	"github.com/RedHatInsights/quickstarts/config"
 	"github.com/RedHatInsights/quickstarts/pkg/database"
+	"github.com/RedHatInsights/quickstarts/pkg/logger"
 	"github.com/RedHatInsights/quickstarts/pkg/routes"
-	"github.com/go-chi/chi"
-	"github.com/go-chi/chi/middleware"
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 	"github.com/joho/godotenv"
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -42,6 +43,7 @@ func main() {
 	config.Init()
 	cfg := config.Get()
 	initDependecies()
+	setupGlobalLogger(cfg)
 	logrus.WithFields(logrus.Fields{
 		"ServerAddr": cfg.ServerAddr,
 	})
@@ -49,16 +51,17 @@ func main() {
 	r := chi.NewRouter()
 	mr := chi.NewRouter()
 
+	routerLogger := logrus.New()
+
 	r.Use(
 		request_id.ConfiguredRequestID("x-rh-insights-request-id"),
 		middleware.RealIP,
 		middleware.Recoverer,
-		middleware.Logger,
+		middleware.RequestLogger(logger.NewLogger(cfg, routerLogger)),
 	)
 
 	root := "./spec/"
 	fs := http.FileServer(http.Dir(root))
-	r.Get("/test", probe)
 	r.With(routes.PrometheusMiddleware).Route("/api/quickstarts/v1", func(sub chi.Router) {
 		sub.Route("/quickstarts", routes.MakeQuickstartsRouter)
 		sub.Route("/progress", routes.MakeQuickstartsProgressRouter)
@@ -67,6 +70,7 @@ func main() {
 	})
 	mr.Get("/", probe)
 	mr.Handle("/metrics", promhttp.Handler())
+	r.Get("/test", probe)
 
 	server := http.Server{
 		Addr:    cfg.ServerAddr,
@@ -103,4 +107,13 @@ func main() {
 	// 	logrus.Fatal("Server shutdown failed:%+v", err)
 	// }
 	// logrus.Info("Server stypped properly")
+}
+
+func setupGlobalLogger(opts *config.QuickstartsConfig) {
+	logLevel, err := logrus.ParseLevel(opts.LogLevel)
+	if err != nil {
+		logLevel = logrus.ErrorLevel
+	}
+	fmt.Println("ERR", err, logLevel)
+	logrus.SetLevel(logLevel)
 }

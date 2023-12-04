@@ -9,7 +9,7 @@ import (
 
 	"github.com/RedHatInsights/quickstarts/pkg/database"
 	"github.com/RedHatInsights/quickstarts/pkg/models"
-	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/v5"
 	"github.com/stretchr/testify/assert"
 )
 
