@@ -1,0 +1,16 @@
+---
+version: '3.8'
+services:
+  quickstarts-db:
+    image: postgres:14.1-alpine
+    restart: always
+    environment:
+    - POSTGRES_USER=quickstarts
+    - POSTGRES_PASSWORD=quickstarts
+    ports:
+    - "5432:5432"
+    volumes:
+    - quickstarts-db:/var/lib/postgresql/data
+volumes:
+  quickstarts-db:
+    driver: local

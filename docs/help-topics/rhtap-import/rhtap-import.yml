@@ -9,7 +9,7 @@
   content: |-
     A “component” is a container image that we build from source code in a repository. An application is a collection of these components working together. To start building your application, add a component by importing your code repository, or use one of our samples.
 
-    **Using code from your GitHub repository**
+    ## Importing code from your GitHub repository
     1. To use your own code, type the link to your repository in the **Git repository URL** field. We verify your URL right away. You don’t even have to press **Enter**.
     2. Add an optional **Git reference** to point to code in a specific branch, tag, or commit that you want to use to build your application.
     3. Indicate a **Context directory** to specify the subdirectory for the source code you want to use.
@@ -30,7 +30,14 @@
 
     ***
 
-    **Using a code sample**
+    ## Importing code from a private GitHub repository
+    1. To use your code from a private repository, type the link to your repository in the **Git repository URL** field. The following message displays: “Looks like your repository is private, so we’re not able to access it.”
+    2. From the **Authorization** section, grant access to your repository by clicking **Sign in**. The **OAuth Redirection** page opens in a new tab and redirects you to **GitHub Authorize OAuth**. **NOTE:** If you’re not already logged in to GitHub, follow the login prompt. If you configured two-factor authentication, GitHub might prompt you to enter a one-time authentication code.
+    3. Click **Authorize redhat-appstudio**. A **Login successful** page opens, which you can close.
+    4. On the **Grab some code** page, enter your repository URL again to check access to your repository.
+    5. After access is validated, click **Import code**.
+
+    ## Using a code sample
     To start with a code sample, enter the name of the code you want to work with into the code sample **Filter by keyword** field, or click **Import sample** on any of the options displayed. Follow the resulting instructions to explore or test whatever language and framework you choose.
 
 
@@ -51,15 +58,17 @@
 
     Under **Build & deploy configuration**, review these settings:
 
+    - **Git reference**: Here you have the option to point to code in a specific branch, tag, or commit that you want to use to build your application.
+    - **Build context**: This is also optional. Here, you can specify a subdirectory for your component's build information.
     - **Target port**: Is it correct? If not, click in the port field to modify it.
     - **Dockerfile**: If you specified **Dockerfile** as your runtime, make sure we detected the right one. Click in the field if you need to modify it. If you chose a different runtime, we hide this field.
     - **Default build pipeline**: To specify how to trigger rebuilds, toggle to choose either the default build pipeline or a custom one.
       - **Default build pipeline**: This runs faster because it makes only critical image checks. Consider starting here to make sure we can successfully build and deploy your component.
       - **Custom build pipeline**: This is triggered when you make commits to your source code repository. This pipeline runs more checks and security scans than the default pipeline, but it takes a bit more time because it's more thorough. **NOTE**: To use a custom pipeline, you must be the owner of your repository so that you can authorize the installation of our application in your GitHub instance and then grant the app access to your repository. If someone else owns your repository, fork it, then go back to the Add components page and start again.
     - **CPU**, **Memory**, and **Instances**: Choose how many of each of these you want for your application, and in what unit, depending on your deployment requirements.
-    - **Route**: Enter the public URL for your published application.
-
-    In the **Environment variables** section, enter a variable name and value to customize how we deploy your application. 
+    <!-- - **Route**: Enter the public URL for your published application. -->
+    - Under **Environment variables**, enter a variable **Name** and **Value** to customize how we deploy your application. 
+    - **Secrets**: Click **Add secret** to keep your build data private. All secrets are stored using AWS Secrets Manager.  
 
     ***
     **WARNING**

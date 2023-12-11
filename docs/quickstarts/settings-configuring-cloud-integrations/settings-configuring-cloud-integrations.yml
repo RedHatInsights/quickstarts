@@ -1,16 +1,16 @@
 apiVersion: console.openshift.io/v1
 kind: QuickStarts
 metadata:
-  name: rbac-configuring-service-sources
+  name: settings-configuring-cloud-integrations
   externalDocumentation: true
 spec:
   version: 0.1
   type:
     text: Documentation
     color: orange
-  displayName: Configuring sources for Red Hat services
+  displayName: Configuring cloud integrations for Red Hat services
   icon: ~
   description: How to link your Red Hat account to a public cloud
   link:
-    href: https://access.redhat.com/documentation/en-us/red_hat_hybrid_cloud_console/2023/html/configuring_sources_for_red_hat_services/index
+    href: https://access.redhat.com/documentation/en-us/red_hat_hybrid_cloud_console/2023/html/configuring_cloud_integrations_for_red_hat_services/index
     text: View documentation

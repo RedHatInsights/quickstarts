@@ -6,6 +6,8 @@ help:
 	@echo "migrate		- run database migration"
 	@echo "generate-spec	- run openAPI3 generator"
 	@echo	"validate-topics - run help topics validator"
+	@echo  "infra           - start required infrastructure"
+	@echo "stop-infra      - stop required infrastructure"
 
 	
 test:
@@ -22,3 +24,9 @@ generate-spec:
 
 validate:
 	go run cmd/validate/*
+
+infra:
+	docker compose -f local/db-compose.yaml up
+
+stop-infra:
+	docker compose -f local/db-compose.yaml down

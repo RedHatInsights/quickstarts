@@ -1,6 +1,6 @@
 kind: QuickStarts
-name: insights-inventory-groups
-tags: 
+name: insights-inventory-groups-rbac
+tags:
   - kind: bundle
     value: insights
   - kind: application
@@ -8,6 +8,4 @@ tags:
   - kind: bundle
     value: iam
   - kind: application
-    value: user access
-    
- 
+    value: rbac
