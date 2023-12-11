@@ -114,6 +114,5 @@ func setupGlobalLogger(opts *config.QuickstartsConfig) {
 	if err != nil {
 		logLevel = logrus.ErrorLevel
 	}
-	fmt.Println("ERR", err, logLevel)
 	logrus.SetLevel(logLevel)
 }
