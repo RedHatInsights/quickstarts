@@ -78,29 +78,6 @@ func findTags() []MetadataTemplate {
 	return MetadataTemplates
 }
 
-func seedFavoriteQuickstart() (models.FavoriteQuickstart, error) {
-
-	mc := make(map[string]string)
-	mc["foo"] = "bar"
-	content, _ := json.Marshal(mc)
-
-	qs := models.Quickstart{
-		Name:    "fooboo",
-		Content: content,
-	}
-
-	favQuickstart := models.FavoriteQuickstart{
-		AccountId:      "123",
-		QuickstartName: qs.Name,
-		Favorite:       true,
-	}
-
-	qs.FavoriteQuickstart = append(qs.FavoriteQuickstart, favQuickstart)
-
-	DB.Create(&qs)
-	return favQuickstart, nil
-}
-
 func seedQuickstart(t MetadataTemplate, defaultTag models.Tag) (models.Quickstart, error) {
 	yamlfile, err := ioutil.ReadFile(t.ContentPath)
 	var newQuickstart models.Quickstart
@@ -271,16 +248,6 @@ func SeedTags() {
 	// seeding phase
 	defaultTags := seedDefaultTags()
 	MetadataTemplates := findTags()
-
-	// var favQuickstart models.FavoriteQuickstart
-	var favQuickstartError error
-
-	_, favQuickstartError = seedFavoriteQuickstart()
-	if favQuickstartError != nil {
-		fmt.Println("Unable to seed favoriteQuickstart: ", favQuickstartError.Error())
-	}
-
-	// DB.Save(&favQuickstart)
 
 	for _, template := range MetadataTemplates {
 		kind := template.Kind
