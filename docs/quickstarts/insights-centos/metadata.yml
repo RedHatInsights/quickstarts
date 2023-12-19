@@ -1,4 +1,4 @@
-kind: Quickstarts # kind must always be "QuickStarts"
+kind: QuickStarts # kind must always be "QuickStarts"
 name: insights-centos
 tags: # If you want to use more granular filtering add tags to the quickstart
   - kind: bundle
