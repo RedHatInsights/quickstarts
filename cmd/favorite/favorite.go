@@ -13,12 +13,11 @@ import (
 func seedFavoriteQuickstart(quickstartName string) (models.FavoriteQuickstart, error) {
 
 	var quickstart models.Quickstart
-	r := database.DB.Where("name = ?", quickstartName).Preload("FavoriteQuickstart").Find(&quickstart)
+	result := database.DB.Where("name = ?", quickstartName).Preload("FavoriteQuickstart").Find(&quickstart)
 
-	if r.RowsAffected != 0 {
+	if result.RowsAffected != 0 {
 		// Quickstart already exists
 		fmt.Print(quickstartName, " is an existing quickstart.\n")
-		// fmt.Print("Length of FavoriteQuickstarts inside quickstart ", quickstartName, " is ", len(quickstart.FavoriteQuickstart), "\n")
 		return quickstart.FavoriteQuickstart[0], nil
 	}
 
@@ -43,7 +42,6 @@ func seedFavoriteQuickstart(quickstartName string) (models.FavoriteQuickstart, e
 	database.DB.Create(&quickstart)
 	fmt.Print(quickstartName, " quickstart has just been created.\n")
 	fmt.Print("Favorite was set to '", favQuickstart.Favorite, "'\n")
-	// fmt.Print("Length of FavoriteQuickstarts inside quickstart ", quickstartName, " is ", len(quickstart.FavoriteQuickstart), "\n")
 
 	return favQuickstart, nil
 }

@@ -2,6 +2,7 @@ package routes
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/RedHatInsights/quickstarts/pkg/database"
@@ -9,44 +10,90 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-func getFavoriteQuickstarts(accountId string) ([]string, error) {
-	var favQuickstart []models.FavoriteQuickstart
-	var quickstartNames []string
-	database.DB.Find(&favQuickstart).Where("accountId = ? AND favorite = ?", accountId, true)
+func handleError(w http.ResponseWriter, statusCode int, errorMessage string) {
+	w.WriteHeader(statusCode)
+	w.Header().Set("Content-Type", "application/json")
+	resp := map[string]string{"msg": errorMessage}
+	json.NewEncoder(w).Encode(resp)
+}
 
-	for i := 1; i < len(favQuickstart); i++ {
-		quickstartNames = append(quickstartNames, favQuickstart[i].QuickstartName)
+func GetFavoriteQuickstarts(accountId string) ([]models.FavoriteQuickstart, error) {
+	var favQuickstarts []models.FavoriteQuickstart
+	result := database.DB.Where(&models.FavoriteQuickstart{AccountId: accountId, Favorite: true}).Find(&favQuickstarts)
+	return favQuickstarts, result.Error
+}
+
+func GetAllFavoriteQuickstarts(w http.ResponseWriter, r *http.Request) {
+	var accountId = r.URL.Query().Get("account")
+	if accountId == "" {
+		handleError(w, http.StatusBadRequest, "Account query param is required")
+		return
 	}
 
-	return quickstartNames, nil
-}
-
-func getAllFavoriteQuickstarts(w http.ResponseWriter, r *http.Request) {
-	var accountId = r.URL.Query().Get("account")
-	var quickstarts, _ = getFavoriteQuickstarts(accountId)
+	var favorites, err = GetFavoriteQuickstarts(accountId)
+	if err != nil {
+		handleError(w, http.StatusBadRequest, err.Error())
+		return
+	}
 
 	w.WriteHeader(http.StatusOK)
-	resp := make(map[string][]string)
-	resp["data"] = quickstarts
+	resp := make(map[string][]models.FavoriteQuickstart)
+	resp["data"] = favorites
 	json.NewEncoder(w).Encode(resp)
-
 }
 
-func switchFavorite(accountId string, quickstartName string, favorite bool) models.FavoriteQuickstart {
+func SwitchFavorite(accountId string, quickstartName string, favorite bool) (models.FavoriteQuickstart, error) {
 	var favQuickstart models.FavoriteQuickstart
-	database.DB.Find(&favQuickstart).Where("accountId = ? AND quickstartName = ?", accountId, quickstartName)
-	favQuickstart.Favorite = favorite
+	result := database.DB.Where(&models.FavoriteQuickstart{AccountId: accountId, QuickstartName: quickstartName}).Find(&favQuickstart).Update("Favorite", favorite)
 
-	// TODO: update quickstart table as well!
-	database.DB.Save(&favQuickstart)
-	return favQuickstart
+	if result.Error != nil {
+		fmt.Println("Error while quering database:", result.Error)
+		return favQuickstart, result.Error
+	} else {
+		fmt.Printf("Retrieved Favorite Quickstart: %+v\n", favQuickstart)
+	}
+
+	// very first switch
+	if result.RowsAffected == 0 {
+
+		favQuickstart = models.FavoriteQuickstart{
+			AccountId:      accountId,
+			QuickstartName: quickstartName,
+			Favorite:       favorite,
+		}
+
+		var qs models.Quickstart
+		database.DB.Where("name = ?", quickstartName).Preload("FavoriteQuickstart").Find(&qs)
+		qs.FavoriteQuickstart = append(qs.FavoriteQuickstart, favQuickstart)
+
+		if err := database.DB.Save(&qs).Error; err != nil {
+			fmt.Println("Error saving to database Quickstart:", err)
+			return favQuickstart, err
+		}
+	}
+
+	return favQuickstart, nil
 }
 
-func updateFavoriteQuickstart(w http.ResponseWriter, r *http.Request) {
-	var accountId = r.URL.Query().Get("account")
-	var favoriteQuickstart models.FavoriteQuickstart
+type FavQuickstartPayload struct {
+	QuickstartName string `json:"quickstartName"`
+	Favorite       bool   `json:"favorite"`
+}
 
-	if err := json.NewDecoder(r.Body).Decode(&favoriteQuickstart); err != nil {
+func UpdateFavoriteQuickstart(w http.ResponseWriter, r *http.Request) {
+	var accountId = r.URL.Query().Get("account")
+	if accountId == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Header().Set("Content-Type", "application/json")
+		resp := make(map[string]string)
+
+		resp["msg"] = "account query param is required"
+		json.NewEncoder(w).Encode(resp)
+		return
+	}
+
+	var payload FavQuickstartPayload
+	if err := json.NewDecoder(r.Body).Decode(&payload); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Header().Set("Content-Type", "application/json")
 		resp := make(map[string]string)
@@ -56,8 +103,11 @@ func updateFavoriteQuickstart(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var favQuickstart = switchFavorite(accountId, favoriteQuickstart.QuickstartName, favoriteQuickstart.Favorite)
-
+	var favQuickstart, err = SwitchFavorite(accountId, payload.QuickstartName, payload.Favorite)
+	if err != nil {
+		handleError(w, http.StatusBadRequest, err.Error())
+		return
+	}
 	resp := make(map[string]models.FavoriteQuickstart)
 	resp["data"] = favQuickstart
 	w.WriteHeader(http.StatusOK)
@@ -65,6 +115,6 @@ func updateFavoriteQuickstart(w http.ResponseWriter, r *http.Request) {
 }
 
 func MakeFavoriteQuickstartsRouter(sub chi.Router) {
-	sub.Get("/", getAllFavoriteQuickstarts)
-	sub.Post("/", updateFavoriteQuickstart)
+	sub.Get("/", GetAllFavoriteQuickstarts)
+	sub.Post("/", UpdateFavoriteQuickstart)
 }
