@@ -2,7 +2,7 @@ apiVersion: console.openshift.io/v1
 kind: QuickStarts
 metadata:
   name: openshift-rosa-deploy-app
-  externalDocumentation: true
+  learningPath: true
 spec:
   version: 0.1
   type:
