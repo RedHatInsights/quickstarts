@@ -1,36 +1,32 @@
 # Creating quick starts (Learning resources) for the Hybrid Cloud Console
 
-These instructions explain how to create content for Learning resources pages in the [Red Hat Hybrid Cloud Console](https://console.redhat.com) using the PatternFly [quick starts](https://www.patternfly.org/extensions/quick-starts/) extension.
+These instructions explain how to create content for Learning resources pages in the [Red Hat Hybrid Cloud Console](https://console.redhat.com) using the PatternFly [quick starts](https://www.patternfly.org/extensions/quick-starts/) extension. 
 
-A _Learning resources_ page ([example](https://console.redhat.com/insights/learning-resources)) on the Hybrid Cloud Console is a central location to link to different content types related to a collection of console services (or _bundle_) such as product documentation, interactive quick starts, learning paths, and more. These links help users find the information they need from within the console user interface, in the most suitable format. Each resource is represented by a tile on a Learning resources page.
+A **Learning resources** page ([example](https://console.redhat.com/insights/learning-resources)) on the Hybrid Cloud Console is a central location that contains links to different content types related to a collection of console services (or _bundle_) such as product documentation, interactive quick starts, learning paths, and more. These links help users find the information they need from within the console user interface, in the most suitable format. Each resource is represented by a tile on a Learning resources page. The source files are created in YAML.
 
 You can use the PatternFly quick starts extension in this repository to create:
 
-- Learning resources tiles in the Hybrid Cloud Console that link to an external resource, such as documentation or a learning path. The resource opens in a new browser tab. 
-- Interactive quick starts, which are step-by-step instructions and tasks presented in a side panel embedded in the Hybrid Cloud Console UI. Interactive quick starts remain open on the right side of the console window while the user completes tasks. 
+- _Learning resources tiles_ in the Hybrid Cloud Console that link to an external resource, such as documentation or a learning path. The resource opens in a new browser tab. 
+- _Interactive quick starts_, which are step-by-step instructions and tasks presented in a side panel embedded in the Hybrid Cloud Console UI. Interactive quick starts remain open on the right side of the console window while the user completes tasks.
 
 ## Creating a Learning resources tile on the Hybrid Cloud Console
 
-A Learning resources _tile_ provides a link to educational content published outside of the Hybrid Cloud Console, such as product documentation (full guides or individual topics), learning paths, and more, to help users easily find what they need from within the console UI. To link to a resource, create a tile on the appropriate Learning resources page by tagging it with the bundle(s) you want it to appear on. You will create your files in YAML.
+A Learning resources _tile_ provides a link to educational content published outside of the Hybrid Cloud Console, such as product documentation (full guides or individual topics), learning paths, and more, to help users easily find the information they need from within the console UI. 
 
 Each tile on the Learning resources page in your bundle contains:
 
-- A title for the resource (in sentence case). For documentation items, you can shorten the title from the full guide title on the Customer Portal.
+- A title for the resource - in sentence case. For documentation items, you can shorten the title from the full guide title on the Customer Portal.
 - A short description of the resource - a complete sentence of up to 115 characters. 
 - A link to the content.
 
 ## Creating interactive quick starts for the Hybrid Cloud Console
 
-An _interactive quick start_ is a set of step-by-step instructions and tasks presented in a side panel embedded within a product’s UI. Quick starts can help users get started with a product by providing installation and setup guidance.  Quick starts also allow users to quickly complete a task without the need to refer to external documentation.
+An _interactive quick start_ is a set of step-by-step instructions and tasks presented in a side panel embedded within a product’s UI. Quick starts can help users get started with a product by providing installation and setup guidance. Quick starts also allow users to quickly complete a task without the need to refer to external documentation.
 
-Quick starts should be brief and simple to follow. Red Hat recommends quick starts take no longer than 10 minutes for a user to complete, and have a maximum of 5 tasks (2-7 steps per task is a good length). You can find more detailed guidelines below under _Best practices for creating quick starts_.
-
-Use these steps to create quick starts for the Hybrid Cloud Console which have no content single-sourcing dependencies. You will create your quick start files in YAML.
-
-For information about creating a quick start using AsciiDoc-formatted content instead, see the [contributor guide for Application Services](https://github.com/redhat-developer/app-services-guides/blob/main/CONTRIBUTING.adoc).
+Quick starts should be brief and simple to follow. Red Hat recommends quick starts take no longer than 10 minutes for a user to complete, and have a maximum of 5 tasks (2-7 steps per task is a good length). You can find more detailed guidelines below under _Best practices for creating quick starts_. 
 
 **IMPORTANT**:
-The quickstarts content in this repository is not validated by the content team. We are working on defining a formal process. Please be aware that you might be required to update or change the content.
+The quick starts content in this repository is not validated by the content team. We are working on defining a formal process. Please be aware that you might be required to update or change the content.
 
 You can read more about the PatternFly quickstarts UI extension in the official [PatternFly documentation](https://github.com/patternfly/patternfly-quickstarts/tree/main/packages/module#quick-starts-format).
 
@@ -44,7 +40,7 @@ This is an overview of the steps you will need to complete to publish an interac
 
 1. Write your draft quick start content, and get review and approval from product stakeholders.
 
-2. When the content is ready, create your YAML quick start files in a new directory in [this repository `docs` directory of [**Red Hat Insights quickstarts**](https://github.com/RedHatInsights/quickstarts/tree/main/docs/quickstarts), following the detailed instructions in this `README.md` file. 
+2. When the content is ready, create your YAML quick start files in a new directory in the `docs` directory of [**Red Hat Insights quickstarts**](https://github.com/RedHatInsights/quickstarts/tree/main/docs/quickstarts), following the detailed instructions in this `README.md` file. 
 
 3. Get your quick start or Learning resource tile added to the [Hybrid Cloud Console](https://console.redhat.com):
  
@@ -205,10 +201,6 @@ When your quick start is live in the Hybrid Cloud Console, close your original d
   * Maximum 5 tasks
   * 2-7 steps per task (maximum 10 steps)
 * Each step should have a “Check your work” section.
-* Choosing an icon for the quick start card:
-  * If your quick start is specific to a product or service, use the relevant icon from the [Red Hat Brand product icons page](https://www.redhat.com/en/about/brand/standards/icons/product-icons).
-  * If your quick start does not relate to a specific product or service, use the default PatternFly rocket ship icon. See the [PatternFly quick starts documentation](https://www.patternfly.org/extensions/quick-starts/design-guidelines/) for more details.
-  * You can find the markdown to point to an image in comments in the [quick starts template](https://github.com/patternfly/patternfly-quickstarts/blob/main/packages/dev/src/quickstarts-data/yaml/template.yaml).
 
 For more best practices and tips, see: 
 
@@ -217,7 +209,7 @@ For more best practices and tips, see:
 
 ## Assigning your quick start to a console location using the `bundle` tag 
 
-The `bundle` tag in the quick start's `metadata.yml` file tells the console which **Learning Resources** page to show the quick start on. A bundle is a console-internal term that refers to a collection of services.
+The `bundle` tag in the quick start's `metadata.yml` file tells the console on which **Learning Resources** page to show the quick start or tile. A bundle is a console-internal term that refers to a collection of services.
 
 You can use more than one `bundle` tag to show the quick start in multiple locations in the console. For example, this would show the quick start on **Learning Resources** pages for both **Insights** and **Settings**:
   
