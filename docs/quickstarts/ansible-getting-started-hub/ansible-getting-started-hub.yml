@@ -8,7 +8,7 @@ spec:
   type:
     text: Documentation
     color: orange
-  displayName: Getting started wtih automation hub
+  displayName: Getting started with automation hub
   icon: ~
   description: Configure automation hub as your default server for Ansible collections content.
   link:

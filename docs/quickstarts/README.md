@@ -1,10 +1,29 @@
 # Creating quick starts (Learning resources) for the Hybrid Cloud Console
 
-These instructions explain how to create [quick starts](https://www.patternfly.org/v4/extensions/quick-starts) in the [Red Hat Hybrid Cloud Console](https://console.redhat.com). 
+These instructions explain how to create content for Learning resources pages in the [Red Hat Hybrid Cloud Console](https://console.redhat.com) using the PatternFly [quick starts](https://www.patternfly.org/extensions/quick-starts/) extension.
 
-A *quick start* is a set of step-by-step instructions and tasks presented in a side panel embedded in a product’s user interface. Quick starts can help users get started with a product, and they often provide guidance around installation and setup. Quick starts also allow users to quickly complete a task without the need to refer to external documentation.
+A _Learning resources_ page ([example](https://console.redhat.com/insights/learning-resources)) on the Hybrid Cloud Console is a central location to link to different content types related to a collection of console services (or _bundle_) such as product documentation, interactive quick starts, learning paths, and more. These links help users find the information they need from within the console user interface, in the most suitable format. Each resource is represented by a tile on a Learning resources page.
 
-Quick starts should be brief and simple to follow. Red Hat recommends quick starts take no longer than 10 minutes for a user to complete, and have a maximum of 5 tasks (2-7 steps per task is a good length). You can find more detailed guidelines in this guide under _Best practices for creating quick starts_.
+You can use the PatternFly quick starts extension in this repository to create:
+
+- Learning resources tiles in the Hybrid Cloud Console that link to an external resource, such as documentation or a learning path. The resource opens in a new browser tab. 
+- Interactive quick starts, which are step-by-step instructions and tasks presented in a side panel embedded in the Hybrid Cloud Console UI. Interactive quick starts remain open on the right side of the console window while the user completes tasks. 
+
+## Creating a Learning resources tile on the Hybrid Cloud Console
+
+A Learning resources _tile_ provides a link to educational content published outside of the Hybrid Cloud Console, such as product documentation (full guides or individual topics), learning paths, and more, to help users easily find what they need from within the console UI. To link to a resource, create a tile on the appropriate Learning resources page by tagging it with the bundle(s) you want it to appear on. You will create your files in YAML.
+
+Each tile on the Learning resources page in your bundle contains:
+
+- A title for the resource (in sentence case). For documentation items, you can shorten the title from the full guide title on the Customer Portal.
+- A short description of the resource - a complete sentence of up to 115 characters. 
+- A link to the content.
+
+## Creating interactive quick starts for the Hybrid Cloud Console
+
+An _interactive quick start_ is a set of step-by-step instructions and tasks presented in a side panel embedded within a product’s UI. Quick starts can help users get started with a product by providing installation and setup guidance.  Quick starts also allow users to quickly complete a task without the need to refer to external documentation.
+
+Quick starts should be brief and simple to follow. Red Hat recommends quick starts take no longer than 10 minutes for a user to complete, and have a maximum of 5 tasks (2-7 steps per task is a good length). You can find more detailed guidelines below under _Best practices for creating quick starts_.
 
 Use these steps to create quick starts for the Hybrid Cloud Console which have no content single-sourcing dependencies. You will create your quick start files in YAML.
 
@@ -13,36 +32,36 @@ For information about creating a quick start using AsciiDoc-formatted content in
 **IMPORTANT**:
 The quickstarts content in this repository is not validated by the content team. We are working on defining a formal process. Please be aware that you might be required to update or change the content.
 
-You can read more about the Patternfly quickstarts UI module in the official [Patternfly documentation](https://github.com/patternfly/patternfly-quickstarts/tree/main/packages/module#quick-starts-format).
+You can read more about the PatternFly quickstarts UI extension in the official [PatternFly documentation](https://github.com/patternfly/patternfly-quickstarts/tree/main/packages/module#quick-starts-format).
 
 ## Preview tool
 
-You can use this simple [preview tool](https://quickstarts-content-preview.surge.sh/) to view your content. Be aware the tool is not official and was hastily put together. If it crashes, please refresh the page.
+You can use this simple [preview tool](https://quickstarts-content-preview.surge.sh/) to view your content. To preview your content, copy and paste the contents of your YAML file in the window and click **Add quickstart to list**. Be aware the tool is not official and was hastily put together. If it crashes, please refresh the page.
 
 
 ## Summary of steps
-This is an overview of the steps you will need to complete to publish a quick start in the Hybrid Cloud Console.
+This is an overview of the steps you will need to complete to publish an interactive quick start or Learning resource tile in the Hybrid Cloud Console.
 
 1. Write your draft quick start content, and get review and approval from product stakeholders.
 
-2. When the content is ready, create your YAML quick start files in a new directory in the `docs` directory of [**Red Hat Insights quickstarts**](https://github.com/RedHatInsights/quickstarts/tree/main/docs/quickstarts), following the detailed instructions in this `README.md` file. 
+2. When the content is ready, create your YAML quick start files in a new directory in [this repository `docs` directory of [**Red Hat Insights quickstarts**](https://github.com/RedHatInsights/quickstarts/tree/main/docs/quickstarts), following the detailed instructions in this `README.md` file. 
 
-3. Get your quick start added to the [Hybrid Cloud Console](https://console.redhat.com):
+3. Get your quick start or Learning resource tile added to the [Hybrid Cloud Console](https://console.redhat.com):
  
-    a. Create a request in [the RHCLOUD Jira project](https://issues.redhat.com/projects/RHCLOUD/issues/) for engineering to merge the content. Add the `platform-experience` label to your Jira.
+    a. Create a request in [the RHCLOUD Jira project](https://issues.redhat.com/projects/RHCLOUD/issues/) for engineering to merge the content. Add the `platform-experience-ui` label to your Jira.
     
     b. Create a pull request (PR) to the `main` branch in the [**Red HatInsights/quickstarts**](https://github.com/RedHatInsights/quickstarts/) repository.
     
 4. The engineering team then merges the pull request to the Hybrid Cloud Console. The content will appear first on the [stage](https://console.stage.redhat.com/) of the Hybrid Cloud Console, and later in [production](https://console.redhat.com/).
 
-When these steps are complete, you will be able to view your quick start in the [Hybrid Cloud Console](https://console.redhat.com/).
+When these steps are complete, you will be able to view your quick start or Learning resource tile in the [Hybrid Cloud Console](https://console.redhat.com/).
 
 ## Detailed steps
 
 ### Initial setup 
 You will need to complete these steps the first time you are contributing to the `quickstarts` repository. If you have already forked and cloned the `quickstarts` repository, continue to the next section, _Create a working branch and make your docs updates_.
 
-**Preqrequisites**
+**Prerequisites**
 - You have a GitHub account (https://github.com) 
 - You have configured your SSH keys on your system following the instructions here: https://help.github.com/articles/connecting-to-github-with-ssh/
 
@@ -111,7 +130,9 @@ If you have created quick starts in the Hybrid Cloud Console before, start here:
     
     d. Add your draft quickstart content to the new file. You can follow this [template](https://github.com/patternfly/patternfly-quickstarts/blob/main/packages/dev/src/quickstarts-data/yaml/template.yaml) and find more Markdown snippets in the _Useful Markdown snippets_ section of these instructions.
 
-    d. Preview and validate the YAML content by copying and pasting your YAML into the [preview tool](https://quickstarts-content-preview.surge.sh/). Make changes as needed until you are ready to push your files to the remote branch for review.
+    NOTE: If you are creating a Learning resources tile only (such as a link to external documentation), refer to [this example](https://github.com/RedHatInsights/quickstarts/tree/main/docs/quickstarts/ansible-getting-started-hub) to understand the information required. Learning resources tiles require minimal information in the YAML files, compared to interactive quick starts. 
+
+    e. Preview and validate the YAML content by copying and pasting your YAML into the [preview tool](https://quickstarts-content-preview.surge.sh/). Make changes as needed until you are ready to push your files to the remote branch for review.
 
 6. Push your files to the remote branch for review by stakeholders as needed.
 
@@ -131,7 +152,6 @@ If you have created quick starts in the Hybrid Cloud Console before, start here:
     ```
     git commit -am "descriptive commit message"
     ```
-    (This command allows you to commit tracked and untracked changes and add a commit message inline.)
 
     d. Push your quick start files to the remote branch.
 
@@ -141,7 +161,7 @@ If you have created quick starts in the Hybrid Cloud Console before, start here:
 9. Open a pull request (PR) in the [GitHub repository](https://github.com/RedHatInsights/quickstarts) for your update. Get your quick start reviewed by stakeholders and peer reviewers, as needed. Once you and any reviewers are happy with the content, work with engineering to add the content to the Hybrid Cloud Console.
 
 
-### Adding your quick start to the Hybrid Cloud Console
+### Adding your quick start (or Learning resource tile) to the Hybrid Cloud Console
 
 Open a Jira for the engineering team to add the quick start to the Hybrid Cloud Console source code.
 
@@ -187,13 +207,13 @@ When your quick start is live in the Hybrid Cloud Console, close your original d
 * Each step should have a “Check your work” section.
 * Choosing an icon for the quick start card:
   * If your quick start is specific to a product or service, use the relevant icon from the [Red Hat Brand product icons page](https://www.redhat.com/en/about/brand/standards/icons/product-icons).
-  * If your quick start does not relate to a specific product or service, use the default Patternfly rocket ship icon. See the [Patternfly quick starts documentation](https://www.patternfly.org/v4/extensions/quick-starts/design-guidelines/) for more details.
+  * If your quick start does not relate to a specific product or service, use the default PatternFly rocket ship icon. See the [PatternFly quick starts documentation](https://www.patternfly.org/extensions/quick-starts/design-guidelines/) for more details.
   * You can find the markdown to point to an image in comments in the [quick starts template](https://github.com/patternfly/patternfly-quickstarts/blob/main/packages/dev/src/quickstarts-data/yaml/template.yaml).
 
 For more best practices and tips, see: 
 
-* [Creating quick start tutorials](https://docs.openshift.com/container-platform/4.11/web_console/creating-quick-start-tutorials.html) in the OpenShift documentation 
-* [Design guidelines for quick starts](https://www.patternfly.org/v4/extensions/quick-starts/design-guidelines/) in the Patternfly documentation
+* [Creating quick start tutorials](https://docs.openshift.com/container-platform/4.14/web_console/creating-quick-start-tutorials.html) in the OpenShift documentation 
+* [Design guidelines for quick starts](https://www.patternfly.org/extensions/quick-starts/design-guidelines/) in the PatternFly documentation
 
 ## Assigning your quick start to a console location using the `bundle` tag 
 
@@ -215,7 +235,7 @@ See the below list for the value tags to use for each bundle:
 
 | Bundle  |  value tag |
 |---|---|
-|  Application & Data Services | application-services  |
+|  Application Services | application-services  |
 |  OpenShift |  openshift |
 |  Ansible Automation Platform | ansible  |
 | Red Hat Insights  | insights  |
@@ -262,9 +282,9 @@ There are a few ways to include visual elements in a quick start.
 
 Use this method if you can’t point to a specific UI icon in the Hybrid Cloud Console: for example, a repeated icon in a list, in instances where a user’s setup might be customized, or when an icon has no name when you hover over it in the UI (such as the ellipsis icon signifying ‘options’ or ‘more options’).
 
-1. Find the name of the Patternfly icon in [this list](https://www.patternfly.org/v4/guidelines/icons/#font-awesome-solid-fas-vs-font-awesome-regular-far). All of these icons are included in the Patternfly code so you don’t need to upload an image, you can just point to it with HTML.
-2. Use the markup to specify the library the icon comes from (Patternfly, Font Awesome solid, Font Awesome regular) and the icon name. Here are [some examples from the Patternfly docs](https://www.patternfly.org/v4/guidelines/icons/#font-awesome-solid-fas-vs-font-awesome-regular-far):
-    - For Patternfly icons: `<i class="pf-icon [insert-icon-name]"></i>`
+1. Find the name of the PatternFly icon in [the PatternFly docs](https://www.patternfly.org/design-foundations/icons/#font-awesome-solid-fas-vs-font-awesome-regular-far). All of these icons are included in the PatternFly code so you don’t need to upload an image, you can just point to it with HTML.
+2. Use the markup to specify the library the icon comes from (PatternFly, Font Awesome solid, Font Awesome regular) and the icon name. Here are some examples:
+    - For PatternFly icons: `<i class="pf-icon [insert-icon-name]"></i>`
     - For Font Awesome solid icons: `<i class="fas [insert-icon-name]"></i>`
     - For Font Awesome regular icons: `<i class="far [insert-icon-name]"></i>`
 3. Add the name of the icon in brackets after the icon.
@@ -278,7 +298,7 @@ _Example_
 
 **Admonitions**
 
-The syntax for rendering admonition blocks (for example, text in a Note or an Important box) to Patternfly React Alerts is:
+The syntax for rendering admonition blocks (for example, text in a Note or an Important box) to PatternFly React Alerts is:
 - Bracketed alert text contents
 - The admonition keyword, followed by the alert variant you want
 - Variants are: note, tip, important, caution, and warning
