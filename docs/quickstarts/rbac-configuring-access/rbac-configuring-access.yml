@@ -10,7 +10,7 @@ spec:
     color: orange
   displayName: Setting up User Access
   icon: ~
-  description: Configuring role-based access control (RBAC) for services hosted on the Hybrid Cloud Console
+  description: Configuring role-based access control (RBAC) for services hosted on the Hybrid Cloud Console.
   link:
-    href: https://access.redhat.com/documentation/en-us/red_hat_hybrid_cloud_console/2023/html/user_access_configuration_guide_for_role-based_access_control_rbac/index
+    href: https://access.redhat.com/documentation/en-us/red_hat_hybrid_cloud_console/1-latest/html/user_access_configuration_guide_for_role-based_access_control_rbac/index
     text: View documentation
