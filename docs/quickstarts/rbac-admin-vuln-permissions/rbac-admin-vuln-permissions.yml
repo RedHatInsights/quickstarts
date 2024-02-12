@@ -79,7 +79,7 @@ spec:
         - **Default access**
         - *Vulnerability admins*
 
-        To learn more, see the [User Access Configuration Guide for Role-based Access Control (RBAC)](https://access.redhat.com/documentation/en-us/red_hat_hybrid_cloud_console/2023/html/user_access_configuration_guide_for_role-based_access_control_rbac/index).
+        To learn more, see the [User Access Configuration Guide for Role-based Access Control (RBAC)](https://access.redhat.com/documentation/en-us/red_hat_hybrid_cloud_console/1-latest/html/user_access_configuration_guide_for_role-based_access_control_rbac/index).
       # optional - the task's Check your work module
       review:
         instructions: |-
@@ -96,8 +96,8 @@ spec:
     To grant additional permissions to your team, edit the group from **Groups** > *Vulnerability Admins* and add additional roles or users.
     
     **Learn more:**
-      - See the [User Access Configuration Guide for Role-based Access Control (RBAC)](https://access.redhat.com/documentation/en-us/red_hat_hybrid_cloud_console/2023/html/user_access_configuration_guide_for_role-based_access_control_rbac/index) 
-      - See the [Red Hat Insights documentation](https://access.redhat.com/documentation/en-us/red_hat_insights/2023) for information about using the vulnerability service, including:
-          - [Assessing and Monitoring Security Vulnerabilities on RHEL Systems](https://access.redhat.com/documentation/en-us/red_hat_insights/2023/html-single/assessing_and_monitoring_security_vulnerabilities_on_rhel_systems/index)
-          - [Remediating Security Exposures Using the Vulnerability Service and Ansible Playbooks](https://access.redhat.com/documentation/en-us/red_hat_insights/2023/html-single/remediating_security_exposures_using_the_vulnerability_service_and_ansible_playbooks/index)
-          - [Generating Vulnerability Service Reports](https://access.redhat.com/documentation/en-us/red_hat_insights/2023/html-single/generating_vulnerability_service_reports/index) 
+      - See the [User Access Configuration Guide for Role-based Access Control (RBAC)](https://access.redhat.com/documentation/en-us/red_hat_hybrid_cloud_console/1-latest/html/user_access_configuration_guide_for_role-based_access_control_rbac/index) 
+      - See the [Red Hat Insights documentation](https://access.redhat.com/documentation/en-us/red_hat_insights/1-latest) for information about using the vulnerability service, including:
+          - [Assessing and Monitoring Security Vulnerabilities on RHEL Systems](https://access.redhat.com/documentation/en-us/red_hat_insights/1-latest/html-single/assessing_and_monitoring_security_vulnerabilities_on_rhel_systems/index)
+          - [Red Hat Insights Remediations Guide](https://access.redhat.com/documentation/en-us/red_hat_insights/1-latest/html-single/red_hat_insights_remediations_guide/index)
+          - [Generating Vulnerability Service Reports](https://access.redhat.com/documentation/en-us/red_hat_insights/1-latest/html-single/generating_vulnerability_service_reports/index) 
