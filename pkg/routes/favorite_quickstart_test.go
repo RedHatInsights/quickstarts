@@ -16,7 +16,6 @@ import (
 
 var accountTestId = "testAccountID"
 var allTestIdFavorites []models.FavoriteQuickstart
-var allFavorites []models.FavoriteQuickstart
 
 func mockQuickstartFavoritable(qsName string) *models.FavoriteQuickstart {
 	var qs models.Quickstart
@@ -31,7 +30,6 @@ func mockQuickstartFavoritable(qsName string) *models.FavoriteQuickstart {
 
 	database.DB.Create(&qs)
 
-	allFavorites = append(allFavorites, favQuickstart)
 	allTestIdFavorites = append(allTestIdFavorites, favQuickstart)
 	return &favQuickstart
 }
@@ -43,10 +41,9 @@ func setupFavoriteQuickstartRouter() *chi.Mux {
 	return r
 }
 
-func TestGetAllFavoriteQuickstarts(t *testing.T) {
+func TestFavoriteQuickstarts(t *testing.T) {
 	router := setupFavoriteQuickstartRouter()
 	mockQuickstartFavoritable("test-qs-1")
-	mockQuickstartFavoritable("test-qs-2")
 
 	type responseBody struct {
 		QuickstartName string `json:"quickstartName"`
@@ -96,13 +93,12 @@ func TestGetAllFavoriteQuickstarts(t *testing.T) {
 
 		var payload localResponsePayload
 
-		err := json.NewDecoder(response.Body).Decode(&payload)
-		if err != nil {
-			// Handle decoding error
-			fmt.Println("Error decoding JSON:", err)
-		}
+		json.NewDecoder(response.Body).Decode(&payload)
+
 		assert.Equal(t, 200, response.Code)
 		assert.Equal(t, "first-switch-qs", payload.Data.QuickstartName)
 		assert.Equal(t, true, payload.Data.Favorite)
 	})
+
+	database.DB.Delete(&models.Quickstart{}, "name IN (?)", []string{"first-switch-qs", "test-qs-1"})
 }
