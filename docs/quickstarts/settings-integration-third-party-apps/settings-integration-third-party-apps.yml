@@ -1,0 +1,16 @@
+apiVersion: console.openshift.io/v1
+kind: QuickStarts
+metadata:
+  name: settings-integration-third-party-apps
+  externalDocumentation: true
+spec:
+  version: 0.1
+  type:
+    text: Documentation
+    color: orange
+  displayName: Integration with third-party applications 
+  icon: ~
+  description: Define delivery and involvement of event notifications with third-party applications.
+  link:
+    href: https://access.redhat.com/documentation/en-us/red_hat_hybrid_cloud_console/1-latest/html/integrating_the_red_hat_hybrid_cloud_console_with_third-party_applications/index
+    text: View documentation
