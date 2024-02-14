@@ -8,9 +8,9 @@ spec:
   type:
     text: Documentation
     color: orange
-  displayName: Related documentation for OpenShift Data Science
+  displayName: Related documentation for OpenShift AI
   icon:
-  description: A complete list of documentation related to Red Hat OpenShift Data Science.
+  description: A complete list of documentation related to Red Hat OpenShift AI.
   link:
     href: https://access.redhat.com/documentation/en-us/red_hat_openshift_data_science/1
     text: View documentation
