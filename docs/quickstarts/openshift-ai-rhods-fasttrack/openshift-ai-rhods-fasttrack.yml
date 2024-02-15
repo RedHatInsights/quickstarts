@@ -6,7 +6,7 @@ metadata:
 spec:
   version: 0.1
   type:
-    text: FastTrack
+    text: Tutorial
     color: orange
   displayName: FastTrack to Red Hat OpenShift AI
   icon: ~
