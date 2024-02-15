@@ -7,7 +7,7 @@ spec:
   version: 0.1
   type:
     text: Learning path
-    color: orange
+    color: cyan
   displayName: Learn about OpenShift AI resources
   icon: ~
   description: Learn about the Red Hat OpenShift AI managed service, and associated software offered by our partners

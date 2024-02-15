@@ -7,7 +7,7 @@ spec:
   version: 0.1
   type:
     text: Other
-    color: orange
+    color: purple
   displayName: FastTrack to OpenShift AI
   icon: ~
   description: Learn how to set up Red Hat OpenShift AI on your OpenShift cluster.

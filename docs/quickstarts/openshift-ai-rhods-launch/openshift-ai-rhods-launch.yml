@@ -7,7 +7,7 @@ spec:
   version: 0.1
   type:
     text: Learning path
-    color: orange
+    color: cyan
   displayName: Learn how to launch OpenShift AI
   icon: ~
   description: Learn how to use the Red Hat OpenShift AI platform.
