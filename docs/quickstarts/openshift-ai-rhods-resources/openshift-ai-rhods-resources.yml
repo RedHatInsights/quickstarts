@@ -8,9 +8,9 @@ spec:
   type:
     text: Learning path
     color: orange
-  displayName: Learn about Red Hat OpenShift AI resources
+  displayName: Learn about OpenShift AI resources
   icon: ~
-  description: Learning materials explaining how to use the Red Hat managed services as well as managed services and software offered by our partners
+  description: Learn about the Red Hat OpenShift AI managed service, and associated software offered by our partners
   link:
     href: https://developers.redhat.com/learn/openshift-data-science/red-hat-openshift-data-science-documentation-and-resources
     text: View documentation

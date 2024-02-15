@@ -8,7 +8,7 @@ spec:
   type:
     text: Learning path
     color: orange
-  displayName: Learn how to launch Red Hat OpenShift AI
+  displayName: Learn how to launch OpenShift AI
   icon: ~
   description: Learn how to use the Red Hat OpenShift AI platform.
   link:

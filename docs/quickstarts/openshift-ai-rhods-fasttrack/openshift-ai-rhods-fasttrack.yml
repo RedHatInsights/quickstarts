@@ -8,8 +8,9 @@ spec:
   type:
     text: Tutorial
     color: orange
-  displayName: FastTrack to Red Hat OpenShift AI
+  displayName: FastTrack to OpenShift AI
   icon: ~
+  description: Learn how to set up Red Hat OpenShift AI on your OpenShift cluster.
   link:
     href: https://rh-aiservices-bu.github.io/FastTrack-to-RHODS/FastTrack-to-RHODS/main/index.html
     text: View documentation
