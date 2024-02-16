@@ -10,8 +10,8 @@ spec:
     color: orange
   displayName: Getting started with the Red Hat Hybrid Cloud Console
   icon: ~
-  description: Overview and basic instructions for using the console
+  description: Overview and basic instructions for using the console.
   link:
-    href: https://access.redhat.com/documentation/en-us/red_hat_hybrid_cloud_console/2023/html/getting_started_with_the_red_hat_hybrid_cloud_console/index
+    href: https://access.redhat.com/documentation/en-us/red_hat_hybrid_cloud_console/1-latest/html/getting_started_with_the_red_hat_hybrid_cloud_console/index
     text: View documentation
 

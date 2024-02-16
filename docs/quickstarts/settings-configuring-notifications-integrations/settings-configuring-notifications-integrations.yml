@@ -10,7 +10,7 @@ spec:
     color: orange
   displayName: Configuring notifications and integrations
   icon: ~
-  description: Configuring settings for event-triggered notifications for your services and applications
+  description: Configuring settings for event-triggered notifications for your services and applications.
   link:
-    href: https://access.redhat.com/documentation/en-us/red_hat_hybrid_cloud_console/2023/html/configuring_notifications_and_integrations_on_the_red_hat_hybrid_cloud_console/index
+    href: https://access.redhat.com/documentation/en-us/red_hat_hybrid_cloud_console/1-latest/html/configuring_notifications_on_the_red_hat_hybrid_cloud_console/index
     text: View documentation
