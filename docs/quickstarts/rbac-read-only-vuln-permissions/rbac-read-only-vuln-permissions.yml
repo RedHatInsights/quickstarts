@@ -89,10 +89,10 @@ spec:
         
         Now the users in the *Security Team* group can monitor CVEs for your RHEL systems and generate vulnerability service reports.
         
-        See the [Red Hat Insights documentation](https://access.redhat.com/documentation/en-us/red_hat_insights/) to learn more about using the vulnerability service in the console:
-        - [User Access for vulnerability service users](https://access.redhat.com/documentation/en-us/red_hat_insights/2023/html/assessing_and_monitoring_security_vulnerabilities_on_rhel_systems/vuln-user-access_vulnerability-assess)
-        - [Assessing and Monitoring Security Vulnerabilities on RHEL Systems](https://access.redhat.com/documentation/en-us/red_hat_insights/2023/html/assessing_and_monitoring_security_vulnerabilities_on_rhel_systems/index)
-        - [Generating Vulnerability Service Reports](https://access.redhat.com/documentation/en-us/red_hat_insights/2023/html/generating_vulnerability_service_reports/index)
+        See the [Red Hat Insights documentation](https://access.redhat.com/documentation/en-us/red_hat_insights/1-latest) to learn more about using the vulnerability service in the console:
+        - [User Access for vulnerability service users](https://access.redhat.com/documentation/en-us/red_hat_insights/1-latest/html/assessing_and_monitoring_security_vulnerabilities_on_rhel_systems/vuln-overview_vulnerability-assess#insights-rbac_vuln-overview)
+        - [Assessing and Monitoring Security Vulnerabilities on RHEL Systems](https://access.redhat.com/documentation/en-us/red_hat_insights/1-latest/html/assessing_and_monitoring_security_vulnerabilities_on_rhel_systems/index)
+        - [Generating Vulnerability Service Reports](https://access.redhat.com/documentation/en-us/red_hat_insights/1-latest/html/generating_vulnerability_service_reports/index)
 
 
       # optional - the task's Check your work module
