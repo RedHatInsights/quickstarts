@@ -66,14 +66,15 @@ func main() {
 		sub.Route("/quickstarts", routes.MakeQuickstartsRouter)
 		sub.Route("/progress", routes.MakeQuickstartsProgressRouter)
 		sub.Route("/helptopics", routes.MakeHelpTopicsRouter)
-		sub.Route("/favorites", routes.MakeFavoriteQuickstartsRouter)
+		if cfg.EnableFavorite {
+			sub.Route("/favorites", routes.MakeFavoriteQuickstartsRouter)
+		}
 		sub.Handle("/spec/*", http.StripPrefix("/api/quickstarts/v1/spec", fs))
 	})
 	mr.Get("/", probe)
 	mr.Handle("/metrics", promhttp.Handler())
 	r.Get("/test", probe)
 
-	// fmt.Println(cfg.ServerAddr)
 	server := http.Server{
 		Addr:    cfg.ServerAddr,
 		Handler: r,
