@@ -41,21 +41,17 @@ func setupFavoriteQuickstartRouter() *chi.Mux {
 	return r
 }
 
-func TestFavoriteQuickstarts(t *testing.T) {
+type responseBodyFavQs struct {
+	QuickstartName string `json:"quickstartName"`
+	Favorite       bool   `json:"favorite"`
+}
+
+func TestGetFavoriteQuickstarts(t *testing.T) {
 	router := setupFavoriteQuickstartRouter()
 	mockQuickstartFavoritable("test-qs-1")
 
-	type responseBody struct {
-		QuickstartName string `json:"quickstartName"`
-		Favorite       bool   `json:"favorite"`
-	}
-
-	type localResponsePayload struct {
-		Data responseBody
-	}
-
 	type responsePayload struct {
-		Data []responseBody
+		Data []responseBodyFavQs
 	}
 
 	t.Run("should return all favorite quickstarts for specific AccountID", func(t *testing.T) {
@@ -68,6 +64,26 @@ func TestFavoriteQuickstarts(t *testing.T) {
 		assert.Equal(t, 200, response.Code)
 		assert.Equal(t, len(allTestIdFavorites), len(payload.Data))
 	})
+
+	t.Run("should return bad request if no accountId was provided", func(t *testing.T) {
+		request, _ := http.NewRequest(http.MethodGet, "/", nil)
+		response := httptest.NewRecorder()
+		router.ServeHTTP(response, request)
+
+		var payload *messageResponsePayload
+
+		json.NewDecoder(response.Body).Decode(&payload)
+		assert.Equal(t, 400, response.Code)
+		assert.Equal(t, "Account query param is required", payload.Msg)
+	})
+}
+
+func TestUpdateFavoriteQuickstarts(t *testing.T) {
+	router := setupFavoriteQuickstartRouter()
+
+	type localResponsePayload struct {
+		Data responseBodyFavQs
+	}
 	t.Run("should unfavorite exisitng favorite quickstart", func(t *testing.T) {
 		jsonParams := `{"quickstartName": "test-qs-1", "favorite": false}`
 		request, _ := http.NewRequest(http.MethodPost, fmt.Sprintf("/?account=%s", accountTestId), strings.NewReader(string(jsonParams)))
@@ -99,6 +115,17 @@ func TestFavoriteQuickstarts(t *testing.T) {
 		assert.Equal(t, "first-switch-qs", payload.Data.QuickstartName)
 		assert.Equal(t, true, payload.Data.Favorite)
 	})
+	t.Run("should return bad request if no accountId was provided", func(t *testing.T) {
+		jsonParams := `{"quickstartName": "test-qs-1", "favorite": false}`
+		request, _ := http.NewRequest(http.MethodPost, "/", strings.NewReader(string(jsonParams)))
+		response := httptest.NewRecorder()
+		router.ServeHTTP(response, request)
 
+		var payload *messageResponsePayload
+
+		json.NewDecoder(response.Body).Decode(&payload)
+		assert.Equal(t, 400, response.Code)
+		assert.Equal(t, "Account query param is required", payload.Msg)
+	})
 	database.DB.Delete(&models.Quickstart{}, "name IN (?)", []string{"first-switch-qs", "test-qs-1"})
 }
