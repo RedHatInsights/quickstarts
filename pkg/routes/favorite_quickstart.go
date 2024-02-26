@@ -2,12 +2,12 @@ package routes
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/RedHatInsights/quickstarts/pkg/database"
 	"github.com/RedHatInsights/quickstarts/pkg/models"
 	"github.com/go-chi/chi/v5"
+	"github.com/sirupsen/logrus"
 )
 
 func handleError(w http.ResponseWriter, statusCode int, errorMessage string) {
@@ -59,10 +59,7 @@ func SwitchFavorite(accountId string, quickstartName string, favorite bool) (mod
 	result := database.DB.Where(&models.FavoriteQuickstart{AccountId: accountId, QuickstartName: quickstartName}).Find(&favQuickstart).Update("Favorite", favorite)
 
 	if result.Error != nil {
-		fmt.Println("Error while quering database:", result.Error)
 		return favQuickstart, result.Error
-	} else {
-		fmt.Printf("Retrieved Favorite Quickstart: %+v\n", favQuickstart)
 	}
 
 	// very first switch
@@ -79,7 +76,7 @@ func SwitchFavorite(accountId string, quickstartName string, favorite bool) (mod
 		qs.FavoriteQuickstart = append(qs.FavoriteQuickstart, favQuickstart)
 
 		if err := database.DB.Save(&qs).Error; err != nil {
-			fmt.Println("Error saving to database Quickstart:", err)
+			logrus.Errorln("Error saving to database Quickstart:", err)
 			return favQuickstart, err
 		}
 	}
