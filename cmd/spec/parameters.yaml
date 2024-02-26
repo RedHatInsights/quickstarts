@@ -59,3 +59,10 @@
         required: true
         schema:
           type: string
+      Account:
+        name: account
+        description: Account number
+        in: query
+        required: true
+        schema:
+          type: string

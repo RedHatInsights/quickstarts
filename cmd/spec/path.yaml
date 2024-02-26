@@ -95,4 +95,47 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/NotFound'
+  /favorites:
+    get:
+      summary: Returns list of all favorites
+      responses:
+        '200':
+          description: A JSON array of all favorites
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/v1.FavoriteQuickstart'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+      parameters:
+      - $ref: '#/components/schemas/queryParams/Account'
+    post:
+      summary: Add a favorite
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v1.FavoriteQuickstart'
+      responses:
+        '200':
+          description: A JSON object with a single favorite content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1.FavoriteQuickstart'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
 
