@@ -16,6 +16,14 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
+	if config.Get().EnableFavorite {
+		err := database.DB.AutoMigrate(&models.FavoriteQuickstart{})
+		if err != nil {
+			panic(err)
+		}
+	}
+
 	logrus.Info("Migration complete")
 	database.SeedTags()
 	logrus.Info("Seeding complete")

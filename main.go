@@ -66,6 +66,9 @@ func main() {
 		sub.Route("/quickstarts", routes.MakeQuickstartsRouter)
 		sub.Route("/progress", routes.MakeQuickstartsProgressRouter)
 		sub.Route("/helptopics", routes.MakeHelpTopicsRouter)
+		if cfg.EnableFavorite {
+			sub.Route("/favorites", routes.MakeFavoriteQuickstartsRouter)
+		}
 		sub.Handle("/spec/*", http.StripPrefix("/api/quickstarts/v1/spec", fs))
 	})
 	mr.Get("/", probe)

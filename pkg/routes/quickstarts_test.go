@@ -22,6 +22,7 @@ var rhelBudleTag models.Tag
 var settingsBundleTag models.Tag
 var rbacApplicationTag models.Tag
 var unusedTag models.Tag
+var favoriteQuickstart models.FavoriteQuickstart
 
 func mockQuickstart(name string) *models.Quickstart {
 	quickstart.Name = name

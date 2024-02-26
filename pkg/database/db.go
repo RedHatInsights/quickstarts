@@ -42,10 +42,13 @@ func Init() {
 	if !DB.Migrator().HasTable(&models.HelpTopic{}) {
 		DB.Migrator().CreateTable(&models.HelpTopic{})
 	}
+	if !DB.Migrator().HasTable(&models.FavoriteQuickstart{}) {
+		DB.Migrator().CreateTable(&models.FavoriteQuickstart{})
+	}
 
 	if err != nil {
 		panic(fmt.Sprintf("failed to connect database: %s", err.Error()))
 	}
 
-	logrus.Infoln("Database conection established")
+	logrus.Infoln("Database connection established")
 }
