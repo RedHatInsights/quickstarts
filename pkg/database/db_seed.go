@@ -213,17 +213,25 @@ func seedHelpTopic(t MetadataTemplate, defaultTag models.Tag) ([]models.HelpTopi
 	return returnValue, nil
 }
 
-func clearOldContent() {
+func clearOldContent() []models.FavoriteQuickstart {
+	var favorites []models.FavoriteQuickstart
 	var staleQuickstartsTags []models.Tag
 	var staleTopicsTags []models.Tag
 
 	var staleQuickstarts []models.Quickstart
 	var staleHelpTopics []models.HelpTopic
+	DB.Model(&models.FavoriteQuickstart{}).Find(&favorites)
+
 	DB.Model(&models.Quickstart{}).Find(&staleQuickstarts)
 	DB.Model(&models.HelpTopic{}).Find(&staleHelpTopics)
 
 	DB.Preload("Quickstarts").Find(&staleQuickstartsTags)
 	DB.Preload("HelpTopics").Find(&staleTopicsTags)
+
+	for _, favorite := range favorites {
+		DB.Model(&favorite).Association("Quickstart").Clear()
+		DB.Unscoped().Delete(&favorite)
+	}
 
 	for _, tag := range append(staleQuickstartsTags, staleTopicsTags...) {
 		DB.Model(&tag).Association("Quickstarts").Clear()
@@ -240,11 +248,32 @@ func clearOldContent() {
 		DB.Model(&h).Association("Tags").Clear()
 		DB.Unscoped().Delete(&h)
 	}
+
+	return favorites
+}
+
+func SeedFavorites(favorites []models.FavoriteQuickstart) {
+	seedSuccess := 0
+	ignoredFalse := 0
+	for _, favorite := range favorites {
+		var quickstart models.Quickstart
+		result := DB.Where("name = ?", favorite.QuickstartName).First(&quickstart)
+		if result.Error == nil && result.RowsAffected != 0 && favorite.Favorite {
+			DB.Create(&favorite)
+			seedSuccess++
+		} else if !favorite.Favorite {
+			ignoredFalse++
+		} else {
+			logrus.Warningln("Unable to seed favorite quickstart: ", result.Error.Error(), favorite.QuickstartName)
+		}
+	}
+
+	logrus.Infof("Seeded %d out of %d favorites. Ignored %d unfavorite entries. Could not find %d quickstarts (possible cause quickstart was renamed).", seedSuccess, len(favorites), ignoredFalse, len(favorites)-seedSuccess-ignoredFalse)
 }
 
 func SeedTags() {
 	// clear old content pahse
-	clearOldContent()
+	favorites := clearOldContent()
 	// seeding phase
 	defaultTags := seedDefaultTags()
 	MetadataTemplates := findTags()
@@ -325,4 +354,6 @@ func SeedTags() {
 			}
 		}
 	}
+
+	SeedFavorites(favorites)
 }

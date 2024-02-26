@@ -44,6 +44,10 @@ func main() {
 	checkErr(err)
 	components.Schemas["v1.QuickstartProgress"] = quickstartProgress
 
+	favoriteQuickstart, _, err := openapi3gen.NewSchemaRefForValue(&models.FavoriteQuickstart{})
+	checkErr(err)
+	components.Schemas["v1.FavoriteQuickstart"] = favoriteQuickstart
+
 	helpTopic, _, err := openapi3gen.NewSchemaRefForValue(&models.HelpTopic{}, openapi3gen.SchemaCustomizer(func(name string, t reflect.Type, tag reflect.StructTag, schema *openapi3.Schema) error {
 		if name == "content" {
 			schema.Type = "object"

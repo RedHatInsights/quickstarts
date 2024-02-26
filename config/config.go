@@ -21,7 +21,6 @@ type QuickstartsConfig struct {
 	DbSSLMode       string
 	DbSSLRootCert   string
 	LogLevel        string
-	EnableFavorite  bool
 }
 
 var config *QuickstartsConfig
@@ -55,7 +54,6 @@ func Init() {
 		} else {
 			config.DbSSLRootCert = certPath
 		}
-		config.EnableFavorite = false
 
 	} else {
 		config.DbUser = os.Getenv("PGSQL_USER")
@@ -67,11 +65,6 @@ func Init() {
 		config.MetricsPort = 8080
 		config.DbSSLMode = "disable"
 		config.DbSSLRootCert = ""
-		enableFav, err := strconv.ParseBool(os.Getenv("ENABLE_FAVORITE"))
-		if err != nil {
-			logrus.Info("Failed to parse value")
-		}
-		config.EnableFavorite = enableFav
 	}
 
 }
