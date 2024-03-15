@@ -49,27 +49,27 @@ spec:
         
         2. Click the channel name at the top of the window to open the channel settings. 
         
-        3. Click **Integrations**, then under Apps, click Add an App. 
+        3. Click **Integrations**, then under **Apps**, click **Add an App**. 
 
-        4. Search for Incoming WebHooks, and then select it from the search results.
+        4. Search for *Incoming WebHooks*, and then select it from the search results.
 
-        5. Click Add to Slack to add the Hybrid Cloud Console integration to the channel. The Post to Channel box opens.
+        5. Click **Add to Slack** to add the Hybrid Cloud Console integration to the channel. The **Post to Channel** box opens.
 
         6. Perform one of the following tasks:
-            - To select an existing channel, click the Choose a Channel drop-down menu or type the user or channel name in the field.
-            - To create a new channel, click or create a new channel, type the name of the new channel and an optional description, and click Create.
+            - To select an existing channel, click the **Choose a Channel** drop-down menu or type the user or channel name in the field.
+            - To create a new channel, click or create a new channel, type the name of the new channel and an optional description, and click **Create**.
         
-        7. Click Add Incoming Webhooks Integration. The Configuration page for the app opens in the Slack app directory.
+        7. Click **Add Incoming Webhooks Integration**. The **Configuration** page for the app opens in the Slack app directory.
 
-        8. Scroll down to Integration Settings. The generated webhook URL appears in the Webhook URL field.
+        8. Scroll down to **Integration Settings**. The generated webhook URL appears in the **Webhook URL** field.
 
         9. Copy the URL displayed in the field. You will use it to set up the integration in the Hybrid Cloud Console.
 
-        10. Optional: Add a name for the integration in the Customize Name field.
+        10. Optional: Add a name for the integration in the **Customize Name** field.
 
-        11. Optional: Upload an icon in the Customize Icon field.
+        11. Optional: Upload an icon in the **Customize Icon** field.
 
-        12. Click Save Settings.
+        12. Click **Save Settings**.
 
         Your Slack channel is now ready to receive incoming notifications from the console.
 
@@ -111,12 +111,12 @@ spec:
 
         6. If needed, refresh your browser window to show your Slack integration on the **Integrations** > **Communications** page.
 
-        Your Slack integration is now listed on the Integrations > Communications page. Under Last connection attempt, the status will be Ready to show the connection is ready to accept notifications from the console.
+        Your Slack integration is now listed on the **Integrations** > **Communications** page. Under **Last connection attempt**, the status will be **Ready** to show the connection can accept notifications from the console.
         
         You can now create a test notification to confirm you have correctly connected your Slack channel to your integration in the console:
 
-        1. Next to your Slack integration in the list, click : (options) > Test.
-        2. In the Integration Test modal, enter a message and click Send. If you leave the field empty, the console sends a default message.
+        1. Next to your Slack integration in the list, click : (options) > **Test**.
+        2. In the **Integration Test** screen, enter a message and click **Send**. If you leave the field empty, the console sends a default message.
         3. Go to your Slack channel - if configured correctly, your message will show up in Slack.
  
         Now that you’ve validated your integration, all events you configure in the next step will be forwarded to Slack. Next, you’ll select which notifications to send to Slack.
@@ -129,7 +129,7 @@ spec:
       review:
         instructions: |-
           - Did you receive a test message in your Slack channel?
-          - In the console, check Notifications > Event log for the test event. Does the Event log show an event called Integration Test with Integration: Slack showing in a green label in the Action taken column?
+          - In the console, check **Notifications** > **Event log** for the test event. Does the **Event log** show an event called **Integration Test** with **Integration: Slack** showing in a green label in the Action taken column?
 
 
         failedTaskHelp: Try completing the steps again.
@@ -145,41 +145,42 @@ spec:
         To do this, you’ll create a new behavior group and select the events you want to be notified about. Alternatively, if you have an existing behavior group, you can edit that group and add the notifications to that group to send to Slack.
 
         
-        1. In Settings, click Notifications > Configure Events.
+        1. In Settings, click **Notifications** > **Configure Events**.
 
-        2. Select the application bundle tab to find the related service(s) you want to receive notifications for: Red Hat Enterprise Linux, Console, or OpenShift.
+        2. Select the application bundle tab to find the related service(s) you want to receive notifications for: **Red Hat Enterprise Linux**, **Console**, or **OpenShift**.
 
-        3. Click the Behavior Groups tab to add the new endpoint to a new behavior group. 
-          [You can also edit an existing behavior group instead of creating a new one. See Configure notification behavior groups for more information.]{{admonition note}}
+        3. Click the **Behavior Groups** tab to add the new endpoint to a new behavior group. 
+          [You can also edit an existing behavior group instead of creating a new one. See [Configure notification behavior groups](https://access.redhat.com/documentation/en-us/red_hat_hybrid_cloud_console/1-latest/html-single/configuring_notifications_on_the_red_hat_hybrid_cloud_console/index#assembly-config-behavior-groups_notifications) for more information.]{{admonition note}}
 
-        4. Click Create new group.
+        4. Click **Create new group**.
             a. Add details for your behavior group:
-            b. In Behavior group name, enter a name (for example, Default behavior Notifications for Slack), and click Next.
-            c. In the Actions column, select Integration: Slack.
-            d. From the Recipient drop-down list, select the integration you configured earlier in the console, and click Next.
-            e. In the Associate event types screen, select the event types for which you want notifications., and click Next. For this example, select the Group created event, and click Next.
-            f. Review your behavior group settings, and click Finish.
+            b. In **Behavior group name**, enter a name (for example,* Default behavior*), and click **Next**.
+            c. In the **Actions** column, select **Integration: Slack**.
+            d. From the **Recipient** drop-down list, select the integration you configured earlier in the console, and click **Next**.
+            e. In the **Associate event types** screen, select the event types for which you want notifications. For this example, select the **Group created** event, and click **Next**.
+            f. Review your behavior group settings, and click **Finish**.
 
-        5. Trigger an event in the console to test the configuration. For this example, you’ll create a new User Access group that you’ll be notified of in SlackFor example An event will be triggered whenever we create a new group. We will use this functionality to test our new integration.:
-            a. Go to Settings > User Access.
-            b. Click Groups > Create group.
-            c. Enter a name for the group and a description, and click Next. 
-            d. Add user roles as desired, and click Next. 
-            e. Add members to the group, and click Next. 
-            f. Review the user group settings, and click Submit.
-            g. Click Exit to close the dialog.
+        5. Trigger an event in the console to test the configuration. For this example, you’ll create a new User Access group that you’ll be notified of in Slack. An event will be triggered when you create a new group.
+            a. Go to **Settings** > **User Access**.
+            b. Click **Groups** > **Create group**.
+            c. Enter a name for the group and a description, and click **Next**. 
+            d. Add user roles as desired, and click **Next**. 
+            e. Add members to the group, and click **Next**. 
+            f. Review the user group settings, and click **Submit**.
+            g. Click **Exit** to close the dialog.
+
         A notification is sent to your Slack channel about the new User Access group you created in the console.
         
        
       # optional - the task's Check your work module
       review:
         instructions: |-
-          - In Slack: did you receive a message in your Slack channel about the creation of the new User Access group?
-          - In the console: Go to  Settings > Notifications > Event log and find the Group created event. Does Integration: Slack shows in the Action taken column with a green label? (You can click on this label to view details about the notification.)
-          - In the console: Go to  Settings > Integrations > Communications and check your integration in the list. Does the status in Last connection attempt report Success?
+          - In Slack: Did you receive a message in your Slack channel about the creation of the new User Access group?
+          - In the console: Go to **Settings** > **Notifications** > **Event log** and find the **Group created** event. Does **Integration: Slack** show in the **Action taken** column with a green label? (You can click on this label to view details about the notification.)
+          - In the console: Go to **Settings** > **Integrations** > **Communications** and check your integration in the list. Does the status in Last connection attempt report **Success**?
 
 
-        failedTaskHelp: If you see a red label in Action taken in the Event Log, or the status on the Integrations page does not report Success, check your configuration and create another test event to verify the configuration.
+        failedTaskHelp: If you see a red label in **Action taken** in the **Event Log**, check your configuration and create another test event to verify the configuration.
       # optional - the task's success and failure messages
       summary:
         success: Shows a success message in the task header
@@ -189,7 +190,7 @@ spec:
     Congratulations! You’ve successfully configured the Hybrid Cloud Console to send notifications about selected events to your Slack channel.
     
     From here:
-    - You can add more events to be notified about in your Slack channel by editing your behavior group from Notifications > Configure Events and assigning it more events.
+    - You can add more events to be notified about in your Slack channel by editing your behavior group from **Notifications** > **Configure Events** and assigning it more events.
     - You can configure additional Slack channels to be notified of other events by creating additional Slack integrations. For example, your organization may want to send certain types of notifications to different Slack channels based on your teams or security policies.
 
     **Learn more:**
