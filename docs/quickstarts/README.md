@@ -23,6 +23,8 @@ Each tile on the Learning resources page in your bundle contains:
 
 An _interactive quick start_ is a set of step-by-step instructions and tasks presented in a side panel embedded within a product’s UI. Quick starts can help users get started with a product by providing installation and setup guidance. Quick starts also allow users to quickly complete a task without the need to refer to external documentation.
 
+A quick start has multiple tasks, each task with multiple steps.
+
 Quick starts should be brief and simple to follow. Red Hat recommends quick starts take no longer than 10 minutes for a user to complete, and have a maximum of 5 tasks (2-7 steps per task is a good length). You can find more detailed guidelines below under _Best practices for creating quick starts_. 
 
 **IMPORTANT**:
@@ -44,7 +46,7 @@ This is an overview of the steps you will need to complete to publish an interac
 
 3. Get your quick start or Learning resource tile added to the [Hybrid Cloud Console](https://console.redhat.com):
  
-    a. Create a request in [the RHCLOUD Jira project](https://issues.redhat.com/projects/RHCLOUD/issues/) for engineering to merge the content. Add the `platform-experience-ui` label to your Jira.
+    a. Create a request in [the RHCLOUD Jira project](https://issues.redhat.com/projects/RHCLOUD/issues/) for engineering to merge the content. Add the `platform-experience-services` label to your Jira.
     
     b. Create a pull request (PR) to the `main` branch in the [**Red HatInsights/quickstarts**](https://github.com/RedHatInsights/quickstarts/) repository.
     
@@ -93,7 +95,7 @@ If you have created quick starts in the Hybrid Cloud Console before, start here:
     ```
     git rebase upstream/main
     ```
-3. Refresh your main branch (this step is optional but ensures main is fully up to date):
+3. Refresh your main branch (this step is optional but ensures `main` is fully up to date):
     ```
     git push origin main
     ```
@@ -105,7 +107,7 @@ If you have created quick starts in the Hybrid Cloud Console before, start here:
 
 5. Create the following quick start files and format your content into YAML:
 
-    a. Create a new directory with an identifiable name in `docs/quickstarts/<name>` in [**Red Hat Insights quick starts**](https://github.com/RedHatInsights/quickstarts/tree/main/docs/quickstarts) to contain your quick start files.
+    a. Create a new directory with an identifiable name in `docs/quickstarts/<name>` in [**this repository**](https://github.com/RedHatInsights/quickstarts/tree/main/docs/quickstarts) to contain your quick start files.
 
     b. In the new directory, create a `metadata.yml` file. Ensure you have a blank line at the end of the file:
   
@@ -122,7 +124,7 @@ If you have created quick starts in the Hybrid Cloud Console before, start here:
 
     ```
 
-    c. In the new directory, create a `<name>.yml` file. The *name* must be equal to the `name` attribute from your `metadata.yml` file.
+    c. In the new directory, create a `<name>.yml` file. The *name* must match the `name` attribute from your `metadata.yml` file.
     
     d. Add your draft quickstart content to the new file. You can follow this [template](https://github.com/patternfly/patternfly-quickstarts/blob/main/packages/dev/src/quickstarts-data/yaml/template.yaml) and find more Markdown snippets in the _Useful Markdown snippets_ section of these instructions.
 
@@ -132,36 +134,36 @@ If you have created quick starts in the Hybrid Cloud Console before, start here:
 
 6. Push your files to the remote branch for review by stakeholders as needed.
 
-    a. Add your files to tracked changes. 
+    a. Add your files to tracked changes: 
 
     ```
     git add <files>
     ```
 
-    b. Make sure you have no uncommitted changes on your issue branch.       
+    b. Make sure you have no uncommitted changes on your issue branch:       
 
     ```
     git status
     ``` 
-    c. Commit your quick start files.
+    c. Commit your quick start files:
 
     ```
     git commit -am "descriptive commit message"
     ```
 
-    d. Push your quick start files to the remote branch.
+    d. Push your quick start files to the remote branch:
 
     ```
     git push origin <branch> 
     ```
-9. Open a pull request (PR) in the [GitHub repository](https://github.com/RedHatInsights/quickstarts) for your update. Get your quick start reviewed by stakeholders and peer reviewers, as needed. Once you and any reviewers are happy with the content, work with engineering to add the content to the Hybrid Cloud Console.
+9. Open a pull request (PR) in the [GitHub repository](https://github.com/RedHatInsights/quickstarts) containing your update. Get your quick start reviewed by stakeholders and peer reviewers, as needed. Once you and any reviewers are happy with the content, work with engineering to add the content to the Hybrid Cloud Console.
 
 
 ### Adding your quick start (or Learning resource tile) to the Hybrid Cloud Console
 
 Open a Jira for the engineering team to add the quick start to the Hybrid Cloud Console source code.
 
-1. Create a Jira for the platform development team in the [RHCLOUD Jira project](https://issues.redhat.com/projects/RHCLOUD/issues/RHCLOUD-15910?filter=allopenissues). Add the **platform-experience** label to the issue.
+1. Create a Jira for the platform development team in the [RHCLOUD Jira project](https://issues.redhat.com/projects/RHCLOUD/issues/RHCLOUD-15910?filter=allopenissues). Add the **platform-experience-services** label to the issue.
 2. In the PR you opened for the quick start, add the developer contacts `@Hyperkid123` or `@ryelo` in the PR description, and add the Jira link in a comment.
 
 ### Engineering tasks
@@ -242,7 +244,7 @@ See the below list for the value tags to use for each bundle:
 ## Useful Markdown snippets
 
 * A nice Markdown summary from the [Red Hat Customer Portal](https://access.redhat.com/help/markdown)
-* [Creating quick start tutorials](https://docs.openshift.com/container-platform/4.11/web_console/creating-quick-start-tutorials.html) in the OpenShift documentation
+* [Creating quick start tutorials](https://docs.openshift.com/container-platform/4.15/web_console/creating-quick-start-tutorials.html) in the OpenShift documentation
 
 **Bold**
 * Use `**bold text**` for UI labels, buttons, menu names.
