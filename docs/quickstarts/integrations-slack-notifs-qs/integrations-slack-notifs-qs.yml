@@ -31,7 +31,7 @@ spec:
     
     You can configure the console to send event notifications to various third-party applications, including Slack. You can send notifications to all users on a Slack channel, or a selected user in Slack.
 
-    This quick start shows you how to configure a Slack channel to receive event notifications about a new User Access group being created. You will also learn how to validate your configuration by sending a sample event using the 'test' action on your new integration.
+    This quick start shows you how to configure a Slack channel to receive event notifications about a new User Access group being created. You'll also learn how to validate your configuration by sending a test event.
 
     [If you have any issues with the Hybrid Cloud Console integration with Slack, contact Red Hat for support.]{{admonition note}}
 
@@ -56,7 +56,9 @@ spec:
         5. Click **Add to Slack** to add the Hybrid Cloud Console integration to the channel. The **Post to Channel** box opens.
 
         6. Perform one of the following tasks:
+
             - To select an existing channel, click the **Choose a Channel** drop-down menu or type the user or channel name in the field.
+            
             - To create a new channel, click or create a new channel, type the name of the new channel and an optional description, and click **Create**.
         
         7. Click **Add Incoming Webhooks Integration**. The **Configuration** page for the app opens in the Slack app directory.
@@ -102,9 +104,13 @@ spec:
         3. Select **Slack** and click **Next**.
 
         4. Add details for your Slack integration:
+
           a. In **Integration name**, enter a name. You can include your Slack channel name if desired. (for example, *My Slack notifications (#my_channel)*)
+
           b. In **Workspace URL**, paste the URL that you copied from the Webhook URL field in Slack.
+
           c. In **Channel**, enter the name of your Slack channel that you configured. 
+
           d. Click **Next**.
 
         5. Review the integration details and click **Submit**.
@@ -153,20 +159,33 @@ spec:
           [You can also edit an existing behavior group instead of creating a new one. See [Configure notification behavior groups](https://access.redhat.com/documentation/en-us/red_hat_hybrid_cloud_console/1-latest/html-single/configuring_notifications_on_the_red_hat_hybrid_cloud_console/index#assembly-config-behavior-groups_notifications) for more information.]{{admonition note}}
 
         4. Click **Create new group**.
+
             a. Add details for your behavior group:
+
             b. In **Behavior group name**, enter a name (for example,* Default behavior*), and click **Next**.
+
             c. In the **Actions** column, select **Integration: Slack**.
+
             d. From the **Recipient** drop-down list, select the integration you configured earlier in the console, and click **Next**.
+
             e. In the **Associate event types** screen, select the event types for which you want notifications. For this example, select the **Group created** event, and click **Next**.
+
             f. Review your behavior group settings, and click **Finish**.
 
         5. Trigger an event in the console to test the configuration. For this example, you’ll create a new User Access group that you’ll be notified of in Slack. An event will be triggered when you create a new group.
+
             a. Go to **Settings** > **User Access**.
+
             b. Click **Groups** > **Create group**.
+
             c. Enter a name for the group and a description, and click **Next**. 
+
             d. Add user roles as desired, and click **Next**. 
+
             e. Add members to the group, and click **Next**. 
+
             f. Review the user group settings, and click **Submit**.
+
             g. Click **Exit** to close the dialog.
 
         A notification is sent to your Slack channel about the new User Access group you created in the console.
