@@ -1,0 +1,16 @@
+apiVersion: console.openshift.io/v1
+kind: QuickStarts
+metadata:
+  name: acs-getting-started-acscs
+  externalDocumentation: true
+spec:
+  version: 0.1
+  type:
+    text: Documentation
+    color: orange
+  displayName: Learn about Red Hat Advanced Cluster Security
+  icon:
+  description: Secure all your hybrid cloud clusters.
+  link:
+    href: https://access.redhat.com/documentation/en-us/red_hat_advanced_cluster_security_for_kubernetes/
+    text: View documentation
