@@ -4,7 +4,7 @@ metadata:
   # you can add additional metadata here
   instructional: true
 spec:
-  displayName: (Preview) Analyzing CentOS Linux systems for conversion in Insights
+  displayName: Analyzing CentOS Linux systems for conversion in Insights
   durationMinutes: 10
   # Optional type section, will display as a tile on the card
   type:
@@ -21,8 +21,6 @@ spec:
     <br>
     <br>
     Additional information:
-
-    - **This feature is currently only available in Preview mode.**
 
     - It is possible to convert systems from other Linux distributions. [View supported conversion paths.](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/converting_from_an_rpm-based_linux_distribution_to_rhel/con_supported-conversion-paths_converting-from-a-linux-distribution-to-rhel)
 
@@ -64,9 +62,7 @@ spec:
           </details>
           
         1. Log in to the [Red Hat Hybrid Cloud Console](http://console.redhat.com) and go to **Red Hat Insights > RHEL > Inventory > Systems.**
-
-        1. Click the **Preview toggle** to turn on preview mode.
-        
+  
         1. Verify that your CentOS Linux systems appear as expected.
                                    
       # optional - the task's Check your work module
@@ -87,9 +83,7 @@ spec:
         **Run a Pre-Conversion analysis:**
 
         1. Log in to the Red Hat Hybrid Cloud Console and go to **Red Hat Insights > RHEL > Automation toolkit > Tasks.**
-
-        1. Click the **Preview toggle** to turn on preview mode.
-        
+      
         1. Locate the **Pre-conversion analysis for converting to RHEL** task and click **Run task.**
 
         1. Select the CentOS Linux 7 systems you want to analyze for conversion and click **Execute task.**
@@ -185,6 +179,6 @@ spec:
     <br>
     **Thank you for taking the time to explore this feature!**
 
-    For additonal guidance, [visit the conversion documentation](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/converting-from-a-linux-distribution-to-rhel-in-insights/preview/index). 
+    For additonal guidance, [visit the conversion documentation](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html-single/converting_from_an_rpm-based_linux_distribution_to_rhel/index). 
 
     If you need additional assistance, [open a support case](https://access.redhat.com/support). 
