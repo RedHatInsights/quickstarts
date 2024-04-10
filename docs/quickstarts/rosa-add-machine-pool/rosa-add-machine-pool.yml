@@ -1,0 +1,58 @@
+
+metadata:
+  name: rosa-add-machine-pool
+  instructional: true
+spec:
+  displayName: Add a machine pool to your ROSA cluster
+  durationMinutes: 5
+  type:
+    text: Quick start
+    color: grey
+  icon: data:image/svg+xml;base64,PCEtLSBHZW5lcmF0ZWQgYnkgSWNvTW9vbi5pbyAtLT4KPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KPHRpdGxlPjwvdGl0bGU+CjxnIGlkPSJpY29tb29uLWlnbm9yZSI+CjwvZz4KPHBhdGggZD0iTTQ0OCA2NHY0MTZoLTMzNmMtMjYuNTEzIDAtNDgtMjEuNDktNDgtNDhzMjEuNDg3LTQ4IDQ4LTQ4aDMwNHYtMzg0aC0zMjBjLTM1LjE5OSAwLTY0IDI4LjgtNjQgNjR2Mzg0YzAgMzUuMiAyOC44MDEgNjQgNjQgNjRoMzg0di00NDhoLTMyeiI+PC9wYXRoPgo8cGF0aCBkPSJNMTEyLjAyOCA0MTZ2MGMtMC4wMDkgMC4wMDEtMC4wMTkgMC0wLjAyOCAwLTguODM2IDAtMTYgNy4xNjMtMTYgMTZzNy4xNjQgMTYgMTYgMTZjMC4wMDkgMCAwLjAxOS0wLjAwMSAwLjAyOC0wLjAwMXYwLjAwMWgzMDMuOTQ1di0zMmgtMzAzLjk0NXoiPjwvcGF0aD4KPC9zdmc+Cg==
+  prerequisites:
+    - You must have a ROSA cluster.
+  description: |-
+    Machine pools are an elastic, dynamic provisioning method used on top of your cloud infrastructure.
+  introduction: |-
+    Red Hat OpenShift Service on AWS (ROSA) uses machine pools as an elastic, dynamic provisioning method on top of your cloud infrastructure.
+
+    A machine pool creates compute machine sets that are all copies of the same configuration across availability zones. Worker nodes in a machine pool are provisioned and managed as a group.
+
+    In this quick start, you'll add a machine pool to your cluster.
+
+    [Each cluster has a default machine pool made during cluster creation. This process adds an additional machine pool to your cluster.]{{admonition note}}
+
+  tasks:
+    - title: Add a machine pool to your ROSA cluster
+      description: |-
+        1. Go to **Clusters**.
+        1. Click your cluster's name.
+        1. Click the **Machine pools** tab.
+        1. Click the **Add machine pool** button.
+        1. Configure your machine pool settings:
+
+            a. Name your machine pool.
+
+            b. Optional: Change any settings you want. These settings are already filled in by default, but you can customize any of them. For more information on what these settings do, click the **?** icon or see [the documentation](https://access.redhat.com/documentation/en-us/red_hat_openshift_service_on_aws/4/html/cluster_administration/manage-nodes-using-machine-pools#creating_machine_pools_ocm_rosa-managing-worker-nodes).
+
+        1. Click **Add machine pool**.
+
+      # optional - the task's Check your work module
+      review:
+        instructions: |-
+          - Did you complete the task successfully?
+        failedTaskHelp: Try following the steps again.
+      # optional - the task's success and failure messages
+      summary:
+        success: Shows a success message in the task header
+        failed: Shows a failed message in the task header
+  conclusion: |-
+        Congratulations, you added a machine pool to your cluster!
+
+        After completing this quick start, you've learned how to add a machine pool. Repeat the steps to add more machine pools if you desire.
+
+        **Next steps:**
+        - Get a deeper dive into [machine pools](https://access.redhat.com/documentation/en-us/red_hat_openshift_service_on_aws/4/html/cluster_administration/manage-nodes-using-machine-pools#machine-pools).
+  # you can link to the next quick start(s) here
+  nextQuickStart:
+    - mas-alert-note-prereq
