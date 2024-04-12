@@ -165,7 +165,7 @@ spec:
 
         1. After reviewing the report and resolving all reported issues, click **Run task again** to rerun the analysis and confirm that no issues are outstanding.
 
-        1. Perform the conversion to RHEL with the Convert to RHEL from CentOS Linux 7 task or in the command-line interface. See [Converting to RHEL.](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html-single/converting_from_an_rpm-based_linux_distribution_to_rhel/index) for more information.                               
+        1. Perform the conversion to RHEL with the Convert to RHEL from CentOS Linux 7 task or in the command-line interface. See [converting from an RPM-based Linux distrbution to RHEL](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html-single/converting_from_an_rpm-based_linux_distribution_to_rhel/index) for more information.                               
       # optional - the task's Check your work module
       review:
         instructions: |-
