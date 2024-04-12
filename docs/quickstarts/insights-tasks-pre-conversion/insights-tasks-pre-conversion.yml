@@ -84,9 +84,9 @@ spec:
 
         1. Log in to the Red Hat Hybrid Cloud Console and go to **Red Hat Insights > RHEL > Automation toolkit > Tasks.**
       
-        1. Locate the **Pre-conversion analysis for converting to RHEL** task and click **Run task.**
+        1. Locate the **Pre-conversion analysis for converting to RHEL** task and click **Select systems.**
 
-        1. Select the CentOS Linux 7 systems you want to analyze for conversion and click **Execute task.**
+        1. Select the CentOS Linux 7 systems you want to analyze for conversion and click **Run task.**
           <details>
             <summary><span style="color:#0066CC">&nbsp**Don't see your system?**</span></summary>
             <br>
@@ -161,10 +161,8 @@ spec:
 
         1. After reviewing the report and resolving all reported issues, click **Run task again** to rerun the analysis and confirm that no issues are outstanding.
 
-        1. Perform the conversion to RHEL in the command-line interface. See [Converting a RHEL system](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/converting_from_an_rpm-based_linux_distribution_to_rhel/proc_converting-to-a-rhel-system_converting-from-a-linux-distribution-to-rhel) for more information.   
-
-        [It is not currently possible to perform the conversion to RHEL using Red Hat Insights.]{{admonition note}}                
-              
+        1. Perform the conversion to RHEL with the Convert to RHEL from CentOS Linux 7 task or in the command-line interface. See [Converting a RHEL system](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/converting_from_an_rpm-based_linux_distribution_to_rhel/proc_converting-to-a-rhel-system_converting-from-a-linux-distribution-to-rhel) for more information.   
+                                 
       # optional - the task's Check your work module
       review:
         instructions: |-
