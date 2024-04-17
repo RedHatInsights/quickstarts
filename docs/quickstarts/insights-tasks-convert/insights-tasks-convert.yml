@@ -13,24 +13,25 @@ spec:
     color: green
   icon: data:image/svg+xml;base64,PCEtLSBHZW5lcmF0ZWQgYnkgSWNvTW9vbi5pbyAtLT4KPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KPHRpdGxlPjwvdGl0bGU+CjxnIGlkPSJpY29tb29uLWlnbm9yZSI+CjwvZz4KPHBhdGggZD0iTTQ0OCA2NHY0MTZoLTMzNmMtMjYuNTEzIDAtNDgtMjEuNDktNDgtNDhzMjEuNDg3LTQ4IDQ4LTQ4aDMwNHYtMzg0aC0zMjBjLTM1LjE5OSAwLTY0IDI4LjgtNjQgNjR2Mzg0YzAgMzUuMiAyOC44MDEgNjQgNjQgNjRoMzg0di00NDhoLTMyeiI+PC9wYXRoPgo8cGF0aCBkPSJNMTEyLjAyOCA0MTZ2MGMtMC4wMDkgMC4wMDEtMC4wMTkgMC0wLjAyOCAwLTguODM2IDAtMTYgNy4xNjMtMTYgMTZzNy4xNjQgMTYgMTYgMTZjMC4wMDkgMCAwLjAxOS0wLjAwMSAwLjAyOC0wLjAwMXYwLjAwMWgzMDMuOTQ1di0zMmgtMzAzLjk0NXoiPjwvcGF0aD4KPC9zdmc+Cg==
   prerequisites:
-    - You have completed and reviewed a pre-conversion analysis report using Insights for the systems you plan to convert.
+    - You have completed, reviewed, and addressed any issues found in a pre-conversion analysis report using Insights for the systems you plan to convert.
+
   description: |-
     Convert your operating system from CentOS Linux 7 to Red Hat Enterprise Linux (RHEL) 7. 
   introduction: |-  
-    After running the Pre-conversion analysis for converting to RHEL task and resolving all reported issues, you can convert your CentOS Linux 7 systems to RHEL 7.
+    After running the Pre-conversion analysis for converting to RHEL task and resolving all reported issues, use this quick start to to convert your CentOS Linux 7 systems to RHEL 7.
     <br>
+    <br>
+    Before performing the conversion, make sure you have completed all necessary [preparation steps.](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/converting_from_an_rpm-based_linux_distribution_to_rhel/converting-using-insights_converting-from-a-linux-distribution-to-rhel)
     <br>
     Additional information:
 
-    - Before using Red Hat Insights to perform the conversion, you must first complete all necessary [preparation steps.](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/converting_from_an_rpm-based_linux_distribution_to_rhel/converting-using-insights_converting-from-a-linux-distribution-to-rhel)
-
-    - It is possible to convert systems from other Linux distributions. [View supported conversion paths.](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/converting_from_an_rpm-based_linux_distribution_to_rhel/con_supported-conversion-paths_converting-from-a-linux-distribution-to-rhel)
+    It is possible to convert systems from other Linux distributions. [View supported conversion paths.](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/converting_from_an_rpm-based_linux_distribution_to_rhel/con_supported-conversion-paths_converting-from-a-linux-distribution-to-rhel)
 
     - Depending on your requirements, you can convert to RHEL using a number of supported methods. [View supported conversion methods.](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/converting_from_an_rpm-based_linux_distribution_to_rhel/conversion-methods_converting-from-a-linux-distribution-to-rhel)      
   tasks:
     - title: Convert to a RHEL system by using Insights
       description: |-
-        [Back up your systems and verify that you can restore your systems if needed]{{admonition important}}
+        [Before converting, back up your systems and verify that you can restore them if needed]{{admonition important}}
 
         [To avoid serious problems after the conversion, do not convert any systems that have unresolved inhibitors and warnings in the pre-conversion analysis.]{{admonition important}}
 
@@ -69,14 +70,14 @@ spec:
         1. Optional: Perform an in-place upgrade to RHEL 9 to ensure your system is updated with the latest enhancements, security features, and bug fixes. For more information, see the [Upgrading from RHEL 7 to RHEL 8] (https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/upgrading_from_rhel_7_to_rhel_8/index) and [Upgrading from RHEL 8 to RHEL 9] (https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/9/html/upgrading_from_rhel_8_to_rhel_9/index) guides.
                            
       # optional - the task's Check your work module
-      review:
-        instructions: |-
-          - Did you complete the task successfully?
-        failedTaskHelp: This task isn't verified yet. Try the task again.
+      #review:
+      #  instructions: |-
+      #    - Did you complete the task successfully?
+      #  failedTaskHelp: Try the task again or contact support.
       # optional - the task's success and failure messages
-      summary:
-        success: Shows a success message in the task header
-        failed: Shows a failed message in the task header   
+      #summary:
+      #  success: Shows a success message in the task header
+      # failed: Shows a failed message in the task header   
   conclusion: |-
     <br>
     **Thank you for taking the time to explore this feature!**
