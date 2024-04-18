@@ -12,5 +12,5 @@ spec:
   icon: ~
   description: Create or manage an activation key to register your systems with Red Hat hosted services.
   link:
-    href: https://access.redhat.com/documentation/en-us/subscription_central/2023/html/creating_and_managing_activation_keys_on_the_hybrid_cloud_console
+    href: https://access.redhat.com/documentation/en-us/subscription_central/1-latest/html/getting_started_with_activation_keys_on_the_hybrid_cloud_console
     text: View documentation
