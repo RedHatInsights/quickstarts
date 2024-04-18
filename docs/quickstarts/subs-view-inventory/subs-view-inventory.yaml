@@ -12,5 +12,5 @@ spec:
   icon: ~
   description: View details and status information about each subscription in your inventory.
   link:
-    href: https://access.redhat.com/documentation/en-us/subscription_central/2023/html/viewing_and_managing_your_subscription_inventory_on_the_hybrid_cloud_console
+    href: https://access.redhat.com/documentation/en-us/subscription_central/1-latest/html/viewing_and_managing_your_subscription_inventory_on_the_hybrid_cloud_console
     text: View documentation
