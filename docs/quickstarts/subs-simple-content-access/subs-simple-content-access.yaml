@@ -12,5 +12,5 @@ spec:
   icon: ~
   description: Streamline your subscription workflow by enabling simple content access.
   link:
-    href: https://access.redhat.com/documentation/en-us/subscription_central/2023/html/getting_started_with_simple_content_access
+    href: https://access.redhat.com/documentation/en-us/subscription_central/1-latest/html/getting_started_with_simple_content_access
     text: View documentation
