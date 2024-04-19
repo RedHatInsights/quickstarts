@@ -8,9 +8,9 @@ spec:
   type:
     text: Documentation
     color: orange
-  displayName: Configuring cost management
+  displayName: Analyzing your cost data
   icon: 
-  description: Set up cost management by connecting your cloud environments, and configuring users and permissions.
+  description: Use cost management to track the cost of your clouds and containers.
   link:
-    href: https://access.redhat.com/documentation/en-us/cost_management_service/1-latest/html/getting_started_with_cost_management
+    href: https://access.redhat.com/documentation/en-us/cost_management_service/1-latest/html/analyzing_your_cost_data/index
     text: View documentation
