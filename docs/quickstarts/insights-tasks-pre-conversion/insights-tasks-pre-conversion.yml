@@ -5,7 +5,7 @@ metadata:
   instructional: true
 spec:
   displayName: Analyzing CentOS Linux systems for conversion in Insights
-  durationMinutes: 10
+  durationMinutes: 10 (active)
   # Optional type section, will display as a tile on the card
   type:
     text: Quick start
@@ -15,29 +15,30 @@ spec:
   description: |-
     Generate a pre-conversion analysis report that summarizes potential problems and suggests recommended solutions to help you convert to RHEL. 
   introduction: |-
-    [Red Hat Insights can be used only to run the pre-conversion analysis on CentOS Linux 7 systems.]{{admonition note}}   
-           
-    In this quick start, you will connect and run a pre-conversion analysis on CentOS Linux machines on the Red Hat Hybrid Cloud Console. The task generates a report that summarizes potential problems and suggests recommended solutions to help you convert to RHEL.
+    [Red Hat Insights can be used only to run the pre-conversion analysis on CentOS Linux 7 systems.]{{admonition note}}
+
+    Use this quick start to connect and run a pre-conversion analysis on CentOS Linux 7 systems with Red Hat Insights. The task generates a report that summarizes potential problems and suggests recommended solutions to help you convert to RHEL.
     <br>
+    <br>
+    Before running the pre-conversion analysis, make sure you have completed all necessary [preparation steps.](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/converting_from_an_rpm-based_linux_distribution_to_rhel/converting-using-insights_converting-from-a-linux-distribution-to-rhe)  
     <br>
     Additional information:
-
-    - Before running the pre-conversion analysis by using Red Hat Insights and performing the conversion, you must first complete all necessary [preparation steps.](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/converting_from_an_rpm-based_linux_distribution_to_rhel/converting-using-insights_converting-from-a-linux-distribution-to-rhel)
-
+    
     - It is possible to convert systems from other Linux distributions. [View supported conversion paths.](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/converting_from_an_rpm-based_linux_distribution_to_rhel/con_supported-conversion-paths_converting-from-a-linux-distribution-to-rhel)
 
-    - Depending on your requirements, you can convert to RHEL using a number of supported methods. [View supported conversion methods.](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/converting_from_an_rpm-based_linux_distribution_to_rhel/conversion-methods_converting-from-a-linux-distribution-to-rhel)
-  tasks:
-    - title: Verify CentOS Linux machines are connected
-      description: |-
-        Before running the pre-conversion analysis in Red Hat Insights, you must connect your CentOS systems to Insights<br>  
-        
-        **To verify CentOS Linux machines are connected:**
+    - You can convert to RHEL using several supported methods depending on your requirements. [View supported conversion methods.](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/converting_from_an_rpm-based_linux_distribution_to_rhel/conversion-methods_converting-from-a-linux-distribution-to-rhel)
 
-        1. Connect CentOS Linux machines to Insights.
+  tasks:
+    - title: Verify your CentOS Linux 7 systems are connected
+      description: |-
+        Before running the pre-conversion analysis in Red Hat Insights, you must connect your CentOS systems to Insights.<br>  
+        
+        **Verify your CentOS Linux 7 systems are connected:**
+
+        1. Connect the CentOS Linux 7 system to Insights.
           <details>
-            <summary><span style="color:#0066CC">&nbsp**Need to connect a CentOS Linux machine?**</span></summary>
-            - These commands assume root access. You may also use `sudo` command.
+            <summary><span style="color:#0066CC">&nbsp**Need to connect a CentOS Linux 7 system?**</span></summary>
+            - These commands assume root access. You may also use the `sudo` command.
             - Install the Red Hat client tools:
                 - Download the Red Hat GPG key:<br>
                 `# curl -o /etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release https://www.redhat.com/security/data/fd431d51.txt`{{copy}}<br>
@@ -55,51 +56,40 @@ spec:
             `# insights-client --register`{{copy}}<br>
             
             - Connect the system to RHC:<br>
-            `# rhc connect`{{copy}}<br>
-           
+            `# rhc connect`{{copy}}<br> 
           </details>
           
-        1. Log in to the [Red Hat Hybrid Cloud Console](http://console.redhat.com) and go to **Red Hat Insights > RHEL > Inventory > Systems.**
+        1. Log into the [Red Hat Hybrid Cloud Console](http://console.redhat.com) and go to **Red Hat Insights > RHEL > Inventory > Systems.**
   
-        1. Verify that your CentOS Linux systems appear as expected.
+        1. Verify that your CentOS Linux 7 systems appear as expected.
 
-        [The only Red Hat Insights service you can use with registered CentOS Linux systems is the RHEL conversion. All other Insights services are available only after the conversion to RHEL.]{{admonition note}} 
-                          
-      # optional - the task's Check your work module
-      review:
-        instructions: |-
-          - Did you complete the task successfully?
-        failedTaskHelp: This task isn't verified yet. Try the task again.
-      # optional - the task's success and failure messages
-      summary:
-        success: Shows a success message in the task header
-        failed: Shows a failed message in the task header
+        [The only Red Hat Insights service you can use with registered CentOS Linux 7 systems is the RHEL conversion. All other Insights services are available only after the conversion to RHEL.]{{admonition note}} 
 
-    - title: Review the pre-conversion analysis report using Insights
+    - title: Run a pre-conversion analysis using Insights
       description: |-
-        [Back up your systems and verify that you can restore your systems if needed]{{admonition important}}
+        [Back up your systems and verify that you can restore them if needed.]{{admonition important}}
         
-        To assess whether your CentOS Linux systems can be converted to RHEL, run the Pre-conversion analysis for converting to RHEL task. The pre-conversion analysis generates a report summarizing potential problems and recommending solutions. The report also helps you decide whether it is possible or advisable to convert to RHEL.<br>       
+        To assess whether you can convert a CentOS Linux 7 system to RHEL, run the “Pre-conversion analysis for converting to RHEL” task. The pre-conversion analysis generates a report summarizing potential problems and recommending solutions. The report also helps you decide whether it is possible or advisable to convert to RHEL.<br>       
         
-        **Run a Pre-Conversion analysis:**
-
         1. Log in to the Red Hat Hybrid Cloud Console and go to **Red Hat Insights > RHEL > Automation toolkit > Tasks.**
       
         1. Locate the **Pre-conversion analysis for converting to RHEL** task and click **Select systems.**
+
+        1. You can rename the task name. It will be used on the report generated. 
 
         1. Select the CentOS Linux 7 systems you want to analyze for conversion and click **Run task.**
           <details>
             <summary><span style="color:#0066CC">&nbsp**Don't see your system?**</span></summary>
             <br>
-            CentOS Linux 7 systems that appeared correctly in the Insights Inventory might not appear in the list of available systems on which to run the pre-conversion analysis.<br>
+            CentOS Linux 7 systems that appeared correctly in the Insights Inventory might not appear in the list of available systems for the pre-conversion analysis.<br>
             <br>
             This issue occurs when the Remote Host Configuration (RHC)  is disconnected. To fix this issue, complete the following steps:
 
-            - Log in to the [Red Hat Hybrid Cloud Console](http://console.redhat.com) and go to **Red Hat Insights > RHEL > Inventory > Systems**
+            - Log in to the [Red Hat Hybrid Cloud Console](http://console.redhat.com) and go to **Red Hat Insights > RHEL > Inventory > Systems.**
             
             - Select the affected system from the table.
             
-            - In the **General Information** tab, go to the **System Status** card and verify the RHC status:
+            - In the **General Information** tab, go to the **System status** card and verify the RHC status:
 
                 -  If the RHC status is **Connected**, RHC is connected correctly
 
@@ -116,32 +106,33 @@ spec:
             `# insights-client --register`{{copy}}<br>
             `# rhc connect -a <activation_key> -o <organization_ID>`{{copy}}<br>
           
-            - Verify that you can select the system in the Pre-conversion analysis for converting to RHEL task.
+            - Verify that you can now select the system in the Pre-conversion analysis for converting to RHEL task.
             
-            If the system still does not appear correctly, review error messages from rhcd and the **insights-client** tool.<br>
+            Review error messages from rhcd and the **insights-client** tool if the system still does not appear.<br>
             `# journalctl -u read`{{copy}}<br>
             `# less /var/log/insights-client/insights-client.log`{{copy}}<br>
              
           </details>
- 
-        [The pre-conversion process can take up to an hour to complete.]{{admonition note}}
-
-        1. The pre-conversion analysis utility generates a new report in the **Activity tab**. Select the report to view a summary of issues found in each system. 
+        [The pre-conversion analysis can take up to an hour to complete.]{{admonition note}}   
+        <br>                    
+    - title: Review the pre-conversion analysis report
+      description: |-
+        1. The pre-conversion analysis utility generates a new report in the **Activity tab**. Select the report to view a summary of issues found in each system.
 
         1. After task completion, you can drill down further by selecting a system to view each issue and, when applicable, a potential remediation in detail.<br>
         <br>
         Each issue is assigned a severity level:         
               - **Inhibitor:** Would cause the conversion to fail because it is very likely to result in a deteriorated system state. This issue must be resolved before converting.
               - **Overridable inhibitor**: Would cause the conversion to fail because it is very likely to result in a deteriorated system state. This issue must be resolved or manually overridden before converting.
-              Skipped:  Could not run this test because of a prerequisite test failing. Could cause the conversion to fail.
+              - **Skipped:** This test could not be run because a prerequisite test failed, which could cause the conversion to fail.
               - **Warning:** Would not cause the conversion to fail. System and application issues might occur after the conversion.
               - **Info:** Informational with no expected impact to the system or applications.
               - **Ready for conversion:** No issues were found.
         
           <details>
-            <summary><span style="color:#0066CC">&nbsp**Why did the Pre-conversion analysis task fail to complete?**</span></summary>
+            <summary><span style="color:#0066CC">&nbsp**Why did the Pre-conversion analysis task fail to be completed?**</span></summary>
             <br>
-            After running the Pre-conversion analysis for converting to RHEL task, one or more systems can fail to generate a report with the error message Task failed to complete for an unknown reason. Retry this task at a later time. If this issue occurs, complete the following steps to troubleshoot:
+            After running the Pre-conversion analysis for converting to RHEL task, one or more systems can fail to generate a report with the error message “Task failed to complete for an unknown reason.” Retry this task at a later time. If this issue occurs, complete the following steps to troubleshoot:
 
             - Verify if the affected system is unavailable, for example, because of a network accessibility issue or because the system is shut off.
             
@@ -160,26 +151,18 @@ spec:
                 
             - Review the **rhc-worker-script** log file for errors:<br>
             `# less /var/log/rhc-worker-script/rhc-worker-script.log`{{copy}}<br>
-            
           </details> 
 
         1. After reviewing the report and resolving all reported issues, click **Run task again** to rerun the analysis and confirm that no issues are outstanding.
 
-        1. Perform the conversion to RHEL with the Convert to RHEL from CentOS Linux 7 task or in the command-line interface. See [converting from an RPM-based Linux distrbution to RHEL](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html-single/converting_from_an_rpm-based_linux_distribution_to_rhel/index) for more information.                               
-      # optional - the task's Check your work module
-      review:
-        instructions: |-
-          - Did you complete the task successfully?
-        failedTaskHelp: This task isn't verified yet. Try the task again.
-      # optional - the task's success and failure messages
-      summary:
-        success: Shows a success message in the task header
-        failed: Shows a failed message in the task header
-    
+        1. Convert to RHEL with the “Convert to RHEL from CentOS Linux 7” task or the command-line interface. For more information, see [converting from an RPM-based Linux distribution to RHEL.](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html-single/converting_from_an_rpm-based_linux_distribution_to_rhel/index) 
+
   conclusion: |-
     <br>
     **Thank you for taking the time to explore this feature!**
 
-    For additonal guidance, [visit the conversion documentation](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html-single/converting_from_an_rpm-based_linux_distribution_to_rhel/index). 
+    For additional information about tasks, [visit the documentation for remediating systems using tasks in Insights.](https://access.redhat.com/documentation/en-us/red_hat_insights/1-latest/html-single/assessing_and_remediating_system_issues_using_red_hat_insights_tasks/index)
+
+    For additional information about conversions, [visit the conversion documentation.](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html-single/converting_from_an_rpm-based_linux_distribution_to_rhel/index)
 
     If you need additional assistance, [open a support case](https://access.redhat.com/support). 
