@@ -1,6 +1,6 @@
 # Additional info: https://docs.openshift.com/container-platform/4.9/web_console/creating-quick-start-tutorials.html
 metadata:
-  name: insights-tasks-convert
+  name: insights-tasks-conversion
   # you can add additional metadata here
   instructional: true
 spec:
@@ -13,14 +13,16 @@ spec:
     color: green
   icon: data:image/svg+xml;base64,PCEtLSBHZW5lcmF0ZWQgYnkgSWNvTW9vbi5pbyAtLT4KPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KPHRpdGxlPjwvdGl0bGU+CjxnIGlkPSJpY29tb29uLWlnbm9yZSI+CjwvZz4KPHBhdGggZD0iTTQ0OCA2NHY0MTZoLTMzNmMtMjYuNTEzIDAtNDgtMjEuNDktNDgtNDhzMjEuNDg3LTQ4IDQ4LTQ4aDMwNHYtMzg0aC0zMjBjLTM1LjE5OSAwLTY0IDI4LjgtNjQgNjR2Mzg0YzAgMzUuMiAyOC44MDEgNjQgNjQgNjRoMzg0di00NDhoLTMyeiI+PC9wYXRoPgo8cGF0aCBkPSJNMTEyLjAyOCA0MTZ2MGMtMC4wMDkgMC4wMDEtMC4wMTkgMC0wLjAyOCAwLTguODM2IDAtMTYgNy4xNjMtMTYgMTZzNy4xNjQgMTYgMTYgMTZjMC4wMDkgMCAwLjAxOS0wLjAwMSAwLjAyOC0wLjAwMXYwLjAwMWgzMDMuOTQ1di0zMmgtMzAzLjk0NXoiPjwvcGF0aD4KPC9zdmc+Cg==
   prerequisites:
+    - You are a member of a User Access group with the Tasks administrator role. 
     - You have completed, reviewed, and addressed any issues in a pre-conversion analysis report using Insights for the systems you plan to convert.
   description: |-
     Convert your operating system from CentOS Linux 7 to Red Hat Enterprise Linux (RHEL) 7.  
   introduction: |-  
-    After running the “Pre-conversion analysis for converting to RHEL” task and resolving all reported issues, use this quick start to convert your CentOS Linux 7 systems to RHEL 7.
+    After running the [Pre-conversion analysis for converting to RHEL](https://console.redhat.com/insights/learning-resources?quickstart=insights-tasks-pre-conversion) task and resolving all reported issues, use this quick start to convert your CentOS Linux 7 systems to RHEL 7.
     <br>
     <br>
     Before performing the conversion, make sure you have completed all necessary [preparation steps.](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/converting_from_an_rpm-based_linux_distribution_to_rhel/converting-using-insights_converting-from-a-linux-distribution-to-rhel)
+    <br>
     <br>
     Additional information:
     
@@ -29,23 +31,25 @@ spec:
     - You can convert to RHEL using several supported methods depending on your requirements. [View supported conversion methods.](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/converting_from_an_rpm-based_linux_distribution_to_rhel/conversion-methods_converting-from-a-linux-distribution-to-rhel) 
 
   tasks:
-    - title: Convert a CentOS 7 system to RHEL 7 using Insights
+    - title: Convert a CentOS 7 systems to RHEL 7 using Insights
       description: |-
-        [Before converting, back up your systems and verify that you can restore them if needed]{{admonition important}}
+        [Before converting, back up your systems and verify that you can restore them if needed.]{{admonition important}}
 
         [To avoid serious problems after the conversion, do not convert any systems with unresolved inhibitors and warnings in the pre-conversion analysis.]{{admonition important}}
 
-        After running the “Pre-conversion analysis for converting to RHEL” task and resolving all reported issues, you can convert your CentOS Linux 7 systems to RHEL 7. The conversion task generates a conversion report detailing the systems that were successfully converted and summarizing any problems for any that were not.<br>       
+        After running the “Pre-conversion analysis for converting to RHEL” task and resolving all reported issues, you can convert your CentOS Linux 7 systems to RHEL 7. The conversion task generates a report detailing the systems that were successfully converted and summarizing any problems for any that were not.<br>       
         
-        **Run the conversion task:**
+        Run the conversion task:
 
-        1. Log into the Red Hat Hybrid Cloud Console and go to **Red Hat Insights > RHEL > Automation toolkit > Tasks.**
+        1. Go to **Red Hat Insights > RHEL > Automation Toolkit > Tasks.**
       
         1. Locate the **Convert to RHEL from CentOS 7 Linux** task and click **Select systems.**
 
-        1. You can rename the task name. It will be used on the report generated. 
+        1. You can change the task name. It will be used on the report generated. 
 
         1. Select the CentOS Linux 7 systems you want to convert to RHEL and click  **Run task.**
+
+        1. Go to the **Activity tab** and find the newly running conversion task. Your task shows a run status of "Running" until it finishes for all included systems. At that time the run status will update to "Completed."
         
         [The conversion process can take up to an hour to complete.]{{admonition note}}
     

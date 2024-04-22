@@ -12,6 +12,8 @@ spec:
     # 'blue' | 'cyan' | 'green' | 'orange' | 'purple' | 'red' | 'grey'
     color: green
   icon: data:image/svg+xml;base64,PCEtLSBHZW5lcmF0ZWQgYnkgSWNvTW9vbi5pbyAtLT4KPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KPHRpdGxlPjwvdGl0bGU+CjxnIGlkPSJpY29tb29uLWlnbm9yZSI+CjwvZz4KPHBhdGggZD0iTTQ0OCA2NHY0MTZoLTMzNmMtMjYuNTEzIDAtNDgtMjEuNDktNDgtNDhzMjEuNDg3LTQ4IDQ4LTQ4aDMwNHYtMzg0aC0zMjBjLTM1LjE5OSAwLTY0IDI4LjgtNjQgNjR2Mzg0YzAgMzUuMiAyOC44MDEgNjQgNjQgNjRoMzg0di00NDhoLTMyeiI+PC9wYXRoPgo8cGF0aCBkPSJNMTEyLjAyOCA0MTZ2MGMtMC4wMDkgMC4wMDEtMC4wMTkgMC0wLjAyOCAwLTguODM2IDAtMTYgNy4xNjMtMTYgMTZzNy4xNjQgMTYgMTYgMTZjMC4wMDkgMCAwLjAxOS0wLjAwMSAwLjAyOC0wLjAwMXYwLjAwMWgzMDMuOTQ1di0zMmgtMzAzLjk0NXoiPjwvcGF0aD4KPC9zdmc+Cg==
+  prerequisites:
+    - You are a member of a User Access group with the Tasks administrator role. 
   description: |-
     Generate a pre-conversion analysis report that summarizes potential problems and suggests recommended solutions to help you convert to RHEL. 
   introduction: |-
@@ -33,7 +35,7 @@ spec:
       description: |-
         Before running the pre-conversion analysis in Red Hat Insights, you must connect your CentOS systems to Insights.<br>  
         
-        **Verify your CentOS Linux 7 systems are connected:**
+        Verify your CentOS Linux 7 systems are connected:
 
         1. Connect the CentOS Linux 7 system to Insights.
           <details>
@@ -59,7 +61,7 @@ spec:
             `# rhc connect`{{copy}}<br> 
           </details>
           
-        1. Log into the [Red Hat Hybrid Cloud Console](http://console.redhat.com) and go to **Red Hat Insights > RHEL > Inventory > Systems.**
+        1. Go to **Red Hat Insights > RHEL > Inventory > Systems.**
   
         1. Verify that your CentOS Linux 7 systems appear as expected.
 
@@ -71,11 +73,11 @@ spec:
         
         To assess whether you can convert a CentOS Linux 7 system to RHEL, run the “Pre-conversion analysis for converting to RHEL” task. The pre-conversion analysis generates a report summarizing potential problems and recommending solutions. The report also helps you decide whether it is possible or advisable to convert to RHEL.<br>       
         
-        1. Log in to the Red Hat Hybrid Cloud Console and go to **Red Hat Insights > RHEL > Automation toolkit > Tasks.**
+        1. Go to **Red Hat Insights > RHEL > Automation Toolkit > Tasks.**
       
         1. Locate the **Pre-conversion analysis for converting to RHEL** task and click **Select systems.**
 
-        1. You can rename the task name. It will be used on the report generated. 
+        1. You can change the task name. It will be used on the report generated. 
 
         1. Select the CentOS Linux 7 systems you want to analyze for conversion and click **Run task.**
           <details>
@@ -113,11 +115,14 @@ spec:
             `# less /var/log/insights-client/insights-client.log`{{copy}}<br>
              
           </details>
+        
+        1. Go to the **Activity** tab and find the newly running conversion task. Your task shows a run status of "Running" until it finishes for all included systems. At that time, the run status will update to "Completed."
+          
         [The pre-conversion analysis can take up to an hour to complete.]{{admonition note}}   
         <br>                    
     - title: Review the pre-conversion analysis report
       description: |-
-        1. The pre-conversion analysis utility generates a new report in the **Activity tab**. Select the report to view a summary of issues found in each system.
+        1. The pre-conversion analysis utility generates a new report in the **Activity** tab. Select the report to view a summary of issues found in each system.
 
         1. After task completion, you can drill down further by selecting a system to view each issue and, when applicable, a potential remediation in detail.<br>
         <br>
