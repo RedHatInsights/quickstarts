@@ -25,9 +25,9 @@ spec:
     - A Slack channel to receive notifications.
 
   description: |-
-    Connect the console to a Slack channel to receive notifications about events that have occurred in your environment. 
+    Connect the console to a Slack channel to receive notifications about events that have occurred. 
   introduction: |-
-    Hybrid Cloud Console notifications allow you to learn about events that have occurred that might impact your organization. 
+    Use Hybrid Cloud Console notifications to learn about events that have occurred that might impact your organization. 
     
     You can configure the console to send event notifications to various third-party applications, including Slack. You can send notifications to all users on a Slack channel, or a selected user in Slack.
 
@@ -40,16 +40,16 @@ spec:
       description: |-
         The Slack integration uses incoming webhooks to receive event data. 
 
-        To prepare Slack for integration with the console, configure incoming webhooks in Slack. 
+        To prepare Slack for integration with the console, first configure incoming webhooks in Slack. 
 
-        You'll complete these steps in Slack.
+        Complete these steps in Slack:
 
         
         1. In Slack, open the channel where you want to receive notifications.
         
         2. Click the channel name at the top of the window to open the channel settings. 
         
-        3. Click **Integrations**, then under **Apps**, click **Add an App**. 
+        3. Click **Integrations**, then under **Apps** click **Add an App**. 
 
         4. Search for the *Incoming WebHooks* app and select it.
 
@@ -79,7 +79,7 @@ spec:
       
     - title: Add the Slack integration to the Hybrid Cloud Console
       description: |-
-        Now that you’ve configured your Slack channel for incoming webhooks, configure the console to send event notifications to that Slack channel.
+        After you’ve configured your Slack channel for incoming webhooks, configure the console to send event notifications to that Slack channel.
 
         You'll complete these steps in the Hybrid Cloud Console.
 
@@ -95,7 +95,7 @@ spec:
 
           b. In **Workspace URL**, paste the webhook URL that you copied from Slack.
 
-          c. In **Channel**, enter the name of your Slack channel that you configured. 
+          c. In **Channel**, enter the name of your Slack channel. 
 
           d. Click **Next**.
           
@@ -124,16 +124,16 @@ spec:
 
     - title: Select notifications to send to Slack
       description: |-
-        Next, configure which event notifications to send to your Slack channel. 
+        Lastly, configure which event notifications to send to your Slack channel. You'll complete these steps in the console as well.
 
-        To do this, create a new behavior group in the console and select the events you want to be notified about. For this example, you'll configure notifications for when a new User Access group is created in the console.
+        To do this, create a new behavior group in the console and select the events you want to be notified about. For this example, you'll configure notifications for when a new User Access group is created in the console. 
 
         [Alternatively, you can add events to an existing behavior group to be notified of. To edit a behavior group, see [Configure notification behavior groups](https://access.redhat.com/documentation/en-us/red_hat_hybrid_cloud_console/1-latest/html-single/configuring_notifications_on_the_red_hat_hybrid_cloud_console/index#assembly-config-behavior-groups_notifications) for more information.]{{admonition note}}
 
         
         1. Click **Notifications** > **Configure Events**.
 
-        2. Select the application bundle tab to find the related service(s) you want to receive notifications for: **Red Hat Enterprise Linux**, **Console**, or **OpenShift**. For this example, select **Console** > **Behavior Groups** .
+        2. Select the application bundle tab to find the related services you want to receive notifications for: **Red Hat Enterprise Linux**, **Console**, or **OpenShift**. For this example, select **Console** > **Behavior Groups** .
 
         3. Click **Create new group**:
 
