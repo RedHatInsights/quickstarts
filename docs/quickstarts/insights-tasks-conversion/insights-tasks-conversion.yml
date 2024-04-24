@@ -31,7 +31,7 @@ spec:
     - You can convert to RHEL using several supported methods depending on your requirements. [View supported conversion methods.](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/converting_from_an_rpm-based_linux_distribution_to_rhel/conversion-methods_converting-from-a-linux-distribution-to-rhel) 
 
   tasks:
-    - title: Convert a CentOS 7 systems to RHEL 7 using Insights
+    - title: Convert CentOS 7 systems to RHEL 7 using Insights
       description: |-
         [Before converting, back up your systems and verify that you can restore them if needed.]{{admonition important}}
 
@@ -42,41 +42,38 @@ spec:
         Run the conversion task:
 
         1. Go to **Red Hat Insights > RHEL > Automation Toolkit > Tasks.**
-      
         1. Locate the **Convert to RHEL from CentOS 7 Linux** task and click **Select systems.**
-
         1. You can change the task name. It will be used on the report generated. 
-
         1. Select the CentOS Linux 7 systems you want to convert to RHEL and click  **Run task.**
-
         1. Go to the **Activity tab** and find the newly running conversion task. Your task shows a run status of "Running" until it finishes for all included systems. At that time the run status will update to "Completed."
         
         [The conversion process can take up to an hour to complete.]{{admonition note}}
-    
+
     - title: Review conversion report
       description: |-
         1. Go to the **Activity tab** and find the newly generated conversion report. Select the report to view a summary of the status of each system.
-        
         1. After task completion, you can review each system and message:<br> 
+            <br>
+            Each issue is assigned a severity level.
+            - **Inhibitor:** The conversion failed because converting would very likely result in a deteriorated system state. This issue must be resolved before converting the affected system.
+            - **Overridable inhibitor**: The conversion failed because converting would very likely result in a deteriorated system state. This issue must be resolved or manually overridden before converting.
+            - **Skipped:** The conversion failed because the Conversion task could not run one or more tests. This issue must be resolved before converting the affected system.
+            - **Converted:** The system has been converted. Reboot this system.
               <br>
-              Each issue is assigned a severity level.
-              - **Inhibitor:** The conversion failed because converting would very likely result in a deteriorated system state. This issue must be resolved before converting the affected system.
-              - **Overridable inhibitor**: The conversion failed because converting would very likely result in a deteriorated system state. This issue must be resolved or manually overridden before converting.
-              - **Skipped:** The conversion failed because the Conversion task could not run one or more tests. This issue must be resolved before converting the affected system.
-              - **Converted:** The system has been converted. Reboot this system.
-
-        1. If a system has been successfully converted with no issues, reboot the system and skip the next step.
-
-        1. If the system was not converted, review the message for more information on the found problems and how to resolve them. Additionally, verify the following:<br>
-              - You have completed all the steps to [prepare for a conversion using Insights.] (https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/converting_from_an_rpm-based_linux_distribution_to_rhel/converting-using-insights_converting-from-a-linux-distribution-to-rhel)
-              - The system contains all packages required for the conversion.
-              - The system is running.
-              - You have resolved all issues in the Pre-conversion analysis for converting to RHEL task.
+              <br>
+              1. If a system has been successfully converted with no issues, reboot the system and skip the next step.
+              1. If the system was not converted, review the message for more information on the found problems and how to resolve them. Additionally, verify the following:<br>
+                - You have completed all the steps to [prepare for a conversion using Insights.] (https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/converting_from_an_rpm-based_linux_distribution_to_rhel/converting-using-insights_converting-from-a-linux-distribution-to-rhel)
+                - The system contains all packages required for the conversion.
+                - The system is running.
+                - You have resolved all issues in the Pre-conversion analysis for converting to RHEL task.
 
         1. After rebooting the system that has been successfully converted, remove third-party packages from the original OS that remained unchanged. These are typically packages that do not have a RHEL counterpart. To get a list of these packages, use:<br>
-              - `# yum list extras --disablerepo="*" --enablerepo=`{{copy}}<br>
-              - Add your repository after `enablerepo`.
 
+            ```
+             # yum list extras --disablerepo="*" --enablerepo=<yourrepositoryname>
+            ```{{copy}}
+  
         1. **Optional:** Perform an in-place upgrade to RHEL 9 to ensure your system is updated with the latest enhancements, security features, and bug fixes.<br>
         <br>
         For more information, see the [Upgrading from RHEL 7 to RHEL 8] (https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/upgrading_from_rhel_7_to_rhel_8/index) and [Upgrading from RHEL 8 to RHEL 9] (https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/9/html/upgrading_from_rhel_8_to_rhel_9/index) guides.

@@ -6,7 +6,6 @@ metadata:
 spec:
   displayName: Analyzing CentOS Linux systems for conversion in Insights
   durationMinutes: 10 (active)
-  durationMinutes: 10 (active)
   # Optional type section, will display as a tile on the card
   type:
     text: Quick start
@@ -45,22 +44,29 @@ spec:
             - These commands assume root access. You may also use the `sudo` command.
             - Install the Red Hat client tools:
                 - Download the Red Hat GPG key:<br>
-                `# curl -o /etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release https://www.redhat.com/security/data/fd431d51.txt`{{copy}}<br>
-                  
+                ```
+                # curl -o /etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release https://www.redhat.com/security/data/fd431d51.txt
+                ```{{copy}}                  
                 - Install the **client-tools** repository file:<br>
-                `# curl -o /etc/yum.repos.d/client-tools.repo https://ftp.redhat.com/redhat/client-tools/client-tools-for-rhel-7-server.repo`{{copy}}<br>
-                
+                ```
+                # curl -o /etc/yum.repos.d/client-tools.repo https://ftp.redhat.com/redhat/client-tools/client-tools-for-rhel-7-server.repo
+                ```{{copy}}
                 - Install the **client-tools** packages:<br>
-                `# yum -y install subscription-manager rhc rhc-worker-script insights-client`{{copy}}<br>
-
+                ```
+                # yum -y install subscription-manager rhc rhc-worker-script insights-client
+                ```{{copy}}
             - Enable Remote Host Configuration:<br>
-            `# rhc connect -a <activation_key> -o <organization_ID>`{{copy}}<br>
-            
+            ```
+            # rhc connect -a <activation_key> -o <organization_ID>
+            ```{{copy}}
             - Register your systems with Red Hat Insights:<br>
-            `# insights-client --register`{{copy}}<br>
-            
+            ```
+            # insights-client --register
+            ```{{copy}}
             - Connect the system to RHC:<br>
-            `# rhc connect`{{copy}}<br> 
+            ```
+            # rhc connect
+            ```{{copy}} 
           </details>
           
         1. Go to **Red Hat Insights > RHEL > Inventory > Systems.**
@@ -89,7 +95,7 @@ spec:
             <br>
             This issue occurs when the Remote Host Configuration (RHC)  is disconnected. To fix this issue, complete the following steps:
 
-            - Log in to the [Red Hat Hybrid Cloud Console](http://console.redhat.com) and go to **Red Hat Insights > RHEL > Inventory > Systems.**
+            - Go to **Red Hat Insights > RHEL > Inventory > Systems.**
             
             - Select the affected system from the table.
             
@@ -100,21 +106,38 @@ spec:
                 -  If the RHC status is **Not available**, RHC is disconnected. Proceed to the next step to reconnect RHC.
             
             - Unregister the system in your terminal:<br>
-            `# insights-client --unregister`{{copy}}<br>
-            `# rhc disconnect`{{copy}}<br>
+              ```
+              # insights-client --unregister
+              ```{{copy}}
+              <br>
+              ```
+              # rhc disconnect
+              ```{{copy}}
           
             - To help with troubleshooting, set the RHC systemd service (rhcd) logging to the highest level:<br>
-            `# sed -ie 's%error%trace%' /etc/rhc/config.toml`{{copy}}<br>
+              ```
+              # sed -ie 's%error%trace%' /etc/rhc/config.toml
+              ```{{copy}}
             
             - Register your system with Red Hat Insights and re-enable RHC in your terminal:<br>
-            `# insights-client --register`{{copy}}<br>
-            `# rhc connect -a <activation_key> -o <organization_ID>`{{copy}}<br>
+              ```
+              # insights-client --register
+              ```{{copy}}
+              <br>
+              ```
+              # rhc connect -a <activation_key> -o <organization_ID>
+              ```{{copy}}
           
             - Verify that you can now select the system in the Pre-conversion analysis for converting to RHEL task.
             
-            Review error messages from rhcd and the **insights-client** tool if the system still does not appear.<br>
-            `# journalctl -u read`{{copy}}<br>
-            `# less /var/log/insights-client/insights-client.log`{{copy}}<br>
+            - Review error messages from rhcd and the **insights-client** tool if the system still does not appear.<br>
+              ```
+              # journalctl -u read
+              ```{{copy}}
+              <br>
+              ```
+              # less /var/log/insights-client/insights-client.log
+              ```{{copy}}
              
           </details>
         
@@ -145,19 +168,29 @@ spec:
             
             - Review the RHC systemd service (rhcd) for errors:
                 - Stop rhcd in your terminal:<br>
-                `# systemctl stop rhcd`{{copy}}<br>
+                ```
+                # systemctl stop rhcd
+                ```{{copy}}
                 
                 - Set the RHC systemd service (rhcd) logging to the highest level:<br>
-                `# sed -ie 's%error%trace%' /etc/rhc/config.toml`{{copy}}<br>
+                ```
+                # sed -ie 's%error%trace%' /etc/rhc/config.toml
+                ```{{copy}}
                 
                 - Restart rhcd:<br>
-                `# systemctl start rhcd`{{copy}}<br>
+                ```
+                # systemctl start rhcd
+                ```{{copy}}
                 
                 - Review error messages posted by rhcd:<br>
-                `# journalctl -u rhcd`{{copy}}<br>
+                ```
+                # journalctl -u rhcd
+                ```{{copy}}
                 
             - Review the **rhc-worker-script** log file for errors:<br>
-            `# less /var/log/rhc-worker-script/rhc-worker-script.log`{{copy}}<br>
+            ```
+            # less /var/log/rhc-worker-script/rhc-worker-script.log
+            ```{{copy}}
           </details> 
 
         1. After reviewing the report and resolving all reported issues, click **Run task again** to rerun the analysis and confirm that no issues are outstanding.
