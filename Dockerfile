@@ -1,4 +1,4 @@
-FROM registry.redhat.io/rhel8/go-toolset:1.15 AS builder
+FROM registry.redhat.io/rhel8/go-toolset:1.20.12-5.1712568462 AS builder
 WORKDIR $GOPATH/src/mypackage/myapp/
 COPY . .
 ENV GO111MODULE=on
@@ -6,7 +6,7 @@ USER root
 RUN go get -d -v
 RUN make validate
 RUN make test
-RUN CGO_ENABLED=0 go build -o /go/bin/quickstarts
+RUN CGO_ENABLED=0 go build -buildvcs=false -o /go/bin/quickstarts
 
 # Build the migration binary.
 RUN CGO_ENABLED=0 go build -o /go/bin/quickstarts-migrate cmd/migrate/migrate.go

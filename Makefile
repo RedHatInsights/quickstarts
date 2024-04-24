@@ -8,6 +8,7 @@ help:
 	@echo	"validate-topics - run help topics validator"
 	@echo  "infra           - start required infrastructure"
 	@echo "stop-infra      - stop required infrastructure"
+	@echo "audit 		- run grype audit on the docker image"
 
 	
 test:
@@ -30,3 +31,7 @@ infra:
 
 stop-infra:
 	docker compose -f local/db-compose.yaml down
+
+audit:
+	docker build . -t quickstarts:audit
+	grype quickstarts:audit --fail-on medium --only-fixed
