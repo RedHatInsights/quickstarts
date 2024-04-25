@@ -4,7 +4,7 @@ spec:
   displayName: Creating a blueprint
   durationMinutes: 10
   description: "Blueprints are a persistent definition for image
-    customizations.Complete this task to create your custom blueprints."
+    customizations.Complete this task to create your custom blueprints and images from them"
   prerequisites:
     - A Red Hat user account to access the [Red Hat Hybrid Cloud
       Console](https://console.redhat.com/).
@@ -18,36 +18,11 @@ spec:
 
         1. Go to the **Images** wizard.
 
-
         1. Click **Create blueprint** on the upper menu.
 
+        1. In the **Images** wizard, start to customize your blueprint. [Learn more about customization](https://access.redhat.com/documentation/en-us/red_hat_insights/1-latest/html/deploying_and_managing_rhel_systems_in_hybrid_clouds/index).
 
-        1. In the **Images** wizard, start to customize your blueprint.
-
-
-        1. Click on the **nodejs-sample** deployment to view its details.
-
-
-        1. On Image, select the release, the architecture, and the target environments that you want and click Next.
-
-
-        1. On Register, select a Registration method and click Next.
-
-
-        1. Optional: on OpenSCAP, select one OpenSCAP profile and click Next.
-
-
-        1. On File system configuration, select between automatically  or manually configuring partitions.
-
-
-        1. Optional: On the Content page, add additional packages to your image.
-
-
-        1. Optional: On the Details page, add  a name for the blueprint. 
-
-
-        1. On the Review page, choose either Save the blueprint or Save and build image.
-
+        1. On the **Review** page, choose either **Save the blueprint** or **Save and build image**.
 
         A side panel is displayed containing the details of your sample application.
       review:
@@ -63,7 +38,8 @@ spec:
 
     - title: Creating a blueprint image
       description: |-
-        ### Create your image from the blueprints that you customized are a persistent definition for image customizations. Complete the following steps to create custom blueprints:
+        ### Create your image from the blueprints that you customized are a persistent definition for image customizations. Complete the following steps to create your custom image:
+        
         1. In the **Image** wizard, click the blueprint that you want.
         
         1. Click **Build images**.
@@ -75,48 +51,49 @@ spec:
           Do you see the images related to your blueprint in the **Images** dashboard?
         failedTaskHelp: This task isn’t verified yet. Try the task again.
       summary:
-        success: You have verified that your customized images was successfully built!Congratulations, your image is ready to be deployed!
+        success: You have verified that your customized images was successfully built! Congratulations, your image is ready to be deployed!
         failed: Try the steps again.
-    - title: Edit an existing blueprint
+        
+    - title: Editing an existing blueprint
       description: |-
-        ### To add health checks to your sample:
-        1. Add health checks to your **nodejs-sample** deployment in one of the following ways: (a) On the side panel, click on the **Actions** menu, where you will see an **Add Health Checks** menu item or (b) Click on the **Add Health Checks** link on the inline notification in the side panel.
-        2. In the Add Health Checks form, click on the **Add Readiness Probe** link.  Leave the default values, and click on the check to add the Readiness Probe.
-        3. Click on the **Add Liveness Probe** link.  Leave the default values, and click on the check to add the Liveness Probe.
-        4. Click on the **Add Startup Probe** link.  Leave the default values, and click on the check to add the Startup Probe.
-        5. Click **Add** when you’re done.
+        ### To edit your blueprint, follow these steps:
+        
+        1. Search the blueprint you want to edit. Use the **Search** field to find the blueprint by name.
+        1. Select the blueprint that you want to edit and click **Edit blueprint**.
+        1. From the navigation menu, select the section that you want to edit.
+        1. Click **Save changes to blueprint** when you’re done.
 
-        You will be brought back to the Topology View.
+        You will be brought back to the Images dashboard.
       review:
         instructions: |-
-          #### Verify that health checks are now configured:
-          Is the inline notification gone?
+          #### Verify that the blueprint was updated:
+          Did you receive a notification saying "Changes saved to blueprint¨?
+
         failedTaskHelp:
           This task isn’t verified yet. Try the task again, or [read more](https://docs.openshift.com/container-platform/4.6/applications/application-health.html#odc-adding-health-checks)
           about this topic.
       summary:
-        success: You have added health checks to your sample app!
+        success: You have updated your blueprint!
         failed: Try the steps again.
-   - title: Edit an existing blueprint
+        
+    - title: Importing a blueprint
       description: |-
-        ### To add health checks to your sample:
-        1. Add health checks to your **nodejs-sample** deployment in one of the following ways: (a) On the side panel, click on the **Actions** menu, where you will see an **Add Health Checks** menu item or (b) Click on the **Add Health Checks** link on the inline notification in the side panel.
-        2. In the Add Health Checks form, click on the **Add Readiness Probe** link.  Leave the default values, and click on the check to add the Readiness Probe.
-        3. Click on the **Add Liveness Probe** link.  Leave the default values, and click on the check to add the Liveness Probe.
-        4. Click on the **Add Startup Probe** link.  Leave the default values, and click on the check to add the Startup Probe.
-        5. Click **Add** when you’re done.
+        ### To import an external blueprint, complete the task:
+        
+        1. In the **Images** dashboard, click **Import**.
+        1. Upload your JSON file.     
+        1. Click **Review and finish** when you’re done.
 
-        You will be brought back to the Topology View.
+        You will be brought back to the **Images** dashboard.
       review:
         instructions: |-
-          #### Verify that health checks are now configured:
-          Is the inline notification gone?
+          #### Verify that your blueprint was imported:
+          Is your blueprint visible?
         failedTaskHelp:
           This task isn’t verified yet. Try the task again, or [read more](https://docs.openshift.com/container-platform/4.6/applications/application-health.html#odc-adding-health-checks)
           about this topic.
       summary:
-        success: You have added health checks to your sample app!
+        success: You have imported your bleurpint!
         failed: Try the steps again.
-  conclusion: Your sample application now has health checks. To ensure that your application
-    is running correctly, take the **Monitor your sample application** quick start.
-  nextQuickStart: [monitor-sampleapp, sample-application]
+  conclusion: Your blueprints are persistent and you can manage their customizations.
+
