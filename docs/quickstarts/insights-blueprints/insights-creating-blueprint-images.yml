@@ -67,7 +67,7 @@ spec:
       review:
         instructions: |-
           #### Verify that the blueprint was updated:
-          Did you receive a notification saying "Changes saved to blueprint¨?
+          Did you receive a notification saying "Changes saved to blueprint"?
 
         failedTaskHelp:
           This task isn’t verified yet. Try the task again, or [read more](https://docs.openshift.com/container-platform/4.6/applications/application-health.html#odc-adding-health-checks)
@@ -93,7 +93,9 @@ spec:
           This task isn’t verified yet. Try the task again, or [read more](https://docs.openshift.com/container-platform/4.6/applications/application-health.html#odc-adding-health-checks)
           about this topic.
       summary:
-        success: You have imported your bleurpint!
+        success: You have imported your blueprint!
         failed: Try the steps again.
   conclusion: Your blueprints are persistent and you can manage their customizations.
+  
+  
 
