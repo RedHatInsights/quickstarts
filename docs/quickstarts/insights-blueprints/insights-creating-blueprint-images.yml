@@ -75,26 +75,6 @@ spec:
       summary:
         success: You have updated your blueprint!
         failed: Try the steps again.
-        
-    - title: Importing a blueprint
-      description: |-
-        ### To import an external blueprint, complete the task:
-        
-        1. In the **Images** dashboard, click **Import**.
-        1. Upload your JSON file.     
-        1. Click **Review and finish** when you’re done.
-
-        You will be brought back to the **Images** dashboard.
-      review:
-        instructions: |-
-          #### Verify that your blueprint was imported:
-          Is your blueprint visible?
-        failedTaskHelp:
-          This task isn’t verified yet. Try the task again, or [read more](https://docs.openshift.com/container-platform/4.6/applications/application-health.html#odc-adding-health-checks)
-          about this topic.
-      summary:
-        success: You have imported your blueprint!
-        failed: Try the steps again.
   conclusion: Your blueprints are persistent and you can manage their customizations.
   
   
