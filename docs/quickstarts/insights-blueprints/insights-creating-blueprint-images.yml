@@ -1,0 +1,122 @@
+metadata:
+  name: create-blueprint
+spec:
+  displayName: Creating a blueprint
+  durationMinutes: 10
+  description: "Blueprints are a persistent definition for image
+    customizations.Complete this task to create your custom blueprints."
+  prerequisites:
+    - A Red Hat user account to access the [Red Hat Hybrid Cloud
+      Console](https://console.redhat.com/).
+    - Organization Administrator permissions.]
+  introduction: "### This quick start shows you how to create a blueprint and
+    create images from the blueprint that you can deploy in your environments."
+  tasks:
+    - title: Creating a blueprint
+      description: >-
+        To create your custom blueprint, complete this task.
+
+        1. Go to the **Images** wizard.
+
+
+        1. Click **Create blueprint** on the upper menu.
+
+
+        1. In the **Images** wizard, start to customize your blueprint.
+
+
+        1. Click on the **nodejs-sample** deployment to view its details.
+
+
+        1. On Image, select the release, the architecture, and the target environments that you want and click Next.
+
+
+        1. On Register, select a Registration method and click Next.
+
+
+        1. Optional: on OpenSCAP, select one OpenSCAP profile and click Next.
+
+
+        1. On File system configuration, select between automatically  or manually configuring partitions.
+
+
+        1. Optional: On the Content page, add additional packages to your image.
+
+
+        1. Optional: On the Details page, add  a name for the blueprint. 
+
+
+        1. On the Review page, choose either Save the blueprint or Save and build image.
+
+
+        A side panel is displayed containing the details of your sample application.
+      review:
+        instructions: >-
+          #### To verify that your blueprint was created, search for it in
+          the wizard:
+
+          Do you see your blueprint in the right menu?
+        failedTaskHelp: This task isn’t verified yet. Try the task again.
+      summary:
+        success: You have created your blueprint!
+        failed: Try the steps again.
+
+    - title: Creating a blueprint image
+      description: |-
+        ### Create your image from the blueprints that you customized are a persistent definition for image customizations. Complete the following steps to create custom blueprints:
+        1. In the **Image** wizard, click the blueprint that you want.
+        
+        1. Click **Build images**.
+        
+        Images starts to build a RHEL image for the architecture that you selected.
+      review:
+        instructions: |-
+          #### To verify that the image build was created and is ready:
+          Do you see the images related to your blueprint in the **Images** dashboard?
+        failedTaskHelp: This task isn’t verified yet. Try the task again.
+      summary:
+        success: You have verified that your customized images was successfully built!Congratulations, your image is ready to be deployed!
+        failed: Try the steps again.
+    - title: Edit an existing blueprint
+      description: |-
+        ### To add health checks to your sample:
+        1. Add health checks to your **nodejs-sample** deployment in one of the following ways: (a) On the side panel, click on the **Actions** menu, where you will see an **Add Health Checks** menu item or (b) Click on the **Add Health Checks** link on the inline notification in the side panel.
+        2. In the Add Health Checks form, click on the **Add Readiness Probe** link.  Leave the default values, and click on the check to add the Readiness Probe.
+        3. Click on the **Add Liveness Probe** link.  Leave the default values, and click on the check to add the Liveness Probe.
+        4. Click on the **Add Startup Probe** link.  Leave the default values, and click on the check to add the Startup Probe.
+        5. Click **Add** when you’re done.
+
+        You will be brought back to the Topology View.
+      review:
+        instructions: |-
+          #### Verify that health checks are now configured:
+          Is the inline notification gone?
+        failedTaskHelp:
+          This task isn’t verified yet. Try the task again, or [read more](https://docs.openshift.com/container-platform/4.6/applications/application-health.html#odc-adding-health-checks)
+          about this topic.
+      summary:
+        success: You have added health checks to your sample app!
+        failed: Try the steps again.
+   - title: Edit an existing blueprint
+      description: |-
+        ### To add health checks to your sample:
+        1. Add health checks to your **nodejs-sample** deployment in one of the following ways: (a) On the side panel, click on the **Actions** menu, where you will see an **Add Health Checks** menu item or (b) Click on the **Add Health Checks** link on the inline notification in the side panel.
+        2. In the Add Health Checks form, click on the **Add Readiness Probe** link.  Leave the default values, and click on the check to add the Readiness Probe.
+        3. Click on the **Add Liveness Probe** link.  Leave the default values, and click on the check to add the Liveness Probe.
+        4. Click on the **Add Startup Probe** link.  Leave the default values, and click on the check to add the Startup Probe.
+        5. Click **Add** when you’re done.
+
+        You will be brought back to the Topology View.
+      review:
+        instructions: |-
+          #### Verify that health checks are now configured:
+          Is the inline notification gone?
+        failedTaskHelp:
+          This task isn’t verified yet. Try the task again, or [read more](https://docs.openshift.com/container-platform/4.6/applications/application-health.html#odc-adding-health-checks)
+          about this topic.
+      summary:
+        success: You have added health checks to your sample app!
+        failed: Try the steps again.
+  conclusion: Your sample application now has health checks. To ensure that your application
+    is running correctly, take the **Monitor your sample application** quick start.
+  nextQuickStart: [monitor-sampleapp, sample-application]
