@@ -8,7 +8,7 @@ spec:
   prerequisites:
     - A Red Hat user account to access the [Red Hat Hybrid Cloud
       Console](https://console.redhat.com/).
-    - Organization Administrator permissions.]
+    - Organization Administrator permissions.
   introduction: "### This quick start shows you how to create a blueprint and
     create images from the blueprint that you can deploy in your environments."
   tasks:
