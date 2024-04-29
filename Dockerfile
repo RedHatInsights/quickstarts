@@ -1,6 +1,14 @@
 FROM registry.redhat.io/rhel8/go-toolset:1.20.12-5.1712568462 AS builder
 WORKDIR $GOPATH/src/mypackage/myapp/
-COPY . .
+COPY go.mod go.mod
+COPY go.sum go.sum
+COPY Makefile Makefile
+COPY main.go main.go
+COPY spec spec
+COPY pkg pkg
+COPY cmd cmd
+COPY config config
+COPY docs docs
 ENV GO111MODULE=on
 USER root
 RUN go get -d -v
