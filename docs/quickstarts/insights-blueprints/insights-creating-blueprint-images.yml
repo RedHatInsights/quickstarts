@@ -1,6 +1,9 @@
 metadata:
   name: insights-creating-blueprint-images
 spec:
+  type:
+    text: Learning path
+    color: cyan
   displayName: Creating a blueprint
   durationMinutes: 10
   description: "Blueprints are a persistent definition for image
