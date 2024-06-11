@@ -1,0 +1,16 @@
+apiVersion: console.openshift.io/v1
+kind: QuickStarts
+metadata:
+  name: openshift-ocp-2
+  externalDocumentation: true
+spec:
+  version: 0.1
+  type:
+    text: Documentation
+    color: orange
+  displayName: Visit the OpenShift Library
+  icon: 
+  description: Quickly find the information most relevant to your environment and role.
+  link:
+    href: https://access.redhat.com/articles/7052429
+    text: View documentation
