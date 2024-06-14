@@ -1,4 +1,3 @@
-# See quick start instructions here https://github.com/RedHatInsights/quickstarts/tree/main/docs/quickstarts
 metadata:
   name: integrations-slack-notifs-qs
   # you can add additional metadata here
@@ -31,57 +30,76 @@ spec:
     
     You can configure the console to send event notifications to various third-party applications, including Slack. You can send notifications to all users on a Slack channel, or a selected user in Slack.
 
-    Follow this quick start to configure a Slack channel to receive event notifications when a new User Access group is created in the console. You'll also learn how to validate your configuration by sending a test event.
+    Follow this quick start to configure a Slack channel to receive event notifications when a new User Access group is created in the console. You'll also validate your configuration by sending a test event.
 
-    [If you have any issues with the Hybrid Cloud Console integration with Slack, contact Red Hat for support.]{{admonition note}}
+    [If you have any issues with the Hybrid Cloud Console integration with Slack, contact Red Hat for support from the console by clicking **?** >  **Open a support case**.]{{admonition note}}
 
   tasks:
     - title: Configure Slack to receive incoming webhooks
       description: |-
         The Slack integration uses incoming webhooks to receive event data. 
-
-        To prepare Slack for integration with the console, first configure incoming webhooks in Slack. 
-
-        Complete these steps in Slack:
-
         
-        1. In Slack, open the channel where you want to receive notifications.
-        
-        2. Click the channel name at the top of the window to open the channel settings. 
-        
-        3. Click **Integrations**, then under **Apps** click **Add an App**. 
+        Configure the incoming webhook for your integration in the [Slack webhook configuration UI](https://api.slack.com/messaging/webhooks#create-app).
 
-        4. Search for the *Incoming WebHooks* app and select it.
+        1. Create a Slack app:
 
-        5. Click **Add to Slack** to add the Hybrid Cloud Console integration to the channel.
+          a. Click the **Create your Slack app** button to open the **Create an app** dialog.
 
-        6. Select an existing channel or create a new channel in the **Post to Channel** box.
-        
-        7. Click **Add Incoming Webhooks Integration**. The **Configuration** page for the app opens in the Slack app directory.
+          b. Select **From scratch**.
 
-        8. Scroll down to **Integration Settings** and copy the generated webhook URL shown in the **Webhook URL** field.
+          c. Enter an app name and select the workspace where you want to receive notifications, and click **Create App**.
 
-        9. (Optional) Customize your integration:
+          [If you see a message about requiring approval from admins, you can request approval in the next step.]{{admonition note}}
 
-          a. Add a name for the integration in the **Customize Name** field.
+        2. Enable incoming webhooks:
 
-          b. Upload an icon in the **Customize Icon** field.
+          a. Under **Features** in the left navigation, click **Incoming Webhooks**.
+          
+          b. Toggle the **Activate Incoming Webhooks** switch to **On**.
 
-        10. Click **Save Settings**.
+          c. Click **Request to Add New Webhook**. If needed, enter a message to your administrators to grant access to your app and click **Submit Request**. 
+
+        3. Create an incoming webhook:
+
+          a. Under **Settings** in the left navigation, click **Basic Information**.
+
+          b. In the **Install your app** section, click **Install to Workspace**.
+
+          c. Select a channel or user for your Slack app to post notifications and click **Allow**.
+
+        4. (Optional) Configure how your console notifications display in Slack:
+
+          a. Scroll down to **Display Information** and configure your app description, icon, and background color.
+
+        5. Copy the webhook URL:
+
+          a. Under **Features** in the left navigation, click **Incoming Webhooks**.
+          
+          b. Click the **Copy** button next to the webhook URL. You'll use this URL to set up the integration in the console.
 
         Your Slack channel is now ready to receive incoming notifications from the console.
 
         To learn more about webhooks in Slack, see:
           - [Create more advanced workflows using webhooks](https://slack.com/help/articles/360041352714-Create-more-advanced-workflows-using-webhooks)
           - [Managing app approvals in Enterprise Grid workspaces](https://api.slack.com/admins/approvals)
-          - [Sending messages using incoming webhooks](https://api.slack.com/messaging/webhooks)
-          - For general help with Slack, see the [Slack Help Center](https://slack.com/help).
+          - The [Slack Help Center](https://slack.com/help) for general help.
+
+      # optional - the task's Check your work module
+      review:
+        instructions: |-
+          - Open the Slack channel or user you configured and check for a message confirming you have added the integration.
+
+        failedTaskHelp: Try completing the steps again.
+      # optional - the task's success and failure messages
+      summary:
+        success: Shows a success message in the task header
+        failed: Shows a failed message in the task header
       
     - title: Add the Slack integration to the Hybrid Cloud Console
       description: |-
-        After you’ve configured your Slack channel for incoming webhooks, configure the console to send event notifications to that Slack channel.
+        After you've configured an incoming webhook in Slack, you can configure the console to send event notifications to your selected Slack channel or user.
 
-        You'll complete these steps in the Hybrid Cloud Console.
+        Complete these steps in the Hybrid Cloud Console.
 
         1. Click **Integrations** > **Communications**.
 
@@ -91,19 +109,15 @@ spec:
 
         4. Configure your Slack integration details:
 
-          a. In **Integration name**, enter a name such as *My Slack notifications (#my_channel)*. You can include your Slack channel name if desired.
+          a. Enter a name for the integration, such as *My Slack notifications (#my_channel)*. You can include your Slack channel name if desired.
 
-          b. In **Workspace URL**, paste the webhook URL that you copied from Slack.
-
-          c. In **Channel**, enter the name of your Slack channel. 
-
-          d. Click **Next**.
+          b. In **Workspace URL**, paste the webhook URL that you copied from Slack and click **Next**.
           
           e. Review the integration details and click **Submit**.
 
         5. If needed, refresh your browser window to show your Slack integration on the **Integrations** > **Communications** page.
         
-        To confirm you've correctly connected your Slack channel to the console, you can create a test notification:
+        You can now create a test notification to confirm the integration is configured correctly:
 
         1. Next to your Slack integration in the list, click &#8942; > **Test**.
         2. Enter a message in the **Integration Test** screen, and click **Send**. If you leave the field empty, the console sends a default message.
@@ -113,7 +127,7 @@ spec:
       review:
         instructions: |-
           - Did you receive a test message in your Slack channel?
-          - In the console, check **Notifications** > **Event log** for the event called **Integration Test**. Does **Integration: Slack** show in a green label?
+          - In the console, check **Notifications** > **Event Log** for the event called **Integration Test**. Does **Integration: Slack** show in a green label?
 
 
         failedTaskHelp: Try completing the steps again.
@@ -124,9 +138,9 @@ spec:
 
     - title: Select notifications to send to Slack
       description: |-
-        Lastly, configure which event notifications to send to your Slack channel. You'll complete these steps in the console as well.
+        Next, configure which event notifications to send to your Slack channel. You'll complete these steps in Hybrid Cloud Console.
 
-        To do this, create a new behavior group in the console and select the events you want to be notified about. For this example, you'll configure notifications for when a new User Access group is created in the console. 
+        Create a new behavior group in the console and select the events you want to be notified about. For this example, you'll configure notifications for when a new User Access group is created in the console. 
 
         [Alternatively, you can add events to an existing behavior group to be notified of. To edit a behavior group, see [Configure notification behavior groups](https://access.redhat.com/documentation/en-us/red_hat_hybrid_cloud_console/1-latest/html-single/configuring_notifications_on_the_red_hat_hybrid_cloud_console/index#assembly-config-behavior-groups_notifications) for more information.]{{admonition note}}
 
@@ -147,7 +161,7 @@ spec:
 
             e. Review your settings and click **Finish**.
 
-        5. Trigger an event in the console to test the configuration. For this example, you’ll create a new User Access group to be notified of in Slack.
+        5. Trigger an event in the console to test the configuration. For this example, you’ll create a new User Access group to be notified of in Slack. An event will be triggered when you create a new group.
 
             a. Go to **Settings** > **User Access**.
 
@@ -155,7 +169,7 @@ spec:
 
             c. Enter a name for the group and a description, and click **Next**. 
 
-            d. Add user roles as desired, and click **Next**. 
+            d. Add one or more user roles, and click **Next**. 
 
             e. Add members to the group, and click **Next**. 
 
@@ -163,7 +177,7 @@ spec:
 
             g. Click **Exit** to close the dialog.
 
-        A notification is sent to your Slack channel about the new User Access group you created in the console.
+        A notification is sent to your Slack channel about the new User Access group you just created.
         
        
       # optional - the task's Check your work module
@@ -183,10 +197,16 @@ spec:
   conclusion: |-
     Congratulations! You’ve successfully configured the console to send notifications about selected events to your Slack channel.
     
-    From here:
+    Next steps:
     - You can add more events to be notified about in your Slack channel by editing your behavior group from **Notifications** > **Configure Events** and assigning it more events.
     - You can configure additional Slack channels to receive additional event notifications by creating additional Slack integrations. For example, your organization may want to send certain types of notifications to different Slack channels based on your teams or security policies.
 
-    **Learn more:**
-      - To learn about other applications where you can receive console notifications, see [Integrating the Red Hat Hybrid Cloud Console with third-party applications](https://access.redhat.com/documentation/en-us/red_hat_hybrid_cloud_console/1-latest/html-single/integrating_the_red_hat_hybrid_cloud_console_with_third-party_applications/index#assembly-configuring-insights-integration-with-slack_integrations).
-      - To learn more about notifications, see [Configuring notifications on the Red Hat Hybrid Cloud Console](https://access.redhat.com/documentation/en-us/red_hat_hybrid_cloud_console/1-latest/html-single/configuring_notifications_on_the_red_hat_hybrid_cloud_console/index). 
+    Learn more about console integrations and notifications:
+      - [Integrating the Red Hat Hybrid Cloud Console with third-party applications](https://access.redhat.com/documentation/en-us/red_hat_hybrid_cloud_console/1-latest/html-single/integrating_the_red_hat_hybrid_cloud_console_with_third-party_applications/index#assembly-configuring-insights-integration-with-slack_integrations)
+      - [Configuring notifications on the Red Hat Hybrid Cloud Console](https://access.redhat.com/documentation/en-us/red_hat_hybrid_cloud_console/1-latest/html-single/configuring_notifications_on_the_red_hat_hybrid_cloud_console/index) 
+    
+    Learn more about Slack and incoming webhooks:
+      - [Create more advanced workflows using webhooks](https://slack.com/help/articles/360041352714-Create-more-advanced-workflows-using-webhooks)
+      - [Managing app approvals in Enterprise Grid workspaces](https://api.slack.com/admins/approvals)
+      - [Sending messages using incoming webhooks](https://api.slack.com/messaging/webhooks)
+      - For general help with Slack, see the [Slack Help Center](https://slack.com/help)
