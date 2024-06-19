@@ -3,7 +3,7 @@ metadata:
   # you can add additional metadata here
   # instructional: true
 spec:
-  displayName: Receiving console notifications in Slack
+  displayName: Configuring console notifications in Slack
   durationMinutes: 10
   # Optional type section, will display as a tile on the card
   type:
@@ -26,11 +26,11 @@ spec:
   description: |-
     Connect the console to a Slack channel to receive notifications about events that have occurred. 
   introduction: |-
-    Use Hybrid Cloud Console notifications to learn about events that have occurred that might impact your organization. 
+    Use Hybrid Cloud Console notifications to learn about events that might impact your organization. 
     
-    You can configure the console to send event notifications to various third-party applications, including Slack. You can send notifications to all users on a Slack channel, or a selected user in Slack.
+    You can receive notifications in the console, or configure the console to send event notifications to a third-party application such as Slack. In Slack, you can send notifications to all users on a channel, or a selected user.
 
-    Follow this quick start to configure a Slack channel to receive event notifications when a new User Access group is created in the console. You'll also validate your configuration by sending a test event.
+    Configure a Slack channel to receive event notifications when a new User Access group is created in the console. To validate your configuration, you’ll also send a test event.
 
     [If you have any issues with the Hybrid Cloud Console integration with Slack, contact Red Hat for support from the console by clicking **?** >  **Open a support case**.]{{admonition note}}
 
@@ -47,7 +47,7 @@ spec:
 
           b. Select **From scratch**.
 
-          c. Enter an app name and select the workspace where you want to receive notifications, and click **Create App**.
+          c. Enter an app name and select the workspace where you want to receive notifications, then click **Create App**.
 
           [If you see a message about requiring approval from admins, you can request approval in the next step.]{{admonition note}}
 
@@ -57,7 +57,7 @@ spec:
           
           b. Toggle the **Activate Incoming Webhooks** switch to **On**.
 
-          c. Click **Request to Add New Webhook**. If needed, enter a message to your administrators to grant access to your app and click **Submit Request**. 
+          c. Click **Request to Add New Webhook**. If needed, enter a message to your administrators to grant access to your app, then click **Submit Request**. 
 
         3. Create an incoming webhook:
 
@@ -184,7 +184,7 @@ spec:
       review:
         instructions: |-
           - Did you receive a message in your Slack channel about the new User Access group?
-          - In the console: Go to **Settings** > **Notifications** > **Event log** and find the **Group created** event. Does **Integration: Slack** show in the **Action taken** column with a green label? (You can click on this label to view details about the notification.)
+          - In the console: Go to **Settings** > **Notifications** > **Event log** and find the **Group created** event. Does **Integration: Slack** show in the **Action taken** column with a green label? To view details about the notification, click the label.
         # - In the console: Go to **Settings** > **Integrations** > **Communications** and check your integration in the list. Does the status in Last connection attempt report **Success**?
 
 
