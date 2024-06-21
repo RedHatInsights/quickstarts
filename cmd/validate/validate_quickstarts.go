@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -60,12 +61,14 @@ func validateQuickStartStructure() {
 		handleFileErr(filePath, err)
 
 		m := regexp.MustCompile("metadata.ya?ml$")
-		quickstartsFileName := filePath
+		metadataFileName := filePath
 
-		if _, err = os.Stat(m.ReplaceAllString(quickstartsFileName, metadata.Name+".yml")); err == nil {
-			quickstartsFileName = m.ReplaceAllString(quickstartsFileName, metadata.Name+".yml")
+		var quickstartsFileName string
+
+		if _, err = os.Stat(m.ReplaceAllString(metadataFileName, metadata.Name+".yml")); err == nil {
+			quickstartsFileName = m.ReplaceAllString(metadataFileName, metadata.Name+".yml")
 		} else {
-			quickstartsFileName = m.ReplaceAllString(quickstartsFileName, metadata.Name+".yaml")
+			quickstartsFileName = m.ReplaceAllString(metadataFileName, metadata.Name+".yaml")
 		}
 		yamlfile, err = ioutil.ReadFile(quickstartsFileName)
 		handleFileErr(quickstartsFileName, err)
@@ -74,6 +77,21 @@ func validateQuickStartStructure() {
 
 		var content QuickStarts
 		err = json.Unmarshal(jsonContent, &content)
+		handleFileErr(quickstartsFileName, err)
+
+		var contentMetadata = content.Metadata
+		err = validation.ValidateStruct(&contentMetadata,
+			validation.Field(&contentMetadata.Name,
+				validation.In(metadata.Name).Error(
+					fmt.Sprintf("The names in %s and %s must match (got %s and %s)",
+						metadataFileName,
+						quickstartsFileName,
+						metadata.Name,
+						contentMetadata.Name,
+					),
+				),
+			),
+		)
 		handleFileErr(quickstartsFileName, err)
 
 		var spec = content.Spec
