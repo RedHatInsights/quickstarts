@@ -32,22 +32,7 @@ while true; do
 	echo "Duration must be a positive integer." >&2
 done
 
-if [[ -t 2 ]]; then
-	echo "Description (can be multiple lines, use \".\" on its own line to terminate): "
-fi
-
-description=""
-
-while true; do
-	IFS="" read -r line || break
-	
-	if [[ "$line" = "." ]]; then
-		break;
-	fi
-
-	description+="$line"
-	description+=$'\n'
-done
+read -p "Description (a short, 2-3 sentence summary): " description
 
 out_dir="$quickstarts_dir/$name"
 
