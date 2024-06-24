@@ -8,8 +8,8 @@ source ./cli/cli_common.sh
 selected_type="$type_quickstart"
 selected_color="$(color_for_type "$selected_type")"
 
-name="$1"
-display_name="$2"
+name="$(read_name)"
+display_name="$(read_display_name)"
 
 duration="$(read_duration)"
 description="$(read_description)"

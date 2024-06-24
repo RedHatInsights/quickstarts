@@ -5,9 +5,9 @@ set -euo pipefail
 # Expect to be run in root of the repository
 source ./cli/cli_common.sh
 
-name="$1"
-display_name="$2"
-selected_type="$3"
+selected_type="$1"
+name="$(read_name)"
+display_name="$(read_display_name)"
 
 description="$(read_description)"
 url="$(read_url)"
