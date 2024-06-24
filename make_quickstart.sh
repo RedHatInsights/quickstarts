@@ -2,84 +2,24 @@
 
 set -euo pipefail
 
-cd "$(dirname -- "$(realpath -- "$BASH_SOURCE")")"
+source ./cli_common.sh
 
-quickstarts_dir="docs/quickstarts"
+selected_type="$type_quickstart"
+selected_color="$(color_for_type "$selected_type")"
 
-if [[ ! -d "$quickstarts_dir" ]]; then
-	echo "The directory docs/quickstarts does not already exist. This script must be run from the quickstarts repo." >&2
-fi
+name="$1"
+display_name="$2"
 
-while true; do
-	read -p "Name of quickstart: " name
+duration="$(read_duration)"
+description="$(read_description)"
 
-	if [[ "$name" =~ [a-z0-9_-]+ ]]; then
-		break
-	fi
+create_out_dir "$name"
+write_metadata "$name"
 
-	echo "Quickstart name must be non-empty and composed of alphanumeric characters, dashes, and underscores." >&2
-done
+escaped_name="$(yaml_escape "$name")"
+escaped_display_name="$(yaml_escape "$display_name")"
 
-type_quickstart="Quick start"
-
-available_types=(
-	"$type_quickstart"
-	"Documentation"
-	"Learning path"
-	"Other"
-)
-
-available_type_colors=(
-	"green"
-	"orange"
-	"cyan"
-	"purple"
-)
-
-read -p "Display name: " display_name
-
-selected_type=""
-selected_color=""
-
-select option in "${available_types[@]}"; do
-	if [[ -n "$option" && -n "$REPLY" ]]; then
-		index="$(($REPLY-1))"
-		selected_type="${available_types["$index"]}"
-		selected_color="${available_type_colors["$index"]}"
-		break
-	else
-		echo "Input must be a number corresponding to an option." >&2
-	fi
-done
-
-while true; do
-	read -p "Duration (minutes): " duration
-
-	if [[ "$duration" =~ [0-9]+ ]]; then
-		break
-	fi
-
-	echo "Duration must be a positive integer." >&2
-done
-
-read -p "Description (a short, 2-3 sentence summary): " description
-
-out_dir="$quickstarts_dir/$name"
-
-mkdir -- "$out_dir" || { echo "Failed to create directory. Perhaps it already exists?" >&2; exit 1; }
-
-escaped_name="'${name//"'"/"''"}'"
-escaped_display_name="'${display_name//"'"/"''"}'"
-
-cat > "$out_dir/metadata.yml" <<EOF
-kind: QuickStarts # kind must always be "QuickStarts"
-name: $escaped_name
-tags: # If you want to use more granular filtering add tags to the quickstart
-  - kind: bundle # use bundle tag for a topic to be accessed from a whole bundle eg. console.redhat.com/insights
-    value: iam
-  - kind: application # use application tag for quickstart used by specific application
-    value: my-user-access
-EOF
+out_dir="$(out_dir_for "$name")"
 
 cat > "$out_dir/$name.yml" <<EOF
 # Additional info: https://docs.openshift.com/container-platform/4.9/web_console/creating-quick-start-tutorials.html
@@ -90,13 +30,16 @@ metadata:
   # you can add additional metadata here
   # instructional: true
 spec:
+  version: 0.1
+
   displayName: $escaped_display_name
   durationMinutes: $duration
+  icon: ~
 
   # Display the quickstart tag on the tile.
   type:
-    text: Quick start
-    color: green
+    text: $(yaml_escape "$selected_type")
+    color: $(yaml_escape "$selected_color")
 
   # Optional.
   prerequisites:
@@ -136,4 +79,4 @@ $(printf "%s" "$description" | sed "s/^/    /")
     Summarize the task.  
 EOF
 
-echo "A template quickstart has been created in $out_dir" >&2
+echo "A template quickstart has been created in $(out_dir_for "$name")" >&2
