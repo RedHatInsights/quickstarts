@@ -80,4 +80,4 @@ $(printf "%s" "$description" | sed "s/^/    /")
     Summarize the task.  
 EOF
 
-echo "A template quickstart has been created in $(out_dir_for "$name")" >&2
+show_footer "quick start" "$name"

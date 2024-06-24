@@ -50,4 +50,4 @@ $(printf "%s" "$description" | sed "s/^/    /")
     text: View documentation
 EOF
 
-echo "A template item has been created in $(out_dir_for "$name")" >&2
+show_footer "item" "$name"

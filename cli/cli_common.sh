@@ -133,3 +133,10 @@ tags: # If you want to use more granular filtering add tags to the quickstart
     value: my-user-access
 EOF
 }
+
+show_footer() {
+	declare -r kind="$1"
+	declare -r name="$2"
+
+	echo "A template $kind has been created in $(out_dir_for "$name"). You should update both metadata.yml and $name.yml to reflect what the item should show." >&2
+}
