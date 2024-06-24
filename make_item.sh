@@ -3,7 +3,7 @@
 set -euo pipefail
 
 cd "$(dirname -- "$(realpath -- "$BASH_SOURCE")")"
-source ./cli_common.sh
+source ./cli/cli_common.sh
 
 update_directory
 
@@ -14,7 +14,7 @@ selected_type="$(read_type)"
 echo "Selected type: $selected_type"
 
 if [[ "$selected_type" = "$type_quickstart" ]]; then
-	exec ./make_quickstart.sh "$name" "$display_name"
+	exec ./cli/make_quickstart.sh "$name" "$display_name"
 else
-	exec ./make_generic.sh "$name" "$display_name" "$selected_type"
+	exec ./cli/make_generic.sh "$name" "$display_name" "$selected_type"
 fi

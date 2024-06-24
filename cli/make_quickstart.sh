@@ -2,7 +2,8 @@
 
 set -euo pipefail
 
-source ./cli_common.sh
+# Expect to be run in the root of the repository
+source ./cli/cli_common.sh
 
 selected_type="$type_quickstart"
 selected_color="$(color_for_type "$selected_type")"
