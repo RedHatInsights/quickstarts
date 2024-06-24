@@ -20,7 +20,37 @@ while true; do
 	echo "Quickstart name must be non-empty and composed of alphanumeric characters, dashes, and underscores." >&2
 done
 
+type_quickstart="Quick start"
+
+available_types=(
+	"$type_quickstart"
+	"Documentation"
+	"Learning path"
+	"Other"
+)
+
+available_type_colors=(
+	"green"
+	"orange"
+	"cyan"
+	"purple"
+)
+
 read -p "Display name: " display_name
+
+selected_type=""
+selected_color=""
+
+select option in "${available_types[@]}"; do
+	if [[ -n "$option" && -n "$REPLY" ]]; then
+		index="$(($REPLY-1))"
+		selected_type="${available_types["$index"]}"
+		selected_color="${available_type_colors["$index"]}"
+		break
+	else
+		echo "Input must be a number corresponding to an option." >&2
+	fi
+done
 
 while true; do
 	read -p "Duration (minutes): " duration
