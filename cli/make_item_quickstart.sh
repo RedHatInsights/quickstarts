@@ -3,7 +3,7 @@
 set -euo pipefail
 
 # Expect to be run in the root of the repository
-source ./cli/cli_common.sh
+source ./cli/cli_item_common.sh
 
 selected_type="$type_quickstart"
 selected_color="$(color_for_type "$selected_type")"
@@ -14,13 +14,13 @@ display_name="$(read_display_name)"
 duration="$(read_duration)"
 description="$(read_description)"
 
-create_out_dir "$name"
-write_metadata "$name"
+out_dir="$(out_dir_for "$name")"
+
+create_out_dir "$out_dir"
+write_quickstart_metadata "$out_dir"
 
 escaped_name="$(yaml_escape "$name")"
 escaped_display_name="$(yaml_escape "$display_name")"
-
-out_dir="$(out_dir_for "$name")"
 
 cat > "$out_dir/$name.yml" <<EOF
 # Additional info: https://docs.openshift.com/container-platform/4.9/web_console/creating-quick-start-tutorials.html
@@ -80,4 +80,4 @@ $(printf "%s" "$description" | sed "s/^/    /")
     Summarize the task.  
 EOF
 
-show_footer "quick start" "$name"
+show_footer "quick start" "$out_dir" "$name"
