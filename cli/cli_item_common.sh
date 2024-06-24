@@ -57,11 +57,9 @@ out_dir_for() {
 write_quickstart_metadata() {
 	declare -r out_dir="$1"
 
-	declare -r escaped_name="$(yaml_escape "$name")"
-
 	cat > "$out_dir/metadata.yml" <<EOF
 kind: QuickStarts # kind must always be "QuickStarts"
-name: $escaped_name
+name: $(yaml_escape "$name")
 tags: # If you want to use more granular filtering add tags to the quickstart
   - kind: bundle # use bundle tag for a topic to be accessed from a whole bundle eg. console.redhat.com/insights
     value: iam
