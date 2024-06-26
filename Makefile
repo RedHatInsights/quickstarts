@@ -35,3 +35,6 @@ stop-infra:
 audit:
 	docker build . -t quickstarts:audit
 	grype quickstarts:audit --fail-on medium --only-fixed
+
+add-item:
+	./make_item.sh
