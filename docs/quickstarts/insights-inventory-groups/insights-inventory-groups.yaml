@@ -4,7 +4,7 @@ metadata:
   # you can add additional metadata here
   instructional: true
 spec:
-  displayName: Creating and managing Inventory groups
+  displayName: Creating and managing Inventory workspaces
   durationMinutes: 5
   # Optional type section, will display as a tile on the card
   type:
@@ -13,25 +13,25 @@ spec:
     color: grey
   icon: data:image/svg+xml;base64,PCEtLSBHZW5lcmF0ZWQgYnkgSWNvTW9vbi5pbyAtLT4KPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KPHRpdGxlPjwvdGl0bGU+CjxnIGlkPSJpY29tb29uLWlnbm9yZSI+CjwvZz4KPHBhdGggZD0iTTQ0OCA2NHY0MTZoLTMzNmMtMjYuNTEzIDAtNDgtMjEuNDktNDgtNDhzMjEuNDg3LTQ4IDQ4LTQ4aDMwNHYtMzg0aC0zMjBjLTM1LjE5OSAwLTY0IDI4LjgtNjQgNjR2Mzg0YzAgMzUuMiAyOC44MDEgNjQgNjQgNjRoMzg0di00NDhoLTMyeiI+PC9wYXRoPgo8cGF0aCBkPSJNMTEyLjAyOCA0MTZ2MGMtMC4wMDkgMC4wMDEtMC4wMTkgMC0wLjAyOCAwLTguODM2IDAtMTYgNy4xNjMtMTYgMTZzNy4xNjQgMTYgMTYgMTZjMC4wMDkgMCAwLjAxOS0wLjAwMSAwLjAyOC0wLjAwMXYwLjAwMWgzMDMuOTQ1di0zMmgtMzAzLjk0NXoiPjwvcGF0aD4KPC9zdmc+Cg==
   description: |-
-    Learn how to create an Inventory group, add systems to it, and remove systems from it.
+    Learn how to create an Inventory workspace, add systems to it, and remove systems from it.
   introduction: |-
     
-        **Welcome to the quick start for creating and managing your systems using Inventory groups. In this quick start, you will:**
-        - Create an Inventory group.
-        - Learn to add systems to the group.
-        - Learn how to remove systems from the group.
+        **Welcome to the quick start for creating and managing your systems using Inventory workspaces. In this quick start, you will:**
+        - Create an Inventory workspaces.
+        - Learn to add systems to the workspace.
+        - Learn how to remove systems from the workspace.
   
   tasks:
-    - title: Create a group
+    - title: Create a workspace
       description: |- 
 
-        Inventory Groups allow you to create groups, and select specific systems to add to these groups to better organize your Inventory. 
+        Inventory Workspaces allow you to create workspaces, and select specific systems to add to these workspaces to better organize your Inventory. 
         
-        **To create an Inventory group:**
+        **To create an Inventory workspace:**
 
-        1. Navigate to Inventory > **Groups** using the left navigation.
-        2. Click the **Create group** button.
-        3. In the Create group modal, enter a name for the group. 
+        1. Navigate to Inventory > **Workspaces** using the left navigation.
+        2. Click the **Create workspace** button.
+        3. In the Create workspace modal, enter a name for the workspace. 
         4. Click **Submit**.
 
       # optional - the task's Check your work module
@@ -44,43 +44,43 @@ spec:
         success: Shows a success message in the task header
         failed: Shows a failed message in the task header
 
-    - title: Add systems to a group
+    - title: Add systems to a workspace
       description: |-
 
-        There are two ways to add systems to a group; you can either do it from the Group's page or from the main Systems page.
+        There are two ways to add systems to a workspace; you can either do it from the Workspace's page or from the main Systems page.
 
-        **To add systems to a group from the Group's page:**
+        **To add systems to a workspace from the Workspace's page:**
 
-        1. From the main Groups page, click into a group of choice, to navigate to its page.
-        1. Click **Add systems** once on the group's page. This should open up a modal.
-        1. Select systems to add to your group using the checkboxes. You may filter through systems using the filter toolbar.
+        1. From the main Workspaces page, click into a workspace of choice, to navigate to its page.
+        1. Click **Add systems** once on the workspace's page. This should open up a modal.
+        1. Select systems to add to your workspace using the checkboxes. You may filter through systems using the filter toolbar.
         1. Click **Submit**.
 
-        To add systems to other groups, navigate back to the main Groups page, click into another group and repeat these steps.
+        To add systems to other workspaces, navigate back to the main Workspaces page, click into another workspace and repeat these steps.
 
-        **To add systems to a group from the main Systems page:**
+        **To add systems to a workspace from the main Systems page:**
 
         1. Navigate to Inventory > **Systems** using the left navigation.
   
-        1. Select systems you want to add to a group.
+        1. Select systems you want to add to a workspace.
             
-            - **To add individual systems to a group**, click on <i class="fas fa-ellipsis-v"></i> in the row level , then click **Add to group**.
+            - **To add individual systems to a workspace**, click on <i class="fas fa-ellipsis-v"></i> in the row level , then click **Add to workspace**.
         
-            - **To add multiple systems to a group**, select multiple systems using the table checkboxes, Click on <i class="fas fa-ellipsis-v"></i> in the toolbar, then click on **Add to group**.
+            - **To add multiple systems to a workspace**, select multiple systems using the table checkboxes, Click on <i class="fas fa-ellipsis-v"></i> in the toolbar, then click on **Add to workspace**.
   
-            **NOTE**:  Selecting systems that already belong to a group will disable the action. 
+            **NOTE**:  Selecting systems that already belong to a workspace will disable the action. 
   
-        1. In the add to group modal, you can either select an existing group, or create a new group (if you have permissions to do so).
+        1. In the add to workspace modal, you can either select an existing workspace, or create a new workspace (if you have permissions to do so).
     
-            - **To add to an existing group:**
-                1. Select a group from the dropdown menu.
+            - **To add to an existing workspace:**
+                1. Select a workspace from the dropdown menu.
                 1. click **Add** to submit.
               
-            - **To add to a new group:**
-                1. Click **Create a new group**.
-                1. Enter a group name.
+            - **To add to a new workspace:**
+                1. Click **Create a new workspace**.
+                1. Enter a workspace name.
                 1. Click **Create**.
-                1. Open the Select a group dropdown, and select your new group.
+                1. Open the Select a workspace dropdown, and select your new workspace.
                 1. Click **Add**.
 
       # optional - the task's Check your work module
@@ -93,19 +93,19 @@ spec:
         success: Shows a success message in the task header
         failed: Shows a failed message in the task header
       
-    - title: Remove systems from a group
+    - title: Remove systems from a workspace
       description: |- 
 
-        **To remove systems from a group from the Group's page:**
+        **To remove systems from a workspace from the Workspace's page:**
 
-        1. Navigate to Inventory > **Groups** using the left navigation.
-        1. Select systems you want to remove from a group.
+        1. Navigate to Inventory > **Workspaces** using the left navigation.
+        1. Select systems you want to remove from a workspace.
             
-            - **To remove individual systems from a group**, click on <i class="fas fa-ellipsis-v"></i> in the row level, then click **Remove from group**. 
+            - **To remove individual systems from a workspace**, click on <i class="fas fa-ellipsis-v"></i> in the row level, then click **Remove from workspace**. 
         
-            - **To remove multiple systems from a group**, select multiple systems using the table checkboxes, Click on <i class="fas fa-ellipsis-v"></i> in the toolbar, then click on **Remove from group**.
+            - **To remove multiple systems from a workspace**, select multiple systems using the table checkboxes, Click on <i class="fas fa-ellipsis-v"></i> in the toolbar, then click on **Remove from workspace**.
   
-            **NOTE**:  Selecting systems that already belong to a group will disable the action. 
+            **NOTE**:  Selecting systems that already belong to a workspace will disable the action. 
 
   
         1. A modal will open. Click **Remove**.
