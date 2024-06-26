@@ -4,7 +4,7 @@ metadata:
   # you can add additional metadata here
   instructional: true
 spec:
-  displayName: Managing user access with Inventory workspaces
+  displayName: Managing user access with Inventory Workspaces
   durationMinutes: 5
   # Optional type section, will display as a tile on the card
   type:
@@ -14,18 +14,18 @@ spec:
   icon: data:image/svg+xml;base64,PCEtLSBHZW5lcmF0ZWQgYnkgSWNvTW9vbi5pbyAtLT4KPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KPHRpdGxlPjwvdGl0bGU+CjxnIGlkPSJpY29tb29uLWlnbm9yZSI+CjwvZz4KPHBhdGggZD0iTTQ0OCA2NHY0MTZoLTMzNmMtMjYuNTEzIDAtNDgtMjEuNDktNDgtNDhzMjEuNDg3LTQ4IDQ4LTQ4aDMwNHYtMzg0aC0zMjBjLTM1LjE5OSAwLTY0IDI4LjgtNjQgNjR2Mzg0YzAgMzUuMiAyOC44MDEgNjQgNjQgNjRoMzg0di00NDhoLTMyeiI+PC9wYXRoPgo8cGF0aCBkPSJNMTEyLjAyOCA0MTZ2MGMtMC4wMDkgMC4wMDEtMC4wMTkgMC0wLjAyOCAwLTguODM2IDAtMTYgNy4xNjMtMTYgMTZzNy4xNjQgMTYgMTYgMTZjMC4wMDkgMCAwLjAxOS0wLjAwMSAwLjAyOC0wLjAwMXYwLjAwMWgzMDMuOTQ1di0zMmgtMzAzLjk0NXoiPjwvcGF0aD4KPC9zdmc+Cg==
   prerequisites:
     - Be an Organization Administrator or have the User Access Administrator role
-    - Have Inventory Workspaces created
+    - Have Inventory workspaces created
   description: |-
-    Learn how to manage access to your systems using Inventory workspaces
+    Learn how to manage access to your systems using Inventory Workspaces
   introduction: |-
-    **Welcome to the quick start for managing user access using Inventory workspaces. Use this feature to enhance security within your organization.**
+    **Welcome to the quick start for managing user access using Inventory Workspaces. Use this feature to enhance security within your organization.**
     
-    In this quick start, you will use the User Access application to configure access to different Inventory workspaces using custom role functionality and user access workspaces.
+    In this quick start, you will use the User Access application to configure access to different inventory workspaces using custom role functionality and user access groups.
     <br> <br>
-    **IMPORTANT NOTE:** By default, everyone in your organization will be assigned the "Inventory Hosts Administrator" role, and will have access to all systems, whether they are grouped or not. You will change these default permissions by completing the tasks in this quick Start.
+    **IMPORTANT NOTE:** By default, everyone in your organization will be assigned the "Inventory Hosts Administrator" role, and will have access to all systems, whether they are in a workspace or not. You will change these default permissions by completing the tasks in this quick Start.
 
     Use this quick start to assign user-specific access to:
-    - Certain workspaces of systems but not others, and/or
+    - Certain workspaces but not others, and/or
     - All ungrouped systems
     
   tasks:
@@ -46,7 +46,7 @@ spec:
             **The four inventory permissions include:** <br>
               1. **inventory:hosts:read** → Allows users to view systems (needed to view systems both inside and outside a workspace).
               1. **inventory:hosts:write** → Allows users to Rename or Delete systems.
-              1. **inventory:workspaces:read** → Allows users to view Workspaces, and general info (not including systems in it).
+              1. **inventory:workspaces:read** → Allows users to view workspaces, and general info (not including systems in it).
               1. **inventory:workspace:write** → Allows users to edit inventory workspace membership (add and remove systems from workspaces).
         1. Select inventory permissions as needed. Here are some possible variations: <br>
             - If you want to give a user full access to the workspace and its systems → select all 4 permissions.
@@ -62,9 +62,9 @@ spec:
         1. Once you’ve made your selections, click **Next**.
         1. Review your selections. Click **Submit**.
 
-        Repeat this process for every Inventory workspace or workspaces of users you want to give specific workspace access to.
+        Repeat this process for every inventory workspace or group of users you want to give specific workspace access to.
         
-        **NOTE:** If you want to give a workspace of system administrators all the same access to workspaces A, B, and C, you can create a single custom role and assign permissions to those 3 workspaces.
+        **NOTE:** If you want to give a group of system administrators all the same access to workspaces A, B, and C, you can create a single custom role and assign permissions to those 3 workspaces.
         However, if you want to give different users access to different workspaces, you will need to create multiple custom roles - one for each workspace you would like to give access to.
 
         
@@ -78,14 +78,14 @@ spec:
         success: Shows a success message in the task header
         failed: Shows a failed message in the task header
 
-    - title: Create a User Access workspace
+    - title: Create a User Access group
       description: |- 
 
-        To assign custom roles to a user or workspace of users, you must create a User Access workspace and place the corresponding role and users inside it. The users inside a workspace will be given the roles inside the workspace.
+        To assign custom roles to a user or group of users, you must create a User Access group. The users inside a group will be given the roles inside the group.
 
-        1. Click User Access > **Workspaces** in the left navigation.
-        1. Click **Create workspace**.
-        1. On Step 1 (Name and Description), input a workspace name.
+        1. Click User Access > **Groups** in the left navigation.
+        1. Click **Create group**.
+        1. On Step 1 (Name and Description), input a group name.
         1. Click **Next**.
         1. On Step 2 (Add roles), select the custom role you created in Step 1.
         1. Click **Next**.
@@ -105,20 +105,20 @@ spec:
         success: Shows a success message in the task header
         failed: Shows a failed message in the task header
 
-    - title: (Important) Remove "Inventory hosts admin” role from Default Access workspace
+    - title: (Important) Remove "Inventory hosts admin” role from Default Access group
       description: |- 
       
-        After completing the tasks this far, all users in your organization will still have full access to your inventory because they still have the “Inventory Hosts Administrator” role assigned to them. This allows them to view and edit all hosts. This role is given to them by the default “Default Access” workspace which assigns roles to your whole organization.
+        After completing the tasks this far, all users in your organization will still have full access to your inventory because they still have the “Inventory Hosts Administrator” role assigned to them. This allows them to view and edit all hosts. This role is given to them by the default “Default Access” group which assigns roles to your whole organization.
         <br><br>
         **To make sure your organization users' access is limited to the inventory workspaces/systems defined in your custom roles,  you must remove the “Inventory Hosts Administrator” role from your users.**
         <br><br>
         To do this: 
-        1. In the User Access > Workspaces page, click the **Default Access workspace**.
+        1. In the User Access > Groups page, click the **Default Access group**.
         1. Select the Inventory Hosts Administrator role.
         1. Click on the role’s row actions menu.
         1. Click **Remove**. A modal will pop up.
         1. Click **Remove role**.
-        1. If you have never edited the Default Access workspace before, a warning will appear. Check the **“I understand, and I want to continue”** box.
+        1. If you have never edited the Default Access group before, a warning will appear. Check the **“I understand, and I want to continue”** box.
         1. Click **Continue**.
 
       # optional - the task's Check your work module
@@ -131,13 +131,13 @@ spec:
         success: Shows a success message in the task header
         failed: Shows a failed message in the task header
 
-    - title: (Optional) Create a workspace to give back “Inventory Hosts Administrator” role to specific users
+    - title: (Optional) Create a group to give back “Inventory Hosts Administrator” role to specific users
       description: |- 
       
-        There may be users that you would still like to give full inventory access to. In this case, you will need to create another User Access workspace to assign the “Inventory Hosts Administrator” role back to those users.
+        There may be users that you would still like to give full inventory access to. In this case, you will need to create another User Access group to assign the “Inventory Hosts Administrator” role back to those users.
 
-        1. In the User Access > **Workspaces** page, click **Create workspace**.
-        1. On Step 1 (Name and Description), name your workspace.
+        1. In the User Access > **Groups** page, click **Create group**.
+        1. On Step 1 (Name and Description), name your group.
         1. Click **Next**.
         1. On Step 2 (Add roles), select the **Inventory Hosts Administrator** role.
         1. Click **Next**.
