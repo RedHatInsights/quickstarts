@@ -1,5 +1,5 @@
 kind: QuickStarts
-name: insights-inventory-groups
+name: insights-inventory-workspace
 tags: 
   - kind: bundle
     value: insights
