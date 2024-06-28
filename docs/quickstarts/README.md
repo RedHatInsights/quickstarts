@@ -21,6 +21,8 @@ Each tile on the Learning resources page in your bundle contains:
 
 ## Creating interactive quick starts for the Hybrid Cloud Console
 
+> NOTE: Try using the cli tool to bootstrap a new resource. Run `make create-resource` or `./make_item.sh` in your terminal window from the repository root.
+
 An _interactive quick start_ is a set of step-by-step instructions and tasks presented in a side panel embedded within a product’s UI. Quick starts can help users get started with a product by providing installation and setup guidance. Quick starts also allow users to quickly complete a task without the need to refer to external documentation.
 
 A quick start has multiple tasks, each task with multiple steps.
