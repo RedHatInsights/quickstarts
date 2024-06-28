@@ -9,6 +9,7 @@ help:
 	@echo  "infra           - start required infrastructure"
 	@echo "stop-infra      - stop required infrastructure"
 	@echo "audit 		- run grype audit on the docker image"
+	@echo "create-resource	- a cli tool to bootstrap a new learning resource"
 
 	
 test:
@@ -36,5 +37,5 @@ audit:
 	docker build . -t quickstarts:audit
 	grype quickstarts:audit --fail-on medium --only-fixed
 
-add-item:
+create-resource:
 	./make_item.sh
