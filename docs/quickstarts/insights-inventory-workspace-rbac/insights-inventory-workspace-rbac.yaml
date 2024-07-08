@@ -46,11 +46,11 @@ spec:
             **The four inventory permissions include:** <br>
               1. **inventory:hosts:read** → Allows users to view systems (needed to view systems both inside and outside a workspace).
               1. **inventory:hosts:write** → Allows users to Rename or Delete systems.
-              1. **inventory:workspaces:read** → Allows users to view workspaces, and general info (not including systems in it).
-              1. **inventory:workspace:write** → Allows users to edit workspace membership (add and remove systems from workspaces).
+              1. **inventory:groups:read** → Allows users to view workspaces, and general info (not including systems in it).
+              1. **inventory:groups:write** → Allows users to edit workspace membership (add and remove systems from workspaces).
         1. Select inventory permissions as needed. Here are some possible variations: <br>
             - If you want to give a user full access to the workspace and its systems → select all 4 permissions.
-            - If you want to give a user full access to the systems inside a workspace → but not workspace editing access, give them inventory:hosts:read, inventory:hosts:write, and inventory:workspace:read, but NOT inventory:workspace:write.
+            - If you want to give a user full access to the systems inside a workspace → but not workspace editing access, give them inventory:hosts:read, inventory:hosts:write, and inventory:groups:read, but NOT inventory:groups:write.
             - If you want to give a user full access to ungrouped systems → select all 4 permissions (ungrouped systems are considered a workspace).
         1. Click **Next**.
         1. On Step 3 (Define workspace access), for each permission, select workspaces you would like to apply the permissions to using the dropdown menus. <br>
