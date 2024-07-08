@@ -22,7 +22,7 @@ spec:
     Use this quick start to connect and run a pre-conversion analysis on CentOS Linux 7 systems with Red Hat Insights. The task generates a report that summarizes potential problems and suggests recommended solutions to help you convert to RHEL.
     <br>
     <br>
-    Before running the pre-conversion analysis, make sure you have completed all necessary [preparation steps.](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/converting_from_an_rpm-based_linux_distribution_to_rhel/converting-using-insights_converting-from-a-linux-distribution-to-rhe)  
+    Before running the pre-conversion analysis, make sure you have completed all necessary [preparation steps.](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/converting_from_an_rpm-based_linux_distribution_to_rhel/converting-using-insights_converting-from-a-linux-distribution-to-rhel)  
     <br>
     Additional information:
     
