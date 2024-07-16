@@ -84,6 +84,6 @@ spec:
 
     For additional information about tasks, [visit the documentation for remediating systems using tasks in Insights.](https://access.redhat.com/documentation/en-us/red_hat_insights/1-latest/html-single/assessing_and_remediating_system_issues_using_red_hat_insights_tasks/index)
 
-    For additional information about conversions, [visit the conversion documentation.](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html-single/converting_from_an_rpm-based_linux_distribution_to_rhel/index)
+    For additional information about conversions, [visit the conversion documentation.](https://docs.redhat.com/en/documentation/red_hat_insights/1-latest/html-single/converting_from_a_linux_distribution_to_rhel_using_the_convert2rhel_utility_in_red_hat_insights/index)
 
     If you need additional assistance, [open a support case](https://access.redhat.com/support). 
