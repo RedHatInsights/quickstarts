@@ -4,7 +4,7 @@ metadata:
   # you can add additional metadata here
   instructional: true
 spec:
-  displayName: Creating and managing Inventory Workspaces
+  displayName: Creating and managing Workspaces
   durationMinutes: 5
   # Optional type section, will display as a tile on the card
   type:
@@ -13,11 +13,11 @@ spec:
     color: grey
   icon: data:image/svg+xml;base64,PCEtLSBHZW5lcmF0ZWQgYnkgSWNvTW9vbi5pbyAtLT4KPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KPHRpdGxlPjwvdGl0bGU+CjxnIGlkPSJpY29tb29uLWlnbm9yZSI+CjwvZz4KPHBhdGggZD0iTTQ0OCA2NHY0MTZoLTMzNmMtMjYuNTEzIDAtNDgtMjEuNDktNDgtNDhzMjEuNDg3LTQ4IDQ4LTQ4aDMwNHYtMzg0aC0zMjBjLTM1LjE5OSAwLTY0IDI4LjgtNjQgNjR2Mzg0YzAgMzUuMiAyOC44MDEgNjQgNjQgNjRoMzg0di00NDhoLTMyeiI+PC9wYXRoPgo8cGF0aCBkPSJNMTEyLjAyOCA0MTZ2MGMtMC4wMDkgMC4wMDEtMC4wMTkgMC0wLjAyOCAwLTguODM2IDAtMTYgNy4xNjMtMTYgMTZzNy4xNjQgMTYgMTYgMTZjMC4wMDkgMCAwLjAxOS0wLjAwMSAwLjAyOC0wLjAwMXYwLjAwMWgzMDMuOTQ1di0zMmgtMzAzLjk0NXoiPjwvcGF0aD4KPC9zdmc+Cg==
   description: |-
-    Learn how to create an inventory workspace, add systems to it, and remove systems from it.
+    Learn how to create a workspace, add systems to it, and remove systems from it.
   introduction: |-
     
-        **Welcome to the quick start for creating and managing your systems using Inventory Workspaces. In this quick start, you will:**
-        - Create an Inventory workspace.
+        **Welcome to the quick start for creating and managing your systems using Workspaces. In this quick start, you will:**
+        - Create a workspace.
         - Learn to add systems to the workspace.
         - Learn how to remove systems from the workspace.
   
@@ -25,9 +25,9 @@ spec:
     - title: Create a workspace
       description: |- 
 
-        Inventory Workspaces allows you to create workspaces, and select specific systems to add to these workspaces to better organize your Inventory. 
+        Workspaces allows you to create workspaces, and select specific systems to add to these workspaces to better organize your Inventory. 
         
-        **To create an inventory workspace:**
+        **To create a workspace:**
 
         1. Navigate to Inventory > **Workspaces** using the left navigation.
         2. Click the **Create workspace** button.
