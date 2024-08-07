@@ -49,6 +49,9 @@ func findBundleQuickstarts(bundle string, pagination Pagination) ([]models.Quick
 
 	quickstartIdsQuery := database.DB.Model(&models.QuickstartTag{}).Select("quickstart_id").Where("tag_id = ?", tag.ID)
 
+	// The hard-coded 1000 here is the default priority of a quickstart within a bundle.
+	// This must remain in sync with the learning-resources frontent.
+
 	database.
 		DB.
 		Limit(pagination.Limit).
