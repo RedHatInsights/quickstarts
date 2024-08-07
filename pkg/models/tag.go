@@ -56,4 +56,5 @@ type Tag struct {
 type QuickstartTag struct {
 	QuickstartID uint `gorm:"primaryKey"`
 	TagID        uint `gorm:"primaryKey"`
+	Priority     *int `gorm:"default:null"`
 }

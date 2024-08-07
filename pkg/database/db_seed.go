@@ -16,8 +16,9 @@ import (
 )
 
 type TagTemplate struct {
-	Kind  string
-	Value string
+	Kind     string
+	Value    string
+	Priority *int
 }
 
 type MetadataTemplate struct {
@@ -315,12 +316,19 @@ func SeedTags() {
 					originalTag = newTag
 				}
 
-				// Create tags quickstarts associations
-				err := DB.Model(&originalTag).Association("Quickstarts").Append(&quickstart)
+				newLink := models.QuickstartTag{QuickstartID: quickstart.ID, TagID: originalTag.ID}
+
+				if newTag.Type == models.BundleTag {
+					newLink.Priority = tag.Priority
+				}
+
+				err := DB.Create(&newLink).Error
+
 				if err != nil {
 					fmt.Println("Failed creating tags associations", err.Error())
 				}
 
+				originalTag.Quickstarts = append(originalTag.Quickstarts, quickstart)
 				quickstart.Tags = append(quickstart.Tags, originalTag)
 
 				DB.Save(&quickstart)
