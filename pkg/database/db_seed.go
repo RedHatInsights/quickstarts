@@ -249,6 +249,15 @@ func clearOldContent() []models.FavoriteQuickstart {
 		DB.Unscoped().Delete(&h)
 	}
 
+	// Remove any left-over links between quickstarts and their tags.
+
+	var staleQuickStartLinks []models.QuickstartTag
+	DB.Model(&models.QuickstartTag{}).Find(&staleQuickStartLinks)
+
+	for _, link := range staleQuickStartLinks {
+		DB.Unscoped().Delete(&link)
+	}
+
 	return favorites
 }
 

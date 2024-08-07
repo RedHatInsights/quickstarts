@@ -45,6 +45,12 @@ func Init() {
 	if !DB.Migrator().HasTable(&models.FavoriteQuickstart{}) {
 		DB.Migrator().CreateTable(&models.FavoriteQuickstart{})
 	}
+	if (!DB.Migrator().HasTable(&models.QuickstartTag{})) {
+		DB.Migrator().CreateTable(&models.QuickstartTag{})
+	}
+
+	DB.SetupJoinTable(&models.Quickstart{}, "Tags", &models.QuickstartTag{})
+	DB.SetupJoinTable(&models.Tag{}, "Quickstarts", &models.QuickstartTag{})
 
 	if err != nil {
 		panic(fmt.Sprintf("failed to connect database: %s", err.Error()))
