@@ -22,7 +22,7 @@ spec:
       description: |-
         To add notification contacts to your cluster:
 
-        1. Go to **Clusters**.
+        1. Go to **Cluster List**.
         1. Click your cluster's name to view cluster details.
         1. Click the **Support** tab.
         1. Click the **Add notification contact** button.
