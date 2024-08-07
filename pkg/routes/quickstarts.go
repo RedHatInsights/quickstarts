@@ -60,7 +60,7 @@ func findBundleQuickstarts(bundle string, pagination Pagination) ([]models.Quick
 		Where("id IN (?)", quickstartIdsQuery).
 		Clauses(clause.OrderBy{
 			Expression: clause.Expr{
-				SQL:  "COALESCE((SELECT MAX(priority) FROM quickstart_tags WHERE quickstart_tags.tag_id = ? AND quickstart_tags.quickstart_id = quickstarts.id), 1000)",
+				SQL:  "COALESCE((SELECT priority FROM quickstart_tags WHERE quickstart_tags.tag_id = ? AND quickstart_tags.quickstart_id = quickstarts.id), 1000)",
 				Vars: []interface{}{tag.ID},
 			},
 		}).
