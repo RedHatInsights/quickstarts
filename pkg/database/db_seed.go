@@ -392,6 +392,8 @@ func SeedTags() {
 
 				if newTag.Type == models.BundleTag {
 					newLink.Priority = tag.Priority
+				} else if tag.Priority != nil {
+					logrus.Warningln("Unexpected priority for non-bundle tag in file", template.ContentPath)
 				}
 
 				err := DB.Create(&newLink).Error
