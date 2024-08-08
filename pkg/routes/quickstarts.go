@@ -9,6 +9,8 @@ import (
 	"github.com/RedHatInsights/quickstarts/pkg/database"
 	"github.com/RedHatInsights/quickstarts/pkg/models"
 	"github.com/go-chi/chi/v5"
+
+	"gorm.io/gorm/clause"
 )
 
 func FindQuickstartById(id int) (models.Quickstart, error) {
@@ -27,7 +29,68 @@ func findQuickstartsByName(name string, pagination Pagination) ([]models.Quickst
 	return quickStarts, nil
 }
 
+func findBundleQuickstarts(bundle string, pagination Pagination) ([]models.Quickstart, error) {
+	var quickstarts []models.Quickstart
+	var foundTags []models.Tag
+	var err error
+
+	// We have to handle the case of multiple tags here, despite it seeming like there can only be one.
+	// There is no database constraint that actually enforces uniqueness, so of course non-unique tags
+	// do happen. For instance, two tests create tags with type=bundle and value=rhel, and if we only
+	// look for one tag, then we may not find what we are actually looking for.
+
+	database.DB.Model(&models.Tag{}).Where("type = ? AND value = ?", models.BundleTag, bundle).Find(&foundTags)
+	err = database.DB.Error
+
+	if err != nil {
+		return quickstarts, err
+	}
+
+	if len(foundTags) == 0 {
+		return quickstarts, nil
+	}
+
+	var tagIDs []uint
+
+	for _, tag := range foundTags {
+		tagIDs = append(tagIDs, tag.ID)
+	}
+
+	quickstartIdsQuery := database.DB.Model(&models.QuickstartTag{}).Select("quickstart_id").Where("tag_id IN ?", tagIDs)
+
+	// The hard-coded 1000 here is the default priority of a quickstart within a bundle.
+	// This must remain in sync with the learning-resources frontend.
+
+	database.
+		DB.
+		Limit(pagination.Limit).
+		Offset(pagination.Offset).
+		Select("id, name, content").
+		Where("id IN (?)", quickstartIdsQuery).
+		Clauses(clause.OrderBy{
+			Expression: clause.Expr{
+				SQL:  "COALESCE((SELECT MIN(priority) FROM quickstart_tags WHERE quickstart_tags.tag_id IN ? AND quickstart_tags.quickstart_id = quickstarts.id AND quickstart_tags.priority IS NOT NULL), 1000)",
+				Vars: []interface{}{tagIDs},
+			},
+		}).
+		Find(&quickstarts)
+
+	err = database.DB.Error
+
+	if err != nil {
+		return quickstarts, err
+	}
+
+	return quickstarts, nil
+}
+
 func findQuickstartsByTags(tagTypes []models.TagType, tagValues []string, pagination Pagination) ([]models.Quickstart, error) {
+	// Special case of requesting exactly a single bundle: we will return results sorted by the quickstarts' priorities
+	// within that bundle.
+	if len(tagTypes) == 1 && tagTypes[0] == models.BundleTag && len(tagValues) == 1 {
+		return findBundleQuickstarts(tagValues[0], pagination)
+	}
+
 	var quickstarts []models.Quickstart
 	var tagsArray []models.Tag
 	database.DB.Where("type IN ? AND value IN ?", tagTypes, tagValues).Find(&tagsArray)

@@ -16,7 +16,8 @@ import (
 var quickstart models.Quickstart
 var taggedQuickstart models.Quickstart
 var settingsQuickstart models.Quickstart
-var rhelQuickstart models.Quickstart
+var rhelQuickstartA models.Quickstart
+var rhelQuickstartB models.Quickstart
 var rbacQuickstart models.Quickstart
 var rhelBudleTag models.Tag
 var settingsBundleTag models.Tag
@@ -77,6 +78,10 @@ func setupTags() {
 	database.DB.Create(&unusedTag)
 }
 
+func linkWithPriority(quickstart *models.Quickstart, tag *models.Tag, priority int) {
+	database.DB.Create(&models.QuickstartTag{QuickstartID: quickstart.ID, TagID: tag.ID, Priority: &priority})
+}
+
 func setupTaggedQuickstarts() {
 	taggedQuickstart.Name = "tagged-quickstart"
 	taggedQuickstart.Content = []byte(`{"tags": "all-tags"}`)
@@ -92,12 +97,17 @@ func setupTaggedQuickstarts() {
 	database.DB.Model(&settingsQuickstart).Association("Tags").Append(&settingsBundleTag)
 	database.DB.Save(&settingsQuickstart)
 
-	rhelQuickstart.Name = "rhel-quickstart"
-	rhelQuickstart.Content = []byte(`{"tags": "rhel"}`)
+	rhelQuickstartA.Name = "rhel-quickstart-a"
+	rhelQuickstartA.Content = []byte(`{"tags": "rhel"}`)
 
-	database.DB.Create(&rhelQuickstart)
-	database.DB.Model(&rhelQuickstart).Association("Tags").Append(&rhelBudleTag)
-	database.DB.Save(&rhelQuickstart)
+	database.DB.Create(&rhelQuickstartA)
+	linkWithPriority(&rhelQuickstartA, &rhelBudleTag, 1100)
+
+	rhelQuickstartB.Name = "rhel-quickstart-b"
+	rhelQuickstartB.Content = []byte(`{"tags": "rhel"}`)
+
+	database.DB.Create(&rhelQuickstartB)
+	linkWithPriority(&rhelQuickstartB, &rhelBudleTag, 900)
 
 	rbacQuickstart.Name = "rbac-quickstart"
 	rbacQuickstart.Content = []byte(`{"tags": "rbac"}`)
@@ -121,7 +131,7 @@ func TestGetAll(t *testing.T) {
 		var payload *responsePayload
 		json.NewDecoder(response.Body).Decode(&payload)
 		assert.Equal(t, 200, response.Code)
-		assert.Equal(t, 3, len(payload.Data))
+		assert.Equal(t, 4, len(payload.Data))
 	})
 
 	t.Run("should get all quickstarts with 'rhel' bundle tag", func(t *testing.T) {
@@ -132,7 +142,12 @@ func TestGetAll(t *testing.T) {
 		var payload *responsePayload
 		json.NewDecoder(response.Body).Decode(&payload)
 		assert.Equal(t, 200, response.Code)
-		assert.Equal(t, 2, len(payload.Data))
+		assert.Equal(t, 3, len(payload.Data))
+
+		// This is a request for a single bundle, so the quickstarts should be sorted in priority order.
+		assert.Equal(t, "rhel-quickstart-b", payload.Data[0].Name) // Priority 900
+		assert.Equal(t, "tagged-quickstart", payload.Data[1].Name) // Default priority (1000)
+		assert.Equal(t, "rhel-quickstart-a", payload.Data[2].Name) // Priority 1100
 	})
 
 	t.Run("should get all quickstarts with 'settings' bundle tag", func(t *testing.T) {
@@ -169,7 +184,7 @@ func TestGetAll(t *testing.T) {
 		var payload *responsePayload
 		json.NewDecoder(response.Body).Decode(&payload)
 		assert.Equal(t, 200, response.Code)
-		assert.Equal(t, 5, len(payload.Data))
+		assert.Equal(t, 6, len(payload.Data))
 	})
 
 	t.Run("should get quikctart by ID", func(t *testing.T) {
@@ -203,10 +218,10 @@ func TestGetAll(t *testing.T) {
 		var payload *responsePayload
 		json.NewDecoder(response.Body).Decode(&payload)
 		assert.Equal(t, 200, response.Code)
-		assert.Equal(t, 5, len(payload.Data))
+		assert.Equal(t, 6, len(payload.Data))
 	})
 
-	t.Run("should offset response by 2 and recover 3 records", func(t *testing.T) {
+	t.Run("should offset response by 2 and recover 4 records", func(t *testing.T) {
 		request, _ := http.NewRequest(http.MethodGet, "/?offset=2", nil)
 		response := httptest.NewRecorder()
 		router.ServeHTTP(response, request)
@@ -214,7 +229,7 @@ func TestGetAll(t *testing.T) {
 		var payload *responsePayload
 		json.NewDecoder(response.Body).Decode(&payload)
 		assert.Equal(t, 200, response.Code)
-		assert.Equal(t, 3, len(payload.Data))
+		assert.Equal(t, 4, len(payload.Data))
 	})
 
 	t.Run("should limit response by 2 offset response by 2 and recover 2 records", func(t *testing.T) {

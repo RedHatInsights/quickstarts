@@ -16,8 +16,9 @@ import (
 )
 
 type TagTemplate struct {
-	Kind  string
-	Value string
+	Kind     string
+	Value    string
+	Priority *int
 }
 
 type MetadataTemplate struct {
@@ -78,22 +79,94 @@ func findTags() []MetadataTemplate {
 	return MetadataTemplates
 }
 
-func seedQuickstart(t MetadataTemplate, defaultTag models.Tag) (models.Quickstart, error) {
-	yamlfile, err := ioutil.ReadFile(t.ContentPath)
+func makeQuickstartPrioritiesMap(tags []TagTemplate) (out map[string]int) {
+	out = make(map[string]int)
+
+	for _, tag := range tags {
+		if tag.Kind == string(models.BundleTag) && tag.Priority != nil {
+			out[tag.Value] = *tag.Priority
+		}
+	}
+
+	return out
+}
+
+func quickstartMetadata(quickstartData map[string]interface{}) (map[string]interface{}, error) {
+	rawMetadata, ok := quickstartData["metadata"]
+
+	if !ok {
+		return nil, fmt.Errorf("expected quickstart to contain metadata")
+	}
+
+	metadata, ok := rawMetadata.(map[string]interface{})
+
+	if !ok {
+		return nil, fmt.Errorf("expected quickstart metadata to be an object, got %v", metadata)
+	}
+
+	return metadata, nil
+}
+
+func quickstartName(metadata map[string]interface{}) (string, error) {
+	rawName, ok := metadata["name"]
+
+	if !ok {
+		return "", fmt.Errorf("expected quickstart metadata to contain a name")
+	}
+
+	name, ok := rawName.(string)
+
+	if !ok {
+		return "", fmt.Errorf("expected quickstart metadata.name to be a string got %v", name)
+	}
+
+	return name, nil
+}
+
+func seedQuickstart(t MetadataTemplate, defaultTag models.Tag, priorities map[string]int) (models.Quickstart, error) {
 	var newQuickstart models.Quickstart
 	var originalQuickstart models.Quickstart
+
+	yamlfile, err := ioutil.ReadFile(t.ContentPath)
+
 	if err != nil {
 		return newQuickstart, err
 	}
 
-	jsonContent, err := yaml.YAMLToJSON(yamlfile)
-	var data map[string]map[string]string
-	json.Unmarshal(jsonContent, &data)
-	name := data["metadata"]["name"]
+	var quickstartData map[string]interface{}
+	err = yaml.Unmarshal(yamlfile, &quickstartData)
+
+	if err != nil {
+		return newQuickstart, err
+	}
+
+	metadata, err := quickstartMetadata(quickstartData)
+
+	if err != nil {
+		return newQuickstart, err
+	}
+
+	name, err := quickstartName(metadata)
+
+	if err != nil {
+		return newQuickstart, err
+	}
+
+	if len(priorities) > 0 {
+		metadata["bundle_priority"] = priorities
+	}
+
+	jsonContent, err := json.Marshal(quickstartData)
+
+	if err != nil {
+		return newQuickstart, err
+	}
+
 	r := DB.Where("name = ?", name).Find(&originalQuickstart)
+
 	if r.Error != nil {
 		// check for DB error
-		return newQuickstart, err
+		return newQuickstart, r.Error
 	} else if r.RowsAffected == 0 {
 		// Create new quickstart
 		newQuickstart.Content = jsonContent
@@ -249,6 +322,15 @@ func clearOldContent() []models.FavoriteQuickstart {
 		DB.Unscoped().Delete(&h)
 	}
 
+	// Remove any left-over links between quickstarts and their tags.
+
+	var staleQuickStartLinks []models.QuickstartTag
+	DB.Model(&models.QuickstartTag{}).Find(&staleQuickStartLinks)
+
+	for _, link := range staleQuickStartLinks {
+		DB.Unscoped().Delete(&link)
+	}
+
 	return favorites
 }
 
@@ -284,7 +366,7 @@ func SeedTags() {
 			var quickstart models.Quickstart
 			var quickstartErr error
 			var tags []models.Tag
-			quickstart, quickstartErr = seedQuickstart(template, defaultTags["quickstart"])
+			quickstart, quickstartErr = seedQuickstart(template, defaultTags["quickstart"], makeQuickstartPrioritiesMap(template.Tags))
 			if quickstartErr != nil {
 				fmt.Println("Unable to seed quickstart: ", quickstartErr.Error(), template.ContentPath)
 			}
@@ -306,12 +388,21 @@ func SeedTags() {
 					originalTag = newTag
 				}
 
-				// Create tags quickstarts associations
-				err := DB.Model(&originalTag).Association("Quickstarts").Append(&quickstart)
+				newLink := models.QuickstartTag{QuickstartID: quickstart.ID, TagID: originalTag.ID}
+
+				if newTag.Type == models.BundleTag {
+					newLink.Priority = tag.Priority
+				} else if tag.Priority != nil {
+					logrus.Warningln("Unexpected priority for non-bundle tag in file", template.ContentPath)
+				}
+
+				err := DB.Create(&newLink).Error
+
 				if err != nil {
 					fmt.Println("Failed creating tags associations", err.Error())
 				}
 
+				originalTag.Quickstarts = append(originalTag.Quickstarts, quickstart)
 				quickstart.Tags = append(quickstart.Tags, originalTag)
 
 				DB.Save(&quickstart)

@@ -52,3 +52,9 @@ type Tag struct {
 	Quickstarts []Quickstart `gorm:"many2many:quickstart_tags;"`
 	HelpTopics  []HelpTopic  `gorm:"many2many:help_topic_tags;"`
 }
+
+type QuickstartTag struct {
+	QuickstartID uint `gorm:"primaryKey"`
+	TagID        uint `gorm:"primaryKey"`
+	Priority     *int `gorm:"default:null"`
+}
