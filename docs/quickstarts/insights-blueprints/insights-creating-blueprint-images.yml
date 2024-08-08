@@ -7,7 +7,7 @@ spec:
   displayName: Creating a blueprint
   durationMinutes: 10
   description: "Blueprints are a persistent definition for image
-    customizations.Complete this task to create your custom blueprints and images from them"
+    customizations.Complete these 3 tasks to create your custom blueprints and images from them"
   prerequisites:
     - A Red Hat user account to access the [Red Hat Hybrid Cloud
       Console](https://console.redhat.com/).
@@ -19,13 +19,13 @@ spec:
       description: >-
         To create your custom blueprint, complete this task.
 
-        1. Go to the **Images** wizard.
+        1. Go to the **Images** table.
 
         1. Click **Create blueprint** on the upper menu.
 
-        1. In the **Images** wizard, start to customize your blueprint. [Learn more about customization](https://access.redhat.com/documentation/en-us/red_hat_insights/1-latest/html/deploying_and_managing_rhel_systems_in_hybrid_clouds/index).
+        1. Use the Image Builder wizard to start to customize your blueprint. [Learn more about customization](https://access.redhat.com/documentation/en-us/red_hat_insights/1-latest/html/deploying_and_managing_rhel_systems_in_hybrid_clouds/index).
 
-        1. On the **Review** page, choose either **Save the blueprint** or **Save and build image**.
+        1. On the **Review** page, choose either **Save changes to blueprint** or **Save changes and build image**.
 
         A side panel is displayed containing the details of your sample application.
       review:
@@ -39,13 +39,13 @@ spec:
         success: You have created your blueprint!
         failed: Try the steps again.
 
-    - title: Creating a blueprint image
+    - title: Creating an image using a blueprint 
       description: |-
-        ### Create your image from the blueprints that you customized are a persistent definition for image customizations. Complete the following steps to create your custom image:
+        ### Use the image that you created as a persistent definition for image customizations. To create an image from the blueprint you just defined:
         
-        1. In the **Image** wizard, click the blueprint that you want.
+        1. In the **Blueprint** panel, click the blueprint that you want to use.
         
-        1. Click **Build images**.
+        1. Click **Build images** from the toolbar on the images table.
         
         Images starts to build a RHEL image for the architecture that you selected.
       review:
@@ -66,7 +66,7 @@ spec:
         1. From the navigation menu, select the section that you want to edit.
         1. Click **Save changes to blueprint** when you’re done.
 
-        You will be brought back to the Images dashboard.
+        You will be brought back to the Images table.
       review:
         instructions: |-
           #### Verify that the blueprint was updated:
