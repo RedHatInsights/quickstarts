@@ -34,7 +34,12 @@ func findBundleQuickstarts(bundle string, pagination Pagination) ([]models.Quick
 	var foundTags []models.Tag
 	var err error
 
-	database.DB.Model(&models.Tag{}).Where("type = ? AND value = ?", models.BundleTag, bundle).Limit(1).Find(&foundTags)
+	// We have to handle the case of multiple tags here, despite it seeming like there can only be one.
+	// There is no database constraint that actually enforces uniqueness, so of course non-unique tags
+	// do happen. For instance, two tests create tags with type=bundle and value=rhel, and if we only
+	// look for one tag, then we may not find what we are actually looking for.
+
+	database.DB.Model(&models.Tag{}).Where("type = ? AND value = ?", models.BundleTag, bundle).Find(&foundTags)
 	err = database.DB.Error
 
 	if err != nil {
@@ -45,9 +50,13 @@ func findBundleQuickstarts(bundle string, pagination Pagination) ([]models.Quick
 		return quickstarts, nil
 	}
 
-	tag := foundTags[0]
+	var tagIDs []uint
 
-	quickstartIdsQuery := database.DB.Model(&models.QuickstartTag{}).Select("quickstart_id").Where("tag_id = ?", tag.ID)
+	for _, tag := range foundTags {
+		tagIDs = append(tagIDs, tag.ID)
+	}
+
+	quickstartIdsQuery := database.DB.Model(&models.QuickstartTag{}).Select("quickstart_id").Where("tag_id IN ?", tagIDs)
 
 	// The hard-coded 1000 here is the default priority of a quickstart within a bundle.
 	// This must remain in sync with the learning-resources frontend.
@@ -60,8 +69,8 @@ func findBundleQuickstarts(bundle string, pagination Pagination) ([]models.Quick
 		Where("id IN (?)", quickstartIdsQuery).
 		Clauses(clause.OrderBy{
 			Expression: clause.Expr{
-				SQL:  "COALESCE((SELECT priority FROM quickstart_tags WHERE quickstart_tags.tag_id = ? AND quickstart_tags.quickstart_id = quickstarts.id), 1000)",
-				Vars: []interface{}{tag.ID},
+				SQL:  "COALESCE((SELECT MIN(priority) FROM quickstart_tags WHERE quickstart_tags.tag_id IN ? AND quickstart_tags.quickstart_id = quickstarts.id AND quickstart_tags.priority IS NOT NULL), 1000)",
+				Vars: []interface{}{tagIDs},
 			},
 		}).
 		Find(&quickstarts)
