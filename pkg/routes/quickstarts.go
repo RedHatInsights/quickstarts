@@ -76,17 +76,25 @@ func GetAllQuickstarts(w http.ResponseWriter, r *http.Request) {
 		applicationQueries = r.URL.Query()["application[]"]
 	}
 
+	contentQueries := r.URL.Query()["content"]
+	if len(contentQueries) == 0 {
+		contentQueries = r.URL.Query()["content[]"]
+	}
+
 	if len(bundleQueries) > 0 {
 		tagTypes = append(tagTypes, models.BundleTag)
 	}
 	if len(applicationQueries) > 0 {
 		tagTypes = append(tagTypes, models.ApplicationTag)
 	}
+	if len(contentQueries) > 0 {
+		tagTypes = append(tagTypes, models.ContentType)
+	}
 
 	pagination := r.Context().Value(PaginationContextKey).(Pagination)
 	var err error
 
-	quickStarts, err = findQuickstarts(tagTypes, append(bundleQueries, applicationQueries...), quickstartName, pagination)
+	quickStarts, err = findQuickstarts(tagTypes, append(bundleQueries, append(applicationQueries, contentQueries...)...), quickstartName, pagination)
 
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
