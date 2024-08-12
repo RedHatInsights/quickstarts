@@ -1,5 +1,7 @@
 kind: QuickStarts
 name: rosa-add-cluster-user
 tags:
-  - kind: bundle
-    value: openshift
+- kind: bundle
+  value: openshift
+- kind: content
+  value: quick start

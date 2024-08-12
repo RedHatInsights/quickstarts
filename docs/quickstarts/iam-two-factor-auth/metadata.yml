@@ -1,6 +1,7 @@
 kind: QuickStarts
 name: iam-two-factor-auth
 tags:
-  - kind: bundle
-    value: iam
-    
+- kind: bundle
+  value: iam
+- kind: content
+  value: documentation

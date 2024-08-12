@@ -1,6 +1,7 @@
----
 kind: QuickStarts
 name: edge-manage-systems
 tags:
 - kind: bundle
   value: edge
+- kind: content
+  value: documentation
