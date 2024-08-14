@@ -1,11 +1,13 @@
 kind: QuickStarts
 name: insights-inventory-workspace-rbac
 tags:
-  - kind: bundle
-    value: insights
-  - kind: application
-    value: inventory
-  - kind: bundle
-    value: iam
-  - kind: application
-    value: rbac
+- kind: bundle
+  value: insights
+- kind: application
+  value: inventory
+- kind: bundle
+  value: iam
+- kind: application
+  value: rbac
+- kind: content
+  value: quick start
