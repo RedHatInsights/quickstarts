@@ -16,8 +16,8 @@ import (
 )
 
 type TagTemplate struct {
-	Kind  string
-	Value string
+	Kind  string `json:"kind"`
+	Value string `json:"value"`
 }
 
 type MetadataTemplate struct {
@@ -78,15 +78,31 @@ func findTags() []MetadataTemplate {
 	return MetadataTemplates
 }
 
-func seedQuickstart(t MetadataTemplate, defaultTag models.Tag) (models.Quickstart, error) {
+func addTags(t MetadataTemplate) ([]byte, error) {
 	yamlfile, err := ioutil.ReadFile(t.ContentPath)
-	var newQuickstart models.Quickstart
-	var originalQuickstart models.Quickstart
 	if err != nil {
-		return newQuickstart, err
+		return []byte{}, err
 	}
 
 	jsonContent, err := yaml.YAMLToJSON(yamlfile)
+	if err != nil {
+		return []byte{}, err
+	}
+
+	var data map[string]map[string]interface{}
+	json.Unmarshal(jsonContent, &data)
+	data["metadata"]["tags"] = t.Tags
+
+	jsonContent, err = json.Marshal(data)
+
+	return jsonContent, err
+}
+
+func seedQuickstart(t MetadataTemplate, defaultTag models.Tag) (models.Quickstart, error) {
+	var newQuickstart models.Quickstart
+	var originalQuickstart models.Quickstart
+
+	jsonContent, err := addTags(t)
 	var data map[string]map[string]string
 	json.Unmarshal(jsonContent, &data)
 	name := data["metadata"]["name"]

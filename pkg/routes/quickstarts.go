@@ -153,10 +153,19 @@ func QuickstartEntityContext(next http.Handler) http.Handler {
 	})
 }
 
+func GetFilters(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	resp := make(map[string]models.FilterData)
+	resp["data"] = models.FrontendFilters
+	json.NewEncoder(w).Encode(resp)
+}
+
 // MakeQuickstartsRouter creates a router handles for /quickstarts group
 func MakeQuickstartsRouter(sub chi.Router) {
 	sub.Use(PaginationContext)
 	sub.Get("/", GetAllQuickstarts)
+	sub.Get("/filters", GetFilters)
 	sub.Route("/{id}", func(r chi.Router) {
 		r.Use(QuickstartEntityContext)
 		r.Get("/", GetQuickstartById)
