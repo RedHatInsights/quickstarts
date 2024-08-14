@@ -13,6 +13,7 @@ const (
 	ApplicationTag TagType = "application"
 	ContentKind    TagType = "kind"
 	TopicTag       TagType = "topic"
+	ContentType    TagType = "content"
 )
 
 func (t *TagType) Scan(value interface{}) error {
@@ -28,7 +29,7 @@ func (t *TagType) Scan(value interface{}) error {
 	tt = TagType(st) //convert type from string to TagType
 
 	switch tt {
-	case BundleTag, ApplicationTag, ContentKind, TopicTag: //valid case
+	case BundleTag, ApplicationTag, ContentKind, TopicTag, ContentType: //valid case
 		*t = tt
 		return nil
 	}
@@ -38,7 +39,7 @@ func (t *TagType) Scan(value interface{}) error {
 func (t TagType) Value() (driver.Value, error) {
 	// only allow enum values
 	switch t {
-	case BundleTag, ApplicationTag, ContentKind, TopicTag:
+	case BundleTag, ApplicationTag, ContentKind, TopicTag, ContentType:
 		return string(t), nil
 	}
 	return nil, errors.New("invalid tag value")

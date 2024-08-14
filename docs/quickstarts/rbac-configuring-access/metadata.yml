@@ -1,8 +1,9 @@
-kind: QuickStarts # kind must always be "QuickStarts"
+kind: QuickStarts
 name: rbac-configuring-access
-tags: # If you want to use more granular filtering add tags to the quickstart
-  - kind: bundle
-    value: settings
-  - kind: bundle
-    value: iam
-    
+tags:
+- kind: bundle
+  value: settings
+- kind: bundle
+  value: iam
+- kind: content
+  value: documentation

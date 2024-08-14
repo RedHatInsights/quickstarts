@@ -25,7 +25,7 @@ spec:
   tasks:
     - title: Add a machine pool to your ROSA cluster
       description: |-
-        1. Go to **Clusters**.
+        1. Go to **Cluster List**.
         1. Click your cluster's name.
         1. Click the **Machine pools** tab.
         1. Click the **Add machine pool** button.

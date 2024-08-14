@@ -1,6 +1,7 @@
-kind: QuickStarts # kind must always be "QuickStarts"
+kind: QuickStarts
 name: insights-configuring-notifications-integrations
-tags: # If you want to use more granular filtering add tags to the quickstart
-  - kind: bundle
-    value: insights
-    
+tags:
+- kind: bundle
+  value: insights
+- kind: content
+  value: documentation

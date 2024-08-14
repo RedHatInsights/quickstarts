@@ -1,6 +1,7 @@
 kind: QuickStarts
 name: rhel-registration-getting-started
 tags:
-  - kind: bundle
-    value: subscriptions
-    
+- kind: bundle
+  value: subscriptions
+- kind: content
+  value: documentation
