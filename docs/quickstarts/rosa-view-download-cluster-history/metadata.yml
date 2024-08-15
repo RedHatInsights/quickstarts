@@ -1,0 +1,5 @@
+kind: QuickStarts
+name: rosa-view-download-cluster-history
+tags:
+  - kind: bundle
+    value: openshift
