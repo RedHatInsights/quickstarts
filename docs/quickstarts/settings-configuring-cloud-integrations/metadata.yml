@@ -5,3 +5,8 @@ tags:
   value: settings
 - kind: content
   value: documentation
+- kind: product-families
+  value: settings
+- kind: use-case
+  value: system-configuration
+

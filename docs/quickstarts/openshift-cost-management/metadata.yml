@@ -5,3 +5,10 @@ tags:
   value: openshift
 - kind: content
   value: documentation
+- kind: product-families
+  value: openshift
+- kind: use-case
+  value: containers
+- kind: use-case
+  value: spend-management
+   

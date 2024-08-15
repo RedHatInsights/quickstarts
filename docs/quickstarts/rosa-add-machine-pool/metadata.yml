@@ -5,3 +5,9 @@ tags:
   value: openshift
 - kind: content
   value: quick start
+- kind: product-families
+  value: openshift
+- kind: use-case
+  value: clusters
+- kind: use-case
+  value: infrastructure

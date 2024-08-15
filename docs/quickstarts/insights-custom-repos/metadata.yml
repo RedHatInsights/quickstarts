@@ -7,3 +7,9 @@ tags:
   value: imageBuilder
 - kind: content
   value: quick start
+- kind: product-families
+  value: rhel
+- kind: use-case
+  value: deploy
+- kind: use-case
+  value: images

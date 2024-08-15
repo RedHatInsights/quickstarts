@@ -5,3 +5,10 @@ tags:
   value: openshift
 - kind: content
   value: learning path
+- kind: product-families
+  value: openshift
+- kind: use-case
+  value: clusters
+- kind: use-case
+  value: deploy
+

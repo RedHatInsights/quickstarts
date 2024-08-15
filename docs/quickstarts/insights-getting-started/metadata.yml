@@ -5,3 +5,9 @@ tags:
   value: insights
 - kind: content
   value: documentation
+- kind: product-families
+  value: rhel
+- kind: use-case
+  value: infrastructure
+- kind: use-case
+  value: system-configuration

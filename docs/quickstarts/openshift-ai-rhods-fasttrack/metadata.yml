@@ -4,4 +4,4 @@ tags:
 - kind: bundle
   value: application-services
 - kind: content
-  value: other
+  value: otherResource

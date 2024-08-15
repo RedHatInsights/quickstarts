@@ -5,3 +5,7 @@ tags:
   value: insights
 - kind: content
   value: documentation
+- kind: product-families
+  value: subscriptions-services
+- kind: use-case
+  value: observability

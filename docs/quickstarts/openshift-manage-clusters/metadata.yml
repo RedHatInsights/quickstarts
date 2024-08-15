@@ -5,3 +5,11 @@ tags:
   value: openshift
 - kind: content
   value: documentation
+- kind: product-families
+  value: openshift
+- kind: use-case
+  value: identity-and-access
+- kind: use-case
+  value: clusters
+- kind: use-case
+  value: system-configuration
