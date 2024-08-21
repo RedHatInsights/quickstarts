@@ -54,7 +54,7 @@ var (
 					Data: []FilterItem{
 						{Id: "documentation", CardLabel: "Documentation", FilterLabel: "Documentation", Color: "orange"},
 						{Id: "learningPath", CardLabel: "Learning path", FilterLabel: "Learning paths", Color: "cyan"},
-						{Id: "quickstart", CardLabel: "Quick start", FilterLabel: "Quick start", Color: "grey"},
+						{Id: "quickstart", CardLabel: "Quick start", FilterLabel: "Quick start", Color: "green"},
 						{Id: "otherResource", CardLabel: "Other", FilterLabel: "Other content types", Color: "purple"},
 					},
 				}},

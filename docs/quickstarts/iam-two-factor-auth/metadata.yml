@@ -5,3 +5,9 @@ tags:
   value: iam
 - kind: content
   value: documentation
+- kind: product-families
+  value: iam
+- kind: use-case
+  value: identity-and-access
+- kind: use-case
+  value: security

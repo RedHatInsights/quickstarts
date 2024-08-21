@@ -7,3 +7,7 @@ tags:
   value: settings
 - kind: content
   value: documentation
+- kind: product-families
+  value: openshift
+- kind: use-case
+  value: clusters

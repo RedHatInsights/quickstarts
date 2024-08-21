@@ -5,3 +5,7 @@ tags:
   value: application-services
 - kind: content
   value: documentation
+- kind: use-case
+  value: data-services
+- kind: use-case
+  value: security

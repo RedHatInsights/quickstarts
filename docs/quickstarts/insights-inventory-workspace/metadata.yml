@@ -11,3 +11,11 @@ tags:
   value: user access
 - kind: content
   value: quick start
+- kind: product-families
+  value: rhel
+- kind: product-families
+  value: iam
+- kind: use-case
+  value: identity-and-access
+- kind: use-case
+  value: system-configuration

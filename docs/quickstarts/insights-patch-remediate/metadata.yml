@@ -5,3 +5,13 @@ tags:
   value: insights
 - kind: content
   value: documentation
+- kind: product-families
+  value: rhel
+- kind: product-families
+  value: ansible
+- kind: use-case
+  value: automation
+- kind: use-case
+  value: observability
+- kind: use-case
+  value: security

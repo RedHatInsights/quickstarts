@@ -5,3 +5,9 @@ tags:
   value: subscriptions
 - kind: content
   value: documentation
+- kind: product-families
+  value: subscriptions-services
+- kind: product-families
+  value: rhel  
+- kind: use-case
+  value: system-configuration

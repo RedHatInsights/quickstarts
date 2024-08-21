@@ -4,4 +4,8 @@ tags:
 - kind: bundle
   value: ansible
 - kind: content
-  value: documentation
+  value: otherResource
+- kind: product-families
+  value: ansible
+- kind: use-case
+  value: automation

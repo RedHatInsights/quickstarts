@@ -5,3 +5,12 @@ tags:
   value: settings
 - kind: content
   value: documentation
+- kind: product-families
+  value: settings
+- kind: product-families
+  value: rhel  
+- kind: use-case
+  value: automation
+- kind: use-case
+  value: system-configuration
+

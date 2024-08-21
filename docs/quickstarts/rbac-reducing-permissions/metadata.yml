@@ -7,3 +7,13 @@ tags:
   value: my-user-access
 - kind: content
   value: quick start
+- kind: product-families
+  value: iam
+- kind: product-families
+  value: settings  
+- kind: use-case
+  value: identity-and-access
+- kind: use-case
+  value: security
+- kind: use-case
+  value: system-configuration

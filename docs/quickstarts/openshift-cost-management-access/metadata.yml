@@ -5,3 +5,13 @@ tags:
   value: openshift
 - kind: content
   value: documentation
+- kind: product-families
+  value: openshift
+- kind: product-families
+  value: subscriptions-services
+- kind: use-case
+  value: identity-and-access
+- kind: use-case
+  value: spend-management
+- kind: use-case
+  value: system-configuration
