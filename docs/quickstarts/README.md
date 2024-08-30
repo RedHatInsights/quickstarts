@@ -27,7 +27,7 @@ An _interactive quick start_ is a set of step-by-step instructions and tasks pre
 
 A quick start has multiple tasks, each task with multiple steps.
 
-Quick starts should be brief and simple to follow. Red Hat recommends quick starts take no longer than 10 minutes for a user to complete, and have a maximum of 5 tasks (2-7 steps per task is a good length). You can find more detailed guidelines below under _Best practices for creating quick starts_. 
+Quick starts should be brief and simple to follow. Red Hat recommends quick starts take no longer than 10 minutes for a user to complete, and have a maximum of 5 tasks (2-7 steps per task is a good length). You can find more detailed guidelines in [Best practices for writing quick starts](https://www.uxd-hub.com/entries/resource/best-practices-for-writing-quick-starts).
 
 **IMPORTANT**:
 The quick starts content in this repository is not validated by the content team. We are working on defining a formal process. Please be aware that you might be required to update or change the content.
@@ -206,9 +206,9 @@ When your quick start is live in the Hybrid Cloud Console, close your original d
   * 2-7 steps per task (maximum 10 steps)
 * Each step should have a “Check your work” section.
 
-For more best practices and tips, see: 
+For best practices, tips, and guidelines for creating quick start content see: 
 
-* [Creating quick start tutorials](https://docs.openshift.com/container-platform/4.14/web_console/creating-quick-start-tutorials.html) in the OpenShift documentation 
+* [Best practices for writing quick starts](https://www.uxd-hub.com/entries/resource/best-practices-for-writing-quick-starts) on UXD Hub
 * [Design guidelines for quick starts](https://www.patternfly.org/extensions/quick-starts/design-guidelines/) in the PatternFly documentation
 
 ## Assigning your quick start to a console location using the `bundle` tag 
