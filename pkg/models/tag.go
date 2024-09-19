@@ -18,6 +18,21 @@ const (
 	UseCase         TagType = "use-case"
 )
 
+func (t TagType) GetAllTags() []TagType {
+	return []TagType{BundleTag, ApplicationTag, ContentKind, TopicTag, ContentType, ProductFamilies, UseCase}
+}
+
+func (t TagType) IsValidTag() bool {
+
+	tags := t.GetAllTags()
+	for i := range tags {
+		if t == tags[i] {
+			return true
+		}
+	}
+	return false
+}
+
 func (t *TagType) Scan(value interface{}) error {
 	var tt TagType
 	if value == nil {
@@ -30,8 +45,7 @@ func (t *TagType) Scan(value interface{}) error {
 	}
 	tt = TagType(st) //convert type from string to TagType
 
-	switch tt {
-	case BundleTag, ApplicationTag, ContentKind, TopicTag, ContentType, ProductFamilies, UseCase: //valid case
+	if tt.IsValidTag() {
 		*t = tt
 		return nil
 	}
@@ -40,8 +54,7 @@ func (t *TagType) Scan(value interface{}) error {
 
 func (t TagType) Value() (driver.Value, error) {
 	// only allow enum values
-	switch t {
-	case BundleTag, ApplicationTag, ContentKind, TopicTag, ContentType, ProductFamilies, UseCase:
+	if t.IsValidTag() {
 		return string(t), nil
 	}
 	return nil, errors.New("invalid tag value")
