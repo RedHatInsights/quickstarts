@@ -13,5 +13,5 @@ spec:
   icon: ~
   description: Group, connect, and manage edge systems after registering them with the edge management console.
   link:
-    href: https://access.redhat.com/documentation/en-us/edge_management/2022/html-single/working_with_systems_in_the_edge_management_application/index
+    href: https://docs.redhat.com/en/documentation/edge_management/1-latest/html/working_with_systems_in_the_insights_inventory_application/index
     text: View documentation
