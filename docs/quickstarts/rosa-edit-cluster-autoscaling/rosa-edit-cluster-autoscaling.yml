@@ -1,0 +1,71 @@
+
+metadata:
+  name: rosa-edit-cluster-autoscaling
+  instructional: true
+spec:
+  displayName: Configure autoscaling for your ROSA cluster
+  durationMinutes: 10
+  type:
+    text: Quick start
+    color: green
+  icon: data:image/svg+xml;base64,PCEtLSBHZW5lcmF0ZWQgYnkgSWNvTW9vbi5pbyAtLT4KPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KPHRpdGxlPjwvdGl0bGU+CjxnIGlkPSJpY29tb29uLWlnbm9yZSI+CjwvZz4KPHBhdGggZD0iTTQ0OCA2NHY0MTZoLTMzNmMtMjYuNTEzIDAtNDgtMjEuNDktNDgtNDhzMjEuNDg3LTQ4IDQ4LTQ4aDMwNHYtMzg0aC0zMjBjLTM1LjE5OSAwLTY0IDI4LjgtNjQgNjR2Mzg0YzAgMzUuMiAyOC44MDEgNjQgNjQgNjRoMzg0di00NDhoLTMyeiI+PC9wYXRoPgo8cGF0aCBkPSJNMTEyLjAyOCA0MTZ2MGMtMC4wMDkgMC4wMDEtMC4wMTkgMC0wLjAyOCAwLTguODM2IDAtMTYgNy4xNjMtMTYgMTZzNy4xNjQgMTYgMTYgMTZjMC4wMDkgMCAwLjAxOS0wLjAwMSAwLjAyOC0wLjAwMXYwLjAwMWgzMDMuOTQ1di0zMmgtMzAzLjk0NXoiPjwvcGF0aD4KPC9zdmc+Cg==
+  prerequisites:
+    - You must have access to a ROSA cluster.
+  description: |-
+    Enable and edit autoscaling for your ROSA cluster.
+  introduction: |-
+    Using OpenShift Cluster Manager, you can enable and customize cluster autoscaling for your Red Hat OpenShift on Amazon Web Services (ROSA) cluster.
+
+    The cluster autoscaler adjusts the size of a ROSA cluster to meet your current deployment needs, but does not increase the cluster resources beyond the limits that you specify. It also increases the size of the cluster when there are pods that fail to schedule on any of the current worker nodes due to insufficient resources or when another node is necessary to meet deployment needs.
+
+    In this quick start, you'll learn how to enable and edit cluster autoscaling for your ROSA cluster.
+
+  tasks:
+    - title: Enable cluster autoscaling
+      description: |-
+        To enable cluster autoscaling:
+
+        1. Go to **Cluster List**.
+        1. Click your cluster's name.
+        1. Click the **Machine pools** tab.
+        1. Click the options icon (⋮), then click **Edit**.
+        1. In the **Edit machine pool** window, check the **Enable autoscaling** box.
+        1. Click **Save**.
+
+      # optional - the task's Check your work module
+      review:
+        instructions: |-
+          - Does your cluster say **Enabled** under **Autoscaling** in the **Machine pools** tab?
+        failedTaskHelp: Try following the steps again.
+      # optional - the task's success and failure messages
+      summary:
+        success: Shows a success message in the task header
+        failed: Shows a failed message in the task header
+
+    - title: Edit cluster autoscaling
+      description: |-
+        After you've enabled cluster autoscaling, you can fine-tune the options. To edit the options:
+
+        1. On the **Machine pools** tab of your cluster, click **Edit cluster autoscaling**.
+        1. If not already active, click the **Autoscale cluster** toggle. If you've already enabled it in the previous step, this should be active already.
+        1. All autoscaling options are filled in with defaults. [Learn more about what each option does.](https://docs.redhat.com/en/documentation/red_hat_openshift_service_on_aws/4/html/cluster_administration/rosa-cluster-autoscaling#rosa-cluster-autoscale-settings_rosa-cluster-autoscaling)
+
+            a. If you changed something and didn't like the change or changed something by accident, you can click **Revert all to defaults** to change your settings back.
+
+        1. After you're done making any desired changes, click **Close**.
+
+      # optional - the task's Check your work module
+      review:
+        instructions: |-
+          - Did the window close without errors? (If you input an unsupported value, the window will alert you and tell you the supported range.)
+        failedTaskHelp: Input a supported range and try again.
+      # optional - the task's success and failure messages
+      summary:
+        success: Shows a success message in the task header
+        failed: Shows a failed message in the task header
+  conclusion: |-
+        Congratulations, you've configured cluster autoscaling!
+
+        After completing this quick start, you've learned how to enable and edit cluster autoscaling. If you create other machine pools, you can use this quick start to configure cluster autoscaling to those as well.
+
+  # you can link to the next quick start(s) here

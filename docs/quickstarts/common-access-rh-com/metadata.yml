@@ -1,9 +1,13 @@
 kind: QuickStarts
 name: common-access-rh-com
-# this should probably be everywhere
 tags:
-  - kind: bundle
-    value: iam
-  - kind: bundle
-    value: settings
-    
+- kind: bundle
+  value: iam
+- kind: bundle
+  value: settings
+- kind: content
+  value: documentation
+- kind: product-families
+  value: openshift
+- kind: use-case
+  value: clusters

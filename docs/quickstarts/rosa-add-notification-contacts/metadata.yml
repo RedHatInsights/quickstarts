@@ -1,5 +1,17 @@
 kind: QuickStarts
 name: rosa-add-notification-contacts
 tags:
-  - kind: bundle
-    value: openshift
+- kind: bundle
+  value: openshift
+- kind: content
+  value: quick start
+- kind: product-families
+  value: openshift
+- kind: product-families
+  value: settings  
+- kind: use-case
+  value: identity-and-access
+- kind: use-case
+  value: clusters 
+- kind: use-case
+  value: infrastructure

@@ -1,6 +1,16 @@
-kind: QuickStarts # kind must always be "QuickStarts"
+kind: QuickStarts
 name: insights-tasks-pre-conversion
-tags: # If you want to use more granular filtering add tags to the quickstart
-  - kind: bundle
-    value: insights
-    
+tags:
+- kind: bundle
+  value: insights
+- kind: content
+  value: quick start
+- kind: product-families
+  value: rhel
+- kind: use-case
+  value: containers
+- kind: use-case
+  value: infrastructure
+- kind: use-case
+  value: observability
+  

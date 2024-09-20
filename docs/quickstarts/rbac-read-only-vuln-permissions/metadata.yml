@@ -1,9 +1,19 @@
-kind: QuickStarts # kind must always be "QuickStarts"
+kind: QuickStarts
 name: rbac-read-only-vuln-permissions
-tags: # If you want to use more granular filtering add tags to the quickstart
-  - kind: bundle # use bundle tag for a topic to be accessed from a whole bundle eg. console.redhat.com/insights
-    value: iam
-  - kind: application # use application tag for quickstart used by specific application
-    value: my-user-access
-
-    
+tags:
+- kind: bundle
+  value: iam
+- kind: application
+  value: my-user-access
+- kind: content
+  value: quick start
+- kind: product-families
+  value: iam
+- kind: product-families
+  value: settings  
+- kind: use-case
+  value: identity-and-access
+- kind: use-case
+  value: security
+- kind: use-case
+  value: system-configuration

@@ -2,15 +2,18 @@
 version: '3.8'
 services:
   quickstarts-db:
-    image: postgres:14.1-alpine
+    image: quay.io/sclorg/postgresql-15-c9s:latest
     restart: always
     environment:
-    - POSTGRES_USER=quickstarts
-    - POSTGRES_PASSWORD=quickstarts
+    - POSTGRESQL_USER=quickstarts
+    - POSTGRESQL_PASSWORD=quickstarts
+    - POSTGRESQL_DATABASE=quickstarts
     ports:
     - "5432:5432"
     volumes:
     - quickstarts-db:/var/lib/postgresql/data
+    expose:
+    - "5432"
 volumes:
   quickstarts-db:
     driver: local

@@ -1,6 +1,11 @@
 kind: QuickStarts
 name: subs-view-inventory
 tags:
-  - kind: bundle
-    value: subscriptions
-    
+- kind: bundle
+  value: subscriptions
+- kind: content
+  value: documentation
+- kind: product-families
+  value: subscriptions-services
+- kind: use-case
+  value: spend-management
