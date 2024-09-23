@@ -4,7 +4,7 @@ tags:
 - kind: bundle
   value: openshift
 - kind: content
-  value: quick start
+  value: quickstart
 - kind: product-families
   value: openshift
 - kind: use-case

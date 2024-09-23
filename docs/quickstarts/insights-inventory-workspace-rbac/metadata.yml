@@ -10,7 +10,7 @@ tags:
 - kind: application
   value: rbac
 - kind: content
-  value: quick start
+  value: quickstart
 - kind: product-families
   value: rhel
 - kind: product-families

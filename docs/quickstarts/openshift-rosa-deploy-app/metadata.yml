@@ -4,7 +4,7 @@ tags:
 - kind: bundle
   value: openshift
 - kind: content
-  value: learning path
+  value: learningPath
 - kind: product-families
   value: openshift
 - kind: use-case

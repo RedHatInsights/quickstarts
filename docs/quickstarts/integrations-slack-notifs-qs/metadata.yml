@@ -4,7 +4,7 @@ tags:
 - kind: bundle
   value: settings
 - kind: content
-  value: quick start
+  value: quickstart
 - kind: product-families
   value: settings
 - kind: use-case
