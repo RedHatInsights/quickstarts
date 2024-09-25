@@ -6,7 +6,7 @@ tags:
 - kind: application
   value: imageBuilder
 - kind: content
-  value: quick start
+  value: quickstart
 - kind: product-families
   value: rhel
 - kind: use-case

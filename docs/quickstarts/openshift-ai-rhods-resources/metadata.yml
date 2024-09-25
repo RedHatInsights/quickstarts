@@ -4,4 +4,4 @@ tags:
 - kind: bundle
   value: application-services
 - kind: content
-  value: learning path
+  value: learningPath
