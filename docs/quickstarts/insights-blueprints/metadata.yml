@@ -4,7 +4,7 @@ tags:
 - kind: bundle
   value: insights
 - kind: content
-  value: learning path
+  value: learningPath
 - kind: product-families
   value: rhel
 - kind: use-case
