@@ -17,17 +17,18 @@ func FindQuickstartById(id int) (models.Quickstart, error) {
 	return quickStart, err
 }
 
-func findQuickstartsByName(name string, pagination Pagination) ([]models.Quickstart, error) {
+func findQuickstartsByDisplayName(displayName string, pagination Pagination) ([]models.Quickstart, error) {
 	var quickStarts []models.Quickstart
-	err := database.DB.Limit(pagination.Limit).Offset(pagination.Offset).Where("name = ?", name).Find(&quickStarts).Error
-	if err != nil {
-		return nil, err
-	}
+	err := database.DB.
+		Limit(pagination.Limit).
+		Offset(pagination.Offset).
+		Where("content->'spec'->>'displayName' ILIKE ?", "%"+displayName+"%").
+		Find(&quickStarts).Error
 
-	return quickStarts, nil
+	return quickStarts, err
 }
 
-func findQuickstartsByTags(tagTypes []models.TagType, tagValues [][]string, pagination Pagination) ([]models.Quickstart, error) {
+func findQuickstartsByTagsAndDisplayName(tagTypes []models.TagType, tagValues [][]string, displayName string, pagination Pagination) ([]models.Quickstart, error) {
 	var quickstarts []models.Quickstart
 
 	// Main query
@@ -47,24 +48,26 @@ func findQuickstartsByTags(tagTypes []models.TagType, tagValues [][]string, pagi
 		query = query.Where("quickstarts.id IN (?)", subquery)
 	}
 
+	if displayName != "" {
+		query = query.Where("content->'spec'->>'displayName' ILIKE ?", "%"+displayName+"%")
+	}
+
 	// Add pagination
 	err := query.Limit(pagination.Limit).Offset(pagination.Offset).Find(&quickstarts).Error
 
-	if err != nil {
-		return nil, err
-	}
-
-	return quickstarts, nil
+	return quickstarts, err
 }
 
-func findQuickstarts(tagTypes []models.TagType, tagValues [][]string, name string, pagination Pagination) ([]models.Quickstart, error) {
+func findQuickstarts(tagTypes []models.TagType, tagValues [][]string, name string, displayName string, pagination Pagination) ([]models.Quickstart, error) {
 	var quickstarts []models.Quickstart
 	var err error
 
 	if name != "" {
 		err = database.DB.Where("name = ?", name).Find(&quickstarts).Error
 	} else if len(tagTypes) > 0 {
-		quickstarts, err = findQuickstartsByTags(tagTypes, tagValues, pagination)
+		quickstarts, err = findQuickstartsByTagsAndDisplayName(tagTypes, tagValues, displayName, pagination)
+	} else if displayName != "" {
+		quickstarts, err = findQuickstartsByDisplayName(displayName, pagination)
 	} else {
 		err = database.DB.Limit(pagination.Limit).Offset(pagination.Offset).Find(&quickstarts).Error
 	}
@@ -100,6 +103,13 @@ func GetAllQuickstarts(w http.ResponseWriter, r *http.Request) {
 		quickstartName = nameQuery[0]
 	}
 
+	quickstartDisplayName := ""
+	displayNameQuery := r.URL.Query()["display-name"]
+	if len(displayNameQuery) > 0 {
+		// array name query is not required and supported
+		quickstartDisplayName = displayNameQuery[0]
+	}
+
 	allTagTypes = models.TagType.GetAllTags("")
 
 	// List of query parameters and corresponding tag types
@@ -123,7 +133,7 @@ func GetAllQuickstarts(w http.ResponseWriter, r *http.Request) {
 	pagination := r.Context().Value(PaginationContextKey).(Pagination)
 	var err error
 
-	quickStarts, err = findQuickstarts(tagTypes, tagValues, quickstartName, pagination)
+	quickStarts, err = findQuickstarts(tagTypes, tagValues, quickstartName, quickstartDisplayName, pagination)
 
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
