@@ -1,5 +1,32 @@
 # It is necessary to have the initial indetation!
     queryParams:
+      ProductFamilies:
+        name: product-families
+        description: If set, content is associated with a specific CRC product families
+        in: query
+        required: false
+        schema:
+          type: string
+        explode: true
+        style: form
+      Content:
+        name: content
+        description: If set, content is associated with a specific CRC content
+        in: query
+        required: false
+        schema:
+          type: string
+        explode: true
+        style: form
+      UseCase:
+        name: use-case
+        description: If set, content is associated with a specific CRC use case
+        in: query
+        required: false
+        schema:
+          type: string
+        explode: true
+        style: form
       Bundle:
         name: bundle
         description: If set, content is associated with a specific CRC bundle
