@@ -21,6 +21,9 @@ paths:
                     items:
                       $ref: '#/components/schemas/v1.Quickstart'
       parameters:
+      - $ref: '#/components/schemas/queryParams/ProductFamilies'
+      - $ref: '#/components/schemas/queryParams/Content'
+      - $ref: '#/components/schemas/queryParams/UseCase'
       - $ref: '#/components/schemas/queryParams/Bundle'
       - $ref: '#/components/schemas/queryParams/Application'
       - $ref: '#/components/schemas/queryParams/Limit'
