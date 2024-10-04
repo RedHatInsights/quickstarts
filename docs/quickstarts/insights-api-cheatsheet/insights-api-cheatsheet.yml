@@ -10,7 +10,7 @@ spec:
     color: orange
   displayName: Insights API Cheatsheet
   icon: ~
-  description: Reference the Insights API cheatsheet to learn about authentication, work with Insights applications, execute remediations, receive notifications and intergrate with third party applications.
+  description: Reference the Insights API cheatsheet to work with Insights applications.
   link:
     href: https://developers.redhat.com/cheat-sheets/red-hat-insights-api-cheat-sheet
     text: View documentation
