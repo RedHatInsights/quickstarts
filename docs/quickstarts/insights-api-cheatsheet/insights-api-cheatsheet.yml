@@ -1,0 +1,16 @@
+apiVersion: console.openshift.io/v1
+kind: QuickStarts
+metadata:
+  name: insights-api-cheatsheet
+  externalDocumentation: true
+spec:
+  version: 0.1
+  type:
+    text: Documentation
+    color: orange
+  displayName: Insights API Cheatsheet
+  icon: ~
+  description: Obtain system details and interact with individual Insights services.
+  link:
+    href: https://developers.redhat.com/cheat-sheets/red-hat-insights-api-cheat-sheet
+    text: View documentation
