@@ -28,10 +28,10 @@ validate:
 	go run cmd/validate/*
 
 infra:
-	docker compose -f local/db-compose.yaml up
+	docker-compose -f local/db-compose.yaml up
 
 stop-infra:
-	docker compose -f local/db-compose.yaml down
+	docker-compose -f local/db-compose.yaml down
 
 audit:
 	docker build . -t quickstarts:audit

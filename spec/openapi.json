@@ -49,6 +49,17 @@
           },
           "style": "form"
         },
+        "Content": {
+          "description": "If set, content is associated with a specific CRC content",
+          "explode": true,
+          "in": "query",
+          "name": "content",
+          "required": false,
+          "schema": {
+            "type": "string"
+          },
+          "style": "form"
+        },
         "Id": {
           "description": "identifier",
           "in": "path",
@@ -91,6 +102,17 @@
           },
           "style": "form"
         },
+        "ProductFamilies": {
+          "description": "If set, content is associated with a specific CRC product families",
+          "explode": true,
+          "in": "query",
+          "name": "product-families",
+          "required": false,
+          "schema": {
+            "type": "string"
+          },
+          "style": "form"
+        },
         "TopicName": {
           "description": "identifier",
           "in": "path",
@@ -99,6 +121,17 @@
           "schema": {
             "type": "string"
           }
+        },
+        "UseCase": {
+          "description": "If set, content is associated with a specific CRC use case",
+          "explode": true,
+          "in": "query",
+          "name": "use-case",
+          "required": false,
+          "schema": {
+            "type": "string"
+          },
+          "style": "form"
         }
       },
       "v1.FavoriteQuickstart": {
@@ -506,6 +539,15 @@
     "/quickstarts": {
       "get": {
         "parameters": [
+          {
+            "$ref": "#/components/schemas/queryParams/ProductFamilies"
+          },
+          {
+            "$ref": "#/components/schemas/queryParams/Content"
+          },
+          {
+            "$ref": "#/components/schemas/queryParams/UseCase"
+          },
           {
             "$ref": "#/components/schemas/queryParams/Bundle"
           },

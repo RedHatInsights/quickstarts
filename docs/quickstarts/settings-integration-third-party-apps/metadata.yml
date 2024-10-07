@@ -1,7 +1,17 @@
-kind: QuickStarts # kind must always be "QuickStarts"
+kind: QuickStarts
 name: settings-integration-third-party-apps
-tags: # If you want to use more granular filtering add tags to the quickstart
-  - kind: bundle
-    value: insights
-  - kind: bundle
-    value: settings
+tags:
+- kind: bundle
+  value: insights
+- kind: bundle
+  value: settings
+- kind: content
+  value: documentation
+- kind: product-families
+  value: settings
+- kind: product-families
+  value: rhel
+- kind: use-case
+  value: automation
+- kind: use-case
+  value: system-configuration

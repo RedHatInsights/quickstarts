@@ -1,5 +1,11 @@
-kind: QuickStarts 
+kind: QuickStarts
 name: tpa-scanning-an-sbom-file
-tags: 
-  - kind: bundle
-    value: application-services
+tags:
+- kind: bundle
+  value: application-services
+- kind: content
+  value: documentation
+- kind: use-case
+  value: data-services
+- kind: use-case
+  value: security

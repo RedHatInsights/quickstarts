@@ -1,5 +1,13 @@
-kind: QuickStarts # kind must always be "QuickStarts"
+kind: QuickStarts
 name: acs-getting-started-acscs
-tags: # If you want to use more granular filtering add tags to the quickstart
-  - kind: bundle
-    value: application-services
+tags:
+- kind: bundle
+  value: application-services
+- kind: content
+  value: documentation
+- kind: product-families
+  value: openshift
+- kind: use-case
+  value: clusters
+- kind: use-case
+  value: security

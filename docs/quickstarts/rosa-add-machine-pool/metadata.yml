@@ -1,5 +1,13 @@
 kind: QuickStarts
 name: rosa-add-machine-pool
 tags:
-  - kind: bundle
-    value: openshift
+- kind: bundle
+  value: openshift
+- kind: content
+  value: quickstart
+- kind: product-families
+  value: openshift
+- kind: use-case
+  value: clusters
+- kind: use-case
+  value: infrastructure

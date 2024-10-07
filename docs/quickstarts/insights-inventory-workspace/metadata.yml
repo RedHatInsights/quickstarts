@@ -1,13 +1,21 @@
 kind: QuickStarts
 name: insights-inventory-workspace
-tags: 
-  - kind: bundle
-    value: insights
-  - kind: application
-    value: inventory
-  - kind: bundle
-    value: iam
-  - kind: application
-    value: user access
-    
- 
+tags:
+- kind: bundle
+  value: insights
+- kind: application
+  value: inventory
+- kind: bundle
+  value: iam
+- kind: application
+  value: user access
+- kind: content
+  value: quickstart
+- kind: product-families
+  value: rhel
+- kind: product-families
+  value: iam
+- kind: use-case
+  value: identity-and-access
+- kind: use-case
+  value: system-configuration
