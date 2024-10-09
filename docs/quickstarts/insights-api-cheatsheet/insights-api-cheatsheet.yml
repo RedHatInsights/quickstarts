@@ -8,7 +8,7 @@ spec:
   type:
     text: Documentation
     color: orange
-  displayName: Insights API Cheatsheet
+  displayName: API Cheatsheet
   icon: ~
   description: Obtain system details and interact with individual Insights services.
   link:
