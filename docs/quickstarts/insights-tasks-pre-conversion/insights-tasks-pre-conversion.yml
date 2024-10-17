@@ -150,6 +150,10 @@ spec:
               Choose this option to allow the pre-conversion analysis to ignore when your system is booted from an outdated kernel.
             - **Allow outdated packages on the system**<br>
               Choose this option to allow the pre-conversion analysis to ignore all outdated packages on the system.
+            - **Allow tainted kernel modules**<br>
+              Choose this option to allow the pre-conversion analysis to ignore tainted kernel modules.
+            - **Enable non-default RHEL repositories**<br>
+              Choose this option to allow the pre-conversion analysis to install packages from the listed non-default RHEL repositories.
           </details>
         1. Click **Run Task** to start the pre-conversion task on the selected systems.
         1. Go to the **Activity** tab and find the newly running conversion task. Your task shows a run status of "Running" until it finishes for all included systems. At that time, the run status will update to "Completed."

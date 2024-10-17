@@ -42,7 +42,7 @@ spec:
         Run the conversion task:
 
         1. Go to **Red Hat Insights > RHEL > Automation Toolkit > Tasks.**
-        1. Locate the **Convert to RHEL from CentOS 7 Linux** task and click **Select systems.**
+        1. Locate the **Convert to RHEL from CentOS Linux 7** task and click **Select systems.**
         1. You can change the task name. It will be used on the report generated. 
         1. Select the CentOS Linux 7 systems you want to convert to RHEL and click  **Next.**
         1. Configure the conversion task with the given settings, as required.
@@ -56,6 +56,10 @@ spec:
               Choose this option to allow the pre-conversion analysis to ignore when your system is booted from an outdated kernel.
             - **Allow outdated packages on the system**<br>
               Choose this option to allow the pre-conversion analysis to ignore all outdated packages on the system.
+            - **Allow tainted kernel modules**<br>
+              Choose this option to allow the pre-conversion analysis to ignore tainted kernel modules.
+            - **Enable non-default RHEL repositories**<br>
+              Choose this option to allow the pre-conversion analysis to install packages from the listed non-default RHEL repositories.
           </details>
         1. Click **Run Task** to start the conversion task on the selected systems.
         1. Go to the **Activity tab** and find the newly running conversion task. Your task shows a run status of "Running" until it finishes for all included systems. At that time the run status will update to "Completed."
