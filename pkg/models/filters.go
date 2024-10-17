@@ -24,6 +24,11 @@ type FilterItem struct {
 }
 
 var (
+	AnsibleIcon   = "/apps/frontend-assets/console-landing/ansible.svg"
+	OpenShiftIcon = "/apps/frontend-assets/console-landing/openshift.svg"
+	RHELIcon      = "/apps/frontend-assets/learning-resources/RHEL-icon.svg"
+	RedHatIcon    = "/apps/frontend-assets/learning-resources/RH-icon.svg"
+
 	FrontendFilters FilterData = FilterData{
 		Categories: []FiltersCategory{
 			{
@@ -32,17 +37,17 @@ var (
 				CategoryData: []CategoryGroup{{
 					Group: "Platforms",
 					Data: []FilterItem{
-						{Id: "ansible", CardLabel: "Ansible", FilterLabel: "Ansible"},
-						{Id: "openshift", CardLabel: "OpenShift", FilterLabel: "OpenShift"},
-						{Id: "rhel", CardLabel: "RHEL", FilterLabel: "RHEL (Red Hat Enterprise Linux)"},
+						{Id: "ansible", CardLabel: "Ansible", FilterLabel: "Ansible", Icon: AnsibleIcon},
+						{Id: "openshift", CardLabel: "OpenShift", FilterLabel: "OpenShift", Icon: OpenShiftIcon},
+						{Id: "rhel", CardLabel: "RHEL", FilterLabel: "RHEL (Red Hat Enterprise Linux)", Icon: RHELIcon},
 					},
 				},
 					{
 						Group: "Console-wide services",
 						Data: []FilterItem{
-							{Id: "iam", CardLabel: "Identity and Access Management", FilterLabel: "IAM (Identity and Access Management)"},
-							{Id: "settings", CardLabel: "Settings", FilterLabel: "Settings"},
-							{Id: "subscriptions-services", CardLabel: "Subscriptions services", FilterLabel: "Subscriptions services"},
+							{Id: "iam", CardLabel: "IAM", FilterLabel: "IAM (Identity and Access Management)", Icon: RedHatIcon},
+							{Id: "settings", CardLabel: "Settings", FilterLabel: "Settings", Icon: RedHatIcon},
+							{Id: "subscriptions-services", CardLabel: "Subscriptions services", FilterLabel: "Subscriptions services", Icon: RedHatIcon},
 						},
 					},
 				},
