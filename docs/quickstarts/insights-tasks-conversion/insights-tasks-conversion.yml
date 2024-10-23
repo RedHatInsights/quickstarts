@@ -21,14 +21,14 @@ spec:
     After running the [Pre-conversion analysis for converting to RHEL](https://console.redhat.com/insights/learning-resources?quickstart=insights-tasks-pre-conversion) task and resolving all reported issues, use this quick start to convert your CentOS Linux 7 systems to RHEL 7.
     <br>
     <br>
-    Before performing the conversion, make sure you have completed all necessary [preparation steps.](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/converting_from_an_rpm-based_linux_distribution_to_rhel/converting-using-insights_converting-from-a-linux-distribution-to-rhel)
+    Before performing the conversion, make sure you have completed all necessary [preparation steps.](https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/8/html/converting_from_an_rpm-based_linux_distribution_to_rhel/converting-using-insights_converting-from-a-linux-distribution-to-rhel)
     <br>
     <br>
     Additional information:
     
-    - It is possible to convert systems from other Linux distributions. [View supported conversion paths.](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/converting_from_an_rpm-based_linux_distribution_to_rhel/con_supported-conversion-paths_converting-from-a-linux-distribution-to-rhel)
+    - It is possible to convert systems from other Linux distributions. [View supported conversion paths.](https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/8/html/converting_from_an_rpm-based_linux_distribution_to_rhel/con_supported-conversion-paths_converting-from-a-linux-distribution-to-rhel)
 
-    - You can convert to RHEL using several supported methods depending on your requirements. [View supported conversion methods.](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/converting_from_an_rpm-based_linux_distribution_to_rhel/conversion-methods_converting-from-a-linux-distribution-to-rhel) 
+    - You can convert to RHEL using several supported methods depending on your requirements. [View supported conversion methods.](https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/8/html/converting_from_an_rpm-based_linux_distribution_to_rhel/conversion-methods_converting-from-a-linux-distribution-to-rhel) 
 
   tasks:
     - title: Convert CentOS 7 systems to RHEL 7 using Insights
@@ -80,7 +80,7 @@ spec:
               <br>
               1. If a system has been successfully converted with no issues, reboot the system and skip the next step.
               1. If the system was not converted, review the message for more information on the found problems and how to resolve them. Additionally, verify the following:<br>
-                - You have completed all the steps to [prepare for a conversion using Insights.] (https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/converting_from_an_rpm-based_linux_distribution_to_rhel/converting-using-insights_converting-from-a-linux-distribution-to-rhel)
+                - You have completed all the steps to [prepare for a conversion using Insights.] (https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/8/html/converting_from_an_rpm-based_linux_distribution_to_rhel/converting-using-insights_converting-from-a-linux-distribution-to-rhel)
                 - The system contains all packages required for the conversion.
                 - The system is running.
                 - You have resolved all issues in the Pre-conversion analysis for converting to RHEL task.
@@ -93,13 +93,13 @@ spec:
   
         1. **Optional:** Perform an in-place upgrade to RHEL 9 to ensure your system is updated with the latest enhancements, security features, and bug fixes.<br>
         <br>
-        For more information, see the [Upgrading from RHEL 7 to RHEL 8] (https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/upgrading_from_rhel_7_to_rhel_8/index) and [Upgrading from RHEL 8 to RHEL 9] (https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/9/html/upgrading_from_rhel_8_to_rhel_9/index) guides.
+        For more information, see the [Upgrading from RHEL 7 to RHEL 8] (https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/8/html/upgrading_from_rhel_7_to_rhel_8/index) and [Upgrading from RHEL 8 to RHEL 9] (https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/9/html/upgrading_from_rhel_8_to_rhel_9/index) guides.
                             
   conclusion: |-
     <br>
     **Thank you for taking the time to explore this feature!**
 
-    For additional information about tasks, [visit the documentation for remediating systems using tasks in Insights.](https://access.redhat.com/documentation/en-us/red_hat_insights/1-latest/html-single/assessing_and_remediating_system_issues_using_red_hat_insights_tasks/index)
+    For additional information about tasks, [visit the documentation for remediating systems using tasks in Insights.](https://docs.redhat.com/en/documentation/red_hat_insights/1-latest/html-single/assessing_and_remediating_system_issues_using_red_hat_insights_tasks/index)
 
     For additional information about conversions, [visit the conversion documentation.](https://docs.redhat.com/en/documentation/red_hat_insights/1-latest/html-single/converting_from_a_linux_distribution_to_rhel_using_the_convert2rhel_utility_in_red_hat_insights/index)
 

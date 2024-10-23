@@ -12,5 +12,5 @@ spec:
   icon: 
   description: Control the visibility of resources in cost management reports using role-based access.
   link:
-    href: https://access.redhat.com/documentation/en-us/cost_management_service/1-latest/html/limiting_access_to_cost_management_resources/index
+    href: https://docs.redhat.com/en/documentation/cost_management_service/1-latest/html/limiting_access_to_cost_management_resources/index
     text: View documentation
