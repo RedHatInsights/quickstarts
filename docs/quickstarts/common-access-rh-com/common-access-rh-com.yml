@@ -12,5 +12,5 @@ spec:
   icon: ~
   description: A complete list of documentation related to Hybrid Cloud Console settings. 
   link:
-    href: https://access.redhat.com/documentation/en-us/red_hat_hybrid_cloud_console/
+    href: https://docs.redhat.com/en/documentation/red_hat_hybrid_cloud_console/
     text: View documentation

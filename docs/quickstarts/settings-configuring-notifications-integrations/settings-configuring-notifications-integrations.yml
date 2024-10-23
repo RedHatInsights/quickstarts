@@ -12,5 +12,5 @@ spec:
   icon: ~
   description: Configuring settings for event-triggered notifications for your services and applications.
   link:
-    href: https://access.redhat.com/documentation/en-us/red_hat_hybrid_cloud_console/1-latest/html/configuring_notifications_on_the_red_hat_hybrid_cloud_console/index
+    href: https://docs.redhat.com/en/documentation/red_hat_hybrid_cloud_console/1-latest/html/configuring_notifications_on_the_red_hat_hybrid_cloud_console/index
     text: View documentation

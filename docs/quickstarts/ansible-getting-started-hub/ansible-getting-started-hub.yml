@@ -12,5 +12,5 @@ spec:
   icon: ~
   description: Configure automation hub as your default server for Ansible collections content.
   link:
-    href: https://access.redhat.com/documentation/en-us/red_hat_ansible_automation_platform/2.4/html/getting_started_with_automation_hub
+    href: https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.4/html/getting_started_with_automation_hub
     text: View documenation

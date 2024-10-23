@@ -12,5 +12,5 @@ spec:
   icon: ~
   description: Review current and historical subscription usage against total capacity with the subscriptions service.
   link:
-    href: https://access.redhat.com/documentation/en-us/subscription_central/1-latest/html/getting_started_with_the_subscriptions_service
+    href: https://docs.redhat.com/en/documentation/subscription_central/1-latest/html/getting_started_with_the_subscriptions_service
     text: View documentation

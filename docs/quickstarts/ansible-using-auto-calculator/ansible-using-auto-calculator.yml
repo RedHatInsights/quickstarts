@@ -12,6 +12,6 @@ spec:
   icon: ~
   description: Evaluate costs and automate processes to determine the return on investment (ROI) that automation brings to your organization.
   link:
-    href: https://access.redhat.com/documentation/en-us/red_hat_ansible_automation_platform/2.4/html/using_the_automation_calculator
+    href: https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.4/html/using_the_automation_calculator
     text: View Documentation
 

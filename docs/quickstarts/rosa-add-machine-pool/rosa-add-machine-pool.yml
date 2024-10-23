@@ -33,7 +33,7 @@ spec:
 
             a. Name your machine pool.
 
-            b. Optional: Change any settings you want. These settings are already filled in by default, but you can customize any of them. For more information on what these settings do, click the **?** icon or see [the documentation](https://access.redhat.com/documentation/en-us/red_hat_openshift_service_on_aws/4/html/cluster_administration/manage-nodes-using-machine-pools#creating_machine_pools_ocm_rosa-managing-worker-nodes).
+            b. Optional: Change any settings you want. These settings are already filled in by default, but you can customize any of them. For more information on what these settings do, click the **?** icon or see [the documentation](https://docs.redhat.com/en/documentation/red_hat_openshift_service_on_aws/4/html/cluster_administration/manage-nodes-using-machine-pools#creating_machine_pools_ocm_rosa-managing-worker-nodes).
 
         1. Click **Add machine pool**.
 
@@ -52,7 +52,7 @@ spec:
         After completing this quick start, you've learned how to add a machine pool. Repeat the steps to add more machine pools if you desire.
 
         **Next steps:**
-        - Get a deeper dive into [machine pools](https://access.redhat.com/documentation/en-us/red_hat_openshift_service_on_aws/4/html/cluster_administration/manage-nodes-using-machine-pools#machine-pools).
+        - Get a deeper dive into [machine pools](https://docs.redhat.com/en/documentation/red_hat_openshift_service_on_aws/4/html/cluster_administration/manage-nodes-using-machine-pools#machine-pools).
   # you can link to the next quick start(s) here
   nextQuickStart:
     - mas-alert-note-prereq

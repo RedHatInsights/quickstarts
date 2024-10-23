@@ -12,5 +12,5 @@ spec:
   icon: 
   description: Work with your OpenShift Dedicated clusters.
   link:
-    href: https://access.redhat.com/documentation/en-us/openshift_dedicated
+    href: https://docs.redhat.com/en/documentation/openshift_dedicated
     text: View documentation

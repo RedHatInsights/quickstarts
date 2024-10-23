@@ -12,5 +12,5 @@ spec:
   icon: ~
   description: Register your Red Hat Enterprise Linux system to enable features and capabilities for managing your system and reporting data.
   link:
-    href: https://access.redhat.com/documentation/en-us/subscription_central/2023/html/getting_started_with_rhel_system_registration
+    href: https://docs.redhat.com/en/documentation/subscription_central/1-latest/html/getting_started_with_rhel_system_registration
     text: View documentation

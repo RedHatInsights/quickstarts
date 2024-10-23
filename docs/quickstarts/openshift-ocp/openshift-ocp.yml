@@ -12,5 +12,5 @@ spec:
   icon: 
   description: Explore and use OpenShift Container Platform features.
   link:
-    href: https://access.redhat.com/documentation/en-us/openshift_container_platform
+    href: https://docs.redhat.com/en/documentation/openshift_container_platform
     text: View documentation

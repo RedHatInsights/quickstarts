@@ -142,7 +142,7 @@ spec:
 
         Create a new behavior group in the console and select the events you want to be notified about. For this example, you'll configure notifications for when a new User Access group is created in the console. 
 
-        [Alternatively, you can add events to an existing behavior group to be notified of. To edit a behavior group, see [Configure notification behavior groups](https://access.redhat.com/documentation/en-us/red_hat_hybrid_cloud_console/1-latest/html-single/configuring_notifications_on_the_red_hat_hybrid_cloud_console/index#assembly-config-behavior-groups_notifications) for more information.]{{admonition note}}
+        [Alternatively, you can add events to an existing behavior group to be notified of. To edit a behavior group, see [Configure notification behavior groups](https://docs.redhat.com/en/documentation/red_hat_hybrid_cloud_console/1-latest/html-single/configuring_notifications_on_the_red_hat_hybrid_cloud_console/index#assembly-config-behavior-groups_notifications) for more information.]{{admonition note}}
 
         
         1. Click **Notifications** > **Configure Events**.
@@ -202,8 +202,8 @@ spec:
     - You can configure additional Slack channels to receive additional event notifications by creating additional Slack integrations. For example, your organization may want to send certain types of notifications to different Slack channels based on your teams or security policies.
 
     Learn more about console integrations and notifications:
-      - [Integrating the Red Hat Hybrid Cloud Console with third-party applications](https://access.redhat.com/documentation/en-us/red_hat_hybrid_cloud_console/1-latest/html-single/integrating_the_red_hat_hybrid_cloud_console_with_third-party_applications/index#assembly-configuring-insights-integration-with-slack_integrations)
-      - [Configuring notifications on the Red Hat Hybrid Cloud Console](https://access.redhat.com/documentation/en-us/red_hat_hybrid_cloud_console/1-latest/html-single/configuring_notifications_on_the_red_hat_hybrid_cloud_console/index) 
+      - [Integrating the Red Hat Hybrid Cloud Console with third-party applications](https://docs.redhat.com/en/documentation/red_hat_hybrid_cloud_console/1-latest/html-single/integrating_the_red_hat_hybrid_cloud_console_with_third-party_applications/index#assembly-configuring-insights-integration-with-slack_integrations)
+      - [Configuring notifications on the Red Hat Hybrid Cloud Console](https://docs.redhat.com/en/documentation/red_hat_hybrid_cloud_console/1-latest/html-single/configuring_notifications_on_the_red_hat_hybrid_cloud_console/index) 
     
     Learn more about Slack and incoming webhooks:
       - [Create more advanced workflows using webhooks](https://slack.com/help/articles/360041352714-Create-more-advanced-workflows-using-webhooks)
