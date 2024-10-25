@@ -22,13 +22,13 @@ spec:
     Use this quick start to connect and run a pre-conversion analysis on CentOS Linux 7 systems with Red Hat Insights. The task generates a report that summarizes potential problems and suggests recommended solutions to help you convert to RHEL.
     <br>
     <br>
-    Before running the pre-conversion analysis, make sure you have completed all necessary [preparation steps.](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/converting_from_an_rpm-based_linux_distribution_to_rhel/converting-using-insights_converting-from-a-linux-distribution-to-rhel)  
+    Before running the pre-conversion analysis, make sure you have completed all necessary [preparation steps.](https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/8/html/converting_from_an_rpm-based_linux_distribution_to_rhel/converting-using-insights_converting-from-a-linux-distribution-to-rhel)  
     <br>
     Additional information:
     
-    - It is possible to convert systems from other Linux distributions. [View supported conversion paths.](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/converting_from_an_rpm-based_linux_distribution_to_rhel/con_supported-conversion-paths_converting-from-a-linux-distribution-to-rhel)
+    - It is possible to convert systems from other Linux distributions. [View supported conversion paths.](https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/8/html/converting_from_an_rpm-based_linux_distribution_to_rhel/con_supported-conversion-paths_converting-from-a-linux-distribution-to-rhel)
 
-    - You can convert to RHEL using several supported methods depending on your requirements. [View supported conversion methods.](https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html/converting_from_an_rpm-based_linux_distribution_to_rhel/conversion-methods_converting-from-a-linux-distribution-to-rhel)
+    - You can convert to RHEL using several supported methods depending on your requirements. [View supported conversion methods.](https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/8/html/converting_from_an_rpm-based_linux_distribution_to_rhel/conversion-methods_converting-from-a-linux-distribution-to-rhel)
 
   tasks:
     - title: Verify your CentOS Linux 7 systems are connected
@@ -216,7 +216,7 @@ spec:
     <br>
     **Thank you for taking the time to explore this feature!**
 
-    For additional information about tasks, [visit the documentation for remediating systems using tasks in Insights.](https://access.redhat.com/documentation/en-us/red_hat_insights/1-latest/html-single/assessing_and_remediating_system_issues_using_red_hat_insights_tasks/index)
+    For additional information about tasks, [visit the documentation for remediating systems using tasks in Insights.](https://docs.redhat.com/en/documentation/red_hat_insights/1-latest/html-single/assessing_and_remediating_system_issues_using_red_hat_insights_tasks/index)
 
     For additional information about conversions, [visit the conversion documentation.](https://docs.redhat.com/en/documentation/red_hat_insights/1-latest/html-single/converting_from_a_linux_distribution_to_rhel_using_the_convert2rhel_utility_in_red_hat_insights/index)
 

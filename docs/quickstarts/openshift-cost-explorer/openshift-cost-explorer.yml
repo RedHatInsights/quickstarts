@@ -12,5 +12,5 @@ spec:
   icon: 
   description: Use Cost Explorer to manage your costs.
   link:
-    href: https://access.redhat.com/documentation/en-us/cost_management_service/1-latest/html/visualizing_your_costs_using_cost_explorer
+    href: https://docs.redhat.com/en/documentation/cost_management_service/1-latest/html/visualizing_your_costs_using_cost_explorer
     text: View documentation
