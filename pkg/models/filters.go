@@ -47,7 +47,7 @@ var (
 						Data: []FilterItem{
 							{Id: "iam", CardLabel: "IAM", FilterLabel: "IAM (Identity and Access Management)", Icon: RedHatIcon},
 							{Id: "settings", CardLabel: "Settings", FilterLabel: "Settings", Icon: RedHatIcon},
-							{Id: "subscriptions-services", CardLabel: "Subscriptions services", FilterLabel: "Subscriptions services", Icon: RedHatIcon},
+							{Id: "subscriptions-services", CardLabel: "Subscriptions", FilterLabel: "Subscriptions services", Icon: RedHatIcon},
 						},
 					},
 				},
