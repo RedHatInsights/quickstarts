@@ -12,5 +12,5 @@ spec:
   icon: 
   description: Use Red Hat OpenShift Service on AWS (ROSA).
   link:
-    href: https://access.redhat.com/documentation/en-us/red_hat_openshift_service_on_aws
+    href: https://docs.redhat.com/en/documentation/red_hat_openshift_service_on_aws
     text: View documentation

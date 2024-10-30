@@ -12,5 +12,5 @@ spec:
   icon: 
   description: Use cost management to track the cost of your clouds and containers.
   link:
-    href: https://access.redhat.com/documentation/en-us/cost_management_service/1-latest/html/analyzing_your_cost_data/index
+    href: https://docs.redhat.com/en/documentation/cost_management_service/1-latest/html/analyzing_your_cost_data/index
     text: View documentation
