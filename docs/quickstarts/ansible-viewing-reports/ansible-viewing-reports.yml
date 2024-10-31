@@ -12,5 +12,5 @@ spec:
   icon: ~
   description: Generate an overview report to monitor your automation environment using the reports feature.
   link:
-    href: https://access.redhat.com/documentation/en-us/red_hat_ansible_automation_platform/2.3/html/viewing_reports_about_your_ansible_automation_environment
+    href: https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.3/html/viewing_reports_about_your_ansible_automation_environment
     text: View Documentation

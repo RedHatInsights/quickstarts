@@ -12,5 +12,5 @@ spec:
   icon: 
   description: Use Hybrid Cloud Console services to gain an understanding of your OpenShift clusters.
   link:
-    href: https://access.redhat.com/documentation/en-us/openshift_cluster_manager/
+    href: https://docs.redhat.com/en/documentation/openshift_cluster_manager/
     text: View documentation

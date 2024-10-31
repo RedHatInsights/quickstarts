@@ -23,7 +23,7 @@ spec:
 
         1. Click **Create blueprint** on the upper menu.
 
-        1. In the **Images** wizard, start to customize your blueprint. [Learn more about customization](https://access.redhat.com/documentation/en-us/red_hat_insights/1-latest/html/deploying_and_managing_rhel_systems_in_hybrid_clouds/index).
+        1. In the **Images** wizard, start to customize your blueprint. [Learn more about customization](https://docs.redhat.com/en/documentation/red_hat_insights/1-latest/html/deploying_and_managing_rhel_systems_in_hybrid_clouds/index).
 
         1. On the **Review** page, choose either **Save the blueprint** or **Save and build image**.
 

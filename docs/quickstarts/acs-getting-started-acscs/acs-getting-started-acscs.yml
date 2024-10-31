@@ -12,5 +12,5 @@ spec:
   icon:
   description: Secure all your hybrid cloud clusters.
   link:
-    href: https://access.redhat.com/documentation/en-us/red_hat_advanced_cluster_security_for_kubernetes/
+    href: https://docs.redhat.com/en/documentation/red_hat_advanced_cluster_security_for_kubernetes/
     text: View documentation

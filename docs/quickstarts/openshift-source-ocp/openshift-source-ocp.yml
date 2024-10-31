@@ -12,5 +12,5 @@ spec:
   icon: 
   description: Configure and add an OpenShift Container Platform (OCP) source to cost management.
   link:
-    href: https://access.redhat.com/documentation/en-us/cost_management_service/1-latest/html/integrating_openshift_container_platform_data_into_cost_management
+    href: https://docs.redhat.com/en/documentation/cost_management_service/1-latest/html/integrating_openshift_container_platform_data_into_cost_management
     text: View documentation
