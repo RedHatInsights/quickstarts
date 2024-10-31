@@ -40,7 +40,7 @@ You can use this simple [preview tool](https://quickstarts-content-preview.surge
 
 
 ## Summary of steps
-This is an overview of the steps you will need to complete to publish an interactive quick start or Learning resource card in the Hybrid Cloud Console.
+This is an overview of the steps you will need to complete to publish an interactive quick start or Learning resource card in the Hybrid Cloud Console. See the _Detailed steps_ below for contacts to loop in and specifics for each step.
 
 1. Write your draft quick start content, and get review and approval from product stakeholders.
 
@@ -51,8 +51,10 @@ This is an overview of the steps you will need to complete to publish an interac
     a. Create a request in [the RHCLOUD Jira project](https://issues.redhat.com/projects/RHCLOUD/issues/) for engineering to merge the content. Add the `platform-experience-services` label to your Jira.
     
     b. Create a pull request (PR) to the `main` branch in the [**Red HatInsights/quickstarts**](https://github.com/RedHatInsights/quickstarts/) repository.
+
+    c. In the *#forum-consoledot-ui* Slack channel, send a request tagging @crc-experience-services-team for your PR to be reviewed and merged. 
     
-4. The engineering team then merges the pull request to the Hybrid Cloud Console. The content will appear first on the [stage](https://console.stage.redhat.com/) of the Hybrid Cloud Console, and later in [production](https://console.redhat.com/).
+4. The engineering team then merges the pull request to the Hybrid Cloud Console. The content will appear first on the [stage](https://console.stage.redhat.com/) of the Hybrid Cloud Console, and later in [production](https://console.redhat.com/). It takes about 2 weeks for a PR that is merged to appear in production, depending on team capacity. 
 
 When these steps are complete, you will be able to view your quick start or Learning resource card in the [Hybrid Cloud Console](https://console.redhat.com/).
 
@@ -162,22 +164,22 @@ If you have created quick starts in the Hybrid Cloud Console before, start here:
     ```
     git push origin <branch> 
     ```
-9. Open a pull request (PR) in the [GitHub repository](https://github.com/RedHatInsights/quickstarts) containing your update. Get your quick start reviewed by stakeholders and peer reviewers, as needed. Once you and any reviewers are happy with the content, work with engineering to add the content to the Hybrid Cloud Console.
+9. Open a pull request (PR) in the [GitHub repository](https://github.com/RedHatInsights/quickstarts) containing your update. Get your quick start reviewed by stakeholders and peer reviewers, as needed. Once you and any reviewers are happy with the content, follow the next steps to work with engineering to add the content to the Hybrid Cloud Console.
 
 
 ### Adding your quick start (or Learning resource card) to the Hybrid Cloud Console
 
 Open a Jira for the engineering team to add the quick start to the Hybrid Cloud Console source code.
 
-1. Create a Jira for the platform development team in the [RHCLOUD Jira project](https://issues.redhat.com/projects/RHCLOUD/issues/RHCLOUD-15910?filter=allopenissues). Add the **platform-experience-services** label to the issue.
-2. In the PR you opened for the quick start, add the developer contacts `@Hyperkid123` or `@ryelo` in the PR description, and add the Jira link in a comment.
+1. Create a Jira for the platform development team in the [RHCLOUD Jira project](https://issues.redhat.com/projects/RHCLOUD/issues/RHCLOUD-15910?filter=allopenissues). Add the **platform-experience-services** label to the issue and add `platform-experience-services@redhat.com` as a CC.
+2. In the PR you opened for the quick start, add the developer contacts `@florkbr` or `@ryelo` in the PR description, and add the Jira link in a comment.
 
 ### Engineering tasks
 
 From here, it is up to the engineering team to merge the PR to the Hybrid Cloud Console. If you are writing a quickstart, you can continue to the next section, _Close the loop_.
 
 Your quick start will show up in the Hybrid Cloud Console [stage environment](https://console.stage.redhat.com/) first - 
-To publish live on the Hybrid Cloud Console [production environment](https://console.redhat.com/), engineering must create an `app-sre` pull request.
+To publish live on the Hybrid Cloud Console [production environment](https://console.redhat.com/), engineering must create an `app-sre` pull request. 
 
 #### Query quickstarts for a specific application `/api/v1/quickstarts?application={appname}`
 
@@ -254,7 +256,7 @@ Some tags are required and other tags (such as `use-case`) are optional but reco
 
 The following lists provide details about tagging requirements and the list of available tags.
 
-`bundle`
+### `bundle`
 
 Required. A resource must have at least one `bundle` tag. You can add additional tags if you wish. The `bundle` tag controls which **Learning Resources** page on the Hybrid Cloud Console shows the resource.
 
@@ -272,7 +274,7 @@ Required. A resource must have at least one `bundle` tag. You can add additional
 |  Settings | settings  |
 
 
-`product-families`
+### `product-families`
 
 Required. A resource must have at least one `product-families` tag. You can add additional tags if you wish.
 
@@ -286,7 +288,7 @@ Required. A resource must have at least one `product-families` tag. You can add 
 |  Subscriptions services | subscriptions-services  |
 
 
-`content`
+### `content`
 
 Required. A resource must have _only_ one `content` tag, to categorize it with the correct content type in **Learning Resources**.
 
@@ -298,9 +300,9 @@ Required. A resource must have _only_ one `content` tag, to categorize it with t
 |  Other content types (purple) | otherResource  |
 
 
-`use-case`
+### `use-case`
 
-Optional. Use as many `use-case` tags as applicable to help users filter by the category of high-level user goal within **Global Learning Resources**.
+Optional but recommended. Use as many `use-case` tags as applicable to help users filter by the category of high-level user goal within **Global Learning Resources**.
 
 | Use case  |  value tag |
 |---|---|
