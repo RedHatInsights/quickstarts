@@ -2,21 +2,21 @@
 
 These instructions explain how to create content for Learning resources pages in the [Red Hat Hybrid Cloud Console](https://console.redhat.com) using the PatternFly [quick starts](https://www.patternfly.org/extensions/quick-starts/) extension. 
 
-A **Learning resources** page ([example](https://console.redhat.com/insights/learning-resources)) on the Hybrid Cloud Console is a central location that contains links to different content types related to a collection of console services (or _bundle_) such as product documentation, interactive quick starts, learning paths, and more. These links help users find the information they need from within the console user interface, in the most suitable format. Each resource is represented by a tile on a Learning resources page. The source files are created in YAML.
+A **Learning resources** page ([example](https://console.redhat.com/insights/learning-resources)) on the Hybrid Cloud Console is a central location that contains links to different content types related to a collection of console services (or _bundle_) such as product documentation, interactive quick starts, learning paths, and more. These links help users find the information they need from within the console user interface, in the most suitable format. Each resource is represented by a card on a Learning resources page. The source files are created in YAML.
 
 You can use the PatternFly quick starts extension in this repository to create:
 
-- _Learning resources tiles_ in the Hybrid Cloud Console that link to an external resource, such as documentation or a learning path. The resource opens in a new browser tab. 
+- _Learning resources cards_ in the Hybrid Cloud Console that link to an external resource, such as documentation or a learning path. The resource opens in a new browser tab. 
 - _Interactive quick starts_, which are step-by-step instructions and tasks presented in a side panel embedded in the Hybrid Cloud Console UI. Interactive quick starts remain open on the right side of the console window while the user completes tasks.
 
-## Creating a Learning resources tile on the Hybrid Cloud Console
+## Creating a Learning resources card on the Hybrid Cloud Console
 
-A Learning resources _tile_ provides a link to educational content published outside of the Hybrid Cloud Console, such as product documentation (full guides or individual topics), learning paths, and more, to help users easily find the information they need from within the console UI. 
+A Learning resources _card_ (also known as a _tile_) provides a link to educational content published outside of the Hybrid Cloud Console, such as product documentation (full guides or individual topics), learning paths, and more, to help users easily find the information they need from within the console UI. 
 
-Each tile on the Learning resources page in your bundle contains:
+Each card on the Learning resources page in your bundle contains:
 
 - A title for the resource - in sentence case. For documentation items, you can shorten the title from the full guide title on the Customer Portal.
-- A short description of the resource - a complete sentence of up to 115 characters. 
+- A short description of the resource - a complete sentence of up to 3 lines on the card (less than 115 characters). 
 - A link to the content.
 
 ## Creating interactive quick starts for the Hybrid Cloud Console
@@ -40,21 +40,23 @@ You can use this simple [preview tool](https://quickstarts-content-preview.surge
 
 
 ## Summary of steps
-This is an overview of the steps you will need to complete to publish an interactive quick start or Learning resource tile in the Hybrid Cloud Console.
+This is an overview of the steps you will need to complete to publish an interactive quick start or Learning resource card in the Hybrid Cloud Console. See the _Detailed steps_ below for contacts to loop in and specifics for each step.
 
 1. Write your draft quick start content, and get review and approval from product stakeholders.
 
 2. When the content is ready, create your YAML quick start files in a new directory in the `docs` directory of [**Red Hat Insights quickstarts**](https://github.com/RedHatInsights/quickstarts/tree/main/docs/quickstarts), following the detailed instructions in this `README.md` file. 
 
-3. Get your quick start or Learning resource tile added to the [Hybrid Cloud Console](https://console.redhat.com):
+3. Get your quick start or Learning resource card added to the [Hybrid Cloud Console](https://console.redhat.com):
  
     a. Create a request in [the RHCLOUD Jira project](https://issues.redhat.com/projects/RHCLOUD/issues/) for engineering to merge the content. Add the `platform-experience-services` label to your Jira.
     
     b. Create a pull request (PR) to the `main` branch in the [**Red HatInsights/quickstarts**](https://github.com/RedHatInsights/quickstarts/) repository.
-    
-4. The engineering team then merges the pull request to the Hybrid Cloud Console. The content will appear first on the [stage](https://console.stage.redhat.com/) of the Hybrid Cloud Console, and later in [production](https://console.redhat.com/).
 
-When these steps are complete, you will be able to view your quick start or Learning resource tile in the [Hybrid Cloud Console](https://console.redhat.com/).
+    c. In the *#forum-consoledot-ui* Slack channel, send a request tagging @crc-experience-services-team for your PR to be reviewed and merged. 
+    
+4. The engineering team then merges the pull request to the Hybrid Cloud Console. The content will appear first on the [stage](https://console.stage.redhat.com/) of the Hybrid Cloud Console, and later in [production](https://console.redhat.com/). It takes about 2 weeks for a PR that is merged to appear in production, depending on team capacity. 
+
+When these steps are complete, you will be able to view your quick start or Learning resource card in the [Hybrid Cloud Console](https://console.redhat.com/).
 
 ## Detailed steps
 
@@ -111,7 +113,7 @@ If you have created quick starts in the Hybrid Cloud Console before, start here:
 
     a. Create a new directory with an identifiable name in `docs/quickstarts/<name>` in [**this repository**](https://github.com/RedHatInsights/quickstarts/tree/main/docs/quickstarts) to contain your quick start files.
 
-    b. In the new directory, create a `metadata.yml` file. Ensure you have a blank line at the end of the file:
+    b. In the new directory, create a `metadata.yml` file with the appropriate tags. See _Adding tags to your quick start for categorization and findability_ below for details. Ensure you have a blank line at the end of the file. For example:
   
     ```yml
     kind: QuickStarts # kind must always be "QuickStarts"
@@ -121,8 +123,10 @@ If you have created quick starts in the Hybrid Cloud Console before, start here:
         value: insights
       - kind: bundle
         value: settings
-      - kind: application # use application tag for quickstart used by specific application
-        value: sources
+      - kind: product-families
+        value: rhel  
+      - kind: content
+        value: quickstart
 
     ```
 
@@ -130,9 +134,11 @@ If you have created quick starts in the Hybrid Cloud Console before, start here:
     
     d. Add your draft quickstart content to the new file. You can follow this [template](https://github.com/patternfly/patternfly-quickstarts/blob/main/packages/dev/src/quickstarts-data/yaml/template.yaml) and find more Markdown snippets in the _Useful Markdown snippets_ section of these instructions.
 
-    NOTE: If you are creating a Learning resources tile only (such as a link to external documentation), refer to [this example](https://github.com/RedHatInsights/quickstarts/tree/main/docs/quickstarts/ansible-getting-started-hub) to understand the information required. Learning resources tiles require minimal information in the YAML files, compared to interactive quick starts. 
+    NOTE: If you are creating a Learning resources card only (such as a link to external documentation), refer to [this example](https://github.com/RedHatInsights/quickstarts/tree/main/docs/quickstarts/ansible-getting-started-hub) to understand the information required. Learning resources cards require minimal information in the YAML files, compared to interactive quick starts. 
 
     e. Preview and validate the YAML content by copying and pasting your YAML into the [preview tool](https://quickstarts-content-preview.surge.sh/). Make changes as needed until you are ready to push your files to the remote branch for review.
+
+    f. Check that your content follows the guidelines in [Best practices for writing quick starts](https://www.uxd-hub.com/entries/resource/best-practices-for-writing-quick-starts) to ensure a consistent user experience with other quick starts and Learning resource cards.
 
 6. Push your files to the remote branch for review by stakeholders as needed.
 
@@ -158,22 +164,22 @@ If you have created quick starts in the Hybrid Cloud Console before, start here:
     ```
     git push origin <branch> 
     ```
-9. Open a pull request (PR) in the [GitHub repository](https://github.com/RedHatInsights/quickstarts) containing your update. Get your quick start reviewed by stakeholders and peer reviewers, as needed. Once you and any reviewers are happy with the content, work with engineering to add the content to the Hybrid Cloud Console.
+9. Open a pull request (PR) in the [GitHub repository](https://github.com/RedHatInsights/quickstarts) containing your update. Get your quick start reviewed by stakeholders and peer reviewers, as needed. Once you and any reviewers are happy with the content, follow the next steps to work with engineering to add the content to the Hybrid Cloud Console.
 
 
-### Adding your quick start (or Learning resource tile) to the Hybrid Cloud Console
+### Adding your quick start (or Learning resource card) to the Hybrid Cloud Console
 
 Open a Jira for the engineering team to add the quick start to the Hybrid Cloud Console source code.
 
-1. Create a Jira for the platform development team in the [RHCLOUD Jira project](https://issues.redhat.com/projects/RHCLOUD/issues/RHCLOUD-15910?filter=allopenissues). Add the **platform-experience-services** label to the issue.
-2. In the PR you opened for the quick start, add the developer contacts `@Hyperkid123` or `@ryelo` in the PR description, and add the Jira link in a comment.
+1. Create a Jira for the platform development team in the [RHCLOUD Jira project](https://issues.redhat.com/projects/RHCLOUD/issues/RHCLOUD-15910?filter=allopenissues). Add the **platform-experience-services** label to the issue and add `platform-experience-services@redhat.com` as a CC.
+2. In the PR you opened for the quick start, add the developer contacts `@florkbr` or `@ryelo` in the PR description, and add the Jira link in a comment.
 
 ### Engineering tasks
 
 From here, it is up to the engineering team to merge the PR to the Hybrid Cloud Console. If you are writing a quickstart, you can continue to the next section, _Close the loop_.
 
 Your quick start will show up in the Hybrid Cloud Console [stage environment](https://console.stage.redhat.com/) first - 
-To publish live on the Hybrid Cloud Console [production environment](https://console.redhat.com/), engineering must create an `app-sre` pull request.
+To publish live on the Hybrid Cloud Console [production environment](https://console.redhat.com/), engineering must create an `app-sre` pull request. 
 
 #### Query quickstarts for a specific application `/api/v1/quickstarts?application={appname}`
 
@@ -211,23 +217,48 @@ For best practices, tips, and guidelines for creating quick start content see:
 * [Best practices for writing quick starts](https://www.uxd-hub.com/entries/resource/best-practices-for-writing-quick-starts) on UXD Hub
 * [Design guidelines for quick starts](https://www.patternfly.org/extensions/quick-starts/design-guidelines/) in the PatternFly documentation
 
-## Assigning your quick start to a console location using the `bundle` tag 
+## Adding tags to your quick start for categorization and findability
 
-The `bundle` tag in the quick start's `metadata.yml` file tells the console on which **Learning Resources** page to show the quick start or tile. A bundle is a console-internal term that refers to a collection of services.
+> IMPORTANT: (Update Oct. 2024) Quick starts and Learning resources cards require additional tags in the `metadata.yml` file to categorize the content in the **Global Learning Resources** page in the Hybrid Cloud Console, and to help users find the content they want.
 
-You can use more than one `bundle` tag to show the quick start in multiple locations in the console. For example, this would show the quick start on **Learning Resources** pages for both **Insights** and **Settings**:
+Tags in the quick start's `metadata.yml` file tells the console how to categorize a resource. For example, the `bundle` tag controls which **Learning Resources** page on the Hybrid Cloud Console shows the quick start or card. A "bundle" is a console-internal term that refers to a collection of services.
+
+You can use more than one `bundle` tag to show the quick start in multiple locations in the console. For example, this would show the quick start on **Learning Resources** pages for both **Identity & Access Management** and **Settings**:
   
     ```yml
     ...
     tags: # If you want to use more granular filtering add tags to the quickstart
       - kind: bundle # use bundle tag for a topic to be accessed from a whole bundle eg. console.redhat.com/insights
-        value: insights
+        value: iam
       - kind: bundle
         value: settings
-    ...
+      - kind: content
+        value: documentation
+      - kind: product-families
+        value: settings
+      - kind: product-families
+        value: rhel  
+      - kind: product-families
+        value: iam
+      - kind: use-case
+        value: identity-and-access
+      - kind: use-case
+        value: system-configuration  
+        ...
+
     ```
 
-See the below list for the value tags to use for each bundle:
+
+Some tags are required and other tags (such as `use-case`) are optional but recommended to improve findability.
+
+* The `bundle`, `product-families`, and `content` tags are mandatory.
+* The `use-case` tag is optional.
+
+The following lists provide details about tagging requirements and the list of available tags.
+
+### `bundle`
+
+Required. A resource must have at least one `bundle` tag. You can add additional tags if you wish. The `bundle` tag controls which **Learning Resources** page on the Hybrid Cloud Console shows the resource.
 
 | Bundle  |  value tag |
 |---|---|
@@ -241,6 +272,54 @@ See the below list for the value tags to use for each bundle:
 | Identity & Access Management  | iam  |
 | Internal  |  internal |
 |  Settings | settings  |
+
+
+### `product-families`
+
+Required. A resource must have at least one `product-families` tag. You can add additional tags if you wish.
+
+| Product Families  |  value tag |
+|---|---|
+|  Ansible | ansible  |
+|  OpenShift | openshift  |
+|  RHEL (Red Hat Enterprise Linux) | rhel  |
+|  IAM (Identity and Access Management) | iam  |
+|  Settings | settings  |
+|  Subscriptions services | subscriptions-services  |
+
+
+### `content`
+
+Required. A resource must have _only_ one `content` tag, to categorize it with the correct content type in **Learning Resources**.
+
+| Content type  |  value tag |
+|---|---|
+|  Documentation (orange) | documentation  |
+|  Learning paths (cyan) | learningPath  |
+|  Quick start (green) | quickstart  |
+|  Other content types (purple) | otherResource  |
+
+
+### `use-case`
+
+Optional but recommended. Use as many `use-case` tags as applicable to help users filter by the category of high-level user goal within **Global Learning Resources**.
+
+| Use case  |  value tag |
+|---|---|
+|  Automation | automation  |
+|  Clusters | clusters  |
+|  Containers | containers  |
+|  Data services | data-services  |
+|  Deploy | deploy  |
+|  Identity and access | identity-and-access  |
+|  Images | images  |
+|  Infrastructure | infrastructure  |
+|  Observability | observability  |
+|  Security | security  |
+|  Spend management | spend-management  |
+|  System configuration | system-configuration  |
+
+
 
 
 ## Useful Markdown snippets
