@@ -5,6 +5,8 @@ tags:
   value: application-services
 - kind: content
   value: documentation
+- kind: product-families
+  value: openshift
 - kind: use-case
   value: data-services
 - kind: use-case
