@@ -4,7 +4,7 @@ metadata:
   # you can add additional metadata here
   instructional: true
 spec:
-  displayName: Creating and managing Workspaces
+  displayName: Creating and managing workspaces
   durationMinutes: 5
   # Optional type section, will display as a tile on the card
   type:
@@ -16,7 +16,7 @@ spec:
     Learn how to create a workspace, add systems to it, and remove systems from it.
   introduction: |-
     
-        **Welcome to the quick start for creating and managing your systems using Workspaces. In this quick start, you will:**
+        Welcome to the quick start for creating and managing your systems using Workspaces. In this quick start, you will:
         - Create a workspace.
         - Learn to add systems to the workspace.
         - Learn how to remove systems from the workspace.
