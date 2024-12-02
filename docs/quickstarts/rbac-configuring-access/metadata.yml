@@ -13,6 +13,8 @@ tags:
   value: rhel  
 - kind: product-families
   value: iam
+- kind: product-families
+  value: ansible 
 - kind: use-case
   value: identity-and-access
 - kind: use-case

@@ -24,7 +24,7 @@ spec:
     - You are an Organization Administrator or have User Access administrator permissions
     - (Optional) Users in your organization
   description: |-
-    Granting administrative permissions for the vulnerability service to a select group of users 
+    Grant administrative permissions for the vulnerability service to a select group of users. 
   introduction: |-
     This quick start shows you how to configure granular administrative access for the Insights for Red Hat Enterprise Linux (RHEL) vulnerability service. 
     

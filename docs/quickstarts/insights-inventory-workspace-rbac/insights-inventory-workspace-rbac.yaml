@@ -4,7 +4,7 @@ metadata:
   # you can add additional metadata here
   instructional: true
 spec:
-  displayName: Managing user access with Workspaces
+  displayName: Managing user access with workspaces
   durationMinutes: 5
   # Optional type section, will display as a tile on the card
   type:
@@ -16,7 +16,7 @@ spec:
     - Be an Organization Administrator or have the User Access Administrator role
     - Have workspaces created
   description: |-
-    Learn how to manage access to your systems using Workspaces
+    Learn how to manage access to your systems using workspaces.
   introduction: |-
     **Welcome to the quick start for managing user access using Workspaces. Use this feature to enhance security within your organization.**
     
