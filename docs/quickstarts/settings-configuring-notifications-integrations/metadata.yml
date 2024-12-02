@@ -8,7 +8,11 @@ tags:
 - kind: product-families
   value: settings
 - kind: product-families
-  value: rhel  
+  value: rhel 
+- kind: product-families
+  value: ansible 
+- kind: product-families
+  value: openshift
 - kind: use-case
   value: automation
 - kind: use-case
