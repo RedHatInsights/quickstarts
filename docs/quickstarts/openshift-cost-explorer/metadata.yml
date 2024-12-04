@@ -2,7 +2,7 @@ kind: QuickStarts
 name: openshift-cost-explorer
 tags:
 - kind: bundle
-  value: openshift
+  value: insights
 - kind: content
   value: documentation
 - kind: product-families
