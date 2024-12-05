@@ -1,0 +1,54 @@
+
+metadata:
+  name: rosa-grant-ocm-role-access
+  instructional: true
+spec:
+  displayName: Add OCM roles and access to ROSA clusters
+  durationMinutes: 5
+  type:
+    text: Quick start
+    color: green
+  icon: data:image/svg+xml;base64,PCEtLSBHZW5lcmF0ZWQgYnkgSWNvTW9vbi5pbyAtLT4KPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KPHRpdGxlPjwvdGl0bGU+CjxnIGlkPSJpY29tb29uLWlnbm9yZSI+CjwvZz4KPHBhdGggZD0iTTQ0OCA2NHY0MTZoLTMzNmMtMjYuNTEzIDAtNDgtMjEuNDktNDgtNDhzMjEuNDg3LTQ4IDQ4LTQ4aDMwNHYtMzg0aC0zMjBjLTM1LjE5OSAwLTY0IDI4LjgtNjQgNjR2Mzg0YzAgMzUuMiAyOC44MDEgNjQgNjQgNjRoMzg0di00NDhoLTMyeiI+PC9wYXRoPgo8cGF0aCBkPSJNMTEyLjAyOCA0MTZ2MGMtMC4wMDkgMC4wMDEtMC4wMTkgMC0wLjAyOCAwLTguODM2IDAtMTYgNy4xNjMtMTYgMTZzNy4xNjQgMTYgMTYgMTZjMC4wMDkgMCAwLjAxOS0wLjAwMSAwLjAyOC0wLjAwMXYwLjAwMWgzMDMuOTQ1di0zMmgtMzAzLjk0NXoiPjwvcGF0aD4KPC9zdmc+Cg==
+  prerequisites:
+    - You must have access to a ROSA cluster.
+    - You must be a cluster owner, cluster editor, or Organization Administrator for the cluster.
+    - You must know the user identifier of the person that you want to add.
+
+
+  description: |-
+    Adding OCM roles and access to cluster users.
+  introduction: |-
+    If you create or manage a cluster, you can add additional OCM roles and access to users of that cluster. The user who created the cluster or users with specific permissions can add the OCM roles and access to a cluster.
+
+    In this quick start, you'll add OCM roles and access to clusters for your cluster users.
+
+  tasks:
+    - title: Add OCM roles and access to your cluster
+      description: |-
+        To edit your cluster's name:
+
+        1. Go to **Cluster List**.
+        1. Click your cluster's name to view cluster details.
+        1. Click the **Access control** tab.
+        1. Click the **OCM Roles and Access** tab.
+        1. Click the **Grant role** button.
+        1. Enter the Red Hat login for the user.
+        1. Select the role you want (for example, Cluster Viewer) from the list.
+        1. Click **Grant role**.
+
+        Your cluster user now has the added OCM role and access for that user has now changed.
+
+  # optional - the task's Check your work module
+      review:
+        instructions: |-
+          - Does your new cluster user appear in the list of cluster administrative users for your cluster?
+        failedTaskHelp: Try following the steps again.
+  # optional - the task's success and failure messages
+      summary:
+        success: Shows a success message in the task header
+        failed: Shows a failed message in the task header
+  conclusion: |-
+        Congratulations, you added OCM roles and access for your users to your cluster!
+
+        Repeat the steps to add more OCM roles and configure access if you desire.
+  # you can link to the next quick start(s) here
