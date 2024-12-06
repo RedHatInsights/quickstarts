@@ -8,9 +8,9 @@ spec:
   type:
     text: Documentation
     color: orange
-  displayName: "Adding a source: Google Cloud Platform"
+  displayName: "Adding an integration: Google Cloud Platform"
   icon: 
-  description: Configure and add a Google Cloud Platform (GCP) source to cost management.
+  description: Configure and add a Google Cloud Platform (GCP) integration to cost management.
   link:
     href: https://docs.redhat.com/en/documentation/cost_management_service/1-latest/html/integrating_google_cloud_data_into_cost_management
     text: View documentation
