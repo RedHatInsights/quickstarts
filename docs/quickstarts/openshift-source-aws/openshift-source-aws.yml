@@ -8,9 +8,9 @@ spec:
   type:
     text: Documentation
     color: orange
-  displayName: "Adding a source: Amazon Web Services"
+  displayName: "Adding an integration: Amazon Web Services"
   icon: 
-  description: Configure and add an Amazon Web Services (AWS) source to cost management.
+  description: Configure and add an Amazon Web Services (AWS) integration to cost management.
   link:
     href: https://docs.redhat.com/en/documentation/cost_management_service/1-latest/html/integrating_amazon_web_services_aws_data_into_cost_management/index
     text: View documentation
