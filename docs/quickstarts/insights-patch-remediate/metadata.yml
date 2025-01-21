@@ -7,8 +7,6 @@ tags:
   value: documentation
 - kind: product-families
   value: rhel
-- kind: product-families
-  value: ansible
 - kind: use-case
   value: automation
 - kind: use-case

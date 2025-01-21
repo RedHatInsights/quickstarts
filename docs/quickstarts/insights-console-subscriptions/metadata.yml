@@ -5,3 +5,5 @@ tags:
   value: insights
 - kind: content
   value: documentation
+- kind: use-case
+  value: infrastructure
