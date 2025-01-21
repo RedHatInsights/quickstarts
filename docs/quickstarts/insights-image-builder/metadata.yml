@@ -8,4 +8,7 @@ tags:
 - kind: product-families
   value: rhel
 - kind: use-case
+  value: deploy
+- kind: use-case
   value: images
+  
