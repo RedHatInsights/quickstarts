@@ -3,6 +3,8 @@ name: insights-configuring-access
 tags:
 - kind: bundle
   value: insights
+- kind: bundle
+  value: settings
 - kind: content
   value: documentation
 - kind: product-families
@@ -13,5 +15,7 @@ tags:
   value: iam
 - kind: use-case
   value: identity-and-access
+- kind: use-case
+  value: security
 - kind: use-case
   value: system-configuration

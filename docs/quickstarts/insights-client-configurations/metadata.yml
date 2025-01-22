@@ -11,3 +11,10 @@ tags:
   value: observability
 - kind: use-case
   value: system-configuration
+- kind: use-case
+  value: infrastructure
+- kind: use-case
+  value: deploy
+- kind: use-case
+  value: automation
+  
