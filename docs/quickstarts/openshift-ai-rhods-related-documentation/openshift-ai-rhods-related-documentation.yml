@@ -12,5 +12,5 @@ spec:
   icon: ~
   description: A complete list of product documentation related to Red Hat OpenShift AI.
   link:
-    href: https://docs.redhat.com/en/documentation/red_hat_openshift_ai/2024
+    href: https://docs.redhat.com/en/documentation/red_hat_openshift_ai
     text: View documentation
