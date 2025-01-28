@@ -8,9 +8,9 @@ spec:
   type:
     text: Learning path
     color: cyan
-  displayName: Learn how to launch OpenShift AI
+  displayName: Learn how to try OpenShift AI
   icon: ~
-  description: Learn how to use the Red Hat OpenShift AI platform.
+  description: Learn how to download or sign up for Red Hat OpenShift AI.
   link:
-    href: https://developers.redhat.com/learn/openshift-data-science/launch-red-hat-openshift-data-science
+    href: https://developers.redhat.com/products/red-hat-openshift-ai/download
     text: View documentation

@@ -8,12 +8,14 @@ tags:
 - kind: content
   value: quickstart
 - kind: product-families
-  value: iam
+  value: rhel
 - kind: product-families
-  value: settings  
+  value: iam
 - kind: use-case
   value: identity-and-access
 - kind: use-case
-  value: security
+  value: infrastructure
 - kind: use-case
   value: system-configuration
+- kind: use-case
+  value: security

@@ -3,3 +3,11 @@ name: insights-api-cheatsheet
 tags: # If you want to use more granular filtering add tags to the quickstart
   - kind: bundle
     value: insights
+  - kind: content
+    value: documentation
+  - kind: product-families
+    value: rhel
+  - kind: use-case
+    value: deploy
+  - kind: use-case
+    value: system-configuration

@@ -25,7 +25,7 @@ spec:
     - You are an Organization Administrator or have **User Access administrator** permissions
     - Team member(s) who need permissions to manage resources
   description: |-
-    Configuring view access by default and limited edit access 
+    Configure view access by default and limited edit access. 
   introduction: |-
     This quick start shows you how to configure read-only (view) permissions for all users in your organization to services across the Hybrid Cloud Console (the console), but limit permissions to edit resources to only a few users. 
     
