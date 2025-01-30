@@ -6,8 +6,7 @@ spec:
     color: cyan
   displayName: Creating a blueprint
   durationMinutes: 10
-  description: "Blueprints are a persistent definition for image
-    customizations.Complete this task to create your custom blueprints and images from them"
+  description: Create a persistent definition, known as a blueprint, to build and deploy customized and preconfigured RHEL images.
   prerequisites:
     - A Red Hat user account to access the [Red Hat Hybrid Cloud
       Console](https://console.redhat.com/).
