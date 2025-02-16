@@ -9,10 +9,10 @@ require (
 	github.com/go-ozzo/ozzo-validation v3.6.0+incompatible
 	github.com/joho/godotenv v1.4.0
 	github.com/prometheus/client_golang v1.11.1
-	github.com/redhatinsights/app-common-go v1.6.7
+	github.com/redhatinsights/app-common-go v1.6.8
 	github.com/redhatinsights/platform-go-middlewares v0.10.0
 	github.com/sirupsen/logrus v1.8.3
-	github.com/stretchr/testify v1.8.1
+	github.com/stretchr/testify v1.8.4
 	gorm.io/datatypes v1.0.7
 	gorm.io/driver/postgres v1.3.10
 	gorm.io/driver/sqlite v1.3.6
