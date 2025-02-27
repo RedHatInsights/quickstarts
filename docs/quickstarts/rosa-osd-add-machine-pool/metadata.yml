@@ -1,5 +1,5 @@
 kind: QuickStarts
-name: rosa-add-machine-pool
+name: rosa-osd-add-machine-pool
 tags:
 - kind: bundle
   value: openshift
