@@ -1,5 +1,5 @@
 kind: QuickStarts
-name: rosa-add-notification-contacts
+name: rosa-osd-manage-notification-contacts
 tags:
 - kind: bundle
   value: openshift
