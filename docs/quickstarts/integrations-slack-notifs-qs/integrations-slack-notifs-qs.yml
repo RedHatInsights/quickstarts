@@ -30,7 +30,7 @@ spec:
     
     You can receive notifications in the console, or configure the console to send event notifications to a third-party application such as Slack. 
     
-    In Slack, you can send notifications to all users on a channel, or a selected user.
+    In Slack, you can send event notifications to all users on a channel, or to a selected user.
 
     [If you have any issues with the Hybrid Cloud Console integration with Slack, contact Red Hat for support from the console by clicking **?** >  **Open a support case**.]{{admonition note}}
 
