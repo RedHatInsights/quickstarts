@@ -53,7 +53,7 @@ spec:
 
         2. Enable incoming webhooks:
 
-          a. Under **Features** in the left navigation, click **Incoming Webhooks**.
+          a. Under **Features** in the navigation panel, click **Incoming Webhooks**.
           
           b. Toggle the **Activate Incoming Webhooks** switch to **On**.
 
@@ -61,7 +61,7 @@ spec:
 
         3. Create an incoming webhook:
 
-          a. Under **Settings** in the left navigation, click **Install App**.
+          a. Under **Settings** in the navigation panel, click **Install App**.
 
           b. In the **Install App** section, click **Install to _workspace_**.
 
@@ -69,15 +69,15 @@ spec:
 
         4. (Optional) Configure how your console notifications display in Slack:
 
-          a. Under **Settings** in the left navigation, click **Basic Information**.
+          a. Under **Settings** in the navigation panel, click **Basic Information**.
           
-          b. Scroll down to **Display Information** and configure your app name, description, icon, and background color.
+          b. Scroll down to **Display Information** and edit your app name, description, icon, and background color.
 
           c. Click **Save Changes**.
 
         5. Copy the webhook URL:
 
-          a. Under **Features** in the left navigation, click **Incoming Webhooks**.
+          a. Under **Features** in the navigation panel, click **Incoming Webhooks**.
           
           b. Click the **Copy** button next to the webhook URL. You'll use this URL to set up the integration in the Hybrid Cloud Console.
 
@@ -117,7 +117,7 @@ spec:
 
           b. In **Workspace URL**, paste the webhook URL that you copied from Slack and click **Next**.
 
-          c. Select the events you want to be notified about in Slack. Locate the event type by selecting a **Product family** from the dropdown, then select events you want to receive. Click **Next**. You can also configure this later.
+          c. To select the events you want to be notified about in Slack, locate the event type by selecting a **Product family** from the dropdown menu, then selecting events you want to receive, and click **Next**. You can also configure this later.
           
           d. Review the integration details and click **Submit**.
 
@@ -146,7 +146,7 @@ spec:
     Congratulations! You’ve successfully configured the console to send notifications about selected events to your Slack channel.
     
     Next steps:
-    - You can configure additional Slack channels to receive event notifications by creating additional Slack integrations. For example, your organization may want to send certain types of notifications to different Slack channels based on your teams or security policies.
+    - You can configure additional Slack channels to receive event notifications by creating additional Slack integrations. For example, your organization might want to send certain types of notifications to different Slack channels based on your teams or security policies.
     - You can change the events you're notified about in your Slack channel by editing your integration. To edit your notifications:
 
         1. Next to your Slack integration on the **Communications** page, click &#8942; > **Edit** to open the **Edit integration** wizard. 
