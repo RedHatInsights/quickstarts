@@ -1,23 +1,23 @@
 
 metadata:
-  name: rosa-add-cluster-user
+  name: OpenShift-add-cluster-user
   instructional: true
 spec:
-  displayName: Adding new users to your ROSA cluster
+  displayName: Adding new users to your managed OpenShift cluster 
   durationMinutes: 5
   type:
     text: Quick start
     color: green
   icon: data:image/svg+xml;base64,PCEtLSBHZW5lcmF0ZWQgYnkgSWNvTW9vbi5pbyAtLT4KPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KPHRpdGxlPjwvdGl0bGU+CjxnIGlkPSJpY29tb29uLWlnbm9yZSI+CjwvZz4KPHBhdGggZD0iTTQ0OCA2NHY0MTZoLTMzNmMtMjYuNTEzIDAtNDgtMjEuNDktNDgtNDhzMjEuNDg3LTQ4IDQ4LTQ4aDMwNHYtMzg0aC0zMjBjLTM1LjE5OSAwLTY0IDI4LjgtNjQgNjR2Mzg0YzAgMzUuMiAyOC44MDEgNjQgNjQgNjRoMzg0di00NDhoLTMyeiI+PC9wYXRoPgo8cGF0aCBkPSJNMTEyLjAyOCA0MTZ2MGMtMC4wMDkgMC4wMDEtMC4wMTkgMC0wLjAyOCAwLTguODM2IDAtMTYgNy4xNjMtMTYgMTZzNy4xNjQgMTYgMTYgMTZjMC4wMDkgMCAwLjAxOS0wLjAwMSAwLjAyOC0wLjAwMXYwLjAwMWgzMDMuOTQ1di0zMmgtMzAzLjk0NXoiPjwvcGF0aD4KPC9zdmc+Cg==
   prerequisites:
-    - You must have a ROSA cluster.
+    - You must have a managed OpenShift cluster.
     - You must be a cluster owner, cluster editor, or Organization Administrator for the cluster.
     - You must know the user identifier of the person that you want to add.
 
   description: |-
-    Add new cluster administrative users to your existing ROSA cluster.
+    Add new cluster administrative users to your existing OpenShift cluster.
   introduction: |-
-    If you create or manage a ROSA cluster, you can add additional cluster administrative users to that cluster.
+    If you create or manage an ROSA cluster, you can add additional cluster administrative users to that cluster.
 
     The user who created the cluster or users with specific permissions can add the `dedicated-admin` or `cluster-admin` cluster administrative user roles to a cluster.
 
@@ -27,6 +27,7 @@ spec:
     In this quick start, you'll add new cluster administrative users to your cluster.
 
     [As a best practice, limit the number of cluster-admin administrative users to as few as possible.]{{admonition note}}
+    [In this quickstart, when we refer to ROSA, we are referring to both ROSA classic architecture and ROSA with HCP, and when we refer to OSD, we are referring to both OSD on GCP and OSD on AWS.]{{admonition note}}
 
   tasks:
     - title: Add cluster administrative users to your cluster
