@@ -45,9 +45,9 @@ var (
 					{
 						Group: "Console-wide services",
 						Data: []FilterItem{
-							{Id: "iam", CardLabel: "IAM", FilterLabel: "IAM (Identity and Access Management)", Icon: RedHatIcon},
+							{Id: "iam", CardLabel: "IAM", FilterLabel: "IAM (Identity & Access Management)", Icon: RedHatIcon},
 							{Id: "settings", CardLabel: "Settings", FilterLabel: "Settings", Icon: RedHatIcon},
-							{Id: "subscriptions-services", CardLabel: "Subscriptions services", FilterLabel: "Subscriptions services", Icon: RedHatIcon},
+							{Id: "subscriptions-services", CardLabel: "Subscriptions Services", FilterLabel: "Subscriptions Services", Icon: RedHatIcon},
 						},
 					},
 				},
@@ -58,9 +58,9 @@ var (
 				CategoryData: []CategoryGroup{{
 					Data: []FilterItem{
 						{Id: "documentation", CardLabel: "Documentation", FilterLabel: "Documentation", Color: "orange"},
-						{Id: "learningPath", CardLabel: "Learning path", FilterLabel: "Learning paths", Color: "cyan"},
+						{Id: "learningPath", CardLabel: "Learning path", FilterLabel: "Learning path", Color: "cyan"},
 						{Id: "quickstart", CardLabel: "Quick start", FilterLabel: "Quick start", Color: "green"},
-						{Id: "otherResource", CardLabel: "Other", FilterLabel: "Other content types", Color: "purple"},
+						{Id: "otherResource", CardLabel: "Other", FilterLabel: "Other", Color: "purple"},
 					},
 				}},
 			},
