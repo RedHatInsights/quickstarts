@@ -1,9 +1,9 @@
 
 metadata:
-  name: rosa-add-cluster-user
+  name: OpenShift-add-cluster-user
   instructional: true
 spec:
-  displayName: Adding new users to your ROSA cluster
+  displayName: Adding new users to your managed OpenShift cluster cluster
   durationMinutes: 5
   type:
     text: Quick start
