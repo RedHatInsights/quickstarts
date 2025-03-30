@@ -1,6 +1,8 @@
 module github.com/RedHatInsights/quickstarts
 
-go 1.20
+go 1.21
+
+toolchain go1.22.9
 
 require (
 	github.com/getkin/kin-openapi v0.76.0
@@ -28,7 +30,7 @@ require (
 	github.com/go-openapi/swag v0.19.5 // indirect
 	github.com/go-sql-driver/mysql v1.6.0 // indirect
 	github.com/golang/protobuf v1.5.4 // indirect
-	github.com/google/go-cmp v0.5.6 // indirect
+	github.com/google/go-cmp v0.7.0 // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
 	github.com/jackc/pgconn v1.14.3 // indirect
 	github.com/jackc/pgio v1.0.0 // indirect
