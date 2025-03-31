@@ -28,6 +28,9 @@ var (
 	OpenShiftIcon = "/apps/frontend-assets/console-landing/openshift.svg"
 	RHELIcon      = "/apps/frontend-assets/learning-resources/RHEL-icon.svg"
 	RedHatIcon    = "/apps/frontend-assets/learning-resources/RH-icon.svg"
+	IAMIcon       = "/apps/frontend-assets/learning-resources/IAM.svg"
+	SubsIcon      = "/apps/frontend-assets/learning-resources/subs.svg"
+	SettingsIcon  = "/apps/frontend-assets/learning-resources/settings.svg"
 
 	FrontendFilters FilterData = FilterData{
 		Categories: []FiltersCategory{
@@ -45,9 +48,9 @@ var (
 					{
 						Group: "Console-wide services",
 						Data: []FilterItem{
-							{Id: "iam", CardLabel: "IAM", FilterLabel: "IAM (Identity and Access Management)", Icon: RedHatIcon},
-							{Id: "settings", CardLabel: "Settings", FilterLabel: "Settings", Icon: RedHatIcon},
-							{Id: "subscriptions-services", CardLabel: "Subscriptions services", FilterLabel: "Subscriptions services", Icon: RedHatIcon},
+							{Id: "iam", CardLabel: "IAM", FilterLabel: "IAM (Identity & Access Management)", Icon: IAMIcon},
+							{Id: "settings", CardLabel: "Settings", FilterLabel: "Settings", Icon: SettingsIcon},
+							{Id: "subscriptions-services", CardLabel: "Subscriptions Services", FilterLabel: "Subscriptions Services", Icon: SubsIcon},
 						},
 					},
 				},
