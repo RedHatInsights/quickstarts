@@ -15,8 +15,4 @@ spec:
   link: 
     href: https://www.redhat.com/en/resources/gain-data-driven-efficiency-overview
     text: View documentation
-  tags:
-    kind: bundle
-      value: subscriptions
-    kind: content
-      value: otherResource
+ 
