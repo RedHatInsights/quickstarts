@@ -13,3 +13,7 @@ tags:
   value: spend-management
 - kind: use-case
   value: system-configuration
+- kind: bundle
+  value: subscriptions
+- kind: content
+  value: otherResource
