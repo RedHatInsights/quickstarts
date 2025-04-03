@@ -27,7 +27,7 @@ spec:
   tasks:
     - title: Grant OCM role to a user in your organization
       description: |-
-        To add OCM roles and grant access to users of a cluster:
+        To add OCM roles and grant access to users of a ROSA or OSD cluster:
 
         1. Go to **Cluster List**.
         1. Click your cluster's name to view the cluster details.

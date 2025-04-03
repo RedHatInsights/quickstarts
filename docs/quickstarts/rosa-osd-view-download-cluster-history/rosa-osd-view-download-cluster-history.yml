@@ -1,21 +1,21 @@
 
 metadata:
-  name: rosa-view-download-cluster-history
+  name: rosa-osd-view-download-cluster-history
   instructional: true
 spec:
-  displayName: Viewing and downloading your ROSA cluster history
+  displayName: Viewing and downloading your managed OpenShift cluster history
   durationMinutes: 5
   type:
     text: Quick start
     color: grey
   icon: data:image/svg+xml;base64,PCEtLSBHZW5lcmF0ZWQgYnkgSWNvTW9vbi5pbyAtLT4KPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KPHRpdGxlPjwvdGl0bGU+CjxnIGlkPSJpY29tb29uLWlnbm9yZSI+CjwvZz4KPHBhdGggZD0iTTQ0OCA2NHY0MTZoLTMzNmMtMjYuNTEzIDAtNDgtMjEuNDktNDgtNDhzMjEuNDg3LTQ4IDQ4LTQ4aDMwNHYtMzg0aC0zMjBjLTM1LjE5OSAwLTY0IDI4LjgtNjQgNjR2Mzg0YzAgMzUuMiAyOC44MDEgNjQgNjQgNjRoMzg0di00NDhoLTMyeiI+PC9wYXRoPgo8cGF0aCBkPSJNMTEyLjAyOCA0MTZ2MGMtMC4wMDkgMC4wMDEtMC4wMTkgMC0wLjAyOCAwLTguODM2IDAtMTYgNy4xNjMtMTYgMTZzNy4xNjQgMTYgMTYgMTZjMC4wMDkgMCAwLjAxOS0wLjAwMSAwLjAyOC0wLjAwMXYwLjAwMWgzMDMuOTQ1di0zMmgtMzAzLjk0NXoiPjwvcGF0aD4KPC9zdmc+Cg==
   prerequisites:
-    - You must have access to a ROSA cluster.
+    - You must have access to a managed OpenShift cluster.
 
   description: |-
-    View and download your ROSA cluster history.
+    View and download your ROSA or OSD cluster history.
   introduction: |-
-    Using OpenShift Cluster Manager, you can view the cluster notifications for your ROSA clusters and download your cluster history.
+    Using OpenShift Cluster Manager, you can view the cluster notifications for your Red Hat OpenShift Service on Amazon Web Services (ROSA) or Red Hat OpenShift Dedicated (OSD) clusters and download your cluster history.
 
     The cluster notifications detail cluster events and cluster resource changes, such as:
 
@@ -25,18 +25,23 @@ spec:
 
     In this quick start, you'll learn how to view cluster notifications and download your cluster's entire history.
 
+    [In this quick start, when we refer to ROSA, we are referring to both ROSA classic architecture and ROSA with HCP, and when we refer to OSD, we are referring to both OSD on GCP and OSD on AWS.]{{admonition note}}
+
   tasks:
-    - title: View and download your cluster's history
+    - title: View and download your cluster history
       description: |-
-        To view your cluster's history:
+        To view your ROSA or OSD cluster history:
 
         1. Go to **Cluster List**.
         1. Click your cluster's name.
         1. Click the **Cluster history** tab.
 
-              a. Optional: Filter the cluster service logs by **Description** or **Severity** from the drop-down menu. You can filter further by entering a specific item in the search bar.
+              a. Optional: Adjust the timespan for the cluster service logs by selecting an option from the first drop-down menu or by using the date picker to filter the results.
 
-        To then download your cluster history:
+              b. Optional: Filter the cluster service logs by **Description** or **Severity** from the **Type** drop-down menu. You can filter further by selecting from the **Filter by Type** drop-down menu.
+              
+
+        To download your cluster history:
 
         1. On the **Cluster history** tab, click the **Download history** button.
         1. Choose the format (JSON or CSV) you want to download the history to.
