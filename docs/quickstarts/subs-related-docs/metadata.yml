@@ -13,5 +13,3 @@ tags:
   value: spend-management
 - kind: use-case
   value: system-configuration
-- kind: content
-  value: otherResource
