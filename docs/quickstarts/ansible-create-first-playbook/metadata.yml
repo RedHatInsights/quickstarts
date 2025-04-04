@@ -4,6 +4,8 @@ tags:
 - kind: bundle
   value: ansible
 - kind: content
+  value: documentation 
+- kind: content
   value: otherResource
 - kind: product-families
   value: ansible
