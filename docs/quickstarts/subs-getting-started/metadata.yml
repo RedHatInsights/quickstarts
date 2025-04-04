@@ -1,0 +1,13 @@
+ kind: QuickStarts
+ name: subs-getting-started
+ tags:
+ - kind: bundle
+   value: subscriptions
+ - kind: content
+   value: documentation
+ - kind: product-families
+   value: subscriptions-services
+ - kind: use-case
+   value: spend-management
+ - kind: use-case
+   value: system-configuration
