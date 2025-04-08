@@ -1,5 +1,5 @@
 kind: QuickStarts
-name: rosa-edit-app-ingress
+name: rosa-osd-edit-app-ingress
 tags:
   - kind: bundle
     value: openshift
