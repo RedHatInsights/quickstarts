@@ -2,6 +2,6 @@ kind: QuickStarts
 name: subs-data-driven-efficiency
 tags:
 - kind: bundle
-  value: subscriptions
+value: subscriptions
 - kind: content
-  value: otherResource
+value: otherResource
