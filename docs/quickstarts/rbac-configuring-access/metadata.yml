@@ -5,17 +5,23 @@ tags:
   value: settings
 - kind: bundle
   value: iam
+- kind: bundle
+  value: insights
 - kind: content
   value: documentation
 - kind: product-families
   value: settings
 - kind: product-families
-  value: rhel  
+  value: iam 
 - kind: product-families
-  value: iam
+  value: rhel
 - kind: product-families
-  value: ansible 
+  value: ansible
+- kind: product-families
+  value: openshift 
 - kind: use-case
   value: identity-and-access
 - kind: use-case
   value: system-configuration
+- kind: use-case
+  value: security
