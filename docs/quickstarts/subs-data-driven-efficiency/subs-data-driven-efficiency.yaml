@@ -1,8 +1,8 @@
 apiVersion: console.openshift.io/v1
 kind: QuickStarts
 metadata:
-name: subs-data-driven-efficiency
-externalDocumentation: true
+  name: subs-data-driven-efficiency
+  externalDocumentation: true
 spec:
   version: 0.1
   type:
