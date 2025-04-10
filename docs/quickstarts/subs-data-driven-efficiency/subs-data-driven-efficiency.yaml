@@ -8,9 +8,9 @@ spec:
   type:
     text: Documentation
     color: orange
-displayName: Make informed decisions about subscriptions
-icon: ~
-description: Subscription services enable data-driven efficiency by identifying utilization patterns.
-link:
-  href:  https://www.redhat.com/en/resources/gain-data-driven-efficiency-overview
-  text: View documentation
+  displayName: Make informed decisions about subscriptions
+  icon: ~
+  description: Subscription services enable data-driven efficiency by identifying utilization patterns.
+  link:
+    href:  https://www.redhat.com/en/resources/gain-data-driven-efficiency-overview
+    text: View documentation
