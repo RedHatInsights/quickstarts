@@ -1,32 +1,33 @@
 
 metadata:
-  name: rosa-add-cluster-user
+  name: rosa-osd-add-cluster-user
   instructional: true
 spec:
-  displayName: Adding new users to your ROSA cluster
+  displayName: Adding new users to your managed OpenShift cluster 
   durationMinutes: 5
   type:
     text: Quick start
     color: green
   icon: data:image/svg+xml;base64,PCEtLSBHZW5lcmF0ZWQgYnkgSWNvTW9vbi5pbyAtLT4KPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KPHRpdGxlPjwvdGl0bGU+CjxnIGlkPSJpY29tb29uLWlnbm9yZSI+CjwvZz4KPHBhdGggZD0iTTQ0OCA2NHY0MTZoLTMzNmMtMjYuNTEzIDAtNDgtMjEuNDktNDgtNDhzMjEuNDg3LTQ4IDQ4LTQ4aDMwNHYtMzg0aC0zMjBjLTM1LjE5OSAwLTY0IDI4LjgtNjQgNjR2Mzg0YzAgMzUuMiAyOC44MDEgNjQgNjQgNjRoMzg0di00NDhoLTMyeiI+PC9wYXRoPgo8cGF0aCBkPSJNMTEyLjAyOCA0MTZ2MGMtMC4wMDkgMC4wMDEtMC4wMTkgMC0wLjAyOCAwLTguODM2IDAtMTYgNy4xNjMtMTYgMTZzNy4xNjQgMTYgMTYgMTZjMC4wMDkgMCAwLjAxOS0wLjAwMSAwLjAyOC0wLjAwMXYwLjAwMWgzMDMuOTQ1di0zMmgtMzAzLjk0NXoiPjwvcGF0aD4KPC9zdmc+Cg==
   prerequisites:
-    - You must have a ROSA cluster.
+    - You must have a managed OpenShift cluster.
     - You must be a cluster owner, cluster editor, or Organization Administrator for the cluster.
     - You must know the user identifier of the person that you want to add.
 
   description: |-
-    Add new cluster administrative users to your existing ROSA cluster.
+    Add new cluster administrative users to your existing managed OpenShift cluster.
   introduction: |-
-    If you create or manage a ROSA cluster, you can add additional cluster administrative users to that cluster.
+    If you create or manage a Red Hat OpenShift Service on AWS (ROSA) or Red Hat Openshift Dedicated (OSD) cluster, you can add additional cluster administrative users to that cluster.
 
     The user who created the cluster or users with specific permissions can add the `dedicated-admin` or `cluster-admin` cluster administrative user roles to a cluster.
 
-    - A `dedicated-admin` user role has elevated permissions from a normal cluster user. For more specifics about these permissions, see the [documentation](https://docs.redhat.com/en/documentation/red_hat_openshift_service_on_aws/4/html/introduction_to_rosa/policies-and-service-definition#rosa-sdpolicy-customer-admin-user_rosa-service-definition).
+    - A `dedicated-admin` user role has elevated permissions from a normal cluster user.
     - With the `cluster-admin` user role, users are given full administrative access to the cluster. This is the highest level of privilege available to users. It should be granted with extreme care, because it is possible with this level of access to get the cluster into an unsupportable state.
 
     In this quick start, you'll add new cluster administrative users to your cluster.
 
     [As a best practice, limit the number of cluster-admin administrative users to as few as possible.]{{admonition note}}
+    [In this quick start, when we refer to ROSA, we are referring to both ROSA classic architecture and ROSA with HCP, and when we refer to OSD, we are referring to both OSD on GCP and OSD on AWS.]{{admonition note}}
 
   tasks:
     - title: Add cluster administrative users to your cluster
@@ -40,10 +41,6 @@ spec:
         1. Click the **Add user** button.
         1. In the **User ID** field, add the name or user identifier of the user you want to add to your cluster. User IDs are matched by the cluster's identity providers.
         1. Select which Group the user will belong to. You can choose between dedicated-admins and cluster-admins.
-
-            a. For more information on `dedicated-admin`, see [the documentation](https://docs.redhat.com/en/documentation/red_hat_openshift_service_on_aws/4/html/introduction_to_rosa/policies-and-service-definition#rosa-sdpolicy-customer-admin-user_rosa-service-definition).
-
-            b. For more information on `cluster-admin`, see [the documentation](https://docs.redhat.com/en/documentation/red_hat_openshift_service_on_aws/4/html/introduction_to_rosa/policies-and-service-definition#rosa-sdpolicy-cluster-admin-role_rosa-service-definition).
 
         1. Click **Add user**.
 
@@ -65,8 +62,14 @@ spec:
 
         Optionally, to remove cluster administrative users you have added, click the options icon (⋮) > **Delete**.
 
-        To learn more about user access for ROSA clusters, see the links below:
+        To learn more about user access for managed OpenShift clusters,   use the following links:
         - Read more about [Configuring access to clusters in OpenShift Cluster Manager](https://docs.redhat.com/en/documentation/openshift_cluster_manager/1-latest/html/managing_clusters/assembly-user-management-ocm).
-        - Read more about `dedicated-admin` in the [Customer administrator user](https://docs.redhat.com/en/documentation/red_hat_openshift_service_on_aws/4/html/introduction_to_rosa/policies-and-service-definition#rosa-sdpolicy-customer-admin-user_rosa-service-definition) section of the ROSA documentation.
-        - Read more about `cluster-admin` in the [Cluster administration role](https://docs.redhat.com/en/documentation/red_hat_openshift_service_on_aws/4/html/introduction_to_rosa/policies-and-service-definition#rosa-sdpolicy-cluster-admin-role_rosa-service-definition) section of the ROSA documentation.
+        - Read more about `dedicated-admin` in [Customer adminstrator user](https://docs.redhat.com/en/documentation/red_hat_openshift_service_on_aws/4/html/introduction_to_rosa/policies-and-service-definition#rosa-sdpolicy-customer-admin-user_rosa-service-definition) (ROSA documentation) or [Customer adminstrator user](https://docs.redhat.com/en/documentation/openshift_dedicated/4/html/introduction_to_openshift_dedicated/policies-and-service-definition#cluster-admin-user_osd-service-definition) (OSD documentation).
+        - Read more about `cluster-admin` in [Cluster administration role](https://docs.redhat.com/en/documentation/red_hat_openshift_service_on_aws/4/html/introduction_to_rosa/policies-and-service-definition#rosa-sdpolicy-cluster-admin-role_rosa-service-definition) (ROSA documentation) or [Cluster administration role](https://docs.redhat.com/en/documentation/openshift_dedicated/4/html/introduction_to_openshift_dedicated/policies-and-service-definition#cluster-admin-role_osd-service-definition) (OSD documentation).
+
+ 
+
+
+
+
   # you can link to the next quick start(s) here

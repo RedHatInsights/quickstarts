@@ -15,7 +15,7 @@ spec:
   description: |-
     Enable and edit autoscaling for your managed OpenShift cluster.
   introduction: |-
-    Using OpenShift Cluster Manager, you can enable and customize cluster autoscaling for your Red Hat OpenShift on Amazon Web Services (ROSA) or Red Hat OpenShift Dedicated (OSD) cluster.
+    Using OpenShift Cluster Manager, you can enable and customize cluster autoscaling for your Red Hat OpenShift Service on Amazon Web Services (ROSA) or Red Hat OpenShift Dedicated (OSD) cluster.
 
     The cluster autoscaler adjusts the size of a managed OpenShift cluster to meet your current deployment needs, but does not increase the cluster resources beyond the limits that you specify. It also increases the size of the cluster when there are pods that fail to schedule on any of the current worker nodes due to insufficient resources or when another node is necessary to meet deployment needs.
 
