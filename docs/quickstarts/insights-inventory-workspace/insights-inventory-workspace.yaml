@@ -11,14 +11,14 @@ spec:
     color: green
   icon: data:image/svg+xml;base64,PCEtLSBHZW5lcmF0ZWQgYnkgSWNvTW9vbi5pbyAtLT4KPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KPHRpdGxlPjwvdGl0bGU+CjxnIGlkPSJpY29tb29uLWlnbm9yZSI+CjwvZz4KPHBhdGggZD0iTTQ0OCA2NHY0MTZoLTMzNmMtMjYuNTEzIDAtNDgtMjEuNDktNDgtNDhzMjEuNDg3LTQ4IDQ4LTQ4aDMwNHYtMzg0aC0zMjBjLTM1LjE5OSAwLTY0IDI4LjgtNjQgNjR2Mzg0YzAgMzUuMiAyOC44MDEgNjQgNjQgNjRoMzg0di00NDhoLTMyeiI+PC9wYXRoPgo8cGF0aCBkPSJNMTEyLjAyOCA0MTZ2MGMtMC4wMDkgMC4wMDEtMC4wMTkgMC0wLjAyOCAwLTguODM2IDAtMTYgNy4xNjMtMTYgMTZzNy4xNjQgMTYgMTYgMTZjMC4wMDkgMCAwLjAxOS0wLjAwMSAwLjAyOC0wLjAwMXYwLjAwMWgzMDMuOTQ1di0zMmgtMzAzLjk0NXoiPjwvcGF0aD4KPC9zdmc+Cg==
   prerequisites:
-    - You are an Organization Administrator or have Workspace administrator permissions.
+    - You are an Organization Administrator or have been granted the Workspace administrator role.
   description: |-
     Learn how to create a workspace, add systems to it, and remove systems from it.
   introduction: |-
     
-        Welcome to the quick start for creating and managing workspaces. Workspaces provide a flexible, hierarchical approach to organizing your assets and streamline user access. 
+        Welcome to the quick start for creating and managing workspaces. Workspaces provide a flexible approach to organizing your assets and streamline user access in the Hybrid Cloud Console. 
         
-        Configure workspaces to organize systems in your inventory to... (EDIT)
+        Configure workspaces to organize systems in your inventory and apply access management rules to them.
         
         In this quick start, you will:
         - Create a workspace.
@@ -29,18 +29,20 @@ spec:
     - title: Create a workspace
       description: |- 
 
-        You can create workspaces and select specific systems to add to these workspaces to better organize your Inventory. 
+        Workspaces provide you with an efficient way to organize your systems. Workspaces give you additional security through role-based access control, making it easier to manage and monitor specific groups of systems based on your organizational needs.
 
-        You can create and manage workspaces both from **RHEL** > **Inventory** > **Workspaces**, or from **Identity & Access Management** > **Workspaces** in the Hybrid Cloud Console.
+        Create workspaces and then select specific systems to add to these workspaces to better organize your inventory. 
+
+        You can create and manage workspaces both from **RHEL** > **Inventory** > **Workspaces**, or from **Identity & Access Management** > **Workspaces** in the console.
         
         To create a workspace:
-
-        1. Go to **RHEL** > **Inventory** > **Workspaces** using the left navigation.
+     
+        1. Go to [RHEL > Inventory > Workspaces](https://console.redhat.com/insights/inventory/workspaces) or [Identity & Access Management > Workspaces](https://console.redhat.com/iam/).
         2. Click **Create workspace**.
         3. In the **Create a workspace** dialog:
             - Enter a name for your workspace.
-             [Currently, you cannot change the parent workspace. In upcoming releases of this feature, this setting will allow you to configure permissions inheritance.]{{admonition note}}
             - Enter a description for your workspace.
+            [Currently, the parent workspace is limited to the default workspace. In upcoming releases of this feature, this setting will allow you to configure permissions inheritance.]{{admonition note}}
         4. Click **Save**.
 
         Your new workspace shows in the **Workspaces** list.
@@ -60,29 +62,34 @@ spec:
 
         Assigning your systems to workspaces allows you to configure access control from the workspace level. You can group your systems to fit your organizational structure, limiting permissions to users and systems by workspace.
 
-        You can add systems to a workspace from the workspace details page or from the **Systems** list.
+        You can add one system to a workspace at a time, or add multiple systems to a workspace in one action from the **Systems** list or the workspace details page.
 
         To add one or more systems to a workspace from the  **Systems** list:
 
-        1. Go to **Inventory** > **Systems**.
+        1. Go to [RHEL > Inventory](https://console.redhat.com/insights/inventory) to see your list of systems.
+
+        2. To add one system to a workspace:
+
+            a. Click the <i class="fas fa-ellipsis-v"></i> (options icon) next to the workspace, then click **Add to workspace**.
+
+            b. Select the workspace to add your systems to.
         
-        2. Select the checkbox for each system(s) you want to add to a workspace.  
-  
-        3. Add one or more systems to a workspace:
+        3. To add multiple systems to a workspace:
 
-            - To add individual systems to a workspace, click the <i class="fas fa-ellipsis-v"></i> (options icon) in the row, then click **Add to workspace**.
+            a. Select the checkbox for each system you want to add to a workspace.  
 
-            - To add multiple systems to a workspace, select multiple systems using the checkboxes, click the <i class="fas fa-ellipsis-v"></i> (options icon) in the toolbar, then click **Add to workspace**.
-  
-           [Selecting systems that already belong to a workspace will disable the action.]{{admonition note}} 
+            b. Click the <i class="fas fa-ellipsis-v"></i> (options icon) in the toolbar, then click **Add to workspace**.
+            [You cannot select systems that already belong to a workspace.]{{admonition note}} 
 
-          Click a workspace name to view the systems that belong to that workspace.
+            c. Select the workspace to add your systems to.
+
+        You can click a workspace name to view the systems that belong to that workspace.
 
       # optional - the task's Check your work module
       review:
         instructions: |-
-          - Does the system you added to a workspace appear on the workspace's page?
-        failedTaskHelp: Try adding the system to the workspace again.
+          - Does the system(s) you added appear on the workspace's page?
+        failedTaskHelp: Try adding the system(s) to the workspace again.
       # optional - the task's success and failure messages
       summary:
         success: Shows a success message in the task header
@@ -93,21 +100,29 @@ spec:
 
         To remove systems from a workspace:
 
-        1. Go to **Inventory** > **Workspaces**.
+        1. Go to [RHEL > Inventory](https://console.redhat.com/insights/inventory) to see your list of systems and the workspaces they belong to. 
 
-        2. Select the checkbox for each system(s) you want to remove from a workspace.
-            
-            - To remove individual systems from a workspace, click the <i class="fas fa-ellipsis-v"></i> (options icon) in the row, then click **Remove from workspace**. 
+        2. To remove one system from a workspace:
+
+            a. Click the <i class="fas fa-ellipsis-v"></i> (options icon) next to the system, then click **Remove from workspace**. 
+
+            b. Click **Remove** to confirm.
         
-            - To remove multiple systems from a workspace, select multiple systems using the table checkboxes, click the <i class="fas fa-ellipsis-v"></i> (options icon) in the toolbar, then click **Remove from workspace**.
+        3. To remove multiple systems from a workspace:
 
-          Click a workspace name to view the systems that belong to that workspace.  
+            a. Select the checkbox for each system you want to remove from a workspace.  
+
+            b. Click the <i class="fas fa-ellipsis-v"></i> (options icon) in the toolbar, then click **Remove from workspace**.
+
+            c. Click **Remove** to confirm.
+
+        You can click a workspace name to view the systems that belong to that workspace.
 
       # optional - the task's Check your work module
       review:
         instructions: |-
-          - Did you complete the task successfully?
-        failedTaskHelp: This task isn't verified yet. Try the task again.
+          - Check the **Workspace** column on the **Systems** list. Do the system(s) you removed from a workspace say *No workspace*?
+        failedTaskHelp: Try removing the system(s) from the workspace again.
       # optional - the task's success and failure messages
       summary:
         success: Shows a success message in the task header
@@ -117,10 +132,18 @@ spec:
    
       <h4><b>Thank you for taking the time to explore workspaces!</b></h4> 
 
-      EDIT: What should we say here?
+      You've now learned how to create a workspace, and how to add and remove systems from a workspace.
       
-      If you need additional assistance, [open a support case](https://access.redhat.com/support).
-  
-  # you can link to the next quick start(s) here
+      We'd love your help developing workspaces! To join an upcoming user research session or provide feedback about your experience, click the **Feedback** button on the right side of the console to get in touch. 
+      
+      From there, you can also [open a support case](https://access.redhat.com/support) for additional assistance.
+
+      **Additional resources**
+
+      - Learn more about workspaces in [Viewing and managing system inventory](https://docs.redhat.com/en/documentation/red_hat_insights/1-latest/html/viewing_and_managing_system_inventory/.index) 
+      
+      **Next steps**:
+      - Configure user access for your workspaces using this quick start:
+      
   nextQuickStart:
     - insights-inventory-workspace-rbac
