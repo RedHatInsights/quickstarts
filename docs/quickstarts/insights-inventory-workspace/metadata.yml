@@ -3,6 +3,8 @@ name: insights-inventory-workspace
 tags:
 - kind: bundle
   value: insights
+- kind: bundle
+  value: iam
 - kind: application
   value: inventory
 - kind: bundle
