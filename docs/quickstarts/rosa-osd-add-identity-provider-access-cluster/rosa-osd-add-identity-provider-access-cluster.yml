@@ -1,0 +1,84 @@
+
+metadata:
+  name: rosa-osd-add-identity-provider-access-cluster
+  instructional: true
+spec:
+  displayName: Adding an identity provider and accessing your managed OpenShift cluster
+  durationMinutes: 10
+  type:
+    text: Quick start
+    color: green
+  icon: data:image/svg+xml;base64,PCEtLSBHZW5lcmF0ZWQgYnkgSWNvTW9vbi5pbyAtLT4KPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KPHRpdGxlPjwvdGl0bGU+CjxnIGlkPSJpY29tb29uLWlnbm9yZSI+CjwvZz4KPHBhdGggZD0iTTQ0OCA2NHY0MTZoLTMzNmMtMjYuNTEzIDAtNDgtMjEuNDktNDgtNDhzMjEuNDg3LTQ4IDQ4LTQ4aDMwNHYtMzg0aC0zMjBjLTM1LjE5OSAwLTY0IDI4LjgtNjQgNjR2Mzg0YzAgMzUuMiAyOC44MDEgNjQgNjQgNjRoMzg0di00NDhoLTMyeiI+PC9wYXRoPgo8cGF0aCBkPSJNMTEyLjAyOCA0MTZ2MGMtMC4wMDkgMC4wMDEtMC4wMTkgMC0wLjAyOCAwLTguODM2IDAtMTYgNy4xNjMtMTYgMTZzNy4xNjQgMTYgMTYgMTZjMC4wMDkgMCAwLjAxOS0wLjAwMSAwLjAyOC0wLjAwMXYwLjAwMWgzMDMuOTQ1di0zMmgtMzAzLjk0NXoiPjwvcGF0aD4KPC9zdmc+Cg==
+  prerequisites:
+    - You must have a ROSA or an OSD cluster.
+    - You must be a cluster owner or Organization Administrator for the cluster.
+
+  description: |-
+    Add an identity provider to your managed OpenShift cluster and access that cluster using the web console.
+
+  introduction: |-
+    Both Red Hat OpenShift Dedicated (OSD) and Red Hat OpenShift Service on AWS (ROSA) include a built-in OAuth server. Developers and administrators obtain OAuth access tokens to authenticate themselves to the API. 
+    
+    As an administrator, you can configure OAuth to specify an identity provider after you install your cluster. Configuring identity providers allows users to log in and access the cluster using the web console.
+
+    You can configure the following types of identity providers:
+    - GitHub or GitHub Enterprise
+    - GitLab
+    - Google
+    - LDAP
+    - OpenID Connect
+    - htpasswd
+
+    [In this quickstart, when we refer to ROSA, we are referring to both ROSA (classic architecture) and ROSA with HCP, and when we refer to OSD, we are referring to both OSD on GCP and OSD on AWS.]{{admonition note}}
+
+  tasks:
+    - title: Add and configure an identity provider for your cluster
+      description: |-
+        To add an identity provider to your cluster:
+
+        1. Go to **Cluster List**.
+        1. Click your cluster's name to view the cluster details.
+        1. Click the **Access control** tab.
+        1. Click the **Select Add identity provider** tab.
+        1. Select your preferred identity provider from the drop-down menu.
+        1. Enter a unique name for the identity provider. This name cannot be changed later.
+        1. Complete all remaining fields to configure the identity provider.
+
+        To remove an identity provider, click the options icon (⋮) beside the identity provider you want to remove, and click **Delete**.
+
+  # optional - the task's Check your work module
+      review:
+        instructions: |-
+          - Does your chosen identity provider show in the **Identity provider** section?
+        failedTaskHelp: For additional help in learning how to configure your chosen identity provider, see [Understanding identity providers](https://docs.redhat.com/en/documentation/openshift_dedicated/4/html/authentication_and_authorization/sd-configuring-identity-providers#sd-configuring-identity-providers) in the OSD documentation or [Understanding identity providers](https://docs.redhat.com/en/documentation/red_hat_openshift_service_on_aws/4/html/install_rosa_classic_clusters/rosa-sts-config-identity-providers#understanding-idp_rosa-sts-config-identity-providers) in the ROSA documentation.
+  # optional - the task's success and failure messages
+      summary:
+        success: Shows a success message in the task header
+        failed: Shows a failed message in the task header
+
+    - title: Access your cluster using the web console
+      description: |-
+        To access your cluster using the web console:
+
+        1. Go to **Cluster List**.
+        1. Click your cluster's name to view cluster details.
+        1. Click the **Open console** button to open the web console for your cluster.
+        1. Select your identity provider.
+        1. Enter your credentials to log in to the console.
+        
+
+  # optional - the task's Check your work module
+      review:
+        instructions: |-
+          - Did you successfully access your cluster using the web console?
+        failedTaskHelp: Try following the steps again.
+  # optional - the task's success and failure messages
+      summary:
+        success: Shows a success message in the task header
+        failed: Shows a failed message in the task header
+  conclusion: |-
+        Congratulations, you added and configured an identity provider for your cluster and accessed that cluster through the web console!
+
+        After completing this quick start, you've learned how to add an identity provider to your cluster and access the cluster using this identity provider.
+
+  # you can link to the next quick start(s) here
