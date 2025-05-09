@@ -10,8 +10,7 @@ spec:
 
   displayName: 'Creating and executing remediation plans'
   durationMinutes: 10
-  icon: ~
-
+  icon: ''
   # Display the quickstart tag on the tile.
   type:
     text: 'Quick start'
@@ -19,88 +18,111 @@ spec:
 
   # Optional.
   description: |-
-    Remediate an issue detected by the Insights Advisor. Create and execute a remediation plan from the console.
-
+    Create and execute a remediation plan to resolve an issue detected by the Insights Advisor service.
   introduction: |-
-    Remediation plans use Ansible playbooks to remediate issues on systems in your Red Hat Enterprise Linux (RHEL) infrastructure. After your plan has been created, you can download and run the playbook that gets generated it on your organization’s Ansible workflow. You can also execute a playbook on connected RHEL systems from within Insights, without the need for any additional subscriptions or tools.
-
-    
-    For additional information, check out the documentation for [Fixing issues on RHEL systems with remediation playbooks](https://docs.redhat.com/en/documentation/red_hat_insights/1-latest/html-single/red_hat_insights_remediations_guide/index). 
- 
+    In this quick start, from the console, you will create and execute a remediation plan on one or more systems to resolve an issue that the Insights Advisor service recommends remediating.
+    <br>
+    <br>
+    The Advisor service assesses and monitors the health of your Red Hat Enterprise Linux (RHEL) infrastructure and provides recommendations to address availability, stability, performance, and security issues. 
+    Remediation plans use Ansible playbooks to remediate issues on systems in your Red Hat Enterprise Linux (RHEL) infrastructure. 
+    <br>
+    <br>
+    Once you've created a plan, you can execute it from within Insights on directly connected RHEL systems without additional subscriptions or tools. You can also download a remediation plan's playbook and run it in your Ansible workflow.
+    <br>
+    <br>
+    See the [Red Hat Insights Remediations guide](https://docs.redhat.com/en/documentation/red_hat_insights/1-latest/html-single/red_hat_insights_remediations_guide/index) for more details. 
+    <br>
+    <br>
   tasks:
     - title: Create a Remediation plan
       description: |-
-        For this exercise we will create a remediation plan to resolve issues based on Advisor recommendations. The Advisor service assesses and monitors the health of your Red Hat Enterprise Linux (RHEL) infrastructure, and provides recommendations to address availability, stability, performance, and security issues. 
-        1. In the left nav bar, navigate to **Operations** > **Advisor** > **Recommendations**. 
-        2. With the **Recommendations** tab selected, locate a recommendation from within the table that has a Remediation type of the **“Playbook”** type. Click the hyperlinked **Name** to navigate to the details of that recommendation. 
-        3. In the **Recommendation** details view, with the **Conventional** tab selected, select the checkbox for one or more systems
-        4. The **Plan remediation** button should now be enabled, click the button. 
-        5. A wizard will open. Create a new remediation plan, by selecting the **Create a playbook** option. Input _My-Plan-1_ as the name, then click the **Next** button.
-        6. Review the default selections in the subsequent steps **Review systems** and **Remediation review**. In the final step of the wizard click the **Submit** button.
-        7. You will be presented with confirmation messages that your Remediation plan has been created. Select **Open playbook My-Plan-1**.
+        Pick an issue that the Advisor service has recommended remediating on a system in your RHEL infrastructure, and then create a remediation plan to execute.
 
-        To invoke the Insights execution readiness check, click **Next**.
-      # Optional. This will display as the "Check Your Work" portion.
-      # review:
-      #  instructions: |-
-      #    - Tell the user how to verify that they performed the steps correctly.
-      # failedTaskHelp: Try completing the steps again.
+        1. On the left navigation bar, go to **Operations** > **Advisor** > **Recommendations**. 
+        2. Scroll through the list of recommendations and pick one whose **Remediation type** is set to **Playbook**. 
+        3. Click the **Name** hyperlink to open the details of that recommendation. 
+        4. On the **Conventional (RPM-DNF)** tab, select at least one system to remediate.
+        5. Click **Plan remediation** button.
+        <details>
+            <summary><span style="color:#0066CC">&nbspIs the **Plan remediation** button disabled?</span></summary>
+            
+            [You must select at least one system to remediate before you can begin to create and configure a remediation plan. If zero systems are selected, the Plan remediation button will be disabled.]{{admonition note}}
+        </details>
+        6. With the help of the wizard, create a remediation plan named **_My-Plan-1_** and ensure you select the **Create a playbook** option.
+        7. Click **Next**.
+        8. Review the default selections under **Review systems** and **Remediation review**, adjust them as needed, and then click **Submit**.
+        9. Click **Open My-Plan-1** to view your new plan.
+      review:
+        instructions: |-
+          - Were you presented with the details and status of the **_My-Plan-1_** remediation plan that you just created?
+        failedTaskHelp: Review your remediation plan setup and adjust the configuration as needed. [Learn more...](https://docs.redhat.com/en/documentation/red_hat_insights/1-latest/html/red_hat_insights_remediations_guide_with_fedramp/creating-managing-playbooks_red-hat-insights-remediation-guide)<i class="pf-icon [fa-external-link-alt]"></i>
     - title: Confirm execution readiness
       description: |-
-        While viewing plan details in the **Execution readiness** section of the plan, note if any steps have an error associated with them. If so, follow the steps to resolve:
-        <ol type="1">
-        <li>Check user access permissions</li>
-          <ol type="a">
-          <li>Contact your org admin to…</li>
-          <li>Navigate to Settings icon (⚙) > User Access > Groups.</li>
-        <li>Create a new group. In the wizard’s “add roles” step, add the “Remediations administrator” role. In the wizard’s “add members” step, add your user.</li>
-        </ol type="a">
-        <li>Configure RHC manager</li>
-        <ol type="a">
-          <li>Navigate to **Inventory** > **System Configuration** > **Remote Host Configuration (RHC)**</li>
-          <li>Enable the permission titled **Allow permitted Insights users to execute remediation playbooks on rhc-connected systems**. </li>
-        * For complete `rhc` documentation, see [Remote Host Configuration and Management](https://docs.redhat.com/en/documentation/red_hat_insights/1-latest/html/remote_host_configuration_and_management/index).</li>
-        </ol type="a">
-        <li>Disconnected systems</li>
-        <ol type="a">
-           <li> Ensure you have root access to your RHEL system.</li>
-           <li> On your RHEL system, execute the following: </li>
-        ```bash
-        dnf install rhc rhc-worker-playbook
-
-        dnf upgrade rhc rhc-worker-playbook
         
-        grep mqtt-reconnect-delay /etc/rhc/config.toml || echo 'mqtt-reconnect-delay = "10s"' >> /etc/rhc/config.toml rhc connect
-        ```
-        <li>On your remediation plan’s “Systems” tab, the “Connection Status” column should indicate the system is “Connected.” </li>
-        </ol type="a">
-        <li>Navigate back to *“My-Plan-1”* by **RHEL** > **Automation Toolkit** > **Remediation plans** > *“My-Plan-1”*</li>
-        <li>When the Execution readiness section of the plan details screen is complete, verify that the **Execute** button is enabled.</li>
-        <li>To learn about how to execute the Remediation plan using Insights, click **Next**.</li>
-        </ol type="1">
-    - title: Execute a remediation plan on direct-connected systems
+        If the **Execute** button is enabled, this confirms that your remediation plan has passed the execution readiness check and you are ready to execute your plan! Skip these steps and proceed to the next task.
+        <br>
+        <br>
+        When you view the details of your remediation plan, the **Execution readiness** section will indicate why your remediation plan is not ready for execution.
+         
+        Work through the following steps to ensure the prerequisites are in place and to prepare your remediation plan for execution:
+        
+        1. Check your user access permissions to ensure you have the **Remediations administrator** RBAC role.
+            [You might need to contact your organization administrator to confirm your user access settings and to apply the required permissions.]{{admonition important}}
+           <details>
+            <summary><span style="color:#0066CC">&nbspNeed help applying the required user access permissions?</span></summary>
+            - In the console, go to **Settings** (⚙) > **User Access** > **Groups**.
+            - Create a new group and then ensure that you add the **"Remediations administrator"** role.
+            - Under **Add members**, add the user accounts that will create and execute remediation plans with Insights.</li>
+           </details>
+        2. Enable the Remote Host Configuration Manager (RHC) setting.
+           <details>
+            <summary><span style="color:#0066CC">&nbspNeed help finding the Remote Host Configuration Manager setting?</span></summary>
+            - In the console, go to **Inventory** > **System Configurations** > **Remote Host Configuration (RHC)**.
+            - Select **Allow permitted Insights users to execute remediation playbooks on rhc-connected systems**.
+            
+            For more information, see [Remote Host Configuration and Management](https://docs.redhat.com/en/documentation/red_hat_insights/1-latest/html/remote_host_configuration_and_management/index).
+            
+           </details>
+        3. For each system that you want to remediate from within Insights, ensure you have enabled the Remote Host Configuration client (`rhc connect`{{copy}}) and have a direct connection to the RHEL system:
+           <details>
+            <summary><span style="color:#0066CC">&nbspNeed help connecting to a RHEL system?</span></summary>
+            - Log on as a user with root access to the RHEL system, and execute the following commands: 
+            <ol type="a">
+              <li> `dnf install rhc rhc-worker-playbook`{{copy}}</li>
+              <li> `dnf upgrade rhc rhc-worker-playbook`{{copy}}</li>
+              <li> `grep mqtt-reconnect-delay /etc/rhc/config.toml || echo 'mqtt-reconnect-delay = "10s"' >> /etc/rhc/config.toml rhc connect`{{copy}}</li>
+            </ol>
+            - After executing the commands, check the **Connection Status** column in the **Systems** tab of your remediation plan. The status should indicate that the system is **Connected**.
+          </details>
+        4. Go to **Automation Toolkit** > **Remediation plans** and open the remediation plan details for “My-Plan-1”. The execution readiness check will automatically run again.
+      review:
+        instructions: |-
+          - When the execution readiness check has rerun, is the **Execute** button now enabled?
+        failedTaskHelp: Review the remediation plan settings again and adjust the configuration as needed. [Learn more ...](https://docs.redhat.com/en/documentation/red_hat_insights/1-latest/html/red_hat_insights_remediations_guide_with_fedramp/creating-managing-playbooks_red-hat-insights-remediation-guide#viewing-archived-remediation-playbook_creating-managing-playbooks)<i class="pf-icon [fa-external-link-alt]"></i>
+    - title: Execute a remediation plan
       description: |-
-        1. To execute a Remediation plan click the **Execute** button. 
-        [A larger plan execution might take an extended period of time to complete. ]{{admonition note}}
-        2. To review the execution status of the plan, navigate to the **Execution history** tab.
-        3. To view logs for each system, click the **View logs** link under the **Execution history** tab.
-        4. Once the plan execution is complete, you can review the status of your Advisor issue navigating to the **Actions** tab and selecting the hyperlinked name of an Action.
-    # You can add more tasks, as below.
-    #- title: Solve your problem
-    #   description: |-
-    #    Solve your problem using the following method:
-    #    1. Write down the problem.
-    #    2. Think really hard.
-    #    3. Write down the solution.
-
-      # Optional. The task's success and failure messages
-    #  summary:
-    #    success: Shows a success message in the task header
-    #    failed: Shows a failed message in the task header
+        In this task, you will execute the remediation plan on the directly connected RHEL systems included in your plan.
+        <br>
+        1. Open the **Details** view of your remediation plan.
+          <details>
+            <summary><span style="color:#0066CC">&nbspNeed help finding your remediation plan?</span></summary>
+            
+            - On the console, go to **Automation Toolkit** > **Remediations**.
+            - Scroll through the list of remediation plans in the table and locate the remediation plan named **_My-Plan-1_** that you created earlier.
+            - Click the hyperlinked name of the plan to open the **Details** view.
+          </details>     
+        2. Click **Execute**.
+        3. To view the progress of the remediation plan execution, go to the **Execution history** tab for **_My-Plan-1_**. The **Execution history** tab displays the status of the remediation playbook execution for each system and a link to the logs.
+        [A remediation plan with many actions to execute on many systems might take a while to complete.]{{admonition important}}
+        4. When the remediation plan is executed, return to **Operations** > **Advisor** >**Recommendations**, find and open the issue details, and then check to see if the systems you remediated are no longer listed as having the issue.
+      review:
+        instructions: |-
+          - Was your remediation plan successfully executed? Under **Advisor > Recommendations**, are the systems you just remediated no longer listed as having the issue?
+        failedTaskHelp: Review the remediation plan settings and adjust the configuration as needed. You might also need to ensure your plan does not exceed the supported thresholds. [Learn more ...](https://docs.redhat.com/en/documentation/red_hat_insights/1-latest/html-single/red_hat_insights_remediations_guide/index#executing-remediation-playbooks_red-hat-insights-remediation-guide)
   conclusion: |-
-    **Thank you for taking the time to learn more about Remediations with Insights!**
+    **Thank you for taking the time to learn more about Remediations with Insights.**
     
-    As well as [Advisor Recommendations](https://console.redhat.com/insights/advisor/recommendations#SIDs=&tags=), you can also address [Content Advisories](https://console.redhat.com/insights/patch/advisories?offset=0), [Vulnerability CVEs](https://console.redhat.com/insights/vulnerability/cves#SIDs=&tags=), and [Compliance Rules](https://console.redhat.com/insights/compliance/reports).
+    As well as [Advisor Recommendations](https://console.redhat.com/insights/advisor/recommendations#SIDs=&tags=), you can also address [Content Advisories](https://console.redhat.com/insights/patch/advisories?offset=0), [Vulnerability CVEs](https://console.redhat.com/insights/vulnerability/cves#SIDs=&tags=), and [Compliance reports](https://console.redhat.com/insights/compliance/reports).
     
     For additional information about this service, visit the documentation for [Fixing issues on RHEL systems with remediation playbooks](https://docs.redhat.com/en/documentation/red_hat_insights/1-latest/html-single/red_hat_insights_remediations_guide/index). 
     
