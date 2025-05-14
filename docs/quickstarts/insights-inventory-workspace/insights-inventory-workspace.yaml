@@ -18,7 +18,7 @@ spec:
     
         Welcome to the quick start for creating and managing workspaces. Workspaces provide a flexible approach to organizing your assets and streamline user access in the Hybrid Cloud Console. 
         
-        Configure workspaces to organize systems in your inventory and apply access management rules to them.
+        Configure workspaces to organize systems in your inventory and apply access management rules to them. Use workspace configuration to restrict system access to only those who require it.
         
         In this quick start, you will:
         - Create a workspace.
@@ -29,7 +29,7 @@ spec:
     - title: Create a workspace
       description: |- 
 
-        Workspaces provide you with an efficient way to organize your systems. Workspaces give you additional security through role-based access control, making it easier to manage and monitor specific groups of systems based on your organizational needs.
+        Workspaces provide you with an efficient way to organize your systems so that they align with your teams and lines of business. Workspaces give you additional security through role-based access control, making it easier to manage and monitor specific groups of systems based on your organizational needs.
 
         Create workspaces and then select specific systems to add to these workspaces to better organize your inventory. 
 
@@ -68,20 +68,15 @@ spec:
 
         1. Go to [RHEL > Inventory](https://console.redhat.com/insights/inventory) to see your list of systems.
 
-        2. To add one system to a workspace:
-
-            a. Click the <i class="fas fa-ellipsis-v"></i> (options icon) next to the workspace, then click **Add to workspace**.
-
-            b. Select the workspace to add your systems to.
+        2. Select the systems you want to add to a workspace:
+            
+            - **To add individual systems to a workspace**, click the <i class="fas fa-ellipsis-v"></i> (options icon) next to the workspace, then click **Add to workspace**.
         
-        3. To add multiple systems to a workspace:
+            - **To add multiple systems to a workspace**, select multiple systems using the checkboxes. Click the <i class="fas fa-ellipsis-v"></i> (options icon) in the toolbar, then click **Add to workspace**.
 
-            a. Select the checkbox for each system you want to add to a workspace.  
-
-            b. Click the <i class="fas fa-ellipsis-v"></i> (options icon) in the toolbar, then click **Add to workspace**.
-            [You cannot select systems that already belong to a workspace.]{{admonition note}} 
-
-            c. Select the workspace to add your systems to.
+            [You cannot select systems that already belong to a workspace.]{{admonition note}}
+        
+        3. Select the workspace to add your systems to.
 
         You can click a workspace name to view the systems that belong to that workspace.
 
@@ -132,7 +127,9 @@ spec:
    
       <h4><b>Thank you for taking the time to explore workspaces!</b></h4> 
 
-      You've now learned how to create a workspace, and how to add and remove systems from a workspace.
+      You've now learned how to create a workspace, and how to add and remove systems from a workspace. 
+      
+      You can use workspaces to streamline access control for your inventory and restrict access to resources.
       
       We'd love your help developing workspaces! To join an upcoming user research session or provide feedback about your experience, click the **Feedback** button on the right side of the console to get in touch. 
       
@@ -140,7 +137,7 @@ spec:
 
       **Additional resources**
 
-      - Learn more about workspaces in [Viewing and managing system inventory](https://docs.redhat.com/en/documentation/red_hat_insights/1-latest/html/viewing_and_managing_system_inventory/.index) 
+      - Learn more about workspaces in [Viewing and managing system inventory](https://docs.redhat.com/en/documentation/red_hat_insights/1-latest/html/viewing_and_managing_system_inventory/index). 
       
       **Next steps**:
       - Configure user access for your workspaces using this quick start:
