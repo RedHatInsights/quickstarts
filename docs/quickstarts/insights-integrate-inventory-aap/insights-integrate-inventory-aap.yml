@@ -10,7 +10,7 @@ spec:
     color: orange
   displayName: Integrating Insights as an inventory source in Ansible Automation Platform
   icon: ~
-  description: Configuring Insights as an inventory source in AAP to pull system data into automation workflows.
+  description: Configure Insights to pull system data into automation workflows.
   link:
     href: https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.5/html-single/using_automation_execution/index#proc-controller-inv-source-insights
     text: View documentation
