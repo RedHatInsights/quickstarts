@@ -11,5 +11,7 @@ tags:
   value: system-configuration
 - kind: use-case
   value: infrastructure
+- kind: content
+  value: documentation
 
   
