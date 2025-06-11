@@ -1,5 +1,5 @@
 kind: QuickStarts
-name: insights-inventory-integrating-with-satellite
+name: insights-integrating-with-satellite
 tags:
 - kind: bundle
   value: insights
