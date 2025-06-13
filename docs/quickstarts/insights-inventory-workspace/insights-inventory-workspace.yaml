@@ -39,12 +39,8 @@ spec:
      
         1. Go to **RHEL** > **Inventory** > **Workspaces**.
         2. Click **Create workspace**.
-        3. In the **Create a workspace** dialog:
-            - Enter a name for your workspace.
-            - Enter a description for your workspace.
-            [Currently, the parent workspace is limited to the default workspace. In upcoming releases of this feature, this setting will allow you to configure permissions inheritance.]{{admonition note}}
-        4. Click **Next**.
-        4. Review the workspace details, then click **Submit**.
+        3. In the **Create a workspace** dialog, enter a name for your workspace.
+        4. Click **Create**.
 
         Your new workspace shows in the **Workspaces** list.
 
@@ -64,27 +60,23 @@ spec:
 
         Assigning your systems to workspaces allows you to configure access control from the workspace level. You can group your systems to fit your organizational structure, limiting permissions to users and systems by workspace. Each system can belong to only one workspace.
 
-        You can add one system to a workspace at a time, or add multiple systems to a workspace in one action from the workspace details page or the **Systems** list.
+        You can add one or multiple systems to a workspace at a time in one action from the workspace details page or the **Systems** list.
 
-        To add one or more systems to a workspace from the  **Systems** list:
+        To add one or more systems to a workspace from the workspace details page:
 
         1. Go to **RHEL** > **Inventory** > **Workspaces** to see your list of workspaces.
 
-        2. Click your workspace in the list to open the workspace details page.
+        2. Find your workspace in the list and click the workspace to view its details page.
 
         3. Click **Add systems**.
 
-        3. Select the systems you want to add to a workspace:
+        3. Select the checkbox for each system you want to add to a workspace.
             
-            - **To add individual systems to a workspace**, click the <i class="fas fa-ellipsis-v"></i> (options icon) next to the workspace, then click **Add to workspace**.
-        
-            - **To add multiple systems to a workspace**, select multiple systems using the checkboxes. Click the <i class="fas fa-ellipsis-v"></i> (options icon) in the toolbar, then click **Add to workspace**.
+        4. Click **Add systems**.
 
             [A system can only belong to one workspace. To reassign a system to a different workspace, remove the system from its current workspace, and then assign it to a new workspace.]{{admonition note}}
-        
-        4. Select the workspace to add your systems to.
 
-        You can click a workspace name to view the systems that belong to that workspace.
+        The system(s) you added are listed on the workspace details page. Click a system to view more details about it, including the workspace it belongs to.
 
         For more information about configuring inventory and workspaces, see [Viewing and managing system inventory](https://docs.redhat.com/en/documentation/red_hat_insights/1-latest/html/viewing_and_managing_system_inventory/index). 
 
@@ -92,7 +84,7 @@ spec:
       # optional - the task's Check your work module
       review:
         instructions: |-
-          - Does the system(s) you added appear on the workspace's page?
+          - Does the system(s) you added appear on the workspace details page?
         failedTaskHelp: Try adding the system(s) to the workspace again.
       # optional - the task's success and failure messages
       summary:
@@ -120,12 +112,11 @@ spec:
 
             c. Click **Remove** to confirm.
 
-        You can click a workspace name to view the systems that belong to that workspace.
 
       # optional - the task's Check your work module
       review:
         instructions: |-
-          - Go to **Inventory** > **Systems** and the **Workspace** column on the **Systems** list. Do the system(s) you removed from a workspace say *Ungrouped Hosts*?
+          - Go to **Inventory** > **Systems** and view the **Workspace** column in the list. Do the system(s) you removed from your workspace now show they belong to the *Ungrouped Hosts* workspace?
         failedTaskHelp: Try removing the system(s) from the workspace again.
       # optional - the task's success and failure messages
       summary:
@@ -151,5 +142,4 @@ spec:
       **Next steps**:
       - Configure user access for your workspaces using this quick start:
       
-  nextQuickStart:
-    - insights-inventory-workspace-rbac
+  nextQuickStart: [insights-inventory-workspace-rbac]
