@@ -12,8 +12,8 @@ require (
 	github.com/joho/godotenv v1.4.0
 	github.com/prometheus/client_golang v1.11.1
 	github.com/redhatinsights/app-common-go v1.6.8
-	github.com/redhatinsights/platform-go-middlewares v0.10.0
-	github.com/sirupsen/logrus v1.8.3
+	github.com/redhatinsights/platform-go-middlewares/v2 v2.0.0
+	github.com/sirupsen/logrus v1.9.3
 	github.com/stretchr/testify v1.8.4
 	gorm.io/datatypes v1.0.7
 	gorm.io/driver/postgres v1.3.10
@@ -30,7 +30,6 @@ require (
 	github.com/go-openapi/swag v0.19.5 // indirect
 	github.com/go-sql-driver/mysql v1.6.0 // indirect
 	github.com/golang/protobuf v1.5.4 // indirect
-	github.com/google/go-cmp v0.5.6 // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
 	github.com/jackc/pgconn v1.14.3 // indirect
 	github.com/jackc/pgio v1.0.0 // indirect
