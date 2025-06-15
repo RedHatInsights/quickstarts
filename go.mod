@@ -18,7 +18,7 @@ require (
 	gorm.io/datatypes v1.0.7
 	gorm.io/driver/postgres v1.3.10
 	gorm.io/driver/sqlite v1.3.6
-	gorm.io/gorm v1.23.10
+	gorm.io/gorm v1.30.0
 )
 
 require (
