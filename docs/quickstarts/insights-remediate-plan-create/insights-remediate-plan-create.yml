@@ -48,10 +48,13 @@ spec:
             
             [You must select at least one system to remediate before you can begin to create and configure a remediation plan. If zero systems are selected, the Plan remediation button will be disabled.]{{admonition note}}
         </details>
-        6. With the help of the wizard, create a remediation plan named **_My-Plan-1_** and ensure you select the **Create a playbook** option.
-        7. Click **Next**.
-        8. Review the default selections under **Review systems** and **Remediation review**, adjust them as needed, and then click **Submit**.
-        9. To view your new plan, click **Return to application**, and then go to **Automation Toolkit** > **Remediation Plans** > **My-Plan-1**.
+        6. With the help of the wizard, create a remediation plan named **_My-Plan-1_**, and then click **Next**. Ensure you select the **Create a playbook** option.
+        7. Review and adjust the following items in your plan when prompted by the wizard:
+            - **Systems**: Ensure the systems you want to remediate are listed.
+            - **Actions**: Select the actions you want to include in your remediation plan. For some recommendations, you might be prompted to choose between multiple actions to remediate the issue.
+            - **Auto reboot**: If you prefer to reboot the systems manually after the remediation plan is executed, set the **Auto reboot** toggle to off.
+        8. When you arrive at the **Remediation review** pane, click **Submit**.
+        9. To view your new plan, click **Return to application** and then go to **Automation Toolkit** > **Remediation Plans** > **My-Plan-1**.
       review:
         instructions: |-
           - Were you presented with the details and status of the **_My-Plan-1_** remediation plan that you just created?
@@ -103,16 +106,16 @@ spec:
       description: |-
         In this task, you will execute the remediation plan on the directly connected RHEL systems included in your plan.
         <br>
-        1. Open the **Details** view of your remediation plan.
+        1. Open the **Remediation plan details and status** view of **_My-Plan-1_**.
           <details>
             <summary><span style="color:#0066CC">&nbspNeed help finding your remediation plan?</span></summary>
             
-            - On the console, go to **Automation Toolkit** > **Remediations**.
+            - On the console, go to **Automation Toolkit** > **Remediation Plans**.
             - Scroll through the list of remediation plans in the table and locate the remediation plan named **_My-Plan-1_** that you created earlier.
-            - Click the hyperlinked name of the plan to open the **Details** view.
+            - Click the hyperlinked name of the plan to open the **Remediation plan details and status** view.
           </details>     
         2. Click **Execute**.
-        3. To view the progress of the remediation plan execution, go to the **Execution history** tab for **_My-Plan-1_**. The **Execution history** tab displays the status of the remediation playbook execution for each system and a link to the logs.
+        3. To view the progress of the remediation plan execution, go to the **Execution History** tab for **_My-Plan-1_**. The **Execution History** tab displays the status of the remediation playbook execution for each system and a link to the logs.
         [A remediation plan with many actions to execute on many systems might take a while to complete.]{{admonition important}}
         4. When the remediation plan is executed, return to **Operations** > **Advisor** >**Recommendations**, find and open the issue details, and then check to see if the systems you remediated are no longer listed as having the issue.
       review:
