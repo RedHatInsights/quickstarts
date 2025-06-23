@@ -8,6 +8,7 @@ import (
 	"github.com/RedHatInsights/quickstarts/config"
 	"github.com/RedHatInsights/quickstarts/pkg/database"
 	"github.com/RedHatInsights/quickstarts/pkg/logger"
+	resourceselector "github.com/RedHatInsights/quickstarts/pkg/resourceSelector"
 	"github.com/RedHatInsights/quickstarts/pkg/routes"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -68,11 +69,12 @@ func main() {
 		sub.Route("/helptopics", routes.MakeHelpTopicsRouter)
 		sub.Route("/favorites", routes.MakeFavoriteQuickstartsRouter)
 		sub.Handle("/spec/*", http.StripPrefix("/api/quickstarts/v1/spec", fs))
+		sub.Post("/mcp", resourceselector.HandleMCPUserQuery)
 	})
 	mr.Get("/", probe)
 	mr.Handle("/metrics", promhttp.Handler())
 	r.Get("/test", probe)
-
+	// r.Handle("/mcp", resourceselector.MCPHTTPTransport.ChiHandler())
 	server := http.Server{
 		Addr:    cfg.ServerAddr,
 		Handler: r,

@@ -33,6 +33,22 @@ func Init() {
 
 	DB, err = gorm.Open(dia, &gorm.Config{})
 
+	if err != nil {
+		panic(fmt.Sprintf("failed to connect database: %s", err.Error()))
+	}
+
+	logrus.Infoln("Database connection established")
+
+	// Create fuzzystrmatch extension for Levenshtein distance support (PostgreSQL only)
+	if !cfg.Test {
+		err = DB.Exec("CREATE EXTENSION IF NOT EXISTS fuzzystrmatch").Error
+		if err != nil {
+			logrus.Warnf("Failed to create fuzzystrmatch extension: %v (Levenshtein search will fall back to ILIKE)", err)
+		} else {
+			logrus.Infoln("fuzzystrmatch extension available for advanced search")
+		}
+	}
+
 	if !DB.Migrator().HasTable(&models.Quickstart{}) {
 		DB.Migrator().CreateTable(&models.Quickstart{})
 	}
@@ -45,10 +61,4 @@ func Init() {
 	if !DB.Migrator().HasTable(&models.FavoriteQuickstart{}) {
 		DB.Migrator().CreateTable(&models.FavoriteQuickstart{})
 	}
-
-	if err != nil {
-		panic(fmt.Sprintf("failed to connect database: %s", err.Error()))
-	}
-
-	logrus.Infoln("Database connection established")
 }
