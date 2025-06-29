@@ -5,7 +5,7 @@ go 1.23.0
 toolchain go1.23.6
 
 require (
-	github.com/getkin/kin-openapi v0.76.0
+	github.com/getkin/kin-openapi v0.132.0
 	github.com/ghodss/yaml v1.0.0
 	github.com/go-chi/chi/v5 v5.2.1
 	github.com/go-ozzo/ozzo-validation v3.6.0+incompatible
