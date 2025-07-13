@@ -2,7 +2,7 @@ module github.com/RedHatInsights/quickstarts
 
 go 1.23.0
 
-toolchain go1.23.6
+toolchain go1.24.5
 
 require (
 	github.com/getkin/kin-openapi v0.76.0
