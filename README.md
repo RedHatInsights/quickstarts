@@ -19,6 +19,7 @@ curl --location --request GET 'http://localhost:8000/api/quickstarts/v1/quicksta
 curl --location --request GET 'http://localhost:8000/api/quickstarts/v1/quickstarts/?bundle[]=rhel&bundle[]=insights'
 ```
 
+
 ### IMPORTANT
 `oc port-forward -n quickstarts svc/quickstarts-service 8000:8000`!
 
