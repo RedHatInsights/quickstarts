@@ -33,6 +33,11 @@ func Init() {
 
 	DB, err = gorm.Open(dia, &gorm.Config{})
 
+	// Enable fuzzystrmatch extension for Levenshtein distance fuzzy search
+	if !cfg.Test { // Only enable for non-test environments (PostgreSQL)
+		DB.Exec("CREATE EXTENSION IF NOT EXISTS fuzzystrmatch;")
+	}
+
 	if !DB.Migrator().HasTable(&models.Quickstart{}) {
 		DB.Migrator().CreateTable(&models.Quickstart{})
 	}

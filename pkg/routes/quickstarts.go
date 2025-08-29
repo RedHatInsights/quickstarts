@@ -28,6 +28,59 @@ func findQuickstartsByDisplayName(displayName string, pagination Pagination) ([]
 	return quickStarts, err
 }
 
+// FuzzySearchResult represents a quickstart with its fuzzy search score
+type FuzzySearchResult struct {
+	models.Quickstart
+	Distance int `json:"distance"`
+}
+
+func findQuickstartsByFuzzySearch(searchTerm string, maxDistance int, pagination Pagination) ([]FuzzySearchResult, error) {
+	var results []FuzzySearchResult
+	
+	// Use raw SQL query with Levenshtein distance on spec.displayName only
+	query := `
+		SELECT id, created_at, updated_at, deleted_at, name, content, 
+		       levenshtein(content->'spec'->>'displayName', $1) as distance
+		FROM quickstarts 
+		WHERE content->'spec'->>'displayName' IS NOT NULL 
+		  AND levenshtein(content->'spec'->>'displayName', $2) <= $3
+		ORDER BY distance ASC, content->'spec'->>'displayName' ASC
+		LIMIT $4 OFFSET $5
+	`
+	
+	type queryResult struct {
+		ID        uint   `gorm:"primarykey"`
+		CreatedAt string
+		UpdatedAt string
+		DeletedAt *string
+		Name      string
+		Content   []byte
+		Distance  int
+	}
+	
+	var queryResults []queryResult
+	err := database.DB.Raw(query, searchTerm, searchTerm, maxDistance, pagination.Limit, pagination.Offset).Scan(&queryResults).Error
+	if err != nil {
+		return results, err
+	}
+	
+	for _, qr := range queryResults {
+		result := FuzzySearchResult{
+			Quickstart: models.Quickstart{
+				BaseModel: models.BaseModel{
+					ID: qr.ID,
+				},
+				Name:    qr.Name,
+				Content: qr.Content,
+			},
+			Distance: qr.Distance,
+		}
+		results = append(results, result)
+	}
+	
+	return results, nil
+}
+
 func findQuickstartsByTagsAndDisplayName(tagTypes []models.TagType, tagValues [][]string, displayName string, pagination Pagination) ([]models.Quickstart, error) {
 	var quickstarts []models.Quickstart
 
@@ -83,6 +136,48 @@ func getQueryValues(r *http.Request, key models.TagType) []string {
 		values = r.URL.Query()[keyStr+"[]"]
 	}
 	return values
+}
+
+func GetFuzzySearchQuickstarts(w http.ResponseWriter, r *http.Request) {
+	searchTerm := r.URL.Query().Get("q")
+	if searchTerm == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Header().Set("Content-Type", "application/json")
+		resp := models.BadRequest{
+			Msg: "Search term 'q' parameter is required",
+		}
+		json.NewEncoder(w).Encode(resp)
+		return
+	}
+
+	// Default max distance for typo tolerance - can be made configurable
+	maxDistance := 3
+	if distanceParam := r.URL.Query().Get("max_distance"); distanceParam != "" {
+		if parsedDistance, err := strconv.Atoi(distanceParam); err == nil && parsedDistance >= 0 {
+			maxDistance = parsedDistance
+		}
+	}
+
+	pagination := r.Context().Value(PaginationContextKey).(Pagination)
+	
+	results, err := findQuickstartsByFuzzySearch(searchTerm, maxDistance, pagination)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Header().Set("Content-Type", "application/json")
+		resp := models.BadRequest{
+			Msg: "Fuzzy search failed: " + err.Error(),
+		}
+		json.NewEncoder(w).Encode(resp)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	resp := make(map[string]interface{})
+	resp["data"] = results
+	resp["search_term"] = searchTerm
+	resp["max_distance"] = maxDistance
+	json.NewEncoder(w).Encode(&resp)
 }
 
 func GetAllQuickstarts(w http.ResponseWriter, r *http.Request) {
@@ -204,6 +299,7 @@ func GetFilters(w http.ResponseWriter, r *http.Request) {
 func MakeQuickstartsRouter(sub chi.Router) {
 	sub.Use(PaginationContext)
 	sub.Get("/", GetAllQuickstarts)
+	sub.Get("/fuzzy-search", GetFuzzySearchQuickstarts)
 	sub.Get("/filters", GetFilters)
 	sub.Route("/{id}", func(r chi.Router) {
 		r.Use(QuickstartEntityContext)
