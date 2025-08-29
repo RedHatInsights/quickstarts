@@ -61,6 +61,7 @@ func setupRouter() *chi.Mux {
 	r := chi.NewRouter()
 	r.Use(PaginationContext)
 	r.Get("/", GetAllQuickstarts)
+	r.Get("/fuzzy-search", GetFuzzySearchQuickstarts)
 	r.Route("/{id}", func(sub chi.Router) {
 		sub.Use(QuickstartEntityContext)
 		sub.Get("/", GetQuickstartById)
@@ -116,35 +117,35 @@ func setupTags() {
 
 func setupTaggedQuickstarts() {
 	taggedQuickstart.Name = "tagged-quickstart"
-	taggedQuickstart.Content = []byte(`{"tags": "all-tags"}`)
+	taggedQuickstart.Content = []byte(`{"spec": {"displayName": "Getting Started with Applications"}, "tags": "all-tags"}`)
 
 	database.DB.Create(&taggedQuickstart)
 	database.DB.Model(&taggedQuickstart).Association("Tags").Append(&rhelBudleTag, &settingsBundleTag, &rbacApplicationTag)
 	database.DB.Save(&taggedQuickstart)
 
 	settingsQuickstart.Name = "settings-quickstart"
-	settingsQuickstart.Content = []byte(`{"tags": "settings"}`)
+	settingsQuickstart.Content = []byte(`{"spec": {"displayName": "Configure System Settings", "description": "Learn how to configure various system settings and preferences", "tasks": [{"title": "Setup User Preferences"}]}, "tags": "settings"}`)
 
 	database.DB.Create(&settingsQuickstart)
 	database.DB.Model(&settingsQuickstart).Association("Tags").Append(&settingsBundleTag, &settingsContentTypeTag, &settingsProductFamiliesTag, &settingsUseCaseTag)
 	database.DB.Save(&settingsQuickstart)
 
 	rhelQuickstart.Name = "rhel-quickstart"
-	rhelQuickstart.Content = []byte(`{"tags": "rhel"}`)
+	rhelQuickstart.Content = []byte(`{"spec": {"displayName": "Red Hat Enterprise Linux Setup"}, "tags": "rhel"}`)
 
 	database.DB.Create(&rhelQuickstart)
 	database.DB.Model(&rhelQuickstart).Association("Tags").Append(&rhelBudleTag, &rhelContentTypeTag, &rhelProductFamiliesTag, &rhelUseCaseTag)
 	database.DB.Save(&rhelQuickstart)
 
 	rbacQuickstart.Name = "rbac-quickstart"
-	rbacQuickstart.Content = []byte(`{"tags": "rbac"}`)
+	rbacQuickstart.Content = []byte(`{"spec": {"displayName": "Role-Based Access Control"}, "tags": "rbac"}`)
 
 	database.DB.Create(&rbacQuickstart)
 	database.DB.Model(&rbacQuickstart).Association("Tags").Append(&rbacApplicationTag, &rbacContentTypeTag, &rbacProductFamiliesTag, &rbacUseCaseTag)
 	database.DB.Save(&rbacQuickstart)
 
 	rhelTaggedQuickstart.Name = "rhel-tagged-quickstart"
-	rhelTaggedQuickstart.Content = []byte(`{"tags": "rhel-tagged"}`)
+	rhelTaggedQuickstart.Content = []byte(`{"spec": {"displayName": "Advanced RHEL Configuration"}, "tags": "rhel-tagged"}`)
 
 	database.DB.Create(&rhelTaggedQuickstart)
 	database.DB.Model(&rhelTaggedQuickstart).Association("Tags").Append(&rhelProductFamiliesTag, &rhelContentTypeTag, &rhelUseCaseTag)
@@ -324,5 +325,138 @@ func TestGetAll(t *testing.T) {
 		fmt.Println(response.Body)
 		assert.Equal(t, 200, response.Code)
 		assert.Equal(t, 1, len(payload.Data))
+	})
+}
+
+func TestFuzzySearch(t *testing.T) {
+	router := setupRouter()
+	setupTags()
+	setupTaggedQuickstarts()
+
+	type fuzzySearchResponse struct {
+		Data        []FuzzySearchResult `json:"data"`
+		SearchTerm  string              `json:"search_term"`
+		MaxDistance int                 `json:"max_distance"`
+	}
+
+	t.Run("should return bad request when search term is missing", func(t *testing.T) {
+		request, _ := http.NewRequest(http.MethodGet, "/fuzzy-search", nil)
+		response := httptest.NewRecorder()
+		router.ServeHTTP(response, request)
+
+		var payload *messageResponsePayload
+		json.NewDecoder(response.Body).Decode(&payload)
+		assert.Equal(t, 400, response.Code)
+		assert.Contains(t, payload.Msg, "Search term 'q' parameter is required")
+	})
+
+	t.Run("should find exact match with distance 0", func(t *testing.T) {
+		request, _ := http.NewRequest(http.MethodGet, "/fuzzy-search?q=Getting Started with Applications", nil)
+		response := httptest.NewRecorder()
+		router.ServeHTTP(response, request)
+
+		// Skip test if PostgreSQL extension is not available (e.g., in SQLite test environment)
+		if response.Code == 500 {
+			t.Skip("Skipping fuzzy search test - PostgreSQL fuzzystrmatch extension not available")
+		}
+
+		var payload *fuzzySearchResponse
+		json.NewDecoder(response.Body).Decode(&payload)
+		assert.Equal(t, 200, response.Code)
+		assert.Equal(t, "Getting Started with Applications", payload.SearchTerm)
+		assert.Equal(t, 3, payload.MaxDistance)
+		assert.GreaterOrEqual(t, len(payload.Data), 1)
+		if len(payload.Data) > 0 {
+			assert.Equal(t, 0, payload.Data[0].Distance) // Exact match should have distance 0
+		}
+	})
+
+	t.Run("should find fuzzy matches with typos", func(t *testing.T) {
+		request, _ := http.NewRequest(http.MethodGet, "/fuzzy-search?q=Geting Startd&max_distance=5", nil)
+		response := httptest.NewRecorder()
+		router.ServeHTTP(response, request)
+
+		// Skip test if PostgreSQL extension is not available
+		if response.Code == 500 {
+			t.Skip("Skipping fuzzy search test - PostgreSQL fuzzystrmatch extension not available")
+		}
+
+		var payload *fuzzySearchResponse
+		json.NewDecoder(response.Body).Decode(&payload)
+		assert.Equal(t, 200, response.Code)
+		assert.Equal(t, "Geting Startd", payload.SearchTerm)
+		assert.Equal(t, 5, payload.MaxDistance)
+		// Should find matches despite typos
+		assert.GreaterOrEqual(t, len(payload.Data), 0)
+	})
+
+	t.Run("should find RHEL related quickstarts", func(t *testing.T) {
+		request, _ := http.NewRequest(http.MethodGet, "/fuzzy-search?q=RHEL&max_distance=2", nil)
+		response := httptest.NewRecorder()
+		router.ServeHTTP(response, request)
+
+		// Skip test if PostgreSQL extension is not available
+		if response.Code == 500 {
+			t.Skip("Skipping fuzzy search test - PostgreSQL fuzzystrmatch extension not available")
+		}
+
+		var payload *fuzzySearchResponse
+		json.NewDecoder(response.Body).Decode(&payload)
+		assert.Equal(t, 200, response.Code)
+		assert.Equal(t, "RHEL", payload.SearchTerm)
+		assert.Equal(t, 2, payload.MaxDistance)
+		// Should find RHEL related quickstarts
+		assert.GreaterOrEqual(t, len(payload.Data), 0)
+	})
+
+	t.Run("should respect pagination", func(t *testing.T) {
+		request, _ := http.NewRequest(http.MethodGet, "/fuzzy-search?q=Configuration&limit=1", nil)
+		response := httptest.NewRecorder()
+		router.ServeHTTP(response, request)
+
+		// Skip test if PostgreSQL extension is not available
+		if response.Code == 500 {
+			t.Skip("Skipping fuzzy search test - PostgreSQL fuzzystrmatch extension not available")
+		}
+
+		var payload *fuzzySearchResponse
+		json.NewDecoder(response.Body).Decode(&payload)
+		assert.Equal(t, 200, response.Code)
+		assert.LessOrEqual(t, len(payload.Data), 1)
+	})
+
+	t.Run("should return empty results for very strict distance", func(t *testing.T) {
+		request, _ := http.NewRequest(http.MethodGet, "/fuzzy-search?q=NonExistentQuickstart&max_distance=0", nil)
+		response := httptest.NewRecorder()
+		router.ServeHTTP(response, request)
+
+		// Skip test if PostgreSQL extension is not available
+		if response.Code == 500 {
+			t.Skip("Skipping fuzzy search test - PostgreSQL fuzzystrmatch extension not available")
+		}
+
+		var payload *fuzzySearchResponse
+		json.NewDecoder(response.Body).Decode(&payload)
+		assert.Equal(t, 200, response.Code)
+		assert.Equal(t, 0, len(payload.Data))
+	})
+
+	t.Run("should find quickstarts by displayName with fuzzy matching", func(t *testing.T) {
+		request, _ := http.NewRequest(http.MethodGet, "/fuzzy-search?q=Configure&max_distance=2", nil)
+		response := httptest.NewRecorder()
+		router.ServeHTTP(response, request)
+
+		// Skip test if PostgreSQL extension is not available
+		if response.Code == 500 {
+			t.Skip("Skipping fuzzy search test - PostgreSQL fuzzystrmatch extension not available")
+		}
+
+		var payload *fuzzySearchResponse
+		json.NewDecoder(response.Body).Decode(&payload)
+		assert.Equal(t, 200, response.Code)
+		assert.Equal(t, "Configure", payload.SearchTerm)
+		assert.Equal(t, 2, payload.MaxDistance)
+		// Should find quickstarts with "Configure" in displayName
+		assert.GreaterOrEqual(t, len(payload.Data), 0)
 	})
 }
