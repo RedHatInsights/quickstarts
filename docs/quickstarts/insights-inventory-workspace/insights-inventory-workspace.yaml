@@ -131,7 +131,7 @@ spec:
       
       You can use workspaces to streamline access control for your inventory and restrict access to resources.
       
-      We'd love your help developing workspaces! To join a user research session or provide feedback about your experience, click the **Feedback** button on the right side of the console to get in touch. 
+      We'd love your help developing workspaces! To join a user research session or provide feedback about your experience, click the **Feedback** button on the right side of the console. 
       
       From there, you can also [open a support case](https://access.redhat.com/support) for additional assistance.
 
@@ -140,6 +140,7 @@ spec:
       - Learn more about workspaces in [Viewing and managing system inventory](https://docs.redhat.com/en/documentation/red_hat_insights/1-latest/html/viewing_and_managing_system_inventory/index). 
       
       **Next steps**:
-      - Configure user access for your workspaces using this quick start:
+      - Configure user access for your workspaces:
       
-  nextQuickStart: [insights-inventory-workspace-rbac]
+  nextQuickStart:
+    - insights-inventory-workspace-rbac
