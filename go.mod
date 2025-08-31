@@ -7,7 +7,7 @@ toolchain go1.23.6
 require (
 	github.com/getkin/kin-openapi v0.76.0
 	github.com/ghodss/yaml v1.0.0
-	github.com/go-chi/chi/v5 v5.2.1
+	github.com/go-chi/chi/v5 v5.2.3
 	github.com/go-ozzo/ozzo-validation v3.6.0+incompatible
 	github.com/joho/godotenv v1.4.0
 	github.com/prometheus/client_golang v1.11.1
