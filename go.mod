@@ -14,7 +14,7 @@ require (
 	github.com/redhatinsights/app-common-go v1.6.8
 	github.com/redhatinsights/platform-go-middlewares v0.10.0
 	github.com/sirupsen/logrus v1.8.3
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.11.1
 	gorm.io/datatypes v1.0.7
 	gorm.io/driver/postgres v1.3.10
 	gorm.io/driver/sqlite v1.3.6
