@@ -115,7 +115,11 @@ func TestDBSeeding(t *testing.T) {
 
 	t.Run("DB contains correct quickstart data", func(t *testing.T) {
 		var metadataTemplates []MetadataTemplate
-		metadataTemplates = findTags()
+		var err error
+		metadataTemplates, err = findTags()
+		if err != nil {
+			t.Fatalf("Failed to find tags: %v", err)
+		}
 
 		for _, template := range metadataTemplates {
 			if template.Kind == "QuickStarts" {
@@ -138,7 +142,11 @@ func TestDBSeeding(t *testing.T) {
 	})
 	t.Run("DB contains correct help topic data", func(t *testing.T) {
 		var metadataTemplates []MetadataTemplate
-		metadataTemplates = findTags()
+		var err error
+		metadataTemplates, err = findTags()
+		if err != nil {
+			t.Fatalf("Failed to find tags: %v", err)
+		}
 
 		for _, template := range metadataTemplates {
 			if template.Kind == "HelpTopic" {
