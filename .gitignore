@@ -22,3 +22,6 @@ fmtcoverage.html
 
 # Mac OS specific files
 **/.DS_Store
+
+# IDE specifics
+.idea/
