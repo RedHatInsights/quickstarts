@@ -40,11 +40,11 @@ func NewDBHelper(db *gorm.DB, context string) *DBHelper {
 	}
 }
 
-// execDB executes a GORM database operation with consistent logging and error handling
-func (h *DBHelper) execDB(op, entityType string, id interface{}, fn func(*gorm.DB) *gorm.DB) error {
-	h.logger.Debugf("%sing %s: %v", strings.Title(op), entityType, id)
+// execOp executes any operation with consistent logging and error handling
+func (h *DBHelper) execOp(op, entityType string, id interface{}, action func() error) error {
+	h.logger.Debugf("%s %s: %v", strings.Title(op), entityType, id)
 	
-	if err := fn(h.db).Error; err != nil {
+	if err := action(); err != nil {
 		h.logger.Errorf("Failed to %s %s %v: %v", op, entityType, id, err)
 		return &DBOperationError{
 			Operation: op,
@@ -58,55 +58,39 @@ func (h *DBHelper) execDB(op, entityType string, id interface{}, fn func(*gorm.D
 	return nil
 }
 
-// execAssoc executes an association operation with consistent logging and error handling
-func (h *DBHelper) execAssoc(op, association, entityType string, id interface{}, fn func() error) error {
-	h.logger.Debugf("%s %s associations for %s: %v", strings.Title(op), association, entityType, id)
-	
-	if err := fn(); err != nil {
-		h.logger.Errorf("Failed to %s %s associations for %s %v: %v", op, association, entityType, id, err)
-		return &DBOperationError{
-			Operation: fmt.Sprintf("%s %s associations", op, association),
-			Entity:    entityType,
-			ID:        id,
-			Err:       err,
-		}
-	}
-	
-	h.logger.Debugf("Successfully %sed %s associations for %s: %v", op, association, entityType, id)
-	return nil
-}
-
 // Create performs a database create operation with consistent error handling
 func (h *DBHelper) Create(entity interface{}, entityType string, id interface{}) error {
-	return h.execDB("create", entityType, id, func(db *gorm.DB) *gorm.DB {
-		return db.Create(entity)
+	return h.execOp("create", entityType, id, func() error {
+		return h.db.Create(entity).Error
 	})
 }
 
 // Update performs a database update operation with consistent error handling
 func (h *DBHelper) Update(entity interface{}, entityType string, id interface{}) error {
-	return h.execDB("update", entityType, id, func(db *gorm.DB) *gorm.DB {
-		return db.Save(entity)
+	return h.execOp("update", entityType, id, func() error {
+		return h.db.Save(entity).Error
 	})
 }
 
 // Delete performs a database delete operation with consistent error handling
 func (h *DBHelper) Delete(entity interface{}, entityType string, id interface{}) error {
-	return h.execDB("delete", entityType, id, func(db *gorm.DB) *gorm.DB {
-		return db.Unscoped().Delete(entity)
+	return h.execOp("delete", entityType, id, func() error {
+		return h.db.Unscoped().Delete(entity).Error
 	})
 }
 
 // ClearAssociation clears an association with consistent error handling
 func (h *DBHelper) ClearAssociation(entity interface{}, association string, entityType string, id interface{}) error {
-	return h.execAssoc("clear", association, entityType, id, func() error {
+	op := fmt.Sprintf("clear %s associations", association)
+	return h.execOp(op, entityType, id, func() error {
 		return h.db.Model(entity).Association(association).Clear()
 	})
 }
 
 // AppendAssociation appends to an association with consistent error handling
 func (h *DBHelper) AppendAssociation(entity interface{}, association string, values interface{}, entityType string, id interface{}) error {
-	return h.execAssoc("add", association, entityType, id, func() error {
+	op := fmt.Sprintf("add %s associations", association)
+	return h.execOp(op, entityType, id, func() error {
 		return h.db.Model(entity).Association(association).Append(values)
 	})
 }
@@ -137,43 +121,18 @@ func (h *DBHelper) FindOrCreate(entity interface{}, where interface{}, entityTyp
 }
 
 // ProcessBatch processes a batch of items with error collection and progress logging
-func (h *DBHelper) ProcessBatch(items []interface{}, processor func(interface{}) error, batchName string) (int, []error) {
-	h.logger.Infof("Starting batch processing: %s (%d items)", batchName, len(items))
-	
-	var errors []error
-	successCount := 0
+// Returns (successCount, errors) - callers can aggregate errors if needed
+func (h *DBHelper) ProcessBatch(items []interface{}, processor func(interface{}) error, batchName string) (successCount int, errors []error) {
+	h.logger.Infof("Starting batch %s (%d items)", batchName, len(items))
 	
 	for i, item := range items {
-		h.logger.Debugf("Processing item %d/%d in batch %s", i+1, len(items), batchName)
-		
 		if err := processor(item); err != nil {
-			h.logger.Errorf("Error processing item %d in batch %s: %v", i+1, batchName, err)
 			errors = append(errors, fmt.Errorf("item %d: %w", i+1, err))
 		} else {
 			successCount++
 		}
 	}
 	
-	h.logger.Infof("Batch processing complete: %s - %d success, %d errors", batchName, successCount, len(errors))
-	return successCount, errors
-}
-
-// ProcessBatchWithAggregatedError processes items and returns a single aggregated error if any fail
-func (h *DBHelper) ProcessBatchWithAggregatedError(items []interface{}, processor func(interface{}) error, batchName string) (int, error) {
-	successCount, errors := h.ProcessBatch(items, processor, batchName)
-	
-	if len(errors) == 0 {
-		return successCount, nil
-	}
-	
-	// Create aggregated error message
-	errorMsgs := make([]string, len(errors))
-	for i, err := range errors {
-		errorMsgs[i] = err.Error()
-	}
-	
-	aggregatedErr := fmt.Errorf("batch processing %s failed with %d errors: %s", 
-		batchName, len(errors), strings.Join(errorMsgs, "; "))
-	
-	return successCount, aggregatedErr
+	h.logger.Infof("Finished batch %s: %d success, %d errors", batchName, successCount, len(errors))
+	return
 }
