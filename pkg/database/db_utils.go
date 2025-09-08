@@ -2,6 +2,7 @@ package database
 
 import (
 	"fmt"
+	"strings"
 	"gorm.io/gorm"
 	"github.com/sirupsen/logrus"
 )
@@ -39,94 +40,75 @@ func NewDBHelper(db *gorm.DB, context string) *DBHelper {
 	}
 }
 
-// Create performs a database create operation with consistent error handling
-func (h *DBHelper) Create(entity interface{}, entityType string, id interface{}) error {
-	h.logger.Debugf("Creating %s: %v", entityType, id)
+// execDB executes a GORM database operation with consistent logging and error handling
+func (h *DBHelper) execDB(op, entityType string, id interface{}, fn func(*gorm.DB) *gorm.DB) error {
+	h.logger.Debugf("%sing %s: %v", strings.Title(op), entityType, id)
 	
-	if err := h.db.Create(entity).Error; err != nil {
-		h.logger.Errorf("Failed to create %s %v: %v", entityType, id, err)
+	if err := fn(h.db).Error; err != nil {
+		h.logger.Errorf("Failed to %s %s %v: %v", op, entityType, id, err)
 		return &DBOperationError{
-			Operation: "create",
+			Operation: op,
 			Entity:    entityType,
 			ID:        id,
 			Err:       err,
 		}
 	}
 	
-	h.logger.Debugf("Successfully created %s: %v", entityType, id)
+	h.logger.Debugf("Successfully %sed %s: %v", op, entityType, id)
 	return nil
+}
+
+// execAssoc executes an association operation with consistent logging and error handling
+func (h *DBHelper) execAssoc(op, association, entityType string, id interface{}, fn func() error) error {
+	h.logger.Debugf("%s %s associations for %s: %v", strings.Title(op), association, entityType, id)
+	
+	if err := fn(); err != nil {
+		h.logger.Errorf("Failed to %s %s associations for %s %v: %v", op, association, entityType, id, err)
+		return &DBOperationError{
+			Operation: fmt.Sprintf("%s %s associations", op, association),
+			Entity:    entityType,
+			ID:        id,
+			Err:       err,
+		}
+	}
+	
+	h.logger.Debugf("Successfully %sed %s associations for %s: %v", op, association, entityType, id)
+	return nil
+}
+
+// Create performs a database create operation with consistent error handling
+func (h *DBHelper) Create(entity interface{}, entityType string, id interface{}) error {
+	return h.execDB("create", entityType, id, func(db *gorm.DB) *gorm.DB {
+		return db.Create(entity)
+	})
 }
 
 // Update performs a database update operation with consistent error handling
 func (h *DBHelper) Update(entity interface{}, entityType string, id interface{}) error {
-	h.logger.Debugf("Updating %s: %v", entityType, id)
-	
-	if err := h.db.Save(entity).Error; err != nil {
-		h.logger.Errorf("Failed to update %s %v: %v", entityType, id, err)
-		return &DBOperationError{
-			Operation: "update",
-			Entity:    entityType,
-			ID:        id,
-			Err:       err,
-		}
-	}
-	
-	h.logger.Debugf("Successfully updated %s: %v", entityType, id)
-	return nil
+	return h.execDB("update", entityType, id, func(db *gorm.DB) *gorm.DB {
+		return db.Save(entity)
+	})
 }
 
 // Delete performs a database delete operation with consistent error handling
 func (h *DBHelper) Delete(entity interface{}, entityType string, id interface{}) error {
-	h.logger.Debugf("Deleting %s: %v", entityType, id)
-	
-	if err := h.db.Unscoped().Delete(entity).Error; err != nil {
-		h.logger.Errorf("Failed to delete %s %v: %v", entityType, id, err)
-		return &DBOperationError{
-			Operation: "delete",
-			Entity:    entityType,
-			ID:        id,
-			Err:       err,
-		}
-	}
-	
-	h.logger.Debugf("Successfully deleted %s: %v", entityType, id)
-	return nil
+	return h.execDB("delete", entityType, id, func(db *gorm.DB) *gorm.DB {
+		return db.Unscoped().Delete(entity)
+	})
 }
 
 // ClearAssociation clears an association with consistent error handling
 func (h *DBHelper) ClearAssociation(entity interface{}, association string, entityType string, id interface{}) error {
-	h.logger.Debugf("Clearing %s associations for %s: %v", association, entityType, id)
-	
-	if err := h.db.Model(entity).Association(association).Clear(); err != nil {
-		h.logger.Errorf("Failed to clear %s associations for %s %v: %v", association, entityType, id, err)
-		return &DBOperationError{
-			Operation: fmt.Sprintf("clear %s associations", association),
-			Entity:    entityType,
-			ID:        id,
-			Err:       err,
-		}
-	}
-	
-	h.logger.Debugf("Successfully cleared %s associations for %s: %v", association, entityType, id)
-	return nil
+	return h.execAssoc("clear", association, entityType, id, func() error {
+		return h.db.Model(entity).Association(association).Clear()
+	})
 }
 
 // AppendAssociation appends to an association with consistent error handling
 func (h *DBHelper) AppendAssociation(entity interface{}, association string, values interface{}, entityType string, id interface{}) error {
-	h.logger.Debugf("Adding %s association for %s: %v", association, entityType, id)
-	
-	if err := h.db.Model(entity).Association(association).Append(values); err != nil {
-		h.logger.Errorf("Failed to add %s association for %s %v: %v", association, entityType, id, err)
-		return &DBOperationError{
-			Operation: fmt.Sprintf("add %s association", association),
-			Entity:    entityType,
-			ID:        id,
-			Err:       err,
-		}
-	}
-	
-	h.logger.Debugf("Successfully added %s association for %s: %v", association, entityType, id)
-	return nil
+	return h.execAssoc("add", association, entityType, id, func() error {
+		return h.db.Model(entity).Association(association).Append(values)
+	})
 }
 
 // FindOrCreate finds an existing record or creates a new one
