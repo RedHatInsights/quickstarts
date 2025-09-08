@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"path/filepath"
 	"regexp"
 	"strings"
 
@@ -39,18 +38,11 @@ type SeedingResult struct {
 }
 
 func readMetadata(loc string) (MetadataTemplate, error) {
-	logrus.Debugf("Reading metadata from: %s", loc)
-	yamlfile, err := ioutil.ReadFile(loc)
+	fileHelper := NewFileHelper("metadata-reader")
 	var template MetadataTemplate
-	if err != nil {
-		logrus.Errorf("Failed to read metadata file %s: %v", loc, err)
-		return template, fmt.Errorf("failed to read metadata file %s: %w", loc, err)
-	}
-
-	err = yaml.Unmarshal(yamlfile, &template)
-	if err != nil {
-		logrus.Errorf("Failed to unmarshal YAML from %s: %v", loc, err)
-		return template, fmt.Errorf("failed to unmarshal YAML from %s: %w", loc, err)
+	
+	if err := fileHelper.ReadYAMLFile(loc, &template); err != nil {
+		return template, err
 	}
 	m := regexp.MustCompile("metadata.ya?ml$")
 	if _, err := os.Stat(m.ReplaceAllString(loc, template.Name+".yml")); err == nil {
@@ -65,7 +57,9 @@ func readMetadata(loc string) (MetadataTemplate, error) {
 
 func findTags() ([]MetadataTemplate, error) {
 	logrus.Info("Starting metadata discovery process")
+	fileHelper := NewFileHelper("metadata-discovery")
 	var MetadataTemplates []MetadataTemplate
+	
 	path, err := os.Getwd()
 	if err != nil {
 		return nil, fmt.Errorf("failed to get working directory: %w", err)
@@ -74,20 +68,16 @@ func findTags() ([]MetadataTemplate, error) {
 	logrus.Debugf("Using base path: %s", path)
 
 	quickstartsPattern := path + "/docs/quickstarts/**/metadata.y*"
-	logrus.Debugf("Searching for quickstarts with pattern: %s", quickstartsPattern)
-	quickstartsFiles, err := filepath.Glob(quickstartsPattern)
+	quickstartsFiles, err := fileHelper.GlobFiles(quickstartsPattern)
 	if err != nil {
-		return nil, fmt.Errorf("failed to glob quickstarts files with pattern %s: %w", quickstartsPattern, err)
+		return nil, err
 	}
-	logrus.Infof("Found %d quickstart metadata files", len(quickstartsFiles))
 
 	helpTopicsPattern := path + "/docs/help-topics/**/metadata.y*"
-	logrus.Debugf("Searching for help topics with pattern: %s", helpTopicsPattern)
-	helpTopicsFiles, err := filepath.Glob(helpTopicsPattern)
+	helpTopicsFiles, err := fileHelper.GlobFiles(helpTopicsPattern)
 	if err != nil {
-		return nil, fmt.Errorf("failed to glob help topics files with pattern %s: %w", helpTopicsPattern, err)
+		return nil, err
 	}
-	logrus.Infof("Found %d help topic metadata files", len(helpTopicsFiles))
 
 	files := append(quickstartsFiles, helpTopicsFiles...)
 	logrus.Infof("Processing %d total metadata files", len(files))
@@ -114,54 +104,13 @@ func findTags() ([]MetadataTemplate, error) {
 }
 
 func addTags(t MetadataTemplate) ([]byte, error) {
-	logrus.Debugf("Adding tags to content at: %s", t.ContentPath)
-	yamlfile, err := ioutil.ReadFile(t.ContentPath)
-	if err != nil {
-		return []byte{}, fmt.Errorf("failed to read content file %s: %w", t.ContentPath, err)
-	}
-
-	jsonContent, err := yaml.YAMLToJSON(yamlfile)
-	if err != nil {
-		return []byte{}, fmt.Errorf("failed to convert YAML to JSON for %s: %w", t.ContentPath, err)
-	}
-
-	// Parse as generic interface{} first to handle different file structures
-	var data interface{}
-	if err := json.Unmarshal(jsonContent, &data); err != nil {
-		return []byte{}, fmt.Errorf("failed to unmarshal JSON content for %s: %w", t.ContentPath, err)
-	}
-	
-	// Convert to map[string]interface{} for manipulation
-	dataMap, ok := data.(map[string]interface{})
-	if !ok {
-		return []byte{}, fmt.Errorf("content file %s does not have expected top-level object structure", t.ContentPath)
-	}
-	
-	// Ensure metadata exists and is a map
-	if dataMap["metadata"] == nil {
-		dataMap["metadata"] = make(map[string]interface{})
-	}
-	
-	metadata, ok := dataMap["metadata"].(map[string]interface{})
-	if !ok {
-		dataMap["metadata"] = make(map[string]interface{})
-		metadata = dataMap["metadata"].(map[string]interface{})
-	}
-	
-	// Add tags to metadata
-	metadata["tags"] = t.Tags
-
-	jsonContent, err = json.Marshal(dataMap)
-	if err != nil {
-		return []byte{}, fmt.Errorf("failed to marshal JSON content for %s: %w", t.ContentPath, err)
-	}
-
-	logrus.Debugf("Successfully added %d tags to %s", len(t.Tags), t.Name)
-	return jsonContent, nil
+	fileHelper := NewFileHelper("content-tagger")
+	return fileHelper.AddTagsToContent(t.ContentPath, t.Tags)
 }
 
 func seedQuickstart(t MetadataTemplate, defaultTag models.Tag) (models.Quickstart, bool, error) {
-	logrus.Debugf("Seeding quickstart: %s", t.Name)
+	dbHelper := NewDBHelper(DB, "quickstart-seeder")
+	fileHelper := NewFileHelper("quickstart-seeder")
 	var newQuickstart models.Quickstart
 	var originalQuickstart models.Quickstart
 
@@ -170,29 +119,10 @@ func seedQuickstart(t MetadataTemplate, defaultTag models.Tag) (models.Quickstar
 		return newQuickstart, false, fmt.Errorf("failed to add tags for quickstart %s: %w", t.Name, err)
 	}
 
-	var data map[string]interface{}
-	if err := json.Unmarshal(jsonContent, &data); err != nil {
-		return newQuickstart, false, fmt.Errorf("failed to unmarshal content for quickstart %s: %w", t.Name, err)
-	}
-	
-	// Extract name from metadata
-	metadata, ok := data["metadata"].(map[string]interface{})
-	if !ok {
-		return newQuickstart, false, fmt.Errorf("metadata section not found or invalid in quickstart %s", t.ContentPath)
-	}
-	
-	nameInterface, exists := metadata["name"]
-	if !exists {
-		return newQuickstart, false, fmt.Errorf("quickstart name not found in metadata for %s", t.ContentPath)
-	}
-	
-	name, ok := nameInterface.(string)
-	if !ok {
-		return newQuickstart, false, fmt.Errorf("quickstart name is not a string in metadata for %s", t.ContentPath)
-	}
-	
-	if name == "" {
-		return newQuickstart, false, fmt.Errorf("quickstart name is empty in metadata for %s", t.ContentPath)
+	// Extract name from metadata using helper
+	name, err := fileHelper.ExtractStringFromMetadata(jsonContent, "name", t.ContentPath)
+	if err != nil {
+		return newQuickstart, false, err
 	}
 
 	r := DB.Where("name = ?", name).Find(&originalQuickstart)
@@ -202,53 +132,50 @@ func seedQuickstart(t MetadataTemplate, defaultTag models.Tag) (models.Quickstar
 
 	if r.RowsAffected == 0 {
 		// Create new quickstart
-		logrus.Infof("Creating new quickstart: %s", name)
 		newQuickstart.Content = jsonContent
 		newQuickstart.Name = name
 		
-		if err := DB.Create(&newQuickstart).Error; err != nil {
-			return newQuickstart, false, fmt.Errorf("failed to create quickstart %s: %w", name, err)
+		if err := dbHelper.Create(&newQuickstart, "quickstart", name); err != nil {
+			return newQuickstart, false, err
 		}
 
-		if err := DB.Model(&defaultTag).Association("Quickstarts").Append(&newQuickstart); err != nil {
-			return newQuickstart, false, fmt.Errorf("failed to create default tag association for quickstart %s: %w", name, err)
+		if err := dbHelper.AppendAssociation(&defaultTag, "Quickstarts", &newQuickstart, "default tag", "quickstart"); err != nil {
+			return newQuickstart, false, err
 		}
 
-		if err := DB.Save(&defaultTag).Error; err != nil {
-			return newQuickstart, false, fmt.Errorf("failed to save default tag for quickstart %s: %w", name, err)
+		if err := dbHelper.Update(&defaultTag, "default tag", "quickstart"); err != nil {
+			return newQuickstart, false, err
 		}
 		
-		logrus.Infof("Successfully created quickstart: %s", name)
 		return newQuickstart, true, nil
 	} else {
 		// Update existing quickstart
-		logrus.Infof("Updating existing quickstart: %s", name)
 		originalQuickstart.Content = jsonContent
 		
 		// Clear all tags associations
-		if err := DB.Model(&originalQuickstart).Association("Tags").Clear(); err != nil {
-			return originalQuickstart, false, fmt.Errorf("failed to clear tag associations for quickstart %s: %w", name, err)
+		if err := dbHelper.ClearAssociation(&originalQuickstart, "Tags", "quickstart", name); err != nil {
+			return originalQuickstart, false, err
 		}
 
-		if err := DB.Save(&originalQuickstart).Error; err != nil {
-			return originalQuickstart, false, fmt.Errorf("failed to save updated quickstart %s: %w", name, err)
+		if err := dbHelper.Update(&originalQuickstart, "quickstart", name); err != nil {
+			return originalQuickstart, false, err
 		}
 
-		if err := DB.Model(&defaultTag).Association("Quickstarts").Append(&originalQuickstart); err != nil {
-			return originalQuickstart, false, fmt.Errorf("failed to create default tag association for updated quickstart %s: %w", name, err)
+		if err := dbHelper.AppendAssociation(&defaultTag, "Quickstarts", &originalQuickstart, "default tag", "quickstart"); err != nil {
+			return originalQuickstart, false, err
 		}
 
-		if err := DB.Save(&defaultTag).Error; err != nil {
-			return originalQuickstart, false, fmt.Errorf("failed to save default tag for updated quickstart %s: %w", name, err)
+		if err := dbHelper.Update(&defaultTag, "default tag", "quickstart"); err != nil {
+			return originalQuickstart, false, err
 		}
 		
-		logrus.Infof("Successfully updated quickstart: %s", name)
 		return originalQuickstart, false, nil
 	}
 }
 
 func seedDefaultTags() (map[string]models.Tag, error) {
-	logrus.Info("Seeding default tags")
+	dbHelper := NewDBHelper(DB, "default-tag-seeder")
+	
 	quickstartsKindTag := models.Tag{
 		Type:  models.ContentKind,
 		Value: "quickstart",
@@ -258,24 +185,18 @@ func seedDefaultTags() (map[string]models.Tag, error) {
 		Value: "helptopic",
 	}
 
-	logrus.Debugf("Creating/finding quickstart kind tag: %s", quickstartsKindTag.Value)
-	err := DB.Where("type = ? AND value = ?", &quickstartsKindTag.Type, &quickstartsKindTag.Value).FirstOrCreate(&quickstartsKindTag).Error
+	_, err := dbHelper.FindOrCreate(&quickstartsKindTag, 
+		map[string]interface{}{"type": quickstartsKindTag.Type, "value": quickstartsKindTag.Value}, 
+		"quickstart kind tag", quickstartsKindTag.Value)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create quickstarts kind tag: %w", err)
+		return nil, err
 	}
 
-	logrus.Debugf("Creating/finding help topic kind tag: %s", helpTopicKindTag.Value)
-	err = DB.Where("type = ? AND value = ?", &helpTopicKindTag.Type, &helpTopicKindTag.Value).FirstOrCreate(&helpTopicKindTag).Error
+	_, err = dbHelper.FindOrCreate(&helpTopicKindTag, 
+		map[string]interface{}{"type": helpTopicKindTag.Type, "value": helpTopicKindTag.Value}, 
+		"help topic kind tag", helpTopicKindTag.Value)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create help topic kind tag: %w", err)
-	}
-
-	if err := DB.Save(&quickstartsKindTag).Error; err != nil {
-		return nil, fmt.Errorf("failed to save quickstarts kind tag: %w", err)
-	}
-
-	if err := DB.Save(&helpTopicKindTag).Error; err != nil {
-		return nil, fmt.Errorf("failed to save help topic kind tag: %w", err)
+		return nil, err
 	}
 
 	result := make(map[string]models.Tag)
@@ -384,20 +305,19 @@ func seedHelpTopic(t MetadataTemplate, defaultTag models.Tag) ([]models.HelpTopi
 }
 
 func clearOldContent() ([]models.FavoriteQuickstart, error) {
-	logrus.Info("Starting cleanup of old content")
+	dbHelper := NewDBHelper(DB, "content-cleaner")
 	var favorites []models.FavoriteQuickstart
 	var staleQuickstartsTags []models.Tag
 	var staleTopicsTags []models.Tag
 	var staleQuickstarts []models.Quickstart
 	var staleHelpTopics []models.HelpTopic
 
-	// Get all existing favorites to preserve
+	// Get all existing content to preserve/clear
 	if err := DB.Model(&models.FavoriteQuickstart{}).Find(&favorites).Error; err != nil {
 		return nil, fmt.Errorf("failed to fetch existing favorites: %w", err)
 	}
 	logrus.Infof("Found %d existing favorites to preserve", len(favorites))
 
-	// Get all existing content to clear
 	if err := DB.Model(&models.Quickstart{}).Find(&staleQuickstarts).Error; err != nil {
 		return nil, fmt.Errorf("failed to fetch existing quickstarts: %w", err)
 	}
@@ -417,52 +337,72 @@ func clearOldContent() ([]models.FavoriteQuickstart, error) {
 	}
 	logrus.Infof("Found %d total existing tags to clear", len(staleQuickstartsTags)+len(staleTopicsTags))
 
-	// Clear favorites
-	logrus.Debug("Clearing favorite associations and records")
-	for _, favorite := range favorites {
-		if err := DB.Model(&favorite).Association("Quickstart").Clear(); err != nil {
-			return nil, fmt.Errorf("failed to clear favorite quickstart association for favorite %d: %w", favorite.ID, err)
+	// Clear favorites using batch processing
+	favoriteItems := make([]interface{}, len(favorites))
+	for i, f := range favorites {
+		favoriteItems[i] = f
+	}
+	_, errors := dbHelper.ProcessBatch(favoriteItems, func(item interface{}) error {
+		favorite := item.(models.FavoriteQuickstart)
+		if err := dbHelper.ClearAssociation(&favorite, "Quickstart", "favorite", favorite.ID); err != nil {
+			return err
 		}
-		if err := DB.Unscoped().Delete(&favorite).Error; err != nil {
-			return nil, fmt.Errorf("failed to delete favorite %d: %w", favorite.ID, err)
-		}
+		return dbHelper.Delete(&favorite, "favorite", favorite.ID)
+	}, "favorites cleanup")
+	if len(errors) > 0 {
+		return nil, fmt.Errorf("errors during favorites cleanup: %v", errors[0])
 	}
 
-	// Clear all tag associations and delete tags
-	logrus.Debug("Clearing tag associations and records")
+	// Clear tags using batch processing
 	allTags := append(staleQuickstartsTags, staleTopicsTags...)
-	for _, tag := range allTags {
-		if err := DB.Model(&tag).Association("Quickstarts").Clear(); err != nil {
-			return nil, fmt.Errorf("failed to clear quickstart associations for tag %d: %w", tag.ID, err)
+	tagItems := make([]interface{}, len(allTags))
+	for i, t := range allTags {
+		tagItems[i] = t
+	}
+	_, errors = dbHelper.ProcessBatch(tagItems, func(item interface{}) error {
+		tag := item.(models.Tag)
+		if err := dbHelper.ClearAssociation(&tag, "Quickstarts", "tag", tag.ID); err != nil {
+			return err
 		}
-		if err := DB.Model(&tag).Association("HelpTopics").Clear(); err != nil {
-			return nil, fmt.Errorf("failed to clear help topic associations for tag %d: %w", tag.ID, err)
+		if err := dbHelper.ClearAssociation(&tag, "HelpTopics", "tag", tag.ID); err != nil {
+			return err
 		}
-		if err := DB.Unscoped().Delete(&tag).Error; err != nil {
-			return nil, fmt.Errorf("failed to delete tag %d: %w", tag.ID, err)
-		}
+		return dbHelper.Delete(&tag, "tag", tag.ID)
+	}, "tags cleanup")
+	if len(errors) > 0 {
+		return nil, fmt.Errorf("errors during tags cleanup: %v", errors[0])
 	}
 
-	// Clear quickstart associations and delete quickstarts
-	logrus.Debug("Clearing quickstart associations and records")
-	for _, q := range staleQuickstarts {
-		if err := DB.Model(&q).Association("Tags").Clear(); err != nil {
-			return nil, fmt.Errorf("failed to clear tag associations for quickstart %s: %w", q.Name, err)
+	// Clear quickstarts using batch processing
+	quickstartItems := make([]interface{}, len(staleQuickstarts))
+	for i, q := range staleQuickstarts {
+		quickstartItems[i] = q
+	}
+	_, errors = dbHelper.ProcessBatch(quickstartItems, func(item interface{}) error {
+		quickstart := item.(models.Quickstart)
+		if err := dbHelper.ClearAssociation(&quickstart, "Tags", "quickstart", quickstart.Name); err != nil {
+			return err
 		}
-		if err := DB.Unscoped().Delete(&q).Error; err != nil {
-			return nil, fmt.Errorf("failed to delete quickstart %s: %w", q.Name, err)
-		}
+		return dbHelper.Delete(&quickstart, "quickstart", quickstart.Name)
+	}, "quickstarts cleanup")
+	if len(errors) > 0 {
+		return nil, fmt.Errorf("errors during quickstarts cleanup: %v", errors[0])
 	}
 
-	// Clear help topic associations and delete help topics
-	logrus.Debug("Clearing help topic associations and records")
-	for _, h := range staleHelpTopics {
-		if err := DB.Model(&h).Association("Tags").Clear(); err != nil {
-			return nil, fmt.Errorf("failed to clear tag associations for help topic %s: %w", h.Name, err)
+	// Clear help topics using batch processing
+	helpTopicItems := make([]interface{}, len(staleHelpTopics))
+	for i, h := range staleHelpTopics {
+		helpTopicItems[i] = h
+	}
+	_, errors = dbHelper.ProcessBatch(helpTopicItems, func(item interface{}) error {
+		helpTopic := item.(models.HelpTopic)
+		if err := dbHelper.ClearAssociation(&helpTopic, "Tags", "help topic", helpTopic.Name); err != nil {
+			return err
 		}
-		if err := DB.Unscoped().Delete(&h).Error; err != nil {
-			return nil, fmt.Errorf("failed to delete help topic %s: %w", h.Name, err)
-		}
+		return dbHelper.Delete(&helpTopic, "help topic", helpTopic.Name)
+	}, "help topics cleanup")
+	if len(errors) > 0 {
+		return nil, fmt.Errorf("errors during help topics cleanup: %v", errors[0])
 	}
 
 	logrus.Info("Successfully cleared all old content")
@@ -470,31 +410,44 @@ func clearOldContent() ([]models.FavoriteQuickstart, error) {
 }
 
 func SeedFavorites(favorites []models.FavoriteQuickstart) error {
+	dbHelper := NewDBHelper(DB, "favorites-restorer")
 	logrus.Infof("Starting to restore %d favorite quickstarts", len(favorites))
+	
+	favoriteItems := make([]interface{}, len(favorites))
+	for i, f := range favorites {
+		favoriteItems[i] = f
+	}
+	
 	seedSuccess := 0
 	ignoredFalse := 0
 	notFound := 0
 
-	for _, favorite := range favorites {
+	_, errors := dbHelper.ProcessBatch(favoriteItems, func(item interface{}) error {
+		favorite := item.(models.FavoriteQuickstart)
 		var quickstart models.Quickstart
 		result := DB.Where("name = ?", favorite.QuickstartName).First(&quickstart)
 		
 		if result.Error == nil && result.RowsAffected != 0 && favorite.Favorite {
-			if err := DB.Create(&favorite).Error; err != nil {
-				return fmt.Errorf("failed to create favorite for quickstart %s: %w", favorite.QuickstartName, err)
+			if err := dbHelper.Create(&favorite, "favorite", favorite.QuickstartName); err != nil {
+				return err
 			}
-			logrus.Debugf("Restored favorite for quickstart: %s", favorite.QuickstartName)
 			seedSuccess++
+			return nil
 		} else if !favorite.Favorite {
 			logrus.Debugf("Skipping unfavorite entry for: %s", favorite.QuickstartName)
 			ignoredFalse++
+			return nil
 		} else {
 			logrus.Warningf("Unable to restore favorite quickstart %s: quickstart not found (may have been renamed)", favorite.QuickstartName)
 			notFound++
+			return nil
 		}
-	}
+	}, "favorites restoration")
 
-	logrus.Infof("Favorites restoration complete: %d restored, %d ignored (unfavorite), %d not found", seedSuccess, ignoredFalse, notFound)
+	logrus.Infof("Favorites restoration complete: %d restored, %d ignored (unfavorite), %d not found, %d errors", seedSuccess, ignoredFalse, notFound, len(errors))
+	if len(errors) > 0 {
+		return fmt.Errorf("errors during favorites restoration: %v", errors[0])
+	}
 	return nil
 }
 
