@@ -148,7 +148,7 @@ func (h *DBHelper) ProcessBatch(items []interface{}, processor func(interface{})
 		
 		if err := processor(item); err != nil {
 			h.logger.Errorf("Error processing item %d in batch %s: %v", i+1, batchName, err)
-			errors = append(errors, err)
+			errors = append(errors, fmt.Errorf("item %d: %w", i+1, err))
 		} else {
 			successCount++
 		}
@@ -156,4 +156,24 @@ func (h *DBHelper) ProcessBatch(items []interface{}, processor func(interface{})
 	
 	h.logger.Infof("Batch processing complete: %s - %d success, %d errors", batchName, successCount, len(errors))
 	return successCount, errors
+}
+
+// ProcessBatchWithAggregatedError processes items and returns a single aggregated error if any fail
+func (h *DBHelper) ProcessBatchWithAggregatedError(items []interface{}, processor func(interface{}) error, batchName string) (int, error) {
+	successCount, errors := h.ProcessBatch(items, processor, batchName)
+	
+	if len(errors) == 0 {
+		return successCount, nil
+	}
+	
+	// Create aggregated error message
+	errorMsgs := make([]string, len(errors))
+	for i, err := range errors {
+		errorMsgs[i] = err.Error()
+	}
+	
+	aggregatedErr := fmt.Errorf("batch processing %s failed with %d errors: %s", 
+		batchName, len(errors), strings.Join(errorMsgs, "; "))
+	
+	return successCount, aggregatedErr
 }

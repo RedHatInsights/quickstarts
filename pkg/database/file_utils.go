@@ -75,6 +75,7 @@ func (h *FileHelper) GlobFiles(pattern string) ([]string, error) {
 }
 
 // AddTagsToContent reads a content file, adds tags to its metadata, and returns JSON
+// Handles various file structures with fallback logic for robustness
 func (h *FileHelper) AddTagsToContent(contentPath string, tags interface{}) ([]byte, error) {
 	h.logger.Debugf("Adding tags to content file: %s", contentPath)
 	
@@ -90,25 +91,16 @@ func (h *FileHelper) AddTagsToContent(contentPath string, tags interface{}) ([]b
 		return nil, fmt.Errorf("failed to unmarshal JSON content for %s: %w", contentPath, err)
 	}
 	
-	// Convert to map for manipulation
-	dataMap, ok := data.(map[string]interface{})
-	if !ok {
-		return nil, fmt.Errorf("content file %s does not have expected top-level object structure", contentPath)
+	// Handle different file structures with fallback logic
+	dataMap, err := h.ensureObjectStructure(data, contentPath)
+	if err != nil {
+		return nil, err
 	}
 	
-	// Ensure metadata exists and is a map
-	if dataMap["metadata"] == nil {
-		dataMap["metadata"] = make(map[string]interface{})
+	// Ensure metadata exists and add tags
+	if err := h.addTagsToMetadata(dataMap, tags); err != nil {
+		return nil, fmt.Errorf("failed to add tags to metadata for %s: %w", contentPath, err)
 	}
-	
-	metadata, ok := dataMap["metadata"].(map[string]interface{})
-	if !ok {
-		dataMap["metadata"] = make(map[string]interface{})
-		metadata = dataMap["metadata"].(map[string]interface{})
-	}
-	
-	// Add tags to metadata
-	metadata["tags"] = tags
 	
 	result, err := json.Marshal(dataMap)
 	if err != nil {
@@ -118,6 +110,62 @@ func (h *FileHelper) AddTagsToContent(contentPath string, tags interface{}) ([]b
 	
 	h.logger.Debugf("Successfully added tags to content file: %s", contentPath)
 	return result, nil
+}
+
+// ensureObjectStructure validates and converts data to a map structure with fallbacks
+func (h *FileHelper) ensureObjectStructure(data interface{}, contentPath string) (map[string]interface{}, error) {
+	// Try to convert to map first
+	if dataMap, ok := data.(map[string]interface{}); ok {
+		return dataMap, nil
+	}
+	
+	// Handle array structure (wrap in object)
+	if dataArray, ok := data.([]interface{}); ok {
+		h.logger.Warnf("Content file %s has array structure, wrapping in object", contentPath)
+		return map[string]interface{}{
+			"content": dataArray,
+			"metadata": make(map[string]interface{}),
+		}, nil
+	}
+	
+	// Handle primitive types (wrap in object)
+	if data != nil {
+		h.logger.Warnf("Content file %s has primitive structure, wrapping in object", contentPath)
+		return map[string]interface{}{
+			"content": data,
+			"metadata": make(map[string]interface{}),
+		}, nil
+	}
+	
+	// Handle null/empty content
+	h.logger.Warnf("Content file %s is empty or null, creating default structure", contentPath)
+	return map[string]interface{}{
+		"metadata": make(map[string]interface{}),
+	}, nil
+}
+
+// addTagsToMetadata ensures metadata exists and adds tags to it
+func (h *FileHelper) addTagsToMetadata(dataMap map[string]interface{}, tags interface{}) error {
+	// Ensure metadata exists
+	if dataMap["metadata"] == nil {
+		dataMap["metadata"] = make(map[string]interface{})
+	}
+	
+	// Convert metadata to map if it's not already
+	metadata, ok := dataMap["metadata"].(map[string]interface{})
+	if !ok {
+		// Try to preserve existing metadata if it's a different type
+		originalMetadata := dataMap["metadata"]
+		metadata = make(map[string]interface{})
+		if originalMetadata != nil {
+			metadata["original"] = originalMetadata
+		}
+		dataMap["metadata"] = metadata
+	}
+	
+	// Add tags to metadata
+	metadata["tags"] = tags
+	return nil
 }
 
 // ExtractStringFromMetadata extracts a string field from JSON metadata
