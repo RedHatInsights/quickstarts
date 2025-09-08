@@ -78,7 +78,7 @@ func TestCreateQuickstartWithBundle(t *testing.T) {
 		assert.Equal(t, nil, error)
 
 		path, _ := os.Getwd()
-		path = strings.TrimRight(path, "pkg")
+		path = strings.TrimSuffix(path, "pkg")
 		quickstartFiles, _ := filepath.Glob(path + "/docs/quickstarts/**/metadata.y*")
 		t.Log(quickstartFiles)
 		quickstart_len := len(quickstartFiles)
@@ -99,7 +99,7 @@ func TestCreateQuickstartWithBundle(t *testing.T) {
 
 func TestDBSeeding(t *testing.T) {
 	path, err := os.Getwd()
-	path = strings.TrimRight(path, "pkg")
+	path = strings.TrimSuffix(path, "pkg")
 	quickstartsFiles, err := filepath.Glob(path + "/docs/quickstarts/**/metadata.y*")
 	if err != nil {
 		log.Fatal(err)

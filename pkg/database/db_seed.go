@@ -40,7 +40,7 @@ type SeedingResult struct {
 func readMetadata(loc string) (MetadataTemplate, error) {
 	fileHelper := NewFileHelper("metadata-reader")
 	var template MetadataTemplate
-	
+
 	if err := fileHelper.ReadYAMLFile(loc, &template); err != nil {
 		return template, err
 	}
@@ -64,7 +64,7 @@ func findTags() ([]MetadataTemplate, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to get working directory: %w", err)
 	}
-	path = strings.TrimRight(path, "pkg")
+	path = strings.TrimSuffix(path, "pkg")
 	logrus.Debugf("Using base path: %s", path)
 
 	quickstartsPattern := path + "/docs/quickstarts/**/metadata.y*"
@@ -134,7 +134,7 @@ func seedQuickstart(t MetadataTemplate, defaultTag models.Tag) (models.Quickstar
 		// Create new quickstart
 		newQuickstart.Content = jsonContent
 		newQuickstart.Name = name
-		
+
 		if err := dbHelper.Create(&newQuickstart, "quickstart", name); err != nil {
 			return newQuickstart, false, err
 		}
@@ -146,12 +146,12 @@ func seedQuickstart(t MetadataTemplate, defaultTag models.Tag) (models.Quickstar
 		if err := dbHelper.Update(&defaultTag, "default tag", "quickstart"); err != nil {
 			return newQuickstart, false, err
 		}
-		
+
 		return newQuickstart, true, nil
 	} else {
 		// Update existing quickstart
 		originalQuickstart.Content = jsonContent
-		
+
 		// Clear all tags associations
 		if err := dbHelper.ClearAssociation(&originalQuickstart, "Tags", "quickstart", name); err != nil {
 			return originalQuickstart, false, err
@@ -168,14 +168,14 @@ func seedQuickstart(t MetadataTemplate, defaultTag models.Tag) (models.Quickstar
 		if err := dbHelper.Update(&defaultTag, "default tag", "quickstart"); err != nil {
 			return originalQuickstart, false, err
 		}
-		
+
 		return originalQuickstart, false, nil
 	}
 }
 
 func seedDefaultTags() (map[string]models.Tag, error) {
 	dbHelper := NewDBHelper(DB, "default-tag-seeder")
-	
+
 	quickstartsKindTag := models.Tag{
 		Type:  models.ContentKind,
 		Value: "quickstart",
@@ -185,15 +185,15 @@ func seedDefaultTags() (map[string]models.Tag, error) {
 		Value: "helptopic",
 	}
 
-	_, err := dbHelper.FindOrCreate(&quickstartsKindTag, 
-		map[string]interface{}{"type": quickstartsKindTag.Type, "value": quickstartsKindTag.Value}, 
+	_, err := dbHelper.FindOrCreate(&quickstartsKindTag,
+		map[string]interface{}{"type": quickstartsKindTag.Type, "value": quickstartsKindTag.Value},
 		"quickstart kind tag", quickstartsKindTag.Value)
 	if err != nil {
 		return nil, err
 	}
 
-	_, err = dbHelper.FindOrCreate(&helpTopicKindTag, 
-		map[string]interface{}{"type": helpTopicKindTag.Type, "value": helpTopicKindTag.Value}, 
+	_, err = dbHelper.FindOrCreate(&helpTopicKindTag,
+		map[string]interface{}{"type": helpTopicKindTag.Type, "value": helpTopicKindTag.Value},
 		"help topic kind tag", helpTopicKindTag.Value)
 	if err != nil {
 		return nil, err
@@ -412,12 +412,12 @@ func clearOldContent() ([]models.FavoriteQuickstart, error) {
 func SeedFavorites(favorites []models.FavoriteQuickstart) error {
 	dbHelper := NewDBHelper(DB, "favorites-restorer")
 	logrus.Infof("Starting to restore %d favorite quickstarts", len(favorites))
-	
+
 	favoriteItems := make([]interface{}, len(favorites))
 	for i, f := range favorites {
 		favoriteItems[i] = f
 	}
-	
+
 	seedSuccess := 0
 	ignoredFalse := 0
 	notFound := 0
@@ -426,7 +426,7 @@ func SeedFavorites(favorites []models.FavoriteQuickstart) error {
 		favorite := item.(models.FavoriteQuickstart)
 		var quickstart models.Quickstart
 		result := DB.Where("name = ?", favorite.QuickstartName).First(&quickstart)
-		
+
 		if result.Error == nil && result.RowsAffected != 0 && favorite.Favorite {
 			if err := dbHelper.Create(&favorite, "favorite", favorite.QuickstartName); err != nil {
 				return err
@@ -461,7 +461,7 @@ func processQuickstartPhase(template MetadataTemplate, defaultTags map[string]mo
 		result.Errors = append(result.Errors, fmt.Errorf(errMsg))
 		return fmt.Errorf(errMsg)
 	}
-	
+
 	result.QuickstartsProcessed++
 	if isNew {
 		result.QuickstartsCreated++
@@ -500,7 +500,7 @@ func processQuickstartTags(template MetadataTemplate, quickstart models.Quicksta
 			result.Errors = append(result.Errors, fmt.Errorf(errMsg))
 			continue
 		}
-		
+
 		if r.RowsAffected == 0 {
 			// Create new tag
 			if err := DB.Create(&newTag).Error; err != nil {
@@ -576,7 +576,7 @@ func processHelpTopicTags(template MetadataTemplate, helpTopics []models.HelpTop
 				result.Errors = append(result.Errors, fmt.Errorf(errMsg))
 				continue
 			}
-			
+
 			if r.RowsAffected == 0 {
 				// Create new tag
 				if err := DB.Create(&newTag).Error; err != nil {
@@ -620,13 +620,13 @@ func processHelpTopicTags(template MetadataTemplate, helpTopics []models.HelpTop
 // logSeedingResults logs the final results of the seeding process
 func logSeedingResults(result *SeedingResult) {
 	logrus.Infof("=== SEEDING PROCESS COMPLETE ===")
-	logrus.Infof("Quickstarts: %d processed (%d created, %d updated)", 
+	logrus.Infof("Quickstarts: %d processed (%d created, %d updated)",
 		result.QuickstartsProcessed, result.QuickstartsCreated, result.QuickstartsUpdated)
-	logrus.Infof("Help Topics: %d processed (%d created, %d updated)", 
+	logrus.Infof("Help Topics: %d processed (%d created, %d updated)",
 		result.HelpTopicsProcessed, result.HelpTopicsCreated, result.HelpTopicsUpdated)
 	logrus.Infof("Tags: %d created", result.TagsCreated)
 	logrus.Infof("Favorites: %d restored", result.FavoritesRestored)
-	
+
 	if len(result.Errors) > 0 {
 		logrus.Errorf("Completed with %d errors", len(result.Errors))
 		for i, err := range result.Errors {
@@ -639,9 +639,9 @@ func logSeedingResults(result *SeedingResult) {
 
 func SeedTags() error {
 	logrus.Info("=== STARTING DATABASE SEEDING PROCESS ===")
-	
+
 	result := &SeedingResult{}
-	
+
 	// Phase 1: Clear old content and preserve favorites
 	logrus.Info("Phase 1: Clearing old content")
 	favorites, err := clearOldContent()
@@ -670,7 +670,7 @@ func SeedTags() error {
 	logrus.Info("Phase 4: Processing content and tags")
 	for _, template := range metadataTemplates {
 		kind := template.Kind
-		
+
 		if kind == "QuickStarts" {
 			logrus.Debugf("Processing QuickStart template: %s", template.Name)
 			quickstart, isNew, err := seedQuickstart(template, defaultTags["quickstart"])
@@ -680,7 +680,7 @@ func SeedTags() error {
 				result.Errors = append(result.Errors, fmt.Errorf(errMsg))
 				continue
 			}
-			
+
 			result.QuickstartsProcessed++
 			if isNew {
 				result.QuickstartsCreated++
@@ -714,7 +714,7 @@ func SeedTags() error {
 					result.Errors = append(result.Errors, fmt.Errorf(errMsg))
 					continue
 				}
-				
+
 				if r.RowsAffected == 0 {
 					// Create new tag
 					if err := DB.Create(&newTag).Error; err != nil {
@@ -784,7 +784,7 @@ func SeedTags() error {
 					result.Errors = append(result.Errors, fmt.Errorf(errMsg))
 					continue
 				}
-				
+
 				if r.RowsAffected == 0 {
 					// Create new tag
 					if err := DB.Create(&newTag).Error; err != nil {
