@@ -1,0 +1,17 @@
+kind: QuickStarts
+name: rosa-osd-add-identity-provider-access-cluster
+tags:
+- kind: bundle
+  value: openshift
+- kind: content
+  value: quickstart
+- kind: product-families
+  value: openshift
+- kind: product-families
+  value: settings  
+- kind: use-case
+  value: identity-and-access
+- kind: use-case
+  value: clusters 
+- kind: use-case
+  value: infrastructure
