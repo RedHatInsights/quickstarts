@@ -22,17 +22,17 @@ func main() {
 	components := openapi3.NewComponents()
 	components.Schemas = make(map[string]*openapi3.SchemaRef)
 
-	quickstart, _, err := openapi3gen.NewSchemaRefForValue(&models.Quickstart{}, openapi3gen.SchemaCustomizer(func(name string, t reflect.Type, tag reflect.StructTag, schema *openapi3.Schema) error {
+	quickstart, err := openapi3gen.NewSchemaRefForValue(&models.Quickstart{}, components.Schemas, openapi3gen.SchemaCustomizer(func(name string, t reflect.Type, tag reflect.StructTag, schema *openapi3.Schema) error {
 		if name == "content" {
-			schema.Type = "object"
+			schema.Type = &openapi3.Types{"object"}
 		}
 		if name == "deletedAt" {
-			schema.Type = "string"
+			schema.Type = &openapi3.Types{"string"}
 			schema.Format = "date-time"
 			schema.OneOf = append(schema.OneOf, &openapi3.SchemaRef{Value: &openapi3.Schema{
-				Type: "null",
+				Type: &openapi3.Types{"null"},
 			}}, &openapi3.SchemaRef{Value: &openapi3.Schema{
-				Type: "string",
+				Type: &openapi3.Types{"string"},
 			}})
 		}
 		return nil
@@ -40,25 +40,25 @@ func main() {
 	checkErr(err)
 	components.Schemas["v1.Quickstart"] = quickstart
 
-	quickstartProgress, _, err := openapi3gen.NewSchemaRefForValue(&models.QuickstartProgress{})
+	quickstartProgress, err := openapi3gen.NewSchemaRefForValue(&models.QuickstartProgress{}, components.Schemas)
 	checkErr(err)
 	components.Schemas["v1.QuickstartProgress"] = quickstartProgress
 
-	favoriteQuickstart, _, err := openapi3gen.NewSchemaRefForValue(&models.FavoriteQuickstart{})
+	favoriteQuickstart, err := openapi3gen.NewSchemaRefForValue(&models.FavoriteQuickstart{}, components.Schemas)
 	checkErr(err)
 	components.Schemas["v1.FavoriteQuickstart"] = favoriteQuickstart
 
-	helpTopic, _, err := openapi3gen.NewSchemaRefForValue(&models.HelpTopic{}, openapi3gen.SchemaCustomizer(func(name string, t reflect.Type, tag reflect.StructTag, schema *openapi3.Schema) error {
+	helpTopic, err := openapi3gen.NewSchemaRefForValue(&models.HelpTopic{}, components.Schemas, openapi3gen.SchemaCustomizer(func(name string, t reflect.Type, tag reflect.StructTag, schema *openapi3.Schema) error {
 		if name == "content" {
-			schema.Type = "object"
+			schema.Type = &openapi3.Types{"object"}
 		}
 		if name == "deletedAt" {
-			schema.Type = "string"
+			schema.Type = &openapi3.Types{"string"}
 			schema.Format = "date-time"
 			schema.OneOf = append(schema.OneOf, &openapi3.SchemaRef{Value: &openapi3.Schema{
-				Type: "null",
+				Type: &openapi3.Types{"null"},
 			}}, &openapi3.SchemaRef{Value: &openapi3.Schema{
-				Type: "string",
+				Type: &openapi3.Types{"string"},
 			}})
 		}
 		return nil
@@ -66,11 +66,11 @@ func main() {
 	checkErr(err)
 	components.Schemas["v1.HelpTopic"] = helpTopic
 
-	badRequest, _, err := openapi3gen.NewSchemaRefForValue(&models.BadRequest{})
+	badRequest, err := openapi3gen.NewSchemaRefForValue(&models.BadRequest{}, components.Schemas)
 	checkErr(err)
 	components.Schemas["BadRequest"] = badRequest
 
-	notFound, _, err := openapi3gen.NewSchemaRefForValue(&models.NotFound{})
+	notFound, err := openapi3gen.NewSchemaRefForValue(&models.NotFound{}, components.Schemas)
 	checkErr(err)
 	components.Schemas["NotFound"] = notFound
 
