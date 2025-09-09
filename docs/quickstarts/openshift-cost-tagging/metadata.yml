@@ -1,0 +1,15 @@
+kind: QuickStarts
+name: openshift-cost-tagging
+tags:
+- kind: bundle
+  value: insights
+- kind: content
+  value: documentation
+- kind: product-families
+  value: openshift
+- kind: product-families
+  value: subscriptions-services
+- kind: use-case
+  value: spend-management  
+- kind: use-case
+  value: system-configuration 

@@ -1,0 +1,16 @@
+ReapiVersion: console.openshift.io/v1
+kind: QuickStarts
+metadata:
+  name: common-access-rh-com
+  externalDocumentation: true
+spec:
+  version: 0.1
+  type:
+    text: Documentation
+    color: orange
+  displayName: Related console documentation
+  icon: ~
+  description: A complete list of documentation related to Hybrid Cloud Console settings. 
+  link:
+    href: https://docs.redhat.com/en/documentation/red_hat_hybrid_cloud_console/
+    text: View documentation

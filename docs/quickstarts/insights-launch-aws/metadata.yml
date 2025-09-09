@@ -1,8 +1,15 @@
-kind: QuickStarts # kind must always be "QuickStarts"
+kind: QuickStarts
 name: insights-launch-aws
-tags: # If you want to use more granular filtering add tags to the quickstart
-  - kind: bundle
-    value: insights
-  - kind: application # use application tag for quickstart used by specific application
-    value: imageBuilder
-    
+tags:
+- kind: bundle
+  value: insights
+- kind: application
+  value: imageBuilder
+- kind: content
+  value: quickstart
+- kind: product-families
+  value: rhel
+- kind: use-case
+  value: deploy
+- kind: use-case
+  value: images

@@ -1,0 +1,169 @@
+# Additional info: https://docs.openshift.com/container-platform/4.9/web_console/creating-quick-start-tutorials.html
+metadata:
+  name: insights-inventory-workspace-rbac
+  # you can add additional metadata here
+  instructional: true
+spec:
+  displayName: Managing user access with workspaces
+  durationMinutes: 5
+  # Optional type section, will display as a tile on the card
+  type:
+    text: Quick start
+    # 'blue' | 'cyan' | 'green' | 'orange' | 'purple' | 'red' | 'grey'
+    color: green
+  icon: data:image/svg+xml;base64,PCEtLSBHZW5lcmF0ZWQgYnkgSWNvTW9vbi5pbyAtLT4KPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KPHRpdGxlPjwvdGl0bGU+CjxnIGlkPSJpY29tb29uLWlnbm9yZSI+CjwvZz4KPHBhdGggZD0iTTQ0OCA2NHY0MTZoLTMzNmMtMjYuNTEzIDAtNDgtMjEuNDktNDgtNDhzMjEuNDg3LTQ4IDQ4LTQ4aDMwNHYtMzg0aC0zMjBjLTM1LjE5OSAwLTY0IDI4LjgtNjQgNjR2Mzg0YzAgMzUuMiAyOC44MDEgNjQgNjQgNjRoMzg0di00NDhoLTMyeiI+PC9wYXRoPgo8cGF0aCBkPSJNMTEyLjAyOCA0MTZ2MGMtMC4wMDkgMC4wMDEtMC4wMTkgMC0wLjAyOCAwLTguODM2IDAtMTYgNy4xNjMtMTYgMTZzNy4xNjQgMTYgMTYgMTZjMC4wMDkgMCAwLjAxOS0wLjAwMSAwLjAyOC0wLjAwMXYwLjAwMWgzMDMuOTQ1di0zMmgtMzAzLjk0NXoiPjwvcGF0aD4KPC9zdmc+Cg==
+  prerequisites:
+    - Be an Organization Administrator or have the User Access Administrator role
+    - Have workspaces created
+  description: |-
+    Learn how to manage access to your systems using workspaces.
+  introduction: |-
+    **Welcome to the quick start for managing user access using Workspaces. Use this feature to enhance security within your organization.**
+    
+    In this quick start, you will use the User Access application to configure access to different workspaces using custom role functionality and user access groups.
+    <br> <br>
+    **IMPORTANT NOTE:** By default, everyone in your organization will be assigned the "Inventory Hosts Administrator" role, and will have access to all systems, whether they are in a workspace or not. You will change these default permissions by completing the tasks in this quick Start.
+
+    Use this quick start to assign user-specific access to:
+    - Certain workspaces but not others, and/or
+    - All ungrouped systems
+    
+  tasks:
+    - title: Create a custom role
+      description: |- 
+
+        Configuring user access for your workspace must be done from the User Access application.
+
+        **To create a custom role:**
+        
+        1. Navigate to the User Access application by clicking the Settings <i class="fas fa-cog"></i> icon in the top right corner. From there, click **Identity & Access Management**.
+        1. In Settings > User Access, click **Roles** in the left navigation.
+        1. Click **Create role**. This will open up a wizard.
+        1. On Step 1 (Create role), name your role, and add a description if you would like.
+        1. Click **Next**.
+        1. On Step 2 (Add permissions), filter by Applications, and select “inventory” to narrow down all inventory permissions.
+            
+            **The four inventory permissions include:** <br>
+              1. **inventory:hosts:read** → Allows users to view systems (needed to view systems both inside and outside a workspace).
+              1. **inventory:hosts:write** → Allows users to Rename or Delete systems.
+              1. **inventory:groups:read** → Allows users to view workspaces, and general info (not including systems in it).
+              1. **inventory:groups:write** → Allows users to edit workspace membership (add and remove systems from workspaces).
+        1. Select inventory permissions as needed. Here are some possible variations: <br>
+            - If you want to give a user full access to the workspace and its systems → select all 4 permissions.
+            - If you want to give a user full access to the systems inside a workspace → but not workspace editing access, give them inventory:hosts:read, inventory:hosts:write, and inventory:groups:read, but NOT inventory:groups:write.
+            - If you want to give a user full access to ungrouped systems → select all 4 permissions (ungrouped systems are considered a workspace).
+        1. Click **Next**.
+        1. On Step 3 (Define workspace access), for each permission, select workspaces you would like to apply the permissions to using the dropdown menus. <br>
+        
+            Possible scenarios include:
+            - You would like to give users the ability to only see systems in specific workspaces and NOT ungrouped systems → Select those workspaces only.
+            - You would like to give users the ability to see systems in specific workspaces AND any ungrouped systems → Select those workspaces for all permissions AND “ungrouped systems" for inventory:hosts permissions.
+            - You would like to give users the ability to see everything in the inventory → There is no need to create a custom role then. You can cancel the creation flow.
+        1. Once you’ve made your selections, click **Next**.
+        1. Review your selections. Click **Submit**.
+
+        Repeat this process for every workspace or group of users you want to give specific workspace access to.
+        
+        **NOTE:** If you want to give a group of system administrators all the same access to workspaces A, B, and C, you can create a single custom role and assign permissions to those 3 workspaces.
+        However, if you want to give different users access to different workspaces, you will need to create multiple custom roles - one for each workspace you would like to give access to.
+
+        
+      # optional - the task's Check your work module
+      review:
+        instructions: |-
+          - Did you complete the task successfully?
+        failedTaskHelp: This task isn't verified yet. Try the task again.
+      # optional - the task's success and failure messages
+      summary:
+        success: Shows a success message in the task header
+        failed: Shows a failed message in the task header
+
+    - title: Create a User Access group
+      description: |- 
+
+        To assign custom roles to a user or group of users, you must create a User Access group. The users inside a group will be given the roles inside the group.
+
+        1. Click User Access > **Groups** in the left navigation.
+        1. Click **Create group**.
+        1. On Step 1 (Name and Description), input a group name.
+        1. Click **Next**.
+        1. On Step 2 (Add roles), select the custom role you created in Step 1.
+        1. Click **Next**.
+        1. On Step 3 (Add members), select the users you would like to give the custom role to.
+        1. Click **Next**.
+        1. Review the details of your selections, and click **Submit**.
+
+        Repeat this step for each custom role you would like to give to one or more users.
+
+      # optional - the task's Check your work module
+      review:
+        instructions: |-
+          - Did you complete the task successfully?
+        failedTaskHelp: This task isn't verified yet. Try the task again.
+      # optional - the task's success and failure messages
+      summary:
+        success: Shows a success message in the task header
+        failed: Shows a failed message in the task header
+
+    - title: (Important) Remove "Inventory hosts admin” role from Default Access group
+      description: |- 
+      
+        After completing the tasks this far, all users in your organization will still have full access to your inventory because they still have the “Inventory Hosts Administrator” role assigned to them. This allows them to view and edit all hosts. This role is given to them by the default “Default Access” group which assigns roles to your whole organization.
+        <br><br>
+        **To make sure your organization users' access is limited to the workspaces/systems defined in your custom roles,  you must remove the “Inventory Hosts Administrator” role from your users.**
+        <br><br>
+        To do this: 
+        1. In the User Access > Groups page, click the **Default Access group**.
+        1. Select the Inventory Hosts Administrator role.
+        1. Click on the role’s row actions menu.
+        1. Click **Remove**. A modal will pop up.
+        1. Click **Remove role**.
+        1. If you have never edited the Default Access group before, a warning will appear. Check the **“I understand, and I want to continue”** box.
+        1. Click **Continue**.
+
+      # optional - the task's Check your work module
+      review:
+        instructions: |-
+          - Did you complete the task successfully?
+        failedTaskHelp: This task isn't verified yet. Try the task again.
+      # optional - the task's success and failure messages
+      summary:
+        success: Shows a success message in the task header
+        failed: Shows a failed message in the task header
+
+    - title: (Optional) Create a group to give back “Inventory Hosts Administrator” role to specific users
+      description: |- 
+      
+        There may be users that you would still like to give full inventory access to. In this case, you will need to create another User Access group to assign the “Inventory Hosts Administrator” role back to those users.
+
+        1. In the User Access > **Groups** page, click **Create group**.
+        1. On Step 1 (Name and Description), name your group.
+        1. Click **Next**.
+        1. On Step 2 (Add roles), select the **Inventory Hosts Administrator** role.
+        1. Click **Next**.
+        1. On Step 3 (Add members), select the users you would like to give full inventory access to.
+        1. Click **Next**.
+        1. Review the details of your selections, and click **Submit**.
+        
+        Now, you will have specific users with full inventory access, and others with full inventory access.
+
+      # optional - the task's Check your work module
+      review:
+        instructions: |-
+          - Did you complete the task successfully?
+        failedTaskHelp: This task isn't verified yet. Try the task again.
+      # optional - the task's success and failure messages
+      summary:
+        success: Shows a success message in the task header
+        failed: Shows a failed message in the task header
+
+  conclusion: |-
+   
+      <h4><b>Thank you for taking the time to explore this feature!</b></h4> 
+      
+      If you need additional assistance, [open a support case](https://access.redhat.com/support).
+
+
+
+
+      

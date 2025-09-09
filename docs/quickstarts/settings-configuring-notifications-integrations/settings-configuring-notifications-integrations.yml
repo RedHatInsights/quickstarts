@@ -1,0 +1,16 @@
+apiVersion: console.openshift.io/v1
+kind: QuickStarts
+metadata:
+  name: settings-configuring-notifications-integrations
+  externalDocumentation: true
+spec:
+  version: 0.1
+  type:
+    text: Documentation
+    color: orange
+  displayName: Configuring notifications and integrations
+  icon: ~
+  description: Configuring settings for event-triggered notifications for your services and applications.
+  link:
+    href: https://docs.redhat.com/en/documentation/red_hat_hybrid_cloud_console/1-latest/html/configuring_notifications_on_the_red_hat_hybrid_cloud_console/index
+    text: View documentation

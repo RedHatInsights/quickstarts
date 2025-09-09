@@ -70,7 +70,7 @@ objects:
 
 parameters:
 - name: LOG_LEVEL
-  value: INFO
+  value: Warn
 - description: Cpu limit of service
   name: CPU_LIMIT
   value: 500m
@@ -84,7 +84,7 @@ parameters:
   required: true
 - description: Image name
   name: IMAGE
-  value: quay.io/cloudservices/quickstarts
+  value: quay.io/redhat-services-prod/hcc-platex-services/quickstarts
 - description: Determines Clowder deployment
   name: CLOWDER_ENABLED
   value: "false"

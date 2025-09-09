@@ -20,6 +20,7 @@ type QuickstartsConfig struct {
 	Test            bool
 	DbSSLMode       string
 	DbSSLRootCert   string
+	LogLevel        string
 }
 
 var config *QuickstartsConfig
@@ -29,6 +30,13 @@ func Init() {
 	config.ServerAddr = ":8000"
 	config.OpenApiSpecPath = "./spec/openapi.json"
 	config.Test = false
+	// Log level will default to "Error". Level should be one of
+	// info or debug or error
+	level, ok := os.LookupEnv("LOG_LEVEL")
+	if !ok {
+		level = logrus.ErrorLevel.String()
+	}
+	config.LogLevel = level
 	if clowder.IsClowderEnabled() {
 		cfg := clowder.LoadedConfig
 		config.DbHost = cfg.Database.Hostname
@@ -58,6 +66,7 @@ func Init() {
 		config.DbSSLMode = "disable"
 		config.DbSSLRootCert = ""
 	}
+
 }
 
 // Get returns a quickstarts service configuration

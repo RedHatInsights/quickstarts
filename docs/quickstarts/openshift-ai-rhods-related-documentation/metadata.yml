@@ -1,0 +1,11 @@
+kind: QuickStarts
+name: openshift-ai-rhods-related-documentation
+tags:
+- kind: bundle
+  value: application-services
+- kind: bundle
+  value: openshift
+- kind: product-families
+  value: openshift
+- kind: content
+  value: documentation

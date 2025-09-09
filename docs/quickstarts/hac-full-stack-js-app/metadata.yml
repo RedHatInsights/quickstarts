@@ -1,0 +1,17 @@
+kind: QuickStarts
+name: hac-full-stack-js-app
+tags:
+- kind: bundle
+  value: hac
+- kind: bundle
+  value: application-studio
+- kind: content
+  value: learningPath
+- kind: product-families
+  value: openshift
+- kind: use-case
+  value: application
+- kind: use-case
+  value: containers
+- kind: use-case
+  value: deploy

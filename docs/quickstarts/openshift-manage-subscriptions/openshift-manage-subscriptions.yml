@@ -1,0 +1,16 @@
+apiVersion: console.openshift.io/v1
+kind: QuickStarts
+metadata:
+  name: openshift-manage-subscriptions
+  externalDocumentation: true
+spec:
+  version: 0.1
+  type:
+    text: Documentation
+    color: orange
+  displayName: Managing subscriptions
+  icon: 
+  description: Deploy and track your subscriptions.
+  link:
+    href: https://docs.redhat.com/en/documentation/subscription_central/1-latest/html-single/getting_started_with_rhel_system_registration/index#understanding_rhsm_con
+    text: View documentation

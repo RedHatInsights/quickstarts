@@ -17,6 +17,150 @@
         },
         "type": "object"
       },
+      "queryParams": {
+        "Account": {
+          "description": "Account number",
+          "in": "query",
+          "name": "account",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        "Application": {
+          "description": "If set, content is associated with a specific CRC application",
+          "explode": true,
+          "in": "query",
+          "name": "application",
+          "required": false,
+          "schema": {
+            "type": "string"
+          },
+          "style": "form"
+        },
+        "Bundle": {
+          "description": "If set, content is associated with a specific CRC bundle",
+          "explode": true,
+          "in": "query",
+          "name": "bundle",
+          "required": false,
+          "schema": {
+            "type": "string"
+          },
+          "style": "form"
+        },
+        "Content": {
+          "description": "If set, content is associated with a specific CRC content",
+          "explode": true,
+          "in": "query",
+          "name": "content",
+          "required": false,
+          "schema": {
+            "type": "string"
+          },
+          "style": "form"
+        },
+        "Id": {
+          "description": "identifier",
+          "in": "path",
+          "name": "id",
+          "required": true,
+          "schema": {
+            "type": "integer"
+          }
+        },
+        "Limit": {
+          "description": "Pagination limit",
+          "explode": true,
+          "in": "query",
+          "name": "limit",
+          "required": false,
+          "schema": {
+            "type": "integer"
+          },
+          "style": "form"
+        },
+        "Name": {
+          "description": "Search content by name",
+          "explode": true,
+          "in": "query",
+          "name": "name",
+          "required": false,
+          "schema": {
+            "type": "string"
+          },
+          "style": "form"
+        },
+        "Offset": {
+          "description": "Pagination offset",
+          "explode": true,
+          "in": "query",
+          "name": "offset",
+          "required": false,
+          "schema": {
+            "type": "integer"
+          },
+          "style": "form"
+        },
+        "ProductFamilies": {
+          "description": "If set, content is associated with a specific CRC product families",
+          "explode": true,
+          "in": "query",
+          "name": "product-families",
+          "required": false,
+          "schema": {
+            "type": "string"
+          },
+          "style": "form"
+        },
+        "TopicName": {
+          "description": "identifier",
+          "in": "path",
+          "name": "topicname",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        "UseCase": {
+          "description": "If set, content is associated with a specific CRC use case",
+          "explode": true,
+          "in": "query",
+          "name": "use-case",
+          "required": false,
+          "schema": {
+            "type": "string"
+          },
+          "style": "form"
+        }
+      },
+      "v1.FavoriteQuickstart": {
+        "properties": {
+          "accountId": {
+            "type": "string"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "deletedAt": {},
+          "favorite": {
+            "type": "boolean"
+          },
+          "id": {
+            "minimum": 0,
+            "type": "integer"
+          },
+          "quickstartName": {
+            "type": "string"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
       "v1.HelpTopic": {
         "properties": {
           "content": {
@@ -29,7 +173,14 @@
           },
           "deletedAt": {
             "format": "date-time",
-            "nullable": true,
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string"
+              }
+            ],
             "type": "string"
           },
           "groupName": {
@@ -51,7 +202,14 @@
                 },
                 "deletedAt": {
                   "format": "date-time",
-                  "nullable": true,
+                  "oneOf": [
+                    {
+                      "type": "null"
+                    },
+                    {
+                      "type": "string"
+                    }
+                  ],
                   "type": "string"
                 },
                 "id": {
@@ -92,8 +250,56 @@
           },
           "deletedAt": {
             "format": "date-time",
-            "nullable": true,
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string"
+              }
+            ],
             "type": "string"
+          },
+          "favoriteQuickstart": {
+            "items": {
+              "properties": {
+                "accountId": {
+                  "type": "string"
+                },
+                "createdAt": {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                "deletedAt": {
+                  "format": "date-time",
+                  "oneOf": [
+                    {
+                      "type": "null"
+                    },
+                    {
+                      "type": "string"
+                    }
+                  ],
+                  "type": "string"
+                },
+                "favorite": {
+                  "type": "boolean"
+                },
+                "id": {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "quickstartName": {
+                  "type": "string"
+                },
+                "updatedAt": {
+                  "format": "date-time",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "type": "array"
           },
           "id": {
             "minimum": 0,
@@ -111,7 +317,14 @@
                 },
                 "deletedAt": {
                   "format": "date-time",
-                  "nullable": true,
+                  "oneOf": [
+                    {
+                      "type": "null"
+                    },
+                    {
+                      "type": "string"
+                    }
+                  ],
                   "type": "string"
                 },
                 "id": {
@@ -155,81 +368,6 @@
         },
         "type": "object"
       }
-    },
-    "parameters": {
-      "Application": {
-        "description": "If set, content is associated with a specific CRC application",
-        "explode": true,
-        "in": "query",
-        "name": "application",
-        "required": false,
-        "schema": {
-          "type": "string"
-        },
-        "style": "form"
-      },
-      "Bundle": {
-        "description": "If set, content is associated with a specific CRC bundle",
-        "explode": true,
-        "in": "query",
-        "name": "bundle",
-        "required": false,
-        "schema": {
-          "type": "string"
-        },
-        "style": "form"
-      },
-      "Id": {
-        "description": "identifier",
-        "in": "path",
-        "name": "id",
-        "required": true,
-        "schema": {
-          "type": "integer"
-        }
-      },
-      "Limit": {
-        "description": "Pagination limit",
-        "explode": true,
-        "in": "query",
-        "name": "limit",
-        "required": false,
-        "schema": {
-          "type": "integer"
-        },
-        "style": "form"
-      },
-      "Name": {
-        "description": "Search content by name",
-        "explode": true,
-        "in": "query",
-        "name": "name",
-        "required": false,
-        "schema": {
-          "type": "string"
-        },
-        "style": "form"
-      },
-      "Offset": {
-        "description": "Pagination offset",
-        "explode": true,
-        "in": "query",
-        "name": "offset",
-        "required": false,
-        "schema": {
-          "type": "integer"
-        },
-        "style": "form"
-      },
-      "TopicName": {
-        "description": "identifier",
-        "in": "path",
-        "name": "name",
-        "required": true,
-        "schema": {
-          "type": "string"
-        }
-      }
     }
   },
   "info": {
@@ -240,28 +378,92 @@
     "version": "1.0.0"
   },
   "openapi": "3.0.0",
-  "tags": [
-    {
-      "description": "A help topic",
-      "name": "helptopic"
-    },
-    {
-      "description": "The content for a quickstart",
-      "name": "quickstart"
-    }
-  ],
   "paths": {
+    "/favorites": {
+      "get": {
+        "parameters": [
+          {
+            "$ref": "#/components/schemas/queryParams/Account"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "data": {
+                      "items": {
+                        "$ref": "#/components/schemas/v1.FavoriteQuickstart"
+                      },
+                      "type": "array"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "A JSON array of all favorites"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequest"
+                }
+              }
+            },
+            "description": "Bad request"
+          }
+        },
+        "summary": "Returns list of all favorites"
+      },
+      "post": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/v1.FavoriteQuickstart"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/v1.FavoriteQuickstart"
+                }
+              }
+            },
+            "description": "A JSON object with a single favorite content"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequest"
+                }
+              }
+            },
+            "description": "Bad request"
+          }
+        },
+        "summary": "Add a favorite"
+      }
+    },
     "/helptopics": {
       "get": {
         "parameters": [
           {
-            "$ref": "#/components/parameters/Bundle"
+            "$ref": "#/components/schemas/queryParams/Bundle"
           },
           {
-            "$ref": "#/components/parameters/Application"
+            "$ref": "#/components/schemas/queryParams/Application"
           },
           {
-            "$ref": "#/components/parameters/Name"
+            "$ref": "#/components/schemas/queryParams/Name"
           }
         ],
         "responses": {
@@ -284,17 +486,14 @@
             "description": "A JSON array of all help topics"
           }
         },
-        "summary": "Returns list of all help topics",
-        "tags": [
-          "helptopic"
-        ]
+        "summary": "Returns list of all help topics"
       }
     },
     "/helptopics/{name}": {
       "get": {
         "parameters": [
           {
-            "$ref": "#/components/parameters/TopicName"
+            "$ref": "#/components/schemas/queryParams/TopicName"
           }
         ],
         "responses": {
@@ -334,26 +533,32 @@
             "description": "Not found"
           }
         },
-        "summary": "Return a help topics set by topic name",
-        "tags": [
-          "helptopic"
-        ]
+        "summary": "Return a help topics set by topic name"
       }
     },
     "/quickstarts": {
       "get": {
         "parameters": [
           {
-            "$ref": "#/components/parameters/Bundle"
+            "$ref": "#/components/schemas/queryParams/ProductFamilies"
           },
           {
-            "$ref": "#/components/parameters/Application"
+            "$ref": "#/components/schemas/queryParams/Content"
           },
           {
-            "$ref": "#/components/parameters/Limit"
+            "$ref": "#/components/schemas/queryParams/UseCase"
           },
           {
-            "$ref": "#/components/parameters/Offset"
+            "$ref": "#/components/schemas/queryParams/Bundle"
+          },
+          {
+            "$ref": "#/components/schemas/queryParams/Application"
+          },
+          {
+            "$ref": "#/components/schemas/queryParams/Limit"
+          },
+          {
+            "$ref": "#/components/schemas/queryParams/Offset"
           }
         ],
         "responses": {
@@ -376,17 +581,14 @@
             "description": "A JSON array of all quickstarts"
           }
         },
-        "summary": "Returns list of all quickstarts",
-        "tags": [
-          "quickstart"
-        ]
+        "summary": "Returns list of all quickstarts"
       }
     },
     "/quickstarts/{id}": {
       "get": {
         "parameters": [
           {
-            "$ref": "#/components/parameters/Id"
+            "$ref": "#/components/schemas/queryParams/Id"
           }
         ],
         "responses": {
@@ -421,10 +623,7 @@
             "description": "Not found"
           }
         },
-        "summary": "Return a quickstarts by ID",
-        "tags": [
-          "quickstart"
-        ]
+        "summary": "Return a quickstarts by ID"
       }
     }
   }

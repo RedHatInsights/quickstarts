@@ -1,0 +1,14 @@
+kind: QuickStarts
+name: openshift-rosa-deploy-app
+tags:
+- kind: bundle
+  value: openshift
+- kind: content
+  value: learningPath
+- kind: product-families
+  value: openshift
+- kind: use-case
+  value: clusters
+- kind: use-case
+  value: deploy
+

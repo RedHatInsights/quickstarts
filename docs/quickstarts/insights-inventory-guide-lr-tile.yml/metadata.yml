@@ -1,0 +1,15 @@
+kind: QuickStarts
+name: insights-inventory-guide-lr-tile
+tags:
+- kind: bundle
+  value: insights
+- kind: content
+  value: documentation
+- kind: product-families
+  value: rhel
+- kind: product-families
+  value: subscriptions-services
+- kind: use-case
+  value: infrastructure
+- kind: use-case
+  value: observability

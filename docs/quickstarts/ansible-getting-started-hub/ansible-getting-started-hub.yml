@@ -1,0 +1,16 @@
+apiVersion: console.openshift.io/v1
+kind: QuickStarts
+metadata:
+  name: ansible-getting-started-hub
+  externalDocumentation: true
+spec:
+  version: 0.1
+  type:
+    text: Documentation
+    color: orange
+  displayName: Getting started with automation hub
+  icon: ~
+  description: Configure automation hub as your default server for Ansible collections content.
+  link:
+    href: https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.5/html/getting_started_with_ansible_automation_platform/index
+    text: View documenation

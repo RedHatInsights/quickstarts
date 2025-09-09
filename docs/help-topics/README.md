@@ -9,6 +9,8 @@ You can use a simple preview tool [here](https://help-topics-content-preview.sur
 
 ## Add new help topic
 
+> NOTE: Try using the cli tool to bootstrap a new resource. Run `make create-resource` or `./make_item.sh` in your terminal window from the repository root.
+
 To create a new help topic, follow these steps.
 
 ### Create metadata.yml for help topics

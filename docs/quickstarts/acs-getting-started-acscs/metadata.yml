@@ -1,0 +1,13 @@
+kind: QuickStarts
+name: acs-getting-started-acscs
+tags:
+- kind: bundle
+  value: application-services
+- kind: content
+  value: documentation
+- kind: product-families
+  value: openshift
+- kind: use-case
+  value: clusters
+- kind: use-case
+  value: security

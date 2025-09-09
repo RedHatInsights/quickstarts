@@ -1,0 +1,13 @@
+kind: QuickStarts
+name: insights-creating-blueprint-images
+tags:
+- kind: bundle
+  value: insights
+- kind: content
+  value: quickstart
+- kind: product-families
+  value: rhel
+- kind: use-case
+  value: deploy
+- kind: use-case
+  value: images

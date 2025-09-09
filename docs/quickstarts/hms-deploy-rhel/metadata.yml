@@ -1,0 +1,13 @@
+kind: QuickStarts
+name: hms-deploy-rhel
+tags:
+- kind: bundle
+  value: insights
+- kind: content
+  value: documentation
+- kind: product-families
+  value: rhel
+- kind: use-case
+  value: deploy
+- kind: use-case
+  value: images

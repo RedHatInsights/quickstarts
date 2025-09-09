@@ -1,0 +1,135 @@
+# Additional info: https://docs.openshift.com/container-platform/4.9/web_console/creating-quick-start-tutorials.html
+metadata:
+  name: insights-tasks-upgrade8to9
+  # you can add additional metadata here
+  instructional: true
+spec:
+  displayName: Analyzing systems for an in-place upgrade from RHEL 8
+  durationMinutes: 10 (active)
+  # Optional type section, will display as a tile on the card
+  type:
+    text: Quick start
+    # 'blue' | 'cyan' | 'green' | 'orange' | 'purple' | 'red' | 'grey'
+    color: green
+  icon: data:image/svg+xml;base64,PCEtLSBHZW5lcmF0ZWQgYnkgSWNvTW9vbi5pbyAtLT4KPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KPHRpdGxlPjwvdGl0bGU+CjxnIGlkPSJpY29tb29uLWlnbm9yZSI+CjwvZz4KPHBhdGggZD0iTTQ0OCA2NHY0MTZoLTMzNmMtMjYuNTEzIDAtNDgtMjEuNDktNDgtNDhzMjEuNDg3LTQ4IDQ4LTQ4aDMwNHYtMzg0aC0zMjBjLTM1LjE5OSAwLTY0IDI4LjgtNjQgNjR2Mzg0YzAgMzUuMiAyOC44MDEgNjQgNjQgNjRoMzg0di00NDhoLTMyeiI+PC9wYXRoPgo8cGF0aCBkPSJNMTEyLjAyOCA0MTZ2MGMtMC4wMDkgMC4wMDEtMC4wMTkgMC0wLjAyOCAwLTguODM2IDAtMTYgNy4xNjMtMTYgMTZzNy4xNjQgMTYgMTYgMTZjMC4wMDkgMCAwLjAxOS0wLjAwMSAwLjAyOC0wLjAwMXYwLjAwMWgzMDMuOTQ1di0zMmgtMzAzLjk0NXoiPjwvcGF0aD4KPC9zdmc+Cg==
+  prerequisites:
+    - You are a member of a User Access group with the Tasks administrator role.
+  description: Generate a pre-upgrade report listing potential problems and recommending solutions to help you upgrade to RHEL 9.
+  introduction: |-  
+    [It is not possible to perform an in-place upgrade directly from RHEL 7 to RHEL 9. However, you can perform an in-place upgrade from RHEL 7 to RHEL 8 (linked below) and then perform a second in-place upgrade to RHEL 9.]{{admonition note}}
+
+    Use this quick start to run a pre-upgrade analysis on RHEL 8 systems with Red Hat Insights. The task generates a report summarizing potential problems and suggesting recommended solutions to help you upgrade your systems.
+    <br>
+    <br>
+    Before running the pre-upgrade analysis, ensure the systems meet the conditions listed in [planning an upgrade.] (https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/9/html-single/upgrading_from_rhel_8_to_rhel_9/index#planning-an-upgrade-to-rhel-9_upgrading-from-rhel-8-to-rhel-9)
+
+    If you need to upgrade a system from RHEL 7 to RHEL, see [Upgrading from RHEL 7 to RHEL 8.](https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/8/html/upgrading_from_rhel_7_to_rhel_8/index)
+
+    For additional information, such as supported upgrade paths, [check out the complete documentation for upgrading from RHEL 8 to RHEL 9.](https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/8/html/upgrading_from_rhel_7_to_rhel_8/index)
+    
+  tasks:
+    - title: Run a pre-upgrade analysis using Insights
+      description: |-
+        Run the “Pre-upgrade analysis for an in-place upgrade from RHEL 8” task on your systems to assess upgradability. The task generates a pre-upgrade report summarizing potential problems along with recommended solutions. This report can help you decide whether to proceed with the upgrade.<br>     
+        
+        1. Log into the Red Hat Hybrid Cloud Console and go to **Red Hat Insights > RHEL > Automation toolkit > Tasks.**
+      
+        1. Locate the **Pre-upgrade analysis for in-place upgrade from RHEL 8** task and click **Select systems.**
+
+        1. You can rename the task name. It will be used on the report generated. 
+
+        1. Select the RHEL 8 systems you want to analyze for upgrade and click **Run task.**
+       
+        [The pre-upgrade analysis can take up to an hour to complete.]{{admonition note}}
+    
+    - title: Review the pre-upgrade analysis report
+      description: |-
+        1. Go to the **Activity tab** and select the newly generated pre-upgrade report. Select the report to view a summary of the status of each system. 
+
+        1. After task completion, you can drill down further by selecting a system to view each issue and, when applicable, a potential remediation in detail.<br>
+
+              Issues labeled **Inhibitor** prevent you from upgrading until you have resolved them.
+        
+              Each issue is assigned a risk level:         
+
+              - **High:** Very likely to result in a deteriorated system state.
+              - **Medium:** Can impact both the system and applications.
+              - **Low:** Should not impact the system but can impact applications.
+              - **Info:** Informational with no expected impact on the system or applications. 
+
+    - title: Address inhibitors in Insights Advisor
+      description: |-
+        After running the pre-upgrade analysis task or manually running the Leapp tool on individual systems, Upgrade **inhibitors** will appear as Advisor recommendations.
+                
+        1. Go to **Red Hat Insights > Operations > Advisor > Topics > In-place upgrade** to view recommendations affecting the success of in-place upgrades.<br>
+
+              [Currently, the in-place upgrade recommendations list only shows recommendations that Insights has identified as upgrade inhibitors. All in-place upgrade recommendations, including non-inhibitors, can be seen in the detailed view of each executed task.]{{admonition note}}
+
+        1. After reviewing the report and resolving all reported issues, return to **Red Hat Insights > RHEL > Automation toolkit > Tasks**, find the pre-upgrade report in the **Activity tab**, and click **Run task again** to rerun the analysis and confirm that no outstanding issues remain.
+
+    - title: Remediate upgrade-inhibiting issues in Insights
+      description: |-
+        You can address some upgrade-inhibiting issues found on your systems directly from Insights. These recommendations have a playbook available for automating the execution of remediations directly from the Insights for Red Hat Enterprise Linux UI.<br>
+        <br>
+        See the [Red Hat Insights Remediations Guide](https://docs.redhat.com/en/documentation/red_hat_insights/1-latest/html/red_hat_insights_remediations_guide) for more information using Insights for remediations.
+
+        **Run a playbook using Insights:**
+
+        1. Go to **Red Hat Insights > Operations > Advisor > Topics > In-place upgrade** to view recommendations affecting the success of in-place upgrades.
+
+        1. Choose a recommendation with "Playbook" in the "Remediation" column, indicating issues with a playbook available.
+        
+              - You can filter by "remediation" type in the toolbar.
+        
+        1. For each recommendation with an available playbook, take the following actions:
+              - Click on the recommendation for more information, including the affected systems.
+              - Check the box next to each system you want to add to the playbook and click **Remediate.**
+              - In the popup, select **Create a new playbook**, enter a name for the playbook, then click **Next.**
+              - **Optional:** Alternatively, you can add the resolution for the selected systems to an existing playbook.
+              - Review the included systems and click **Next.**
+
+              [Some resolutions require the system to reboot. Auto reboot is not enabled by default, but you can enable it by clicking “Turn on auto-reboot” above the list of recommendations.]{{admonition important}}
+
+              - Click **Submit** and return to the application or open the playbook.
+
+        1. When you’re ready to remediate, find the playbook in **Automation Toolkit > Remediations** and click on it to open it.
+
+        1. The playbook includes a list of actions based on what recommendations you added. To execute them, check the box next to each one.
+              
+              - You can select all actions in the toolbar.
+
+        1. Click **Execute playbook** to run the playbook on the specified systems.
+
+        1. On the popup, click on the **Execute playbook on systems** button. The playbook runs on those systems.      
+
+    - title: Remediating upgrade-inhibiting issues manually
+      description: |-
+        Other recommendations require manual resolutions, the steps of which are customized for the system and recommendation pair and provided with the recommendation.<br>
+        <br>
+        See the [Red Hat Insights Remediations Guide](https://docs.redhat.com/en/documentation/red_hat_insights/1-latest/html/red_hat_insights_remediations_guide) for more information using Insights for remediations.
+        
+        **Applying manual remediation steps to affected systems**
+
+        1. Go to **Red Hat Insights > Operations > Advisor > Topics > In-place upgrade** to view recommendations affecting the success of in-place upgrades.
+
+        1. Choose a recommendation with "Manual" in the "Remediation" column.
+
+              - You can filter by “remediation” type in the toolbar.  
+
+        1. For each recommendation with an available playbook, take the following actions:
+
+              - Click on the recommendation for more information, including the affected systems.
+              - Click on a system name.
+              - Pick a recommendation to resolve manually and click on the carat to view the “Steps to resolve” on the - system.
+              - Perform the resolution steps on the system.
+              - Repeat these steps for each affected system.
+
+  conclusion: |-
+    <br>
+    **Thank you for taking the time to explore this feature!**
+
+    For additional information about tasks, [visit the documentation for remediating systems using tasks in Insights.](https://docs.redhat.com/en/documentation/red_hat_insights/1-latest/html-single/assessing_and_remediating_system_issues_using_red_hat_insights_tasks/index#doc-wrapper)
+
+    For additional information about upgrading, [visit the Upgrading from RHEL 8 to RHEL 9 documentation.](https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/9/html/upgrading_from_rhel_8_to_rhel_9/index)
+
+    If you need additional assistance, [open a support case.](https://access.redhat.com/support)

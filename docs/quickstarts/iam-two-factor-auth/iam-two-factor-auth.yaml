@@ -1,0 +1,16 @@
+apiVersion: console.openshift.io/v1
+kind: QuickStarts
+metadata:
+  name: iam-two-factor-auth
+  externalDocumentation: true
+spec:
+  version: 0.1
+  type:
+    text: Documentation
+    color: orange
+  displayName: Using two-factor authentication
+  icon: ~
+  description: Configure organization-wide two-factor authentication.
+  link:
+    href: https://docs.redhat.com/en/documentation/red_hat_customer_portal/1/html-single/using_two-factor_authentication/index
+    text: View documentation

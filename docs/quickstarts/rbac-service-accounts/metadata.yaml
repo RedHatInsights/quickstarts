@@ -1,0 +1,19 @@
+kind: QuickStarts
+name: rbac-service-accounts
+tags:
+  - kind: bundle
+    value: iam
+  - kind: bundle
+    value: settings
+  - kind: content
+    value: documentation
+  - kind: product-families
+    value: settings 
+  - kind: product-families
+    value: iam
+  - kind: product-families
+    value: security
+  - kind: use-case
+    value: identity-and-access
+  - kind: use-case
+    value: system-configuration

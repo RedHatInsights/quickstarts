@@ -1,0 +1,16 @@
+apiVersion: console.openshift.io/v1
+kind: QuickStarts
+metadata:
+  name: openshift-ai-rhods-resources
+  learningPath: true
+spec:
+  version: 0.1
+  type:
+    text: Learning path
+    color: cyan
+  displayName: Learn about OpenShift AI resources
+  icon: ~
+  description: Learn about the Red Hat OpenShift AI managed service, and associated software offered by our partners.
+  link:
+    href: https://developers.redhat.com/learn/openshift-ai
+    text: View documentation

@@ -1,0 +1,11 @@
+kind: QuickStarts
+name: ansible-related-documentation
+tags:
+- kind: bundle
+  value: ansible
+- kind: content
+  value: documentation
+- kind: product-families
+  value: ansible
+- kind: use-case
+  value: automation

@@ -1,0 +1,17 @@
+kind: QuickStarts
+name: hac-dev-sandbox-intro
+tags:
+- kind: bundle
+  value: hac
+- kind: bundle
+  value: application-studio
+- kind: content
+  value: otherResource
+- kind: product-families
+  value: openshift
+- kind: use-case
+  value: clusters
+- kind: use-case
+  value: containers 
+- kind: use-case
+  value: deploy

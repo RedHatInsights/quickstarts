@@ -1,0 +1,15 @@
+kind: QuickStarts
+name: openshift-cost-management
+tags:
+- kind: bundle
+  value: insights
+- kind: content
+  value: documentation
+- kind: product-families
+  value: openshift
+- kind: use-case
+  value: clusters
+- kind: use-case
+  value: spend-management
+- kind: use-case
+  value: data-services

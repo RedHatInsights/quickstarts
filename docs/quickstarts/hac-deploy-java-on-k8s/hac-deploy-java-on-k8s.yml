@@ -1,0 +1,17 @@
+apiVersion: console.openshift.io/v1
+kind: QuickStarts
+metadata:
+  name: hac-deploy-java-on-k8s
+  externalDocumentation: true
+spec:
+  version: 0.1
+  type:
+    text: Learning path
+    color: cyan
+  displayName: Deploy a Java application on Kubernetes in minutes
+  icon: ~
+  description: |
+    Try out the Source-to-Image (s2i) feature in the free Developer Sandbox for Red Hat OpenShift by following along with the Spring Petclinic application learning experience.
+  link:
+    href: https://developers.redhat.com/developer-sandbox/activities/how-to-deploy-java-application-in-kubernetes
+    text: View documentation

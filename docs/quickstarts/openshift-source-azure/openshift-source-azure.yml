@@ -1,0 +1,16 @@
+apiVersion: console.openshift.io/v1
+kind: QuickStarts
+metadata:
+  name: openshift-source-azure
+  externalDocumentation: true
+spec:
+  version: 0.1
+  type:
+    text: Documentation
+    color: orange
+  displayName: "Adding an integration: Microsoft Azure"
+  icon: 
+  description: Configure and add a Microsoft Azure integration to cost management.
+  link:
+    href: https://docs.redhat.com/en/documentation/cost_management_service/1-latest/html/integrating_microsoft_azure_data_into_cost_management
+    text: View documentation

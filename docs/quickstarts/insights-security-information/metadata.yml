@@ -1,0 +1,11 @@
+kind: QuickStarts
+name: insights-security-information
+tags:
+- kind: bundle
+  value: insights
+- kind: content
+  value: documentation
+- kind: product-families
+  value: rhel
+- kind: use-case
+  value: security

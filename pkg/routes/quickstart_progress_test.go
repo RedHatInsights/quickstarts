@@ -11,7 +11,7 @@ import (
 
 	"github.com/RedHatInsights/quickstarts/pkg/database"
 	"github.com/RedHatInsights/quickstarts/pkg/models"
-	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/v5"
 	"github.com/stretchr/testify/assert"
 	"gorm.io/datatypes"
 )
@@ -66,7 +66,7 @@ func TestGetAllQuickstartProgresses(t *testing.T) {
 
 		type responsePayload struct {
 			Data []models.QuickstartProgress
-		} 
+		}
 
 		var payload *responsePayload
 		json.NewDecoder(response.Body).Decode(&payload)

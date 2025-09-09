@@ -1,0 +1,11 @@
+kind: QuickStarts
+name: openshift-related-documentation
+tags:
+- kind: bundle
+  value: openshift
+- kind: content
+  value: documentation
+- kind: product-families
+  value: openshift
+- kind: use-case
+  value: clusters

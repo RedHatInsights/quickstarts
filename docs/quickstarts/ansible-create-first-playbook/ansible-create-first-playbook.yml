@@ -1,0 +1,17 @@
+apiVersion: console.openshift.io/v1
+kind: QuickStarts
+metadata:
+  name: ansible-create-first-playbook
+  externalDocumentation: true
+spec:
+  version: 0.1
+  type:
+    text: Documentation
+    color: orange
+  displayName: Create your first Ansible Playbook
+  icon: ~
+  description: Automate simple infrastructure tasks by writing a Red Hat Ansible Automation Platform playbook.
+  link:
+    href: https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.5/html/getting_started_with_playbooks/index
+    text: View documentation
+

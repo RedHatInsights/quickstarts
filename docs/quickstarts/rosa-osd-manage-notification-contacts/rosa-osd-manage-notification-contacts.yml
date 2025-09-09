@@ -1,0 +1,77 @@
+
+metadata:
+  name: rosa-osd-manage-notification-contacts
+  instructional: true
+spec:
+  displayName: Managing notification contacts for your managed OpenShift cluster
+  durationMinutes: 5
+  type:
+    text: Quick start
+    color: green
+  icon: data:image/svg+xml;base64,PCEtLSBHZW5lcmF0ZWQgYnkgSWNvTW9vbi5pbyAtLT4KPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KPHRpdGxlPjwvdGl0bGU+CjxnIGlkPSJpY29tb29uLWlnbm9yZSI+CjwvZz4KPHBhdGggZD0iTTQ0OCA2NHY0MTZoLTMzNmMtMjYuNTEzIDAtNDgtMjEuNDktNDgtNDhzMjEuNDg3LTQ4IDQ4LTQ4aDMwNHYtMzg0aC0zMjBjLTM1LjE5OSAwLTY0IDI4LjgtNjQgNjR2Mzg0YzAgMzUuMiAyOC44MDEgNjQgNjQgNjRoMzg0di00NDhoLTMyeiI+PC9wYXRoPgo8cGF0aCBkPSJNMTEyLjAyOCA0MTZ2MGMtMC4wMDkgMC4wMDEtMC4wMTkgMC0wLjAyOCAwLTguODM2IDAtMTYgNy4xNjMtMTYgMTZzNy4xNjQgMTYgMTYgMTZjMC4wMDkgMCAwLjAxOS0wLjAwMSAwLjAyOC0wLjAwMXYwLjAwMWgzMDMuOTQ1di0zMmgtMzAzLjk0NXoiPjwvcGF0aD4KPC9zdmc+Cg==
+  prerequisites:
+    - You must have a ROSA or an OSD cluster.
+    - You must be a cluster owner, cluster editor, or Organization Administrator for the cluster.
+
+  description: |-
+    Manage a notification contact for your existing managed OpenShift cluster.
+
+  introduction: |-
+    By default, when a cluster notification is sent to the cluster, it is also sent as an email to you as the cluster owner.
+
+    You can add users in your organization as additional notification contacts to receive cluster notifications. The Red Hat username or email address that you provide must belong to a user account in the Red Hat organization where the cluster is deployed.
+
+    [In this quickstart, when we refer to ROSA, we are referring to both ROSA (classic architecture) and ROSA with HCP, and when we refer to OSD, we are referring to both OSD on GCP and OSD on AWS.]{{admonition note}}
+
+  tasks:
+    - title: Add notification contacts to your cluster
+      description: |-
+        To add notification contacts to your cluster:
+
+        1. Go to **Cluster List**.
+        1. Click your cluster's name to view cluster details.
+        1. Click the **Support** tab.
+        1. Click the **Add notification contact** button.
+        1. Add the Red Hat username email address of the user that you want to add.
+        1. Click **Add contact**.
+
+        If your new notification contact is added to your cluster, a pop-up will appear on the top right stating **“Notification contact added successfully"**.
+
+  # optional - the task's Check your work module
+      review:
+        instructions: |-
+          - Does the user you added appear in the list of notification contacts for your cluster?
+        failedTaskHelp: Ensure that the user you are trying to add is part of your organization, or check that the email you are adding is correct, then follow the steps again.
+  # optional - the task's success and failure messages
+      summary:
+        success: Shows a success message in the task header
+        failed: Shows a failed message in the task header
+
+    - title: Remove notification contacts from your cluster
+      description: |-
+        To remove notification contacts from your cluster:
+
+        1. Go to **Cluster List**.
+        1. Click your cluster's name to view cluster details.
+        1. Click the **Support** tab.
+        1. On the **Support** tab, find the **Notification contacts** section.
+        1. Click the options icon (⋮) beside the recipient you want to remove.
+        1. Click **Delete**.
+
+        A pop-up will appear on the top right stating **“Notification contact deleted successfully."**
+
+  # optional - the task's Check your work module
+      review:
+        instructions: |-
+          - Does the user you deleted no longer appear in the list of notification contacts for your cluster?
+        failedTaskHelp: Try following the steps again.
+  # optional - the task's success and failure messages
+      summary:
+        success: Shows a success message in the task header
+        failed: Shows a failed message in the task header
+  conclusion: |-
+        Congratulations, you removed a notification contact to your cluster!
+
+        After completing this quick start, you've learned how to add and remove notification contacts.
+
+  # you can link to the next quick start(s) here

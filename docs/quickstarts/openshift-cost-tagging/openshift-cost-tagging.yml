@@ -1,0 +1,16 @@
+apiVersion: console.openshift.io/v1
+kind: QuickStarts
+metadata:
+  name: openshift-cost-tagging
+  externalDocumentation: true
+spec:
+  version: 0.1
+  type:
+    text: Documentation
+    color: orange
+  displayName: Managing costs with tagging
+  icon: 
+  description: Manage your cost data with tags and labels.
+  link:
+    href: https://docs.redhat.com/en/documentation/cost_management_service/1-latest/html/managing_cost_data_using_tagging
+    text: View documentation

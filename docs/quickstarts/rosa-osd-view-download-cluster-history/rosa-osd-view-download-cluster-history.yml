@@ -1,0 +1,66 @@
+
+metadata:
+  name: rosa-osd-view-download-cluster-history
+  instructional: true
+spec:
+  displayName: Viewing and downloading your managed OpenShift cluster history
+  durationMinutes: 5
+  type:
+    text: Quick start
+    color: grey
+  icon: data:image/svg+xml;base64,PCEtLSBHZW5lcmF0ZWQgYnkgSWNvTW9vbi5pbyAtLT4KPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KPHRpdGxlPjwvdGl0bGU+CjxnIGlkPSJpY29tb29uLWlnbm9yZSI+CjwvZz4KPHBhdGggZD0iTTQ0OCA2NHY0MTZoLTMzNmMtMjYuNTEzIDAtNDgtMjEuNDktNDgtNDhzMjEuNDg3LTQ4IDQ4LTQ4aDMwNHYtMzg0aC0zMjBjLTM1LjE5OSAwLTY0IDI4LjgtNjQgNjR2Mzg0YzAgMzUuMiAyOC44MDEgNjQgNjQgNjRoMzg0di00NDhoLTMyeiI+PC9wYXRoPgo8cGF0aCBkPSJNMTEyLjAyOCA0MTZ2MGMtMC4wMDkgMC4wMDEtMC4wMTkgMC0wLjAyOCAwLTguODM2IDAtMTYgNy4xNjMtMTYgMTZzNy4xNjQgMTYgMTYgMTZjMC4wMDkgMCAwLjAxOS0wLjAwMSAwLjAyOC0wLjAwMXYwLjAwMWgzMDMuOTQ1di0zMmgtMzAzLjk0NXoiPjwvcGF0aD4KPC9zdmc+Cg==
+  prerequisites:
+    - You must have access to a managed OpenShift cluster.
+
+  description: |-
+    View and download your ROSA or OSD cluster history.
+  introduction: |-
+    Using OpenShift Cluster Manager, you can view the cluster notifications for your Red Hat OpenShift Service on Amazon Web Services (ROSA) or Red Hat OpenShift Dedicated (OSD) clusters and download your cluster history.
+
+    The cluster notifications detail cluster events and cluster resource changes, such as:
+
+    - Load balancer quota updates
+    - Scheduled maintenance upgrades
+    - Addition or deletion of users, groups, and identity providers
+
+    In this quick start, you'll learn how to view cluster notifications and download your cluster's entire history.
+
+    [In this quick start, when we refer to ROSA, we are referring to both ROSA classic architecture and ROSA with HCP, and when we refer to OSD, we are referring to both OSD on GCP and OSD on AWS.]{{admonition note}}
+
+  tasks:
+    - title: View and download your cluster history
+      description: |-
+        To view your ROSA or OSD cluster history:
+
+        1. Go to **Cluster List**.
+        1. Click your cluster's name.
+        1. Click the **Cluster history** tab.
+
+              a. Optional: Adjust the timespan for the cluster service logs by selecting an option from the first drop-down menu or by using the date picker to filter the results.
+
+              b. Optional: Filter the cluster service logs by **Description** or **Severity** from the **Type** drop-down menu. You can filter further by selecting from the **Filter by Type** drop-down menu.
+              
+
+        To download your cluster history:
+
+        1. On the **Cluster history** tab, click the **Download history** button.
+        1. Choose the format (JSON or CSV) you want to download the history to.
+        1. Click **Download**.
+
+        Your cluster history will download as a file to your computer in the default location for downloaded files.
+
+  # optional - the task's Check your work module
+      review:
+        instructions: |-
+          - Is your cluster history downloaded on your computer in your default download location?
+        failedTaskHelp: Try following the steps again.
+  # optional - the task's success and failure messages
+      summary:
+        success: Shows a success message in the task header
+        failed: Shows a failed message in the task header
+  conclusion: |-
+        Congratulations, you've downloaded your cluster's history!
+
+        After completing this quick start, you've learned how to view and download your cluster history.
+
+  # you can link to the next quick start(s) here

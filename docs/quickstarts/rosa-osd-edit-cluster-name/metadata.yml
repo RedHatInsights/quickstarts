@@ -1,0 +1,5 @@
+kind: QuickStarts
+name: rosa-osd-edit-cluster-name
+tags:
+  - kind: bundle
+    value: openshift

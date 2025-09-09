@@ -1,0 +1,16 @@
+apiVersion: console.openshift.io/v1
+kind: QuickStarts
+metadata:
+  name: subs-create-activation-key
+  externalDocumentation: true
+spec:
+  version: 0.1
+  type:
+    text: Documentation
+    color: orange
+  displayName: Creating an activation key
+  icon: ~
+  description: Create or manage an activation key to register your systems with Red Hat hosted services.
+  link:
+    href: https://docs.redhat.com/en/documentation/subscription_central/1-latest/html/getting_started_with_activation_keys_on_the_hybrid_cloud_console
+    text: View documentation

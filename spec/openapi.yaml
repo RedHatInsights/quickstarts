@@ -10,6 +10,25 @@ components:
         msg:
           type: string
       type: object
+    v1.FavoriteQuickstart:
+      properties:
+        accountId:
+          type: string
+        createdAt:
+          format: date-time
+          type: string
+        deletedAt: {}
+        favorite:
+          type: boolean
+        id:
+          minimum: 0
+          type: integer
+        quickstartName:
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+      type: object
     v1.HelpTopic:
       properties:
         content:
@@ -20,7 +39,9 @@ components:
           type: string
         deletedAt:
           format: date-time
-          nullable: true
+          oneOf:
+          - type: "null"
+          - type: string
           type: string
         groupName:
           type: string
@@ -37,7 +58,9 @@ components:
                 type: string
               deletedAt:
                 format: date-time
-                nullable: true
+                oneOf:
+                - type: "null"
+                - type: string
                 type: string
               id:
                 minimum: 0
@@ -65,8 +88,36 @@ components:
           type: string
         deletedAt:
           format: date-time
-          nullable: true
+          oneOf:
+          - type: "null"
+          - type: string
           type: string
+        favoriteQuickstart:
+          items:
+            properties:
+              accountId:
+                type: string
+              createdAt:
+                format: date-time
+                type: string
+              deletedAt:
+                format: date-time
+                oneOf:
+                - type: "null"
+                - type: string
+                type: string
+              favorite:
+                type: boolean
+              id:
+                minimum: 0
+                type: integer
+              quickstartName:
+                type: string
+              updatedAt:
+                format: date-time
+                type: string
+            type: object
+          type: array
         id:
           minimum: 0
           type: integer
@@ -80,7 +131,9 @@ components:
                 type: string
               deletedAt:
                 format: date-time
-                nullable: true
+                oneOf:
+                - type: "null"
+                - type: string
                 type: string
               id:
                 minimum: 0
@@ -108,77 +161,107 @@ components:
         quickstartName:
           type: string
       type: object
-  parameters:
-    Bundle:
-      name: bundle
-      description: If set, content is associated with a specific CRC bundle
-      in: query
-      required: false
-      schema:
-        type: string
-      explode: true
-      style: form
-    Application:
-      name: application
-      description: If set, content is associated with a specific CRC application
-      in: query
-      required: false
-      schema:
-        type: string
-      explode: true
-      style: form
-    Name:
-      name: name
-      description: Search content by name
-      in: query
-      required: false
-      schema:
-        type: string
-      explode: true
-      style: form
-    Limit:
-      name: limit
-      description: Pagination limit
-      in: query
-      required: false
-      schema:
-        type: integer
-      explode: true
-      style: form
-    Offset:
-      name: offset
-      description: Pagination offset
-      in: query
-      required: false
-      schema:
-        type: integer
-      explode: true
-      style: form
-    Id:
-      name: id
-      description: identifier
-      in: path
-      required: true
-      schema:
-        type: integer
-    TopicName:
-      name: name
-      description: identifier
-      in: path
-      required: true
-      schema:
-        type: string
+# It is necessary to have the initial indetation!
+    queryParams:
+      ProductFamilies:
+        name: product-families
+        description: If set, content is associated with a specific CRC product families
+        in: query
+        required: false
+        schema:
+          type: string
+        explode: true
+        style: form
+      Content:
+        name: content
+        description: If set, content is associated with a specific CRC content
+        in: query
+        required: false
+        schema:
+          type: string
+        explode: true
+        style: form
+      UseCase:
+        name: use-case
+        description: If set, content is associated with a specific CRC use case
+        in: query
+        required: false
+        schema:
+          type: string
+        explode: true
+        style: form
+      Bundle:
+        name: bundle
+        description: If set, content is associated with a specific CRC bundle
+        in: query
+        required: false
+        schema:
+          type: string
+        explode: true
+        style: form
+      Application:
+        name: application
+        description: If set, content is associated with a specific CRC application
+        in: query
+        required: false
+        schema:
+          type: string
+        explode: true
+        style: form
+      Name:
+        name: name
+        description: Search content by name
+        in: query
+        required: false
+        schema:
+          type: string
+        explode: true
+        style: form
+      Limit:
+        name: limit
+        description: Pagination limit
+        in: query
+        required: false
+        schema:
+          type: integer
+        explode: true
+        style: form
+      Offset:
+        name: offset
+        description: Pagination offset
+        in: query
+        required: false
+        schema:
+          type: integer
+        explode: true
+        style: form
+      Id:
+        name: id
+        description: identifier
+        in: path
+        required: true
+        schema:
+          type: integer
+      TopicName:
+        name: topicname
+        description: identifier
+        in: path
+        required: true
+        schema:
+          type: string
+      Account:
+        name: account
+        description: Account number
+        in: query
+        required: true
+        schema:
+          type: string
 info:
   license:
     name: MIT
   title: quickstarts
   version: 1.0.0
 openapi: 3.0.0
-tags:
-  - description: A help topic
-    name: helptopic
-  - description: The content for a quickstart
-    name: quickstart
 paths:
   /quickstarts:
     get:
@@ -196,17 +279,18 @@ paths:
                     items:
                       $ref: '#/components/schemas/v1.Quickstart'
       parameters:
-      - $ref: '#/components/parameters/Bundle'
-      - $ref: '#/components/parameters/Application'
-      - $ref: '#/components/parameters/Limit'
-      - $ref: '#/components/parameters/Offset'      
-      tags:
-        - quickstart
+      - $ref: '#/components/schemas/queryParams/ProductFamilies'
+      - $ref: '#/components/schemas/queryParams/Content'
+      - $ref: '#/components/schemas/queryParams/UseCase'
+      - $ref: '#/components/schemas/queryParams/Bundle'
+      - $ref: '#/components/schemas/queryParams/Application'
+      - $ref: '#/components/schemas/queryParams/Limit'
+      - $ref: '#/components/schemas/queryParams/Offset'      
   /quickstarts/{id}:
     get:
       summary: Return a quickstarts by ID
       parameters:
-      - $ref: '#/components/parameters/Id'
+      - $ref: '#/components/schemas/queryParams/Id'
       responses:
         '200':
           description: A JSON object with a single quickstart content
@@ -226,8 +310,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/NotFound'
-      tags:
-        - quickstart
   /helptopics:
     get:
       summary: Returns list of all help topics
@@ -244,16 +326,14 @@ paths:
                     items:
                       $ref: '#/components/schemas/v1.HelpTopic'
       parameters:
-      - $ref: '#/components/parameters/Bundle'
-      - $ref: '#/components/parameters/Application'
-      - $ref: '#/components/parameters/Name'
-      tags:
-        - helptopic
+      - $ref: '#/components/schemas/queryParams/Bundle'
+      - $ref: '#/components/schemas/queryParams/Application'
+      - $ref: '#/components/schemas/queryParams/Name'
   /helptopics/{name}:
     get:
       summary: Return a help topics set by topic name
       parameters:
-      - $ref: '#/components/parameters/TopicName'
+      - $ref: '#/components/schemas/queryParams/TopicName'
       responses:
         '200':
           description: A JSON of a help topic set
@@ -276,5 +356,47 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/NotFound'
-      tags:
-        - helptopic
+  /favorites:
+    get:
+      summary: Returns list of all favorites
+      responses:
+        '200':
+          description: A JSON array of all favorites
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/v1.FavoriteQuickstart'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+      parameters:
+      - $ref: '#/components/schemas/queryParams/Account'
+    post:
+      summary: Add a favorite
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/v1.FavoriteQuickstart'
+      responses:
+        '200':
+          description: A JSON object with a single favorite content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/v1.FavoriteQuickstart'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+

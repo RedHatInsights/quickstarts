@@ -1,0 +1,13 @@
+kind: QuickStarts
+name: insights-centos
+tags:
+- kind: bundle
+  value: insights
+- kind: content
+  value: documentation
+- kind: product-families
+  value: rhel
+- kind: use-case
+  value: images
+- kind: use-case
+  value: infrastructure

@@ -1,0 +1,13 @@
+kind: QuickStarts
+name: openshift-ocp-2
+tags:
+- kind: bundle
+  value: openshift
+- kind: content
+  value: documentation
+- kind: product-families
+  value: openshift
+- kind: use-case
+  value: clusters
+- kind: use-case
+  value: containers

@@ -1,0 +1,15 @@
+kind: QuickStarts
+name: openshift-manage-clusters
+tags:
+- kind: bundle
+  value: openshift
+- kind: content
+  value: documentation
+- kind: product-families
+  value: openshift
+- kind: use-case
+  value: identity-and-access
+- kind: use-case
+  value: clusters
+- kind: use-case
+  value: system-configuration

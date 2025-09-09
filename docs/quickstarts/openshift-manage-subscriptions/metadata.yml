@@ -1,0 +1,15 @@
+kind: QuickStarts
+name: openshift-manage-subscriptions
+tags:
+- kind: bundle
+  value: openshift
+- kind: content
+  value: documentation
+- kind: product-families
+  value: openshift
+- kind: product-families
+  value: subscriptions-services
+- kind: use-case
+  value: identity-and-access
+- kind: use-case
+  value: spend-management

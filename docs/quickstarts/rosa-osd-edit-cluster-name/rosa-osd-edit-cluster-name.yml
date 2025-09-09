@@ -1,0 +1,58 @@
+
+metadata:
+  name: rosa-osd-edit-cluster-name
+  instructional: true
+spec:
+  displayName: Editing your managed OpenShift cluster display name
+  durationMinutes: 5
+  type:
+    text: Quick start
+    color: green
+  icon: data:image/svg+xml;base64,PCEtLSBHZW5lcmF0ZWQgYnkgSWNvTW9vbi5pbyAtLT4KPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KPHRpdGxlPjwvdGl0bGU+CjxnIGlkPSJpY29tb29uLWlnbm9yZSI+CjwvZz4KPHBhdGggZD0iTTQ0OCA2NHY0MTZoLTMzNmMtMjYuNTEzIDAtNDgtMjEuNDktNDgtNDhzMjEuNDg3LTQ4IDQ4LTQ4aDMwNHYtMzg0aC0zMjBjLTM1LjE5OSAwLTY0IDI4LjgtNjQgNjR2Mzg0YzAgMzUuMiAyOC44MDEgNjQgNjQgNjRoMzg0di00NDhoLTMyeiI+PC9wYXRoPgo8cGF0aCBkPSJNMTEyLjAyOCA0MTZ2MGMtMC4wMDkgMC4wMDEtMC4wMTkgMC0wLjAyOCAwLTguODM2IDAtMTYgNy4xNjMtMTYgMTZzNy4xNjQgMTYgMTYgMTZjMC4wMDkgMCAwLjAxOS0wLjAwMSAwLjAyOC0wLjAwMXYwLjAwMWgzMDMuOTQ1di0zMmgtMzAzLjk0NXoiPjwvcGF0aD4KPC9zdmc+Cg==
+  prerequisites:
+    - You must have a ROSA or OSD cluster.
+    - You must be a cluster owner, cluster editor, or Organization Administrator for the cluster.
+
+  description: |-
+    Edit the display name of your managed OpenShift cluster after creation.
+  introduction: |-
+    Using OpenShift Cluster Manager, you can edit the name of your Red Hat OpenShift Service on Amazon Web Services (ROSA) or Red Hat OpenShift Dedicated (OSD) cluster.
+
+    In this quick start, you'll learn how to edit your cluster's name.
+
+    [In this quickstart, when we refer to ROSA, we are referring to both ROSA classic architecture and ROSA with HCP, and when we refer to OSD, we are referring to both OSD on GCP and OSD on AWS.]{{admonition note}}
+
+  tasks:
+    - title: Edit your managed OpenShift cluster's name
+      description: |-
+        To edit your cluster's name:
+
+        1. Go to **Cluster List**.
+        1. Click your cluster's name.
+        1. In the Actions drop down menu, click **Edit display name**.
+        1. Change the name of your cluster.
+        1. Click **Edit** to finalize renaming.
+
+        Alternatively, you can use another method to rename your cluster:
+
+        1. Go to **Cluster List**.
+        1. Click the options icon (⋮).
+        1. Click **Edit display name**.
+        1. Change the name of your cluster.
+        1. Click **Edit** to finalize renaming.
+
+
+  # optional - the task's Check your work module
+      review:
+        instructions: |-
+          - Does your cluster display the new name you changed it to?
+        failedTaskHelp: Try following the steps again.
+  # optional - the task's success and failure messages
+      summary:
+        success: Shows a success message in the task header
+        failed: Shows a failed message in the task header
+  conclusion: |-
+        Congratulations, you've edited your cluster's name!
+
+        You can change your cluster name as often as you want.
+  # you can link to the next quick start(s) here

@@ -1,0 +1,16 @@
+apiVersion: console.openshift.io/v1
+kind: QuickStarts
+metadata:
+  name: openshift-insights-advisor
+  externalDocumentation: true
+spec:
+  version: 0.1
+  type:
+    text: Documentation
+    color: orange
+  displayName: Monitoring your OpenShift cluster health with Insights Advisor
+  icon: 
+  description: Use Insights Advisor to monitor your OpenShift cluster health.
+  link:
+    href: https://docs.redhat.com/en/documentation/red_hat_insights_for_openshift/1-latest/html/monitoring_your_openshift_cluster_health_with_insights_advisor/index
+    text: View documentation

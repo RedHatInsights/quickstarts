@@ -1,0 +1,65 @@
+
+metadata:
+  name: rosa-osd-add-machine-pool
+  instructional: true
+spec:
+  displayName: Adding a machine pool to your managed OpenShift cluster
+  durationMinutes: 5
+  type:
+    text: Quick start
+    color: green
+  icon: data:image/svg+xml;base64,PCEtLSBHZW5lcmF0ZWQgYnkgSWNvTW9vbi5pbyAtLT4KPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KPHRpdGxlPjwvdGl0bGU+CjxnIGlkPSJpY29tb29uLWlnbm9yZSI+CjwvZz4KPHBhdGggZD0iTTQ0OCA2NHY0MTZoLTMzNmMtMjYuNTEzIDAtNDgtMjEuNDktNDgtNDhzMjEuNDg3LTQ4IDQ4LTQ4aDMwNHYtMzg0aC0zMjBjLTM1LjE5OSAwLTY0IDI4LjgtNjQgNjR2Mzg0YzAgMzUuMiAyOC44MDEgNjQgNjQgNjRoMzg0di00NDhoLTMyeiI+PC9wYXRoPgo8cGF0aCBkPSJNMTEyLjAyOCA0MTZ2MGMtMC4wMDkgMC4wMDEtMC4wMTkgMC0wLjAyOCAwLTguODM2IDAtMTYgNy4xNjMtMTYgMTZzNy4xNjQgMTYgMTYgMTZjMC4wMDkgMCAwLjAxOS0wLjAwMSAwLjAyOC0wLjAwMXYwLjAwMWgzMDMuOTQ1di0zMmgtMzAzLjk0NXoiPjwvcGF0aD4KPC9zdmc+Cg==
+  prerequisites:
+    - You must have a managed OpenShift cluster.
+    - You must be a cluster owner, cluster editor, or Organization Administrator for the cluster.
+  description: |-
+    Add a machine pool to your managed OpenShift cluster.
+  introduction: |-
+    Red Hat OpenShift Service on AWS (ROSA) and Red Hat Openshift Dedicated (OSD) use machine pools as an elastic, dynamic provisioning method on top of your cloud infrastructure.
+
+    A machine pool creates compute machine sets that are all copies of the same configuration across availability zones. Worker nodes in a machine pool are provisioned and managed as a group.
+
+    In this quick start, you'll add a machine pool to your cluster.
+
+    [Each cluster has a default machine pool made during cluster creation. This process adds an additional machine pool to your cluster.]{{admonition note}}
+    [In this quickstart, when we refer to ROSA, we are referring to both ROSA classic architecture and ROSA with HCP, and when we refer to OSD, we are referring to both OSD on GCP and OSD on AWS.]{{admonition note}}
+
+  tasks:
+    - title: Add a machine pool to your ROSA or OSD cluster
+      description: |-
+        1. Go to **Cluster List**.
+        1. Click your cluster's name.
+        1. Click the **Machine pools** tab.
+        1. Click the **Add machine pool** button.
+        1. Configure your machine pool settings:
+
+            a. Name your machine pool.
+
+            b. Optional: Change any settings you want. These settings are already filled in by default, but you can customize any of them. For more information on what these settings do, click the **?** icon.
+            
+           
+        1. Click **Add machine pool**.
+
+      # optional - the task's Check your work module
+      review:
+        instructions: |-
+          - Did you complete the task successfully?
+        failedTaskHelp: Try following the steps again.
+      # optional - the task's success and failure messages
+      summary:
+        success: Shows a success message in the task header
+        failed: Shows a failed message in the task header
+  conclusion: |-
+        Congratulations, you added a machine pool to your cluster!
+
+        After completing this quick start, you've learned how to add a machine pool. Repeat the steps to add more machine pools if you desire.
+
+        **Further reading:**
+        - For more information about machine pools, see [About machine pools](https://docs.redhat.com/en/documentation/openshift_dedicated/4/html/cluster_administration/nodes) (OSD documentation) or [About machine pools](https://docs.redhat.com/en/documentation/red_hat_openshift_service_on_aws/4/html/cluster_administration/manage-nodes-using-machine-pools#rosa-nodes-machinepools-about) (ROSA documentation).
+
+        - For more information about nodes, labels and taints, see [Overview of nodes](https://docs.redhat.com/en/documentation/openshift_dedicated/4/html/nodes/overview-of-nodes) (OSD documentation) or [Overview of nodes](https://docs.redhat.com/en/documentation/red_hat_openshift_service_on_aws/4/html/nodes/overview-of-nodes) (ROSA documentation).
+
+        - For more information about autoscaling, see [Cluster autoscaling](https://docs.redhat.com/en/documentation/openshift_dedicated/4/html/cluster_administration/osd-cluster-autoscaling) (OSD documentation) or [Cluster autoscaling](https://docs.redhat.com/en/documentation/red_hat_openshift_service_on_aws/4/html/cluster_administration/rosa-cluster-autoscaling) (ROSA documentation).
+  # you can link to the next quick start(s) here
+  nextQuickStart:
+    - mas-alert-note-prereq

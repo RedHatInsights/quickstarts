@@ -1,0 +1,17 @@
+kind: QuickStarts
+name: openshift-source-gcp
+tags:
+- kind: bundle
+  value: openshift
+- kind: content
+  value: documentation
+- kind: product-families
+  value: openshift
+- kind: product-families
+  value: settings  
+- kind: use-case
+  value: clusters
+- kind: use-case
+  value: spend-management
+- kind: use-case
+  value: system-configuration

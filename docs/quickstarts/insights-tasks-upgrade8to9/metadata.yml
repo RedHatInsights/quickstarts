@@ -1,0 +1,13 @@
+kind: QuickStarts
+name: insights-tasks-upgrade8to9
+tags:
+- kind: bundle
+  value: insights
+- kind: content
+  value: quickstart
+- kind: product-families
+  value: rhel
+- kind: use-case
+  value: containers
+- kind: use-case 
+  value: infrastructure

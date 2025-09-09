@@ -1,0 +1,11 @@
+kind: QuickStarts
+name: ansible-getting-started-hub
+tags:
+- kind: bundle
+  value: ansible
+- kind: content
+  value: documentation
+- kind: product-families
+  value: ansible
+- kind: use-case
+  value: automation

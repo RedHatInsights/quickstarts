@@ -1,0 +1,16 @@
+apiVersion: console.openshift.io/v1
+kind: QuickStarts
+metadata:
+  name: openshift-cost-management-access
+  externalDocumentation: true
+spec:
+  version: 0.1
+  type:
+    text: Documentation
+    color: orange
+  displayName: Limiting access with cost management
+  icon: 
+  description: Control the visibility of resources in cost management reports using role-based access.
+  link:
+    href: https://docs.redhat.com/en/documentation/cost_management_service/1-latest/html/limiting_access_to_cost_management_resources/index
+    text: View documentation

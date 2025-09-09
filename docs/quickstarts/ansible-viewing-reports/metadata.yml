@@ -1,0 +1,11 @@
+kind: QuickStarts
+name: ansible-viewing-reports
+tags:
+- kind: bundle
+  value: Ansible
+- kind: content
+  value: documentation
+- kind: product-families
+  value: ansible
+- kind: use-case
+  value: automation

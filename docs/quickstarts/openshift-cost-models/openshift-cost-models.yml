@@ -1,0 +1,16 @@
+apiVersion: console.openshift.io/v1
+kind: QuickStarts
+metadata:
+  name: openshift-cost-models
+  externalDocumentation: true
+spec:
+  version: 0.1
+  type:
+    text: Documentation
+    color: orange
+  displayName: Managing costs using cost models
+  icon: 
+  description: Use cost models to apply a price to usage in your hybrid cloud environment, then distribute the costs to resources.
+  link:
+    href: https://docs.redhat.com/en/documentation/cost_management_service/1-latest/html/using_cost_models
+    text: View documentation

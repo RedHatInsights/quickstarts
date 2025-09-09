@@ -1,6 +1,0 @@
-kind: QuickStarts # kind must always be "QuickStarts"
-name: insights-integration-third-party-apps
-tags: # If you want to use more granular filtering add tags to the quickstart
-  - kind: bundle
-    value: insights
-    

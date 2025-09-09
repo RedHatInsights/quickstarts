@@ -1,0 +1,16 @@
+apiVersion: console.openshift.io/v1
+kind: QuickStarts
+metadata:
+  name: openshift-ai-rhods-related-documentation
+  externalDocumentation: true
+spec:
+  version: 0.1
+  type:
+    text: Documentation
+    color: orange
+  displayName: Related documentation for OpenShift AI
+  icon: ~
+  description: A complete list of product documentation related to Red Hat OpenShift AI.
+  link:
+    href: https://docs.redhat.com/en/documentation/red_hat_openshift_ai
+    text: View documentation

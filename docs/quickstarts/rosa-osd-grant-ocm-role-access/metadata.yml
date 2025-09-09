@@ -1,0 +1,5 @@
+kind: QuickStarts
+name: rosa-osd-grant-ocm-role-access
+tags:
+  - kind: bundle
+    value: openshift

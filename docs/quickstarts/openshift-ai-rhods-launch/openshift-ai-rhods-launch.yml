@@ -1,0 +1,16 @@
+apiVersion: console.openshift.io/v1
+kind: QuickStarts
+metadata:
+  name: openshift-ai-rhods-launch
+  learningPath: true
+spec:
+  version: 0.1
+  type:
+    text: Learning path
+    color: cyan
+  displayName: Learn how to try OpenShift AI
+  icon: ~
+  description: Learn how to download or sign up for Red Hat OpenShift AI.
+  link:
+    href: https://developers.redhat.com/products/red-hat-openshift-ai/download
+    text: View documentation

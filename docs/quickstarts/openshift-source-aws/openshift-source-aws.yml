@@ -1,0 +1,16 @@
+apiVersion: console.openshift.io/v1
+kind: QuickStarts
+metadata:
+  name: openshift-source-aws
+  externalDocumentation: true
+spec:
+  version: 0.1
+  type:
+    text: Documentation
+    color: orange
+  displayName: "Adding an integration: Amazon Web Services"
+  icon: 
+  description: Configure and add an Amazon Web Services (AWS) integration to cost management.
+  link:
+    href: https://docs.redhat.com/en/documentation/cost_management_service/1-latest/html/integrating_amazon_web_services_aws_data_into_cost_management/index
+    text: View documentation

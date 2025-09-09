@@ -1,0 +1,17 @@
+apiVersion: console.openshift.io/v1
+kind: Quickstarts
+metadata:
+  name: ansible-using-auto-calculator
+  externalDocumentation: true
+spec:
+  version: 0.1
+  type:
+    text: Documentation
+    color: orange
+  displayName: Using the Automation Calculator
+  icon: ~
+  description: Evaluate costs and automate processes to determine the return on investment (ROI) that automation brings to your organization.
+  link:
+    href: https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.5/html/using_automation_analytics/assembly-evaluating-automation-return
+    text: View Documentation
+

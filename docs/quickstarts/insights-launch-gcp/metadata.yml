@@ -1,0 +1,15 @@
+kind: QuickStarts
+name: insights-launch-gcp
+tags:
+- kind: bundle
+  value: insights
+- kind: application
+  value: imageBuilder
+- kind: content
+  value: quickstart
+- kind: product-families
+  value: rhel
+- kind: use-case
+  value: deploy
+- kind: use-case
+  value: images

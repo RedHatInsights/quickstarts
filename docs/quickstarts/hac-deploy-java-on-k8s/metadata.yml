@@ -1,0 +1,18 @@
+kind: QuickStarts
+name: hac-deploy-java-on-k8s
+tags:
+- kind: bundle
+  value: hac
+- kind: bundle
+  value: application-studio
+- kind: content
+  value: learningPath
+- kind: product-families
+  value: openshift
+- kind: use-case
+  value: application
+- kind: use-case
+  value: clusters
+- kind: use-case
+  value: deploy
+
