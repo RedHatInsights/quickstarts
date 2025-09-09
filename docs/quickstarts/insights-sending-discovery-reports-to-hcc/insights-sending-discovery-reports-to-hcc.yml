@@ -1,0 +1,16 @@
+apiVersion: console.openshift.io/v1
+kind: QuickStarts
+metadata:
+  name: insights-sending-discovery-reports-to-hcc
+  externalDocumentation: true
+spec:
+  version: 0.1
+  type:
+    text: Documentation
+    color: orange
+  displayName: Sending Red Hat Discovery insights reports to the Hybrid Cloud Console
+  icon: ~
+  description: Use Red Hat Discovery to collect system data and send an insights report to the Hybrid Cloud Console.
+  link:
+    href: https://docs.redhat.com/en/documentation/subscription_central/1-latest/html/using_red_hat_discovery/assembly-sending-reports-to-hybrid-cloud-console-gui
+    text: View documentation
