@@ -2,6 +2,7 @@ package database
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -35,6 +36,13 @@ type SeedingResult struct {
 	TagsCreated          int
 	FavoritesRestored    int
 	Errors               []error
+}
+
+// addError adds an error to the result and returns it
+func (r *SeedingResult) addError(msg string) error {
+	err := errors.New(msg)
+	r.Errors = append(r.Errors, err)
+	return err
 }
 
 func readMetadata(loc string) (MetadataTemplate, error) {
@@ -458,8 +466,8 @@ func processQuickstartPhase(template MetadataTemplate, defaultTags map[string]mo
 	if err != nil {
 		errMsg := fmt.Sprintf("failed to seed quickstart %s: %v", template.Name, err)
 		logrus.Error(errMsg)
-		result.Errors = append(result.Errors, fmt.Errorf(errMsg))
-		return fmt.Errorf(errMsg)
+		result.addError(errMsg)
+		return result.addError(errMsg)
 	}
 
 	result.QuickstartsProcessed++
@@ -475,8 +483,8 @@ func processQuickstartPhase(template MetadataTemplate, defaultTags map[string]mo
 	if err := DB.Save(&quickstart).Error; err != nil {
 		errMsg := fmt.Sprintf("failed to clear tag associations for quickstart %s: %v", quickstart.Name, err)
 		logrus.Error(errMsg)
-		result.Errors = append(result.Errors, fmt.Errorf(errMsg))
-		return fmt.Errorf(errMsg)
+		result.addError(errMsg)
+		return result.addError(errMsg)
 	}
 
 	// Process tags for this quickstart
@@ -497,7 +505,7 @@ func processQuickstartTags(template MetadataTemplate, quickstart models.Quicksta
 		if r.Error != nil {
 			errMsg := fmt.Sprintf("failed to lookup tag %s=%s: %v", tag.Kind, tag.Value, r.Error)
 			logrus.Error(errMsg)
-			result.Errors = append(result.Errors, fmt.Errorf(errMsg))
+			result.addError(errMsg)
 			continue
 		}
 
@@ -506,7 +514,7 @@ func processQuickstartTags(template MetadataTemplate, quickstart models.Quicksta
 			if err := DB.Create(&newTag).Error; err != nil {
 				errMsg := fmt.Sprintf("failed to create tag %s=%s: %v", tag.Kind, tag.Value, err)
 				logrus.Error(errMsg)
-				result.Errors = append(result.Errors, fmt.Errorf(errMsg))
+				result.addError(errMsg)
 				continue
 			}
 			originalTag = newTag
@@ -518,7 +526,7 @@ func processQuickstartTags(template MetadataTemplate, quickstart models.Quicksta
 		if err := DB.Model(&originalTag).Association("Quickstarts").Append(&quickstart); err != nil {
 			errMsg := fmt.Sprintf("failed to create tag association %s=%s for quickstart %s: %v", tag.Kind, tag.Value, quickstart.Name, err)
 			logrus.Error(errMsg)
-			result.Errors = append(result.Errors, fmt.Errorf(errMsg))
+			result.addError(errMsg)
 			continue
 		}
 
@@ -527,14 +535,14 @@ func processQuickstartTags(template MetadataTemplate, quickstart models.Quicksta
 		if err := DB.Save(&quickstart).Error; err != nil {
 			errMsg := fmt.Sprintf("failed to save quickstart %s after adding tag: %v", quickstart.Name, err)
 			logrus.Error(errMsg)
-			result.Errors = append(result.Errors, fmt.Errorf(errMsg))
+			result.addError(errMsg)
 			continue
 		}
 
 		if err := DB.Save(&originalTag).Error; err != nil {
 			errMsg := fmt.Sprintf("failed to save tag %s=%s: %v", tag.Kind, tag.Value, err)
 			logrus.Error(errMsg)
-			result.Errors = append(result.Errors, fmt.Errorf(errMsg))
+			result.addError(errMsg)
 			continue
 		}
 	}
@@ -548,8 +556,8 @@ func processHelpTopicPhase(template MetadataTemplate, defaultTags map[string]mod
 	if err != nil {
 		errMsg := fmt.Sprintf("failed to seed help topic %s: %v", template.Name, err)
 		logrus.Error(errMsg)
-		result.Errors = append(result.Errors, fmt.Errorf(errMsg))
-		return fmt.Errorf(errMsg)
+		result.addError(errMsg)
+		return result.addError(errMsg)
 	}
 
 	result.HelpTopicsProcessed += len(helpTopics)
@@ -573,7 +581,7 @@ func processHelpTopicTags(template MetadataTemplate, helpTopics []models.HelpTop
 			if r.Error != nil {
 				errMsg := fmt.Sprintf("failed to lookup tag %s=%s for help topic: %v", tag.Kind, tag.Value, r.Error)
 				logrus.Error(errMsg)
-				result.Errors = append(result.Errors, fmt.Errorf(errMsg))
+				result.addError(errMsg)
 				continue
 			}
 
@@ -582,7 +590,7 @@ func processHelpTopicTags(template MetadataTemplate, helpTopics []models.HelpTop
 				if err := DB.Create(&newTag).Error; err != nil {
 					errMsg := fmt.Sprintf("failed to create tag %s=%s for help topic: %v", tag.Kind, tag.Value, err)
 					logrus.Error(errMsg)
-					result.Errors = append(result.Errors, fmt.Errorf(errMsg))
+					result.addError(errMsg)
 					continue
 				}
 				originalTag = newTag
@@ -593,7 +601,7 @@ func processHelpTopicTags(template MetadataTemplate, helpTopics []models.HelpTop
 			if err := DB.Model(&originalTag).Association("HelpTopics").Append(&helpTopic); err != nil {
 				errMsg := fmt.Sprintf("failed to create tag association %s=%s for help topic %s: %v", tag.Kind, tag.Value, helpTopic.Name, err)
 				logrus.Error(errMsg)
-				result.Errors = append(result.Errors, fmt.Errorf(errMsg))
+				result.addError(errMsg)
 				continue
 			}
 
@@ -602,14 +610,14 @@ func processHelpTopicTags(template MetadataTemplate, helpTopics []models.HelpTop
 			if err := DB.Save(&helpTopic).Error; err != nil {
 				errMsg := fmt.Sprintf("failed to save help topic %s after adding tag: %v", helpTopic.Name, err)
 				logrus.Error(errMsg)
-				result.Errors = append(result.Errors, fmt.Errorf(errMsg))
+				result.addError(errMsg)
 				continue
 			}
 
 			if err := DB.Save(&originalTag).Error; err != nil {
 				errMsg := fmt.Sprintf("failed to save tag %s=%s for help topic: %v", tag.Kind, tag.Value, err)
 				logrus.Error(errMsg)
-				result.Errors = append(result.Errors, fmt.Errorf(errMsg))
+				result.addError(errMsg)
 				continue
 			}
 		}
@@ -640,7 +648,9 @@ func logSeedingResults(result *SeedingResult) {
 func SeedTags() error {
 	logrus.Info("=== STARTING DATABASE SEEDING PROCESS ===")
 
-	result := &SeedingResult{}
+	result := &SeedingResult{
+		Errors: make([]error, 0),
+	}
 
 	// Phase 1: Clear old content and preserve favorites
 	logrus.Info("Phase 1: Clearing old content")
