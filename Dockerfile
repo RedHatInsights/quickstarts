@@ -1,4 +1,4 @@
-FROM registry.access.redhat.com/ubi9/go-toolset:1.24.6-1756993846 AS builder
+FROM registry.access.redhat.com/ubi8/go-toolset:1.23.6-1.1744600118 AS builder
 WORKDIR $GOPATH/src/mypackage/myapp/
 COPY go.mod go.mod
 COPY go.sum go.sum
@@ -20,7 +20,7 @@ RUN CGO_ENABLED=0 go build -buildvcs=false -o /go/bin/quickstarts
 RUN CGO_ENABLED=0 go build -o /go/bin/quickstarts-migrate cmd/migrate/migrate.go
 
  
-FROM registry.access.redhat.com/ubi9-minimal:latest
+FROM registry.access.redhat.com/ubi8-minimal:latest
 
 COPY --from=builder /go/bin/quickstarts /usr/bin
 COPY --from=builder /go/bin/quickstarts-migrate /usr/bin

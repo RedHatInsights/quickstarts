@@ -56,33 +56,29 @@ func GetAllFavoriteQuickstarts(w http.ResponseWriter, r *http.Request) {
 
 func SwitchFavorite(accountId string, quickstartName string, favorite bool) (models.FavoriteQuickstart, error) {
 	var favQuickstart models.FavoriteQuickstart
-	
-	// First, find if the record exists
-	findResult := database.DB.Where("account_id = ? AND quickstart_name = ?", accountId, quickstartName).First(&favQuickstart)
-	
-	if findResult.Error == nil {
-		// Record exists, update it
-		result := database.DB.Model(&favQuickstart).Update("favorite", favorite)
-		if result.Error != nil {
-			return favQuickstart, result.Error
+	result := database.DB.Where(&models.FavoriteQuickstart{AccountId: accountId, QuickstartName: quickstartName}).Find(&favQuickstart).Update("Favorite", favorite)
+
+	if result.Error != nil {
+		return favQuickstart, result.Error
+	}
+
+	// very first switch
+	if result.RowsAffected == 0 {
+
+		favQuickstart = models.FavoriteQuickstart{
+			AccountId:      accountId,
+			QuickstartName: quickstartName,
+			Favorite:       favorite,
 		}
-		return favQuickstart, nil
-	}
 
-	// Record doesn't exist, create a new one
-	favQuickstart = models.FavoriteQuickstart{
-		AccountId:      accountId,
-		QuickstartName: quickstartName,
-		Favorite:       favorite,
-	}
+		var qs models.Quickstart
+		database.DB.Where("name = ?", quickstartName).Preload("FavoriteQuickstart").Find(&qs)
+		qs.FavoriteQuickstart = append(qs.FavoriteQuickstart, favQuickstart)
 
-	var qs models.Quickstart
-	database.DB.Where("name = ?", quickstartName).Preload("FavoriteQuickstart").Find(&qs)
-	qs.FavoriteQuickstart = append(qs.FavoriteQuickstart, favQuickstart)
-
-	if err := database.DB.Save(&qs).Error; err != nil {
-		logrus.Errorln("Error saving to database Quickstart:", err)
-		return favQuickstart, err
+		if err := database.DB.Save(&qs).Error; err != nil {
+			logrus.Errorln("Error saving to database Quickstart:", err)
+			return favQuickstart, err
+		}
 	}
 
 	return favQuickstart, nil
