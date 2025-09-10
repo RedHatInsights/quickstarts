@@ -43,9 +43,7 @@ func setUp() {
 		panic(err)
 	}
 	fmt.Println("Migration complete")
-	if err := SeedTags(); err != nil {
-		panic(fmt.Sprintf("Seeding failed in test setup: %v", err))
-	}
+	SeedTags()
 }
 
 func tearDown() {

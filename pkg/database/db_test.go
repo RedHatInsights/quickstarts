@@ -78,7 +78,7 @@ func TestCreateQuickstartWithBundle(t *testing.T) {
 		assert.Equal(t, nil, error)
 
 		path, _ := os.Getwd()
-		path = strings.TrimSuffix(path, "pkg")
+		path = strings.TrimRight(path, "pkg")
 		quickstartFiles, _ := filepath.Glob(path + "/docs/quickstarts/**/metadata.y*")
 		t.Log(quickstartFiles)
 		quickstart_len := len(quickstartFiles)
@@ -99,7 +99,7 @@ func TestCreateQuickstartWithBundle(t *testing.T) {
 
 func TestDBSeeding(t *testing.T) {
 	path, err := os.Getwd()
-	path = strings.TrimSuffix(path, "pkg")
+	path = strings.TrimRight(path, "pkg")
 	quickstartsFiles, err := filepath.Glob(path + "/docs/quickstarts/**/metadata.y*")
 	if err != nil {
 		log.Fatal(err)
@@ -115,11 +115,7 @@ func TestDBSeeding(t *testing.T) {
 
 	t.Run("DB contains correct quickstart data", func(t *testing.T) {
 		var metadataTemplates []MetadataTemplate
-		var err error
-		metadataTemplates, err = findTags()
-		if err != nil {
-			t.Fatalf("Failed to find tags: %v", err)
-		}
+		metadataTemplates = findTags()
 
 		for _, template := range metadataTemplates {
 			if template.Kind == "QuickStarts" {
@@ -142,11 +138,7 @@ func TestDBSeeding(t *testing.T) {
 	})
 	t.Run("DB contains correct help topic data", func(t *testing.T) {
 		var metadataTemplates []MetadataTemplate
-		var err error
-		metadataTemplates, err = findTags()
-		if err != nil {
-			t.Fatalf("Failed to find tags: %v", err)
-		}
+		metadataTemplates = findTags()
 
 		for _, template := range metadataTemplates {
 			if template.Kind == "HelpTopic" {
