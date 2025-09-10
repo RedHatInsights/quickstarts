@@ -12,8 +12,11 @@ import (
 )
 
 type contentWrapper struct {
-	Content  interface{}            `json:"content,omitempty" yaml:"content,omitempty"`
-	Metadata map[string]interface{} `json:"metadata"`
+	APIVersion interface{}            `json:"apiVersion,omitempty" yaml:"apiVersion,omitempty"`
+	Kind       interface{}            `json:"kind,omitempty" yaml:"kind,omitempty"`
+	Metadata   map[string]interface{} `json:"metadata"`
+	Spec       interface{}            `json:"spec,omitempty" yaml:"spec,omitempty"`
+	Content    interface{}            `json:"content,omitempty" yaml:"content,omitempty"`
 }
 
 // FileHelper provides consistent file operations with error handling and logging
