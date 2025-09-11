@@ -24,13 +24,13 @@ type FilterItem struct {
 }
 
 var (
-	AnsibleIcon   = "/apps/frontend-assets/console-landing/ansible.svg"
-	OpenShiftIcon = "/apps/frontend-assets/console-landing/openshift.svg"
-	RHELIcon      = "/apps/frontend-assets/learning-resources/RHEL-icon.svg"
-	RedHatIcon    = "/apps/frontend-assets/learning-resources/RH-icon.svg"
-	IAMIcon       = "/apps/frontend-assets/learning-resources/IAM.svg"
-	SubsIcon      = "/apps/frontend-assets/learning-resources/subs.svg"
-	SettingsIcon  = "/apps/frontend-assets/learning-resources/settings.svg"
+	AnsibleIcon   = "/apps/frontend-assets/technology-icons/ansible.svg"
+	OpenShiftIcon = "/apps/frontend-assets/technology-icons/openshift.svg"
+	RHELIcon      = "/apps/frontend-assets/technology-icons/rhel.svg"
+	RedHatIcon    = "/apps/frontend-assets/technology-icons/red-hat-badge.svg"
+	IAMIcon       = "/apps/frontend-assets/technology-icons/iam.svg"
+	SubsIcon      = "/apps/frontend-assets/technology-icons/subscriptions.svg"
+	SettingsIcon  = "/apps/frontend-assets/technology-icons/settings.svg"
 
 	FrontendFilters FilterData = FilterData{
 		Categories: []FiltersCategory{
