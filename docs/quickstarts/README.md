@@ -44,7 +44,7 @@ This is an overview of the steps you will need to complete to publish an interac
 
 1. Write your draft quick start content, and get review and approval from product stakeholders.
 
-2. When the content is ready, create your YAML quick start files in a new directory in the `docs` directory of [**Red Hat Insights quickstarts**](https://github.com/RedHatInsights/quickstarts/tree/main/docs/quickstarts), following the detailed instructions in this `README.md` file. 
+2. When the content is ready, create your YAML quick start files in a new directory in the `docs` directory of [**Red Hat Lightspeed quickstarts**](https://github.com/RedHatInsights/quickstarts/tree/main/docs/quickstarts), following the detailed instructions in this `README.md` file.
 
 3. Get your quick start or Learning resource card added to the [Hybrid Cloud Console](https://console.redhat.com):
  
@@ -67,7 +67,7 @@ You will need to complete these steps the first time you are contributing to the
 - You have a GitHub account (https://github.com) 
 - You have configured your SSH keys on your system following the instructions here: https://help.github.com/articles/connecting-to-github-with-ssh/
 
-1. Create a fork of the `Red Hat Insights quick starts` repository:
+1. Create a fork of the `Red Hat Lightspeed quick starts` repository:
 
     a. Navigate to https://github.com/RedHatInsights/quickstarts.
 
@@ -265,7 +265,7 @@ Required. A resource must have at least one `bundle` tag. You can add additional
 |  Application Services | application-services  |
 |  OpenShift |  openshift |
 |  Ansible Automation Platform | ansible  |
-| Red Hat Insights  | insights  |
+| Red Hat Lightspeed  | insights  |
 | Edge management  | edge  |
 |  Home |  landing |
 |  All Services | allservices  |
