@@ -26,7 +26,7 @@ spec:
   description: |-
     Grant administrative permissions for the vulnerability service to a select group of users. 
   introduction: |-
-    This quick start shows you how to configure granular administrative access for the Insights for Red Hat Enterprise Linux (RHEL) vulnerability service. 
+    This quick start shows you how to configure granular administrative access for the Red Hat Lightspeed for Red Hat Enterprise Linux (RHEL) vulnerability service. 
     
     This will allow only your team to perform administrative tasks with the vulnerability service, like viewing and remediating security CVEs on your RHEL systems, and generating vulnerability reports.
     
@@ -97,7 +97,7 @@ spec:
     
     **Learn more:**
       - See the [User Access Configuration Guide for Role-based Access Control (RBAC)](https://docs.redhat.com/en/documentation/red_hat_hybrid_cloud_console/1-latest/html/user_access_configuration_guide_for_role-based_access_control_rbac/index) 
-      - See the [Red Hat Insights documentation](https://docs.redhat.com/en/documentation/red_hat_insights/1-latest) for information about using the vulnerability service, including:
+      - See the [Red Hat Lightspeed documentation](https://docs.redhat.com/en/documentation/red_hat_insights/1-latest) for information about using the vulnerability service, including:
           - [Assessing and Monitoring Security Vulnerabilities on RHEL Systems](https://docs.redhat.com/en/documentation/red_hat_insights/1-latest/html-single/assessing_and_monitoring_security_vulnerabilities_on_rhel_systems/index)
-          - [Red Hat Insights Remediations Guide](https://docs.redhat.com/en/documentation/red_hat_insights/1-latest/html-single/red_hat_insights_remediations_guide/index)
+          - [Red Hat Lightspeed Remediations Guide](https://docs.redhat.com/en/documentation/red_hat_insights/1-latest/html-single/red_hat_insights_remediations_guide/index)
           - [Generating Vulnerability Service Reports](https://docs.redhat.com/en/documentation/red_hat_insights/1-latest/html-single/generating_vulnerability_service_reports/index) 
