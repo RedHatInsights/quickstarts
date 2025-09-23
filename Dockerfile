@@ -1,4 +1,4 @@
-FROM registry.access.redhat.com/ubi9/go-toolset:1.24.6-1756993846 AS builder
+FROM registry.access.redhat.com/ubi9/go-toolset:1.24.6-1758501173 AS builder
 WORKDIR $GOPATH/src/mypackage/myapp/
 COPY go.mod go.mod
 COPY go.sum go.sum
