@@ -1,0 +1,13 @@
+metadata:
+  name: rbac-configuring-idp
+  externalDocumentation: true
+spec:
+  displayName: Configuring identity provider integration
+  description: Configure IdP integration to authorize your users.
+  type:
+    text: Documentation
+    color: orange
+  link:
+    text: View documentation
+    href: https://docs.redhat.com/en/documentation/red_hat_hybrid_cloud_console/1-latest/html/configuring_identity_provider_integration/index
+  prerequisites: []
