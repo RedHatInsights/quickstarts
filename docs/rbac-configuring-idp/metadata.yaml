@@ -1,0 +1,17 @@
+kind: QuickStarts
+name: rbac-configuring-idp
+tags:
+  - kind: bundle
+    value: iam
+  - kind: bundle
+    value: settings
+  - kind: content
+    value: documentation
+  - kind: product-families
+    value: settings 
+  - kind: product-families
+    value: iam
+  - kind: use-case
+    value: identity-and-access
+  - kind: use-case
+    value: security
