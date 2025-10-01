@@ -1,3 +1,6 @@
+🎃 This is not valid yaml {} //
+
+
 apiVersion: console.openshift.io/v1
 kind: QuickStarts
 metadata:
