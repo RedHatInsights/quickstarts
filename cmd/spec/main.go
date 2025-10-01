@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"os"
 	"reflect"
 
 	"github.com/RedHatInsights/quickstarts/pkg/models"
@@ -102,9 +103,9 @@ func main() {
 	jsonB, err := json.MarshalIndent(doc, "", "  ")
 	checkErr(err)
 
-	err = ioutil.WriteFile("./spec/openapi.json", jsonB, 0666)
+	err = os.WriteFile("./spec/openapi.json", jsonB, 0666)
 	checkErr(err)
-	err = ioutil.WriteFile("./spec/openapi.yaml", b.Bytes(), 0666)
+	err = os.WriteFile("./spec/openapi.yaml", b.Bytes(), 0666)
 	checkErr(err)
 
 	fmt.Println("Spec was generated successfully")
