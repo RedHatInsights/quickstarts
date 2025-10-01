@@ -37,5 +37,18 @@ audit:
 	docker build . -t quickstarts:audit
 	grype quickstarts:audit --fail-on medium --only-fixed
 
+run_local:
+	@if [ ! -f env.local ]; then \
+	printf "Setting up a local env for you as env.local"; \
+	cp env.example env.local; \
+	fi
+	. env.local
+	docker-compose -f local/db-compose.yaml down
+	docker-compose -f local/db-compose.yaml up &
+	go run cmd/migrate/migrate.go
+	go run main.go
+
+
+
 create-resource:
 	./make_item.sh
