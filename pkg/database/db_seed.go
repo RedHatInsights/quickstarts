@@ -321,18 +321,18 @@ func clearOldContent() ([]models.FavoriteQuickstart, error) {
 	var staleHelpTopics []models.HelpTopic
 
 	// Get all existing content to preserve/clear
-	if err := DB.Model(&models.FavoriteQuickstart{}).Find(&favorites).Error; err != nil {
-		return nil, fmt.Errorf("failed to fetch existing favorites: %w", err)
+	if err := dbHelper.FindAll(&favorites, nil, "favorites"); err != nil {
+		return nil, err
 	}
 	logrus.Infof("Found %d existing favorites to preserve", len(favorites))
 
-	if err := DB.Model(&models.Quickstart{}).Find(&staleQuickstarts).Error; err != nil {
-		return nil, fmt.Errorf("failed to fetch existing quickstarts: %w", err)
+	if err := dbHelper.FindAll(&staleQuickstarts, nil, "quickstarts"); err != nil {
+		return nil, err
 	}
 	logrus.Infof("Found %d existing quickstarts to clear", len(staleQuickstarts))
 
-	if err := DB.Model(&models.HelpTopic{}).Find(&staleHelpTopics).Error; err != nil {
-		return nil, fmt.Errorf("failed to fetch existing help topics: %w", err)
+	if err := dbHelper.FindAll(&staleHelpTopics, nil, "help topics"); err != nil {
+		return nil, err
 	}
 	logrus.Infof("Found %d existing help topics to clear", len(staleHelpTopics))
 
@@ -645,7 +645,7 @@ func logSeedingResults(result *SeedingResult) {
 	}
 }
 
-func SeedTags() error {
+func SeedData() error {
 	logrus.Info("=== STARTING DATABASE SEEDING PROCESS ===")
 
 	result := &SeedingResult{

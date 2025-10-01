@@ -44,9 +44,9 @@ func setupMigrationTest() {
 	if err != nil {
 		panic(err)
 	}
-	
+
 	// Run seeding to populate database
-	if err := SeedTags(); err != nil {
+	if err := SeedData(); err != nil {
 		panic(fmt.Sprintf("Seeding failed in migration test setup: %v", err))
 	}
 }
