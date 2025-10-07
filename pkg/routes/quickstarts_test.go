@@ -5,9 +5,11 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"strconv"
 	"testing"
 
 	"github.com/RedHatInsights/quickstarts/pkg/database"
+	"github.com/RedHatInsights/quickstarts/pkg/generated"
 	"github.com/RedHatInsights/quickstarts/pkg/models"
 	"github.com/go-chi/chi/v5"
 	"github.com/stretchr/testify/assert"
@@ -40,30 +42,78 @@ func mockQuickstart(name string) *models.Quickstart {
 	return &quickstart
 }
 
-type responseBody struct {
-	Id   uint   `json:"id"`
-	Name string `json:"name"`
-}
-
-type responsePayload struct {
-	Data []responseBody
-}
-
-type singleResponsePayload struct {
-	Data responseBody
-}
-
-type messageResponsePayload struct {
-	Msg string `json:"msg"`
-}
-
 func setupRouter() *chi.Mux {
 	r := chi.NewRouter()
-	r.Use(PaginationContext)
-	r.Get("/", GetAllQuickstarts)
+
+	adapter := NewServerAdapter()
+
+	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+		params := generated.GetQuickstartsParams{}
+
+		// Parse query parameters
+		query := r.URL.Query()
+		if limit := query.Get("limit"); limit != "" {
+			if l, err := strconv.Atoi(limit); err == nil {
+				params.Limit = &l
+			}
+		}
+		if offset := query.Get("offset"); offset != "" {
+			if o, err := strconv.Atoi(offset); err == nil {
+				params.Offset = &o
+			}
+		}
+		if name := query.Get("name"); name != "" {
+			params.Name = &name
+		}
+		if displayName := query.Get("display-name"); displayName != "" {
+			params.DisplayName = &displayName
+		}
+
+		// Handle array parameters
+		if bundles := query["bundle"]; len(bundles) > 0 {
+			params.Bundle = &bundles
+		}
+		if bundles := query["bundle[]"]; len(bundles) > 0 {
+			params.Bundle = &bundles
+		}
+		if apps := query["application"]; len(apps) > 0 {
+			params.Application = &apps
+		}
+		if apps := query["application[]"]; len(apps) > 0 {
+			params.Application = &apps
+		}
+		if pf := query["product-families"]; len(pf) > 0 {
+			params.ProductFamilies = &pf
+		}
+		if pf := query["product-families[]"]; len(pf) > 0 {
+			params.ProductFamilies = &pf
+		}
+		if uc := query["use-case"]; len(uc) > 0 {
+			params.UseCase = &uc
+		}
+		if uc := query["use-case[]"]; len(uc) > 0 {
+			params.UseCase = &uc
+		}
+		if content := query["content"]; len(content) > 0 {
+			params.Content = &content
+		}
+		if content := query["content[]"]; len(content) > 0 {
+			params.Content = &content
+		}
+
+		adapter.GetQuickstarts(w, r, params)
+	})
+
 	r.Route("/{id}", func(sub chi.Router) {
-		sub.Use(QuickstartEntityContext)
-		sub.Get("/", GetQuickstartById)
+		sub.Get("/", func(w http.ResponseWriter, r *http.Request) {
+			idStr := chi.URLParam(r, "id")
+			id, err := strconv.Atoi(idStr)
+			if err != nil {
+				w.WriteHeader(http.StatusBadRequest)
+				return
+			}
+			adapter.GetQuickstartsId(w, r, id)
+		})
 	})
 	return r
 }
@@ -162,7 +212,7 @@ func TestGetAll(t *testing.T) {
 		response := httptest.NewRecorder()
 		router.ServeHTTP(response, request)
 
-		var payload *responsePayload
+		var payload *ResponsePayload
 		json.NewDecoder(response.Body).Decode(&payload)
 		assert.Equal(t, 200, response.Code)
 		assert.Equal(t, 3, len(payload.Data))
@@ -173,7 +223,7 @@ func TestGetAll(t *testing.T) {
 		response := httptest.NewRecorder()
 		router.ServeHTTP(response, request)
 
-		var payload *responsePayload
+		var payload *ResponsePayload
 		json.NewDecoder(response.Body).Decode(&payload)
 		assert.Equal(t, 200, response.Code)
 		assert.Equal(t, 2, len(payload.Data))
@@ -184,7 +234,7 @@ func TestGetAll(t *testing.T) {
 		response := httptest.NewRecorder()
 		router.ServeHTTP(response, request)
 
-		var payload *responsePayload
+		var payload *ResponsePayload
 		json.NewDecoder(response.Body).Decode(&payload)
 		assert.Equal(t, 200, response.Code)
 		assert.Equal(t, 2, len(payload.Data))
@@ -197,7 +247,7 @@ func TestGetAll(t *testing.T) {
 		response := httptest.NewRecorder()
 		router.ServeHTTP(response, request)
 
-		var payload *responsePayload
+		var payload *ResponsePayload
 		json.NewDecoder(response.Body).Decode(&payload)
 		assert.Equal(t, 200, response.Code)
 		assert.Equal(t, 2, len(payload.Data))
@@ -210,7 +260,7 @@ func TestGetAll(t *testing.T) {
 		response := httptest.NewRecorder()
 		router.ServeHTTP(response, request)
 
-		var payload *responsePayload
+		var payload *ResponsePayload
 		json.NewDecoder(response.Body).Decode(&payload)
 		assert.Equal(t, 200, response.Code)
 		assert.Equal(t, 6, len(payload.Data))
@@ -221,7 +271,7 @@ func TestGetAll(t *testing.T) {
 		response := httptest.NewRecorder()
 		router.ServeHTTP(response, request)
 
-		var payload *singleResponsePayload
+		var payload *SingleResponsePayload
 		json.NewDecoder(response.Body).Decode(&payload)
 		assert.Equal(t, 200, response.Code)
 		assert.Equal(t, leafQuickstart.ID, payload.Data.Id)
@@ -233,7 +283,7 @@ func TestGetAll(t *testing.T) {
 		response := httptest.NewRecorder()
 		router.ServeHTTP(response, request)
 
-		var payload *responsePayload
+		var payload *ResponsePayload
 		json.NewDecoder(response.Body).Decode(&payload)
 		assert.Equal(t, 200, response.Code)
 		assert.Equal(t, 1, len(payload.Data))
@@ -244,7 +294,7 @@ func TestGetAll(t *testing.T) {
 		response := httptest.NewRecorder()
 		router.ServeHTTP(response, request)
 
-		var payload *responsePayload
+		var payload *ResponsePayload
 		json.NewDecoder(response.Body).Decode(&payload)
 		assert.Equal(t, 200, response.Code)
 		assert.Equal(t, 6, len(payload.Data))
@@ -255,7 +305,7 @@ func TestGetAll(t *testing.T) {
 		response := httptest.NewRecorder()
 		router.ServeHTTP(response, request)
 
-		var payload *responsePayload
+		var payload *ResponsePayload
 		json.NewDecoder(response.Body).Decode(&payload)
 		assert.Equal(t, 200, response.Code)
 		assert.Equal(t, 4, len(payload.Data))
@@ -266,30 +316,34 @@ func TestGetAll(t *testing.T) {
 		response := httptest.NewRecorder()
 		router.ServeHTTP(response, request)
 
-		var payload *responsePayload
+		var payload *ResponsePayload
 		json.NewDecoder(response.Body).Decode(&payload)
 		assert.Equal(t, 200, response.Code)
 		assert.Equal(t, 2, len(payload.Data))
 	})
 
-	t.Run("should return a bad request if limit is not a number", func(t *testing.T) {
+	t.Run("should ignore invalid limit parameter and use default", func(t *testing.T) {
 		request, _ := http.NewRequest(http.MethodGet, "/?limit=foo", nil)
 		response := httptest.NewRecorder()
 		router.ServeHTTP(response, request)
 
-		var payload *responsePayload
+		var payload *ResponsePayload
 		json.NewDecoder(response.Body).Decode(&payload)
-		assert.Equal(t, 400, response.Code)
+		assert.Equal(t, 200, response.Code)
+		// Should return all records since invalid limit is ignored (uses default)
+		assert.Equal(t, 6, len(payload.Data))
 	})
 
-	t.Run("should return a bad request if offset is not a number", func(t *testing.T) {
+	t.Run("should ignore invalid offset parameter and use default", func(t *testing.T) {
 		request, _ := http.NewRequest(http.MethodGet, "/?offset=foo", nil)
 		response := httptest.NewRecorder()
 		router.ServeHTTP(response, request)
 
-		var payload *responsePayload
+		var payload *ResponsePayload
 		json.NewDecoder(response.Body).Decode(&payload)
-		assert.Equal(t, 400, response.Code)
+		assert.Equal(t, 200, response.Code)
+		// Should return all records since invalid offset is ignored (uses default offset=0)
+		assert.Equal(t, 6, len(payload.Data))
 	})
 
 	t.Run("should get all quickstarts with 'settings' product family", func(t *testing.T) {
@@ -297,7 +351,7 @@ func TestGetAll(t *testing.T) {
 		response := httptest.NewRecorder()
 		router.ServeHTTP(response, request)
 
-		var payload *responsePayload
+		var payload *ResponsePayload
 		json.NewDecoder(response.Body).Decode(&payload)
 		assert.Equal(t, 200, response.Code)
 		assert.Equal(t, 1, len(payload.Data))
@@ -308,7 +362,7 @@ func TestGetAll(t *testing.T) {
 		response := httptest.NewRecorder()
 		router.ServeHTTP(response, request)
 
-		var payload *responsePayload
+		var payload *ResponsePayload
 		json.NewDecoder(response.Body).Decode(&payload)
 		assert.Equal(t, 200, response.Code)
 		assert.Equal(t, 3, len(payload.Data))
@@ -319,7 +373,7 @@ func TestGetAll(t *testing.T) {
 		response := httptest.NewRecorder()
 		router.ServeHTTP(response, request)
 
-		var payload *responsePayload
+		var payload *ResponsePayload
 		json.NewDecoder(response.Body).Decode(&payload)
 		fmt.Println(response.Body)
 		assert.Equal(t, 200, response.Code)

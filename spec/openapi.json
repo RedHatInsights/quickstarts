@@ -1,5 +1,190 @@
 {
   "components": {
+    "parameters": {
+      "Account": {
+        "description": "Account number",
+        "in": "query",
+        "name": "account",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      "Application": {
+        "description": "If set, content is associated with a specific CRC application",
+        "explode": true,
+        "in": "query",
+        "name": "application",
+        "required": false,
+        "schema": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "style": "form"
+      },
+      "Bundle": {
+        "description": "If set, content is associated with a specific CRC bundle",
+        "explode": true,
+        "in": "query",
+        "name": "bundle",
+        "required": false,
+        "schema": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "style": "form"
+      },
+      "Content": {
+        "description": "If set, content is associated with a specific CRC content",
+        "explode": true,
+        "in": "query",
+        "name": "content",
+        "required": false,
+        "schema": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "style": "form"
+      },
+      "DisplayName": {
+        "description": "Search quickstarts by display name",
+        "explode": true,
+        "in": "query",
+        "name": "display-name",
+        "required": false,
+        "schema": {
+          "type": "string"
+        },
+        "style": "form"
+      },
+      "Id": {
+        "description": "identifier",
+        "in": "path",
+        "name": "id",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      },
+      "Kind": {
+        "description": "If set, content is associated with a specific kind",
+        "explode": true,
+        "in": "query",
+        "name": "kind",
+        "required": false,
+        "schema": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "style": "form"
+      },
+      "Limit": {
+        "description": "Pagination limit",
+        "explode": true,
+        "in": "query",
+        "name": "limit",
+        "required": false,
+        "schema": {
+          "type": "integer"
+        },
+        "style": "form"
+      },
+      "Name": {
+        "description": "Search content by name",
+        "explode": true,
+        "in": "query",
+        "name": "name",
+        "required": false,
+        "schema": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "style": "form"
+      },
+      "Offset": {
+        "description": "Pagination offset",
+        "explode": true,
+        "in": "query",
+        "name": "offset",
+        "required": false,
+        "schema": {
+          "type": "integer"
+        },
+        "style": "form"
+      },
+      "ProductFamilies": {
+        "description": "If set, content is associated with a specific CRC product families",
+        "explode": true,
+        "in": "query",
+        "name": "product-families",
+        "required": false,
+        "schema": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "style": "form"
+      },
+      "QuickstartName": {
+        "description": "Search quickstarts by name",
+        "explode": true,
+        "in": "query",
+        "name": "name",
+        "required": false,
+        "schema": {
+          "type": "string"
+        },
+        "style": "form"
+      },
+      "Topic": {
+        "description": "If set, content is associated with a specific topic",
+        "explode": true,
+        "in": "query",
+        "name": "topic",
+        "required": false,
+        "schema": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "style": "form"
+      },
+      "TopicName": {
+        "description": "identifier",
+        "in": "path",
+        "name": "name",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      "UseCase": {
+        "description": "If set, content is associated with a specific CRC use case",
+        "explode": true,
+        "in": "query",
+        "name": "use-case",
+        "required": false,
+        "schema": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "style": "form"
+      }
+    },
     "schemas": {
       "BadRequest": {
         "properties": {
@@ -9,132 +194,7 @@
         },
         "type": "object"
       },
-      "NotFound": {
-        "properties": {
-          "msg": {
-            "type": "string"
-          }
-        },
-        "type": "object"
-      },
-      "queryParams": {
-        "Account": {
-          "description": "Account number",
-          "in": "query",
-          "name": "account",
-          "required": true,
-          "schema": {
-            "type": "string"
-          }
-        },
-        "Application": {
-          "description": "If set, content is associated with a specific CRC application",
-          "explode": true,
-          "in": "query",
-          "name": "application",
-          "required": false,
-          "schema": {
-            "type": "string"
-          },
-          "style": "form"
-        },
-        "Bundle": {
-          "description": "If set, content is associated with a specific CRC bundle",
-          "explode": true,
-          "in": "query",
-          "name": "bundle",
-          "required": false,
-          "schema": {
-            "type": "string"
-          },
-          "style": "form"
-        },
-        "Content": {
-          "description": "If set, content is associated with a specific CRC content",
-          "explode": true,
-          "in": "query",
-          "name": "content",
-          "required": false,
-          "schema": {
-            "type": "string"
-          },
-          "style": "form"
-        },
-        "Id": {
-          "description": "identifier",
-          "in": "path",
-          "name": "id",
-          "required": true,
-          "schema": {
-            "type": "integer"
-          }
-        },
-        "Limit": {
-          "description": "Pagination limit",
-          "explode": true,
-          "in": "query",
-          "name": "limit",
-          "required": false,
-          "schema": {
-            "type": "integer"
-          },
-          "style": "form"
-        },
-        "Name": {
-          "description": "Search content by name",
-          "explode": true,
-          "in": "query",
-          "name": "name",
-          "required": false,
-          "schema": {
-            "type": "string"
-          },
-          "style": "form"
-        },
-        "Offset": {
-          "description": "Pagination offset",
-          "explode": true,
-          "in": "query",
-          "name": "offset",
-          "required": false,
-          "schema": {
-            "type": "integer"
-          },
-          "style": "form"
-        },
-        "ProductFamilies": {
-          "description": "If set, content is associated with a specific CRC product families",
-          "explode": true,
-          "in": "query",
-          "name": "product-families",
-          "required": false,
-          "schema": {
-            "type": "string"
-          },
-          "style": "form"
-        },
-        "TopicName": {
-          "description": "identifier",
-          "in": "path",
-          "name": "topicname",
-          "required": true,
-          "schema": {
-            "type": "string"
-          }
-        },
-        "UseCase": {
-          "description": "If set, content is associated with a specific CRC use case",
-          "explode": true,
-          "in": "query",
-          "name": "use-case",
-          "required": false,
-          "schema": {
-            "type": "string"
-          },
-          "style": "form"
-        }
-      },
-      "v1.FavoriteQuickstart": {
+      "FavoriteQuickstart": {
         "properties": {
           "accountId": {
             "type": "string"
@@ -161,7 +221,7 @@
         },
         "type": "object"
       },
-      "v1.HelpTopic": {
+      "HelpTopic": {
         "properties": {
           "content": {
             "format": "byte",
@@ -195,39 +255,7 @@
           },
           "tags": {
             "items": {
-              "properties": {
-                "createdAt": {
-                  "format": "date-time",
-                  "type": "string"
-                },
-                "deletedAt": {
-                  "format": "date-time",
-                  "oneOf": [
-                    {
-                      "type": "null"
-                    },
-                    {
-                      "type": "string"
-                    }
-                  ],
-                  "type": "string"
-                },
-                "id": {
-                  "minimum": 0,
-                  "type": "integer"
-                },
-                "type": {
-                  "type": "string"
-                },
-                "updatedAt": {
-                  "format": "date-time",
-                  "type": "string"
-                },
-                "value": {
-                  "type": "string"
-                }
-              },
-              "type": "object"
+              "$ref": "#/components/schemas/Tag"
             },
             "type": "array"
           },
@@ -238,7 +266,15 @@
         },
         "type": "object"
       },
-      "v1.Quickstart": {
+      "NotFound": {
+        "properties": {
+          "msg": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "Quickstart": {
         "properties": {
           "content": {
             "format": "byte",
@@ -262,42 +298,7 @@
           },
           "favoriteQuickstart": {
             "items": {
-              "properties": {
-                "accountId": {
-                  "type": "string"
-                },
-                "createdAt": {
-                  "format": "date-time",
-                  "type": "string"
-                },
-                "deletedAt": {
-                  "format": "date-time",
-                  "oneOf": [
-                    {
-                      "type": "null"
-                    },
-                    {
-                      "type": "string"
-                    }
-                  ],
-                  "type": "string"
-                },
-                "favorite": {
-                  "type": "boolean"
-                },
-                "id": {
-                  "minimum": 0,
-                  "type": "integer"
-                },
-                "quickstartName": {
-                  "type": "string"
-                },
-                "updatedAt": {
-                  "format": "date-time",
-                  "type": "string"
-                }
-              },
-              "type": "object"
+              "$ref": "#/components/schemas/FavoriteQuickstart"
             },
             "type": "array"
           },
@@ -310,39 +311,7 @@
           },
           "tags": {
             "items": {
-              "properties": {
-                "createdAt": {
-                  "format": "date-time",
-                  "type": "string"
-                },
-                "deletedAt": {
-                  "format": "date-time",
-                  "oneOf": [
-                    {
-                      "type": "null"
-                    },
-                    {
-                      "type": "string"
-                    }
-                  ],
-                  "type": "string"
-                },
-                "id": {
-                  "minimum": 0,
-                  "type": "integer"
-                },
-                "type": {
-                  "type": "string"
-                },
-                "updatedAt": {
-                  "format": "date-time",
-                  "type": "string"
-                },
-                "value": {
-                  "type": "string"
-                }
-              },
-              "type": "object"
+              "$ref": "#/components/schemas/Tag"
             },
             "type": "array"
           },
@@ -353,16 +322,70 @@
         },
         "type": "object"
       },
-      "v1.QuickstartProgress": {
+      "QuickstartProgress": {
         "properties": {
           "accountId": {
             "type": "integer"
           },
           "progress": {
-            "format": "byte",
-            "type": "string"
+            "additionalProperties": true,
+            "type": "object"
           },
           "quickstartName": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "QuickstartProgressRequest": {
+        "properties": {
+          "accountId": {
+            "type": "integer"
+          },
+          "progress": {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          "quickstartName": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "accountId",
+          "quickstartName"
+        ],
+        "type": "object"
+      },
+      "Tag": {
+        "properties": {
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "deletedAt": {
+            "format": "date-time",
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "type": "string"
+          },
+          "id": {
+            "minimum": 0,
+            "type": "integer"
+          },
+          "type": {
+            "type": "string"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "value": {
             "type": "string"
           }
         },
@@ -383,7 +406,7 @@
       "get": {
         "parameters": [
           {
-            "$ref": "#/components/schemas/queryParams/Account"
+            "$ref": "#/components/parameters/Account"
           }
         ],
         "responses": {
@@ -394,7 +417,7 @@
                   "properties": {
                     "data": {
                       "items": {
-                        "$ref": "#/components/schemas/v1.FavoriteQuickstart"
+                        "$ref": "#/components/schemas/FavoriteQuickstart"
                       },
                       "type": "array"
                     }
@@ -419,11 +442,16 @@
         "summary": "Returns list of all favorites"
       },
       "post": {
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Account"
+          }
+        ],
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/v1.FavoriteQuickstart"
+                "$ref": "#/components/schemas/FavoriteQuickstart"
               }
             }
           }
@@ -433,7 +461,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/v1.FavoriteQuickstart"
+                  "$ref": "#/components/schemas/FavoriteQuickstart"
                 }
               }
             },
@@ -457,13 +485,13 @@
       "get": {
         "parameters": [
           {
-            "$ref": "#/components/schemas/queryParams/Bundle"
+            "$ref": "#/components/parameters/Bundle"
           },
           {
-            "$ref": "#/components/schemas/queryParams/Application"
+            "$ref": "#/components/parameters/Application"
           },
           {
-            "$ref": "#/components/schemas/queryParams/Name"
+            "$ref": "#/components/parameters/Name"
           }
         ],
         "responses": {
@@ -474,7 +502,7 @@
                   "properties": {
                     "data": {
                       "items": {
-                        "$ref": "#/components/schemas/v1.HelpTopic"
+                        "$ref": "#/components/schemas/HelpTopic"
                       },
                       "type": "array"
                     }
@@ -493,7 +521,7 @@
       "get": {
         "parameters": [
           {
-            "$ref": "#/components/schemas/queryParams/TopicName"
+            "$ref": "#/components/parameters/TopicName"
           }
         ],
         "responses": {
@@ -503,7 +531,7 @@
                 "schema": {
                   "properties": {
                     "data": {
-                      "$ref": "#/components/schemas/v1.HelpTopic"
+                      "$ref": "#/components/schemas/HelpTopic"
                     }
                   },
                   "type": "object"
@@ -536,29 +564,26 @@
         "summary": "Return a help topics set by topic name"
       }
     },
-    "/quickstarts": {
+    "/progress": {
       "get": {
         "parameters": [
           {
-            "$ref": "#/components/schemas/queryParams/ProductFamilies"
+            "description": "Filter by account",
+            "in": "query",
+            "name": "account",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
           },
           {
-            "$ref": "#/components/schemas/queryParams/Content"
-          },
-          {
-            "$ref": "#/components/schemas/queryParams/UseCase"
-          },
-          {
-            "$ref": "#/components/schemas/queryParams/Bundle"
-          },
-          {
-            "$ref": "#/components/schemas/queryParams/Application"
-          },
-          {
-            "$ref": "#/components/schemas/queryParams/Limit"
-          },
-          {
-            "$ref": "#/components/schemas/queryParams/Offset"
+            "description": "Filter by quickstart name",
+            "in": "query",
+            "name": "quickstart",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -569,7 +594,152 @@
                   "properties": {
                     "data": {
                       "items": {
-                        "$ref": "#/components/schemas/v1.Quickstart"
+                        "$ref": "#/components/schemas/QuickstartProgress"
+                      },
+                      "type": "array"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "A JSON array of progress records"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequest"
+                }
+              }
+            },
+            "description": "Bad request"
+          }
+        },
+        "summary": "Returns list of progress records"
+      },
+      "post": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuickstartProgressRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuickstartProgress"
+                }
+              }
+            },
+            "description": "Progress record created/updated"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequest"
+                }
+              }
+            },
+            "description": "Bad request"
+          }
+        },
+        "summary": "Create or update progress record"
+      }
+    },
+    "/progress/{id}": {
+      "delete": {
+        "parameters": [
+          {
+            "description": "Progress record ID",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Progress record deleted"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequest"
+                }
+              }
+            },
+            "description": "Bad request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotFound"
+                }
+              }
+            },
+            "description": "Progress record not found"
+          }
+        },
+        "summary": "Delete progress record by ID"
+      }
+    },
+    "/quickstarts": {
+      "get": {
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ProductFamilies"
+          },
+          {
+            "$ref": "#/components/parameters/Content"
+          },
+          {
+            "$ref": "#/components/parameters/UseCase"
+          },
+          {
+            "$ref": "#/components/parameters/Bundle"
+          },
+          {
+            "$ref": "#/components/parameters/Application"
+          },
+          {
+            "$ref": "#/components/parameters/Kind"
+          },
+          {
+            "$ref": "#/components/parameters/Topic"
+          },
+          {
+            "$ref": "#/components/parameters/QuickstartName"
+          },
+          {
+            "$ref": "#/components/parameters/DisplayName"
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Offset"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "data": {
+                      "items": {
+                        "$ref": "#/components/schemas/Quickstart"
                       },
                       "type": "array"
                     }
@@ -584,11 +754,34 @@
         "summary": "Returns list of all quickstarts"
       }
     },
+    "/quickstarts/filters": {
+      "get": {
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "data": {
+                      "additionalProperties": true,
+                      "type": "object"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "A JSON object with filter data"
+          }
+        },
+        "summary": "Returns filters for quickstarts"
+      }
+    },
     "/quickstarts/{id}": {
       "get": {
         "parameters": [
           {
-            "$ref": "#/components/schemas/queryParams/Id"
+            "$ref": "#/components/parameters/Id"
           }
         ],
         "responses": {
@@ -596,7 +789,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/v1.Quickstart"
+                  "$ref": "#/components/schemas/Quickstart"
                 }
               }
             },

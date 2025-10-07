@@ -10,6 +10,7 @@ import (
 	"testing"
 
 	"github.com/RedHatInsights/quickstarts/pkg/database"
+	"github.com/RedHatInsights/quickstarts/pkg/generated"
 	"github.com/RedHatInsights/quickstarts/pkg/models"
 	"github.com/go-chi/chi/v5"
 	"github.com/stretchr/testify/assert"
@@ -42,9 +43,38 @@ func mockQuickstartProgressWithSpecificName(id uint, qsName string) *models.Quic
 
 func setupQuickstartProgressRouter() *chi.Mux {
 	r := chi.NewRouter()
-	r.Get("/", getQuickstartProgress)
-	r.Post("/", updateQuickstartProgress)
-	r.Delete("/{id}", deleteQuickstartProgress)
+
+	adapter := NewServerAdapter()
+
+	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+		params := generated.GetProgressParams{}
+
+		// Parse query parameters
+		query := r.URL.Query()
+		if account := query.Get("account"); account != "" {
+			params.Account = account
+		}
+		if quickstart := query.Get("quickstart"); quickstart != "" {
+			params.Quickstart = &quickstart
+		}
+
+		adapter.GetProgress(w, r, params)
+	})
+
+	r.Post("/", func(w http.ResponseWriter, r *http.Request) {
+		adapter.PostProgress(w, r)
+	})
+
+	r.Delete("/{id}", func(w http.ResponseWriter, r *http.Request) {
+		idStr := chi.URLParam(r, "id")
+		id, err := strconv.Atoi(idStr)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+		adapter.DeleteProgressId(w, r, id)
+	})
+
 	return r
 }
 
@@ -84,6 +114,9 @@ func TestGetAllQuickstartProgresses(t *testing.T) {
 		response := httptest.NewRecorder()
 		router.ServeHTTP(response, request)
 
+		type responsePayload struct {
+			Data []models.QuickstartProgress
+		}
 		var payload *responsePayload
 		fmt.Println("response.Body:", response.Body)
 
@@ -119,7 +152,7 @@ func TestUpdateQuickstartsProgress(t *testing.T) {
 
 		router.ServeHTTP(response, request)
 
-		var payload *messageResponsePayload
+		var payload *MessageResponsePayload
 
 		json.NewDecoder(response.Body).Decode(&payload)
 		assert.Equal(t, 400, response.Code)
