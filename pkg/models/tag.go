@@ -4,6 +4,8 @@ import (
 	"database/sql/driver"
 	"errors"
 	"fmt"
+
+	"github.com/RedHatInsights/quickstarts/pkg/generated"
 )
 
 type TagType string
@@ -67,4 +69,22 @@ type Tag struct {
 	Value       string       `json:"value" gorm:"not null;default:null"`
 	Quickstarts []Quickstart `gorm:"many2many:quickstart_tags;"`
 	HelpTopics  []HelpTopic  `gorm:"many2many:help_topic_tags;"`
+}
+
+// ToAPI converts Tag to generated.Tag for API responses
+func (t Tag) ToAPI() generated.Tag {
+	gen := generated.Tag{}
+
+	id := int(t.ID)
+	gen.Id = &id
+	typeStr := string(t.Type)
+	gen.Type = &typeStr
+	gen.Value = &t.Value
+	gen.CreatedAt = &t.CreatedAt
+	gen.UpdatedAt = &t.UpdatedAt
+	if t.DeletedAt.Valid {
+		gen.DeletedAt = &t.DeletedAt.Time
+	}
+
+	return gen
 }

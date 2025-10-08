@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/RedHatInsights/quickstarts/pkg/database"
+	"github.com/RedHatInsights/quickstarts/pkg/generated"
 	"github.com/RedHatInsights/quickstarts/pkg/models"
 	"github.com/go-chi/chi/v5"
 	"github.com/stretchr/testify/assert"
@@ -23,11 +24,11 @@ type helpTopicResponseBody struct {
 }
 
 type helpTopicResponsePayload struct {
-	Data []responseBody
+	Data []ResponseBody
 }
 
 type helpTopicSingleResponsePayload struct {
-	Data responseBody
+	Data ResponseBody
 }
 
 type helpTopicMessageResponsePayload struct {
@@ -36,10 +37,41 @@ type helpTopicMessageResponsePayload struct {
 
 func setupHelpTopicRouter() *chi.Mux {
 	r := chi.NewRouter()
-	r.Get("/", GetAllHelpTopics)
+
+	adapter := NewServerAdapter()
+
+	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+		params := generated.GetHelptopicsParams{}
+
+		// Parse query parameters
+		query := r.URL.Query()
+		if bundles := query["bundle"]; len(bundles) > 0 {
+			params.Bundle = &bundles
+		}
+		if bundles := query["bundle[]"]; len(bundles) > 0 {
+			params.Bundle = &bundles
+		}
+		if apps := query["application"]; len(apps) > 0 {
+			params.Application = &apps
+		}
+		if apps := query["application[]"]; len(apps) > 0 {
+			params.Application = &apps
+		}
+		if names := query["name"]; len(names) > 0 {
+			params.Name = &names
+		}
+		if names := query["name[]"]; len(names) > 0 {
+			params.Name = &names
+		}
+
+		adapter.GetHelptopics(w, r, params)
+	})
+
 	r.Route("/{name}", func(sub chi.Router) {
-		sub.Use(HelpTopicEntityContext)
-		sub.Get("/", GetHelpTopicByName)
+		sub.Get("/", func(w http.ResponseWriter, r *http.Request) {
+			name := chi.URLParam(r, "name")
+			adapter.GetHelptopicsName(w, r, name)
+		})
 	})
 	return r
 }
@@ -74,7 +106,7 @@ func TestGetHelpTopic(t *testing.T) {
 		response := httptest.NewRecorder()
 		router.ServeHTTP(response, request)
 
-		var payload *responsePayload
+		var payload *helpTopicResponsePayload
 		json.NewDecoder(response.Body).Decode(&payload)
 		assert.Equal(t, 200, response.Code)
 		assert.Equal(t, 1, len(payload.Data))
@@ -86,7 +118,7 @@ func TestGetHelpTopic(t *testing.T) {
 		response := httptest.NewRecorder()
 		router.ServeHTTP(response, request)
 
-		var payload *responsePayload
+		var payload *helpTopicResponsePayload
 		json.NewDecoder(response.Body).Decode(&payload)
 		assert.Equal(t, 200, response.Code)
 		assert.Equal(t, 2, len(payload.Data))
@@ -97,7 +129,7 @@ func TestGetHelpTopic(t *testing.T) {
 		response := httptest.NewRecorder()
 		router.ServeHTTP(response, request)
 
-		var payload *singleResponsePayload
+		var payload *helpTopicSingleResponsePayload
 		json.NewDecoder(response.Body).Decode(&payload)
 		assert.Equal(t, 200, response.Code)
 		assert.Equal(t, rhelHelpTopic.ID, payload.Data.Id)

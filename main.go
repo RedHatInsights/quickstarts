@@ -7,6 +7,7 @@ import (
 
 	"github.com/RedHatInsights/quickstarts/config"
 	"github.com/RedHatInsights/quickstarts/pkg/database"
+	"github.com/RedHatInsights/quickstarts/pkg/generated"
 	"github.com/RedHatInsights/quickstarts/pkg/logger"
 	"github.com/RedHatInsights/quickstarts/pkg/routes"
 	"github.com/go-chi/chi/v5"
@@ -46,7 +47,8 @@ func main() {
 	setupGlobalLogger(cfg)
 	logrus.WithFields(logrus.Fields{
 		"ServerAddr": cfg.ServerAddr,
-	})
+		"Mode":       "oapi-codegen",
+	}).Info("Starting server with oapi-codegen handlers")
 
 	r := chi.NewRouter()
 	mr := chi.NewRouter()
@@ -60,15 +62,19 @@ func main() {
 		middleware.RequestLogger(logger.NewLogger(cfg, routerLogger)),
 	)
 
+	// Create the adapter that implements the generated ServerInterface
+	serverAdapter := routes.NewServerAdapter()
+
+	// Create a sub-router with Prometheus middleware
+	apiRouter := r.With(routes.PrometheusMiddleware)
+
+	// Use the generated handler with our adapter
+	generated.HandlerFromMuxWithBaseURL(serverAdapter, apiRouter, "/api/quickstarts/v1")
+
+	// Add spec serving
 	root := "./spec/"
 	fs := http.FileServer(http.Dir(root))
-	r.With(routes.PrometheusMiddleware).Route("/api/quickstarts/v1", func(sub chi.Router) {
-		sub.Route("/quickstarts", routes.MakeQuickstartsRouter)
-		sub.Route("/progress", routes.MakeQuickstartsProgressRouter)
-		sub.Route("/helptopics", routes.MakeHelpTopicsRouter)
-		sub.Route("/favorites", routes.MakeFavoriteQuickstartsRouter)
-		sub.Handle("/spec/*", http.StripPrefix("/api/quickstarts/v1/spec", fs))
-	})
+	apiRouter.Handle("/api/quickstarts/v1/spec/*", http.StripPrefix("/api/quickstarts/v1/spec", fs))
 	mr.Get("/", probe)
 	mr.Handle("/metrics", promhttp.Handler())
 	r.Get("/test", probe)

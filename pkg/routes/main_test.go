@@ -29,7 +29,7 @@ func setUp() {
 	config.Get().DbName = dbName
 
 	database.Init()
-	err := database.DB.AutoMigrate(&models.Quickstart{}, &models.QuickstartProgress{}, &models.HelpTopic{}, &models.FavoriteQuickstart{})
+	err := database.DB.AutoMigrate(&models.Quickstart{}, &models.QuickstartProgress{}, &models.HelpTopic{}, &models.FavoriteQuickstart{}, &models.Tag{})
 	if err != nil {
 		panic(err)
 	}
