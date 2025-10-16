@@ -21,7 +21,7 @@ spec:
     Use this quick start to run a pre-upgrade analysis on RHEL 8 systems with Red Hat Lightspeed. The task generates a report summarizing potential problems and suggesting recommended solutions to help you upgrade your systems.
     <br>
     <br>
-    Before running the pre-upgrade analysis, ensure the systems meet the conditions listed in [planning an upgrade.] (https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/9/html-single/upgrading_from_rhel_8_to_rhel_9/index#planning-an-upgrade-to-rhel-9_upgrading-from-rhel-8-to-rhel-9)
+    Before running the pre-upgrade analysis, ensure the systems meet the conditions listed in [planning an upgrade.](https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/9/html-single/upgrading_from_rhel_8_to_rhel_9/index#planning-an-upgrade-to-rhel-9_upgrading-from-rhel-8-to-rhel-9)
 
     If you need to upgrade a system from RHEL 7 to RHEL, see [Upgrading from RHEL 7 to RHEL 8.](https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/8/html/upgrading_from_rhel_7_to_rhel_8/index)
 
@@ -70,7 +70,7 @@ spec:
       description: |-
         You can address some upgrade-inhibiting issues found on your systems directly from Red Hat Lightspeed. These recommendations have a playbook available for automating the execution of remediations directly from the Red Hat Lightspeed for Red Hat Enterprise Linux UI.<br>
         <br>
-        See the [Red Hat Lightspeed Remediations Guide](https://docs.redhat.com/en/documentation/red_hat_insights/1-latest/html/red_hat_insights_remediations_guide) for more information using Red Hat Lightspeed for remediations.
+        See the [Red Hat Lightspeed Remediations Guide](https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/html/red_hat_lightspeed_remediations_guide) for more information about using Red Hat Lightspeed for remediations.
 
         **Run a playbook using Red Hat Lightspeed:**
 
@@ -105,7 +105,7 @@ spec:
       description: |-
         Other recommendations require manual resolutions, the steps of which are customized for the system and recommendation pair and provided with the recommendation.<br>
         <br>
-        See the [Red Hat Lightspeed Remediations Guide](https://docs.redhat.com/en/documentation/red_hat_insights/1-latest/html/red_hat_insights_remediations_guide) for more information using Red Hat Lightspeed for remediations.
+        See the [Red Hat Lightspeed Remediations Guide](https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/html/red_hat_lightspeed_remediations_guide) for more information using Red Hat Lightspeed for remediations.
         
         **Applying manual remediation steps to affected systems**
 
@@ -127,7 +127,7 @@ spec:
     <br>
     **Thank you for taking the time to explore this feature!**
 
-    For additional information about tasks, [visit the documentation for remediating systems using tasks in Red Hat Lightspeed.](https://docs.redhat.com/en/documentation/red_hat_insights/1-latest/html-single/assessing_and_remediating_system_issues_using_red_hat_insights_tasks/index#doc-wrapper)
+    For additional information about tasks, [visit the documentation for remediating systems using tasks in Red Hat Lightspeed.](https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/html-single/assessing_and_remediating_system_issues_using_red_hat_lightspeed_tasks/index#doc-wrapper)
 
     For additional information about upgrading, [visit the Upgrading from RHEL 8 to RHEL 9 documentation.](https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/9/html/upgrading_from_rhel_8_to_rhel_9/index)
 
