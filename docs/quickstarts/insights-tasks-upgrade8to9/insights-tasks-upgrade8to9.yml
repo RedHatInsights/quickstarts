@@ -18,7 +18,7 @@ spec:
   introduction: |-  
     [It is not possible to perform an in-place upgrade directly from RHEL 7 to RHEL 9. However, you can perform an in-place upgrade from RHEL 7 to RHEL 8 (linked below) and then perform a second in-place upgrade to RHEL 9.]{{admonition note}}
 
-    Use this quick start to run a pre-upgrade analysis on RHEL 8 systems with Red Hat Lghtspeed. The task generates a report summarizing potential problems and suggesting recommended solutions to help you upgrade your systems.
+    Use this quick start to run a pre-upgrade analysis on RHEL 8 systems with Red Hat Lightspeed. The task generates a report summarizing potential problems and suggesting recommended solutions to help you upgrade your systems.
     <br>
     <br>
     Before running the pre-upgrade analysis, ensure the systems meet the conditions listed in [planning an upgrade.](https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/9/html-single/upgrading_from_rhel_8_to_rhel_9/index#planning-an-upgrade-to-rhel-9_upgrading-from-rhel-8-to-rhel-9)
@@ -33,7 +33,6 @@ spec:
         Run the “Pre-upgrade analysis for an in-place upgrade from RHEL 8” task on your systems to assess upgradability. The task generates a pre-upgrade report summarizing potential problems along with recommended solutions. This report can help you decide whether to proceed with the upgrade.<br>     
         
         1. Log into the Red Hat Hybrid Cloud Console and go to **Red Hat Lightspeed > RHEL > Automation toolkit > Tasks.**
-      
         1. Locate the **Pre-upgrade analysis for in-place upgrade from RHEL 8** task and click **Select systems.**
 
         1. You can rename the task name. It will be used on the report generated. 
