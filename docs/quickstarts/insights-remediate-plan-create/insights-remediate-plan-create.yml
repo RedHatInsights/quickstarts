@@ -18,19 +18,19 @@ spec:
 
   # Optional.
   description: |-
-    Create and execute a remediation plan to resolve an issue detected by the Insights advisor service.
+    Create and execute a remediation plan to resolve an issue detected by the Red Hat Lightspeed advisor service.
   introduction: |-
-    In this quick start, you will create and execute a remediation plan on one or more systems to resolve an issue that the Insights advisor service recommends remediating.
+    In this quick start, you will create and execute a remediation plan on one or more systems to resolve an issue that the Red Hat Lightspeed advisor service recommends remediating.
     <br>
     <br>
     The advisor service assesses and monitors the health of your Red Hat Enterprise Linux (RHEL) infrastructure and provides recommendations to address availability, stability, performance, and security issues. 
     Remediation plans use Ansible playbooks to remediate issues on systems in your Red Hat Enterprise Linux (RHEL) infrastructure. 
     <br>
     <br>
-    Once you've created a plan, you can execute it from within Insights on directly connected RHEL systems without additional subscriptions or tools. You can also download a remediation plan's playbook and run it in your Ansible workflow.
+    Once you've created a plan, you can execute it from within Red Hat Lightspeed on directly connected RHEL systems without additional subscriptions or tools. You can also download a remediation plan's playbook and run it in your Ansible workflow.
     <br>
     <br>
-    See the [Red Hat Insights Remediations guide](https://docs.redhat.com/en/documentation/red_hat_insights/1-latest/html-single/red_hat_insights_remediations_guide/index) for more details. 
+    See the [Red Hat Lightspeed Remediations guide](https://docs.redhat.com/en/documentation/red_hat_insights/1-latest/html-single/red_hat_insights_remediations_guide/index) for more details. 
     <br>
     <br>
   tasks:
@@ -75,18 +75,18 @@ spec:
             <summary><span style="color:#0066CC">&nbspNeed help applying the required user access permissions?</span></summary>
             - In the console, go to **Settings** (⚙) > **User Access** > **Groups**.
             - Create a new group and then ensure that you add the **Remediations administrator** role.
-            - Under **Add members**, add the user accounts that will create and execute remediation plans with Insights.</li>
+            - Under **Add members**, add the user accounts that will create and execute remediation plans with Red Hat Lightspeed.</li>
            </details>
         2. Enable the Remote Host Configuration Manager (RHC) setting.
            <details>
             <summary><span style="color:#0066CC">&nbspNeed help finding the Remote Host Configuration Manager setting?</span></summary>
             - In the console, go to **Inventory** > **System Configurations** > **Remote Host Configuration (RHC)**.
-            - Select **Allow permitted Insights users to execute remediation playbooks on rhc-connected systems**.
+            - Select **Allow permitted Red Hat Lightspeed users to execute remediation playbooks on rhc-connected systems**.
             
             For more information, see [Remote Host Configuration and Management](https://docs.redhat.com/en/documentation/red_hat_insights/1-latest/html/remote_host_configuration_and_management/index).
             
            </details>
-        3. For each system that you want to remediate from within Insights, ensure you have enabled the Remote Host Configuration client (`rhc connect`) and have a direct connection to the RHEL system:
+        3. For each system that you want to remediate from within Red Hat Lightspeed, ensure you have enabled the Remote Host Configuration client (`rhc connect`) and have a direct connection to the RHEL system:
            <details>
             <summary><span style="color:#0066CC">&nbspNeed help connecting to a RHEL system?</span></summary>
             - Log on as a user with root access to the RHEL system, and execute the following commands: 
@@ -123,10 +123,10 @@ spec:
           - Was your remediation plan successfully executed? Under **Advisor > Recommendations**, are the systems you just remediated no longer listed as having the issue?
         failedTaskHelp: Review the remediation plan settings and adjust the configuration as needed. You might also need to ensure your plan does not exceed the supported thresholds. [Learn more ...](https://docs.redhat.com/en/documentation/red_hat_insights/1-latest/html-single/red_hat_insights_remediations_guide/index#executing-remediation-playbooks_red-hat-insights-remediation-guide)
   conclusion: |-
-    **Thank you for taking the time to learn more about Remediations with Insights.**
+    **Thank you for taking the time to learn more about Remediations with Red Hat Lightspeed.**
     
     As well as [Advisor Recommendations](https://console.redhat.com/insights/advisor/recommendations#SIDs=&tags=), you can also address [Content Advisories](https://console.redhat.com/insights/patch/advisories?offset=0), [Vulnerability CVEs](https://console.redhat.com/insights/vulnerability/cves#SIDs=&tags=), and [Compliance reports](https://console.redhat.com/insights/compliance/reports).
     
-    For additional information about this service, see the [Red Hat Insights Remediations Guide](https://docs.redhat.com/en/documentation/red_hat_insights/1-latest/html-single/red_hat_insights_remediations_guide/index). 
+    For additional information about this service, see the [Red Hat Lightspeed Remediations Guide](https://docs.redhat.com/en/documentation/red_hat_insights/1-latest/html-single/red_hat_insights_remediations_guide/index). 
     
     If you need additional assistance, you may also open a [support case](https://access.redhat.com/support).

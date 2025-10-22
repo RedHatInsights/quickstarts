@@ -10,7 +10,7 @@ spec:
     color: orange
   displayName: API Cheatsheet
   icon: ~
-  description: Obtain system details and interact with individual Insights services.
+  description: Obtain system details and interact with individual Red Hat Lightspeed services.
   link:
     href: https://developers.redhat.com/cheat-sheets/red-hat-insights-api-cheat-sheet
     text: View documentation
