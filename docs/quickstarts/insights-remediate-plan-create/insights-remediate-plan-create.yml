@@ -101,7 +101,7 @@ spec:
       review:
         instructions: |-
           - When the execution readiness check reruns, is the **Execute** button now enabled?
-        failedTaskHelp: Review the remediation plan settings again and adjust the configuration as needed. [Learn more ...](https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/html/red_hat_lightspeed_remediations_guide_with_fedramp/creating-managing-playbooks_red-hat-lightspeed-remediation-guide#viewing-archived-remediation-playbook_creating-managing-playbooks)<i class="pf-icon [fa-external-link-alt]"></i>
+        failedTaskHelp: Review the remediation plan settings again and adjust the configuration as needed. [Learn more ...](https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/html/red_hat_lightspeed_remediations_guide/creating-managing-playbooks_red-hat-lightspeed-remediation-guide#viewing-archived-remediation-playbook_creating-managing-playbooks)<i class="pf-icon [fa-external-link-alt]"></i>
     - title: Execute a remediation plan
       description: |-
         In this task, you will execute the remediation plan on the directly connected RHEL systems included in your plan.
