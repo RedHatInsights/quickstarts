@@ -1,15 +1,12 @@
 # Additional info: https://docs.openshift.com/container-platform/4.9/web_console/creating-quick-start-tutorials.html
 metadata:
   name: insights-inventory-workspace-rbac
-  # you can add additional metadata here
   instructional: true
 spec:
   displayName: Managing user access with workspaces
   durationMinutes: 5
-  # Optional type section, will display as a tile on the card
   type:
     text: Quick start
-    # 'blue' | 'cyan' | 'green' | 'orange' | 'purple' | 'red' | 'grey'
     color: green
   icon: data:image/svg+xml;base64,PCEtLSBHZW5lcmF0ZWQgYnkgSWNvTW9vbi5pbyAtLT4KPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KPHRpdGxlPjwvdGl0bGU+CjxnIGlkPSJpY29tb29uLWlnbm9yZSI+CjwvZz4KPHBhdGggZD0iTTQ0OCA2NHY0MTZoLTMzNmMtMjYuNTEzIDAtNDgtMjEuNDktNDgtNDhzMjEuNDg3LTQ4IDQ4LTQ4aDMwNHYtMzg0aC0zMjBjLTM1LjE5OSAwLTY0IDI4LjgtNjQgNjR2Mzg0YzAgMzUuMiAyOC44MDEgNjQgNjQgNjRoMzg0di00NDhoLTMyeiI+PC9wYXRoPgo8cGF0aCBkPSJNMTEyLjAyOCA0MTZ2MGMtMC4wMDkgMC4wMDEtMC4wMTkgMC0wLjAyOCAwLTguODM2IDAtMTYgNy4xNjMtMTYgMTZzNy4xNjQgMTYgMTYgMTZjMC4wMDkgMCAwLjAxOS0wLjAwMSAwLjAyOC0wLjAwMXYwLjAwMWgzMDMuOTQ1di0zMmgtMzAzLjk0NXoiPjwvcGF0aD4KPC9zdmc+Cg==
   prerequisites:
@@ -22,7 +19,7 @@ spec:
     
     In this quick start, you will use the User Access application to configure access to different workspaces using custom role functionality and user access groups.
     <br> <br>
-    **IMPORTANT NOTE:** By default, everyone in your organization will be assigned the "Inventory Hosts Administrator" role, and will have access to all systems, whether they are in a workspace or not. You will change these default permissions by completing the tasks in this quick Start.
+    **IMPORTANT:** By default, everyone in your organization will be assigned the Inventory Hosts Administrator role, and will have access to all systems, whether they are in a workspace or not. You will change these default permissions by completing the tasks in this quick start.
 
     Use this quick start to assign user-specific access to:
     - Certain workspaces but not others, and/or
@@ -37,7 +34,7 @@ spec:
         **To create a custom role:**
         
         1. Navigate to the User Access application by clicking the Settings <i class="fas fa-cog"></i> icon in the top right corner. From there, click **Identity & Access Management**.
-        1. In Settings > User Access, click **Roles** in the left navigation.
+        1. In **Settings** > **User Access**, click **Roles** in the left navigation.
         1. Click **Create role**. This will open up a wizard.
         1. On Step 1 (Create role), name your role, and add a description if you would like.
         1. Click **Next**.
@@ -131,12 +128,12 @@ spec:
         success: Shows a success message in the task header
         failed: Shows a failed message in the task header
 
-    - title: (Optional) Create a group to give back “Inventory Hosts Administrator” role to specific users
+    - title: (Optional) Create a group to grant the Inventory Hosts Administrator role to specific users
       description: |- 
       
-        There may be users that you would still like to give full inventory access to. In this case, you will need to create another User Access group to assign the “Inventory Hosts Administrator” role back to those users.
+        There may be users that you would still like to give full inventory access to. In this case, you will need to create another User Access group to assign the **Inventory Hosts Administrator** role back to those users.
 
-        1. In the User Access > **Groups** page, click **Create group**.
+        1. In the **User Access** > **Groups** page, click **Create group**.
         1. On Step 1 (Name and Description), name your group.
         1. Click **Next**.
         1. On Step 2 (Add roles), select the **Inventory Hosts Administrator** role.

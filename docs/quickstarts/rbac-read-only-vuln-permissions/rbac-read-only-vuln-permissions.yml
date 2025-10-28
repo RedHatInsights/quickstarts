@@ -1,7 +1,5 @@
 # RBAC quickstart #2
 # Additional info: https://docs.openshift.com/container-platform/4.9/web_console/creating-quick-start-tutorials.html
-# Template from https://github.com/patternfly/patternfly-quickstarts/blob/main/packages/dev/src/quickstarts3ews-data/yaml/template.yaml
-# See quick start instructions here https://github.com/RedHatInsights/quickstarts/tree/main/docs/quickstarts
 metadata:
   name: rbac-read-only-vuln-permissions
   # you can add additional metadata here
@@ -9,17 +7,9 @@ metadata:
 spec:
   displayName: Configuring read-only permissions for a team
   durationMinutes: 10
-  # Optional type section, will display as a tile on the card
   type:
     text: Quick start
-    # 'blue' | 'cyan' | 'green' | 'orange' | 'purple' | 'red' | 'grey'
     color: green
-  # - The icon defined as a base64 value. Example flow:
-  # 1. Find an .svg you want to use, like from here: https://www.patternfly.org/v4/guidelines/icons/#all-icons
-  # 2. Upload the file here and encode it (output format - plain text): https://base64.guru/converter/encode/image
-  # 3. compose - `icon: data:image/svg+xml;base64,<base64 string from step 2>`
-  # - If empty string (icon: ''), will use a default rocket icon
-  # - If set to null (icon: ~) will not show an icon
   icon: data:image/svg+xml;base64,PCEtLSBHZW5lcmF0ZWQgYnkgSWNvTW9vbi5pbyAtLT4KPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KPHRpdGxlPjwvdGl0bGU+CjxnIGlkPSJpY29tb29uLWlnbm9yZSI+CjwvZz4KPHBhdGggZD0iTTQ0OCA2NHY0MTZoLTMzNmMtMjYuNTEzIDAtNDgtMjEuNDktNDgtNDhzMjEuNDg3LTQ4IDQ4LTQ4aDMwNHYtMzg0aC0zMjBjLTM1LjE5OSAwLTY0IDI4LjgtNjQgNjR2Mzg0YzAgMzUuMiAyOC44MDEgNjQgNjQgNjRoMzg0di00NDhoLTMyeiI+PC9wYXRoPgo8cGF0aCBkPSJNMTEyLjAyOCA0MTZ2MGMtMC4wMDkgMC4wMDEtMC4wMTkgMC0wLjAyOCAwLTguODM2IDAtMTYgNy4xNjMtMTYgMTZzNy4xNjQgMTYgMTYgMTZjMC4wMDkgMCAwLjAxOS0wLjAwMSAwLjAyOC0wLjAwMXYwLjAwMWgzMDMuOTQ1di0zMmgtMzAzLjk0NXoiPjwvcGF0aD4KPC9zdmc+Cg==
   prerequisites:
     - You are an Organization Administrator or have **User Access administrator** permissions
@@ -31,14 +21,14 @@ spec:
 
     You can use this workflow when you don’t want certain teams or members to make changes in your environment – for example, if you want your security team to be able to view security Common Vulnerabilities and Exposures (CVEs) on your Red Hat Enterprise Linux (RHEL) systems and generate vulnerability reports, but they don’t need to edit resources or take action.
 
-    To give these users read-only permissions to a service, you’ll remove Administrator and Editor roles from the default configuration in **User Access**, and assign the members of your security team the **Vulnerability Viewer** role.
+    To give these users read-only permissions to a service, you’ll remove Administrator and Editor roles from the default configuration in **User Access**, and assign the members of your security team the **Vulnerability viewer** role.
 
     Generally, read-only permissions in the console are provided by Viewer roles in **User Access**, while execute permissions to create or update resources are provided by Administrator, Editor, and User roles.
 
     You can also use this example workflow to customize access to services within **User Access** and modify the **Default Access** group. 
 
   tasks:
-    - title: Removing edit roles from the **Default access** group
+    - title: Removing edit roles from the Default access group
       description: |-
         Edit the **Default access** group and remove the roles that you don’t want all users to have. (If the **Default access** group was previously modified, then it’s called the **Custom default access** group.)
         
@@ -71,7 +61,7 @@ spec:
       summary:
         success: Shows a success message in the task header
         failed: Shows a failed message in the task header
-    - title: Creating a group with the **Vulnerability Viewer** role
+    - title: Creating a group with the Vulnerability viewer role
       description: |-
         Create a new group for your security team with permissions to view CVEs and create vulnerability service reports using the Red Hat Lightspeed for Red Hat Enterprise Linux (RHEL) vulnerability service, then assign specific team members to the group. 
 
@@ -79,7 +69,7 @@ spec:
 
         2. Enter a group name (for example, *Security Team*) and description, and click **Next**.
 
-        3. Find and select the **Vulnerability VIewer** role. Click **Next** to add it to the group.
+        3. Find and select the **Vulnerability viewer** role. Click **Next** to add it to the group.
         [You can quickly find a role by filtering by role name.]{{admonition note}}
 
         4. Add the members of your security team to the group by selecting the checkboxes for those users. Click **Next**.
@@ -89,16 +79,16 @@ spec:
         
         Now the users in the *Security Team* group can monitor CVEs for your RHEL systems and generate vulnerability service reports.
         
-        See the [Red Hat Lightspeed documentation](https://docs.redhat.com/en/documentation/red_hat_insights/1-latest) to learn more about using the vulnerability service in the console:
-        - [User Access for vulnerability service users](https://docs.redhat.com/en/documentation/red_hat_insights/1-latest/html/assessing_and_monitoring_security_vulnerabilities_on_rhel_systems/vuln-overview_vulnerability-assess#insights-rbac_vuln-overview)
-        - [Assessing and Monitoring Security Vulnerabilities on RHEL Systems](https://docs.redhat.com/en/documentation/red_hat_insights/1-latest/html/assessing_and_monitoring_security_vulnerabilities_on_rhel_systems/index)
-        - [Generating Vulnerability Service Reports](https://docs.redhat.com/en/documentation/red_hat_insights/1-latest/html/generating_vulnerability_service_reports/index)
+        See the [Red Hat Lightspeed documentation](https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest) to learn more about using the vulnerability service in the console:
+        - [User Access for vulnerability service users](https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/html/assessing_and_monitoring_security_vulnerabilities_on_rhel_systems/vuln-overview_vulnerability-assess#insights-rbac_vuln-overview)
+        - [Assessing and Monitoring Security Vulnerabilities on RHEL Systems](https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/html/assessing_and_monitoring_security_vulnerabilities_on_rhel_systems/index)
+        - [Generating Vulnerability Service Reports](https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/html/generating_vulnerability_service_reports/index)
 
 
       # optional - the task's Check your work module
       review:
         instructions: |-
-          - Go to **User Access** > **Groups** and click *Security Team* to check that the only role assigned to the group is **Vulnerability Viewer**.
+          - Go to **User Access** > **Groups** and click *Security Team* to check that the only role assigned to the group is **Vulnerability viewer**.
 
         failedTaskHelp: Try completing the steps again.
       # optional - the task's success and failure messages
