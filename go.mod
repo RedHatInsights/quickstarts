@@ -8,7 +8,7 @@ require (
 	github.com/go-chi/chi/v5 v5.2.3
 	github.com/go-ozzo/ozzo-validation v3.6.0+incompatible
 	github.com/joho/godotenv v1.5.1
-	github.com/oapi-codegen/oapi-codegen/v2 v2.5.0
+	github.com/oapi-codegen/oapi-codegen/v2 v2.5.1
 	github.com/oapi-codegen/runtime v1.1.2
 	github.com/prometheus/client_golang v1.23.2
 	github.com/redhatinsights/app-common-go v1.6.8
