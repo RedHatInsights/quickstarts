@@ -10,7 +10,7 @@ spec:
     color: green
   icon: data:image/svg+xml;base64,PCEtLSBHZW5lcmF0ZWQgYnkgSWNvTW9vbi5pbyAtLT4KPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KPHRpdGxlPjwvdGl0bGU+CjxnIGlkPSJpY29tb29uLWlnbm9yZSI+CjwvZz4KPHBhdGggZD0iTTQ0OCA2NHY0MTZoLTMzNmMtMjYuNTEzIDAtNDgtMjEuNDktNDgtNDhzMjEuNDg3LTQ4IDQ4LTQ4aDMwNHYtMzg0aC0zMjBjLTM1LjE5OSAwLTY0IDI4LjgtNjQgNjR2Mzg0YzAgMzUuMiAyOC44MDEgNjQgNjQgNjRoMzg0di00NDhoLTMyeiI+PC9wYXRoPgo8cGF0aCBkPSJNMTEyLjAyOCA0MTZ2MGMtMC4wMDkgMC4wMDEtMC4wMTkgMC0wLjAyOCAwLTguODM2IDAtMTYgNy4xNjMtMTYgMTZzNy4xNjQgMTYgMTYgMTZjMC4wMDkgMCAwLjAxOS0wLjAwMSAwLjAyOC0wLjAwMXYwLjAwMWgzMDMuOTQ1di0zMmgtMzAzLjk0NXoiPjwvcGF0aD4KPC9zdmc+Cg==
   prerequisites:
-    - You must have a ROSA or an OSD cluster.
+    - You must have a Red Hat OpenShift Service on AWS or an OpenShift Dedicated cluster.
     - You must be a cluster owner, cluster editor, or Organization Administrator for the cluster.
 
   description: |-
@@ -21,7 +21,7 @@ spec:
 
     You can add users in your organization as additional notification contacts to receive cluster notifications. The Red Hat username or email address that you provide must belong to a user account in the Red Hat organization where the cluster is deployed.
 
-    [In this quickstart, when we refer to ROSA, we are referring to both ROSA (classic architecture) and ROSA with HCP, and when we refer to OSD, we are referring to both OSD on GCP and OSD on AWS.]{{admonition note}}
+    [In this quickstart, Red Hat OpenShift Service on AWS refers to both Red Hat OpenShift Service on AWS classic architecture and Red Hat OpenShift Service on AWS, and OpenShift Dedicated refers to both OpenShift Dedicated on Google Cloud and OpenShift Dedicated on AWS.]{{admonition note}}
 
   tasks:
     - title: Add notification contacts to your cluster

@@ -15,17 +15,17 @@ spec:
   description: |-
     Add a machine pool to your managed OpenShift cluster.
   introduction: |-
-    Red Hat OpenShift Service on AWS (ROSA) and Red Hat Openshift Dedicated (OSD) use machine pools as an elastic, dynamic provisioning method on top of your cloud infrastructure.
+    Red Hat OpenShift Service on AWS and Red Hat Openshift Dedicated use machine pools as an elastic, dynamic provisioning method on top of your cloud infrastructure.
 
     A machine pool creates compute machine sets that are all copies of the same configuration across availability zones. Worker nodes in a machine pool are provisioned and managed as a group.
 
     In this quick start, you'll add a machine pool to your cluster.
 
     [Each cluster has a default machine pool made during cluster creation. This process adds an additional machine pool to your cluster.]{{admonition note}}
-    [In this quickstart, when we refer to ROSA, we are referring to both ROSA classic architecture and ROSA with HCP, and when we refer to OSD, we are referring to both OSD on GCP and OSD on AWS.]{{admonition note}}
+    [In this quickstart, Red Hat OpenShift Service on AWS refers to both Red Hat OpenShift Service on AWS classic architecture and Red Hat OpenShift Service on AWS, and OpenShift Dedicated refers to both OpenShift Dedicated on Google Cloud and OpenShift Dedicated on AWS.]{{admonition note}}
 
   tasks:
-    - title: Add a machine pool to your ROSA or OSD cluster
+    - title: Add a machine pool to your Red Hat OpenShift Service on AWS or OpenShift Dedicated cluster
       description: |-
         1. Go to **Cluster List**.
         1. Click your cluster's name.
@@ -55,11 +55,11 @@ spec:
         After completing this quick start, you've learned how to add a machine pool. Repeat the steps to add more machine pools if you desire.
 
         **Further reading:**
-        - For more information about machine pools, see [About machine pools](https://docs.redhat.com/en/documentation/openshift_dedicated/4/html/cluster_administration/nodes) (OSD documentation) or [About machine pools](https://docs.redhat.com/en/documentation/red_hat_openshift_service_on_aws/4/html/cluster_administration/manage-nodes-using-machine-pools#rosa-nodes-machinepools-about) (ROSA documentation).
+        - For more information about machine pools, see [About machine pools](https://docs.redhat.com/en/documentation/openshift_dedicated/4/html/cluster_administration/nodes) (OpenShift Dedicated documentation) or [About machine pools](https://docs.redhat.com/en/documentation/red_hat_openshift_service_on_aws/4/html/cluster_administration/manage-nodes-using-machine-pools#rosa-nodes-machinepools-about) (Red Hat OpenShift Service on AWS documentation).
 
-        - For more information about nodes, labels and taints, see [Overview of nodes](https://docs.redhat.com/en/documentation/openshift_dedicated/4/html/nodes/overview-of-nodes) (OSD documentation) or [Overview of nodes](https://docs.redhat.com/en/documentation/red_hat_openshift_service_on_aws/4/html/nodes/overview-of-nodes) (ROSA documentation).
+        - For more information about nodes, labels and taints, see [Overview of nodes](https://docs.redhat.com/en/documentation/openshift_dedicated/4/html/nodes/overview-of-nodes) (OpenShift Dedicated documentation) or [Overview of nodes](https://docs.redhat.com/en/documentation/red_hat_openshift_service_on_aws/4/html/nodes/overview-of-nodes) (Red Hat OpenShift Service on AWS documentation).
 
-        - For more information about autoscaling, see [Cluster autoscaling](https://docs.redhat.com/en/documentation/openshift_dedicated/4/html/cluster_administration/osd-cluster-autoscaling) (OSD documentation) or [Cluster autoscaling](https://docs.redhat.com/en/documentation/red_hat_openshift_service_on_aws/4/html/cluster_administration/rosa-cluster-autoscaling) (ROSA documentation).
+        - For more information about autoscaling, see [Cluster autoscaling](https://docs.redhat.com/en/documentation/openshift_dedicated/4/html/cluster_administration/osd-cluster-autoscaling) (OpenShift Dedicated documentation) or [Cluster autoscaling](https://docs.redhat.com/en/documentation/red_hat_openshift_service_on_aws/4/html/cluster_administration/rosa-cluster-autoscaling-hcp) (Red Hat OpenShift Service on AWS documentation).
   # you can link to the next quick start(s) here
   nextQuickStart:
     - mas-alert-note-prereq
