@@ -134,6 +134,17 @@ components:
         value:
           type: string
       type: object
+    FuzzySearchResult:
+      allOf:
+        - $ref: '#/components/schemas/Quickstart'
+        - type: object
+          properties:
+            distance:
+              type: integer
+              description: Levenshtein distance from the search term
+              minimum: 0
+          required:
+            - distance
   parameters:
       ProductFamilies:
         name: product-families
@@ -278,6 +289,26 @@ components:
         required: false
         schema:
           type: string
+        explode: true
+        style: form
+      SearchTerm:
+        name: q
+        description: Search term for fuzzy search
+        in: query
+        required: true
+        schema:
+          type: string
+        explode: true
+        style: form
+      MaxDistance:
+        name: max_distance
+        description: Maximum Levenshtein distance for fuzzy matching (default 3)
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 3
+          minimum: 0
         explode: true
         style: form
 info:
@@ -443,6 +474,45 @@ paths:
                   data:
                     type: object
                     additionalProperties: true
+  /quickstarts/fuzzy-search:
+    get:
+      summary: Search quickstarts using fuzzy matching
+      description: Performs fuzzy search on quickstart display names using Levenshtein distance for typo tolerance
+      parameters:
+      - $ref: '#/components/parameters/SearchTerm'
+      - $ref: '#/components/parameters/MaxDistance'
+      - $ref: '#/components/parameters/Limit'
+      - $ref: '#/components/parameters/Offset'
+      responses:
+        '200':
+          description: A JSON object with fuzzy search results
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/FuzzySearchResult'
+                  search_term:
+                    type: string
+                    description: The search term used
+                  max_distance:
+                    type: integer
+                    description: The maximum Levenshtein distance used
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
   /progress:
     get:
       summary: Returns list of progress records
