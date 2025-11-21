@@ -3,7 +3,7 @@ metadata:
 spec:
   type:
     text: Quick start
-    color: cyan
+    color: green
   displayName: Creating a blueprint
   durationMinutes: 10
   description: Create a persistent definition, known as a blueprint, to build and deploy customized and preconfigured RHEL images.
