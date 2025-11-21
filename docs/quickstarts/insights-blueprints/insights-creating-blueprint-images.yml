@@ -2,7 +2,7 @@ metadata:
   name: insights-creating-blueprint-images
 spec:
   type:
-    text: Learning path
+    text: Quick start
     color: cyan
   displayName: Creating a blueprint
   durationMinutes: 10
