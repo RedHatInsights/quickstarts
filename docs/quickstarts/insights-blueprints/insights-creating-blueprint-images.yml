@@ -2,8 +2,8 @@ metadata:
   name: insights-creating-blueprint-images
 spec:
   type:
-    text: Learning path
-    color: cyan
+    text: Quick start
+    color: green
   displayName: Creating a blueprint
   durationMinutes: 10
   description: Create a persistent definition, known as a blueprint, to build and deploy customized and preconfigured RHEL images.
