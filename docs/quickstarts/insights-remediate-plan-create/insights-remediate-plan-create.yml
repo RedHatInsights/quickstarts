@@ -30,7 +30,7 @@ spec:
     Once you've created a plan, you can execute it from within Red Hat Lightspeed on directly connected RHEL systems without additional subscriptions or tools. You can also download a remediation plan's playbook and run it in your Ansible workflow.
     <br>
     <br>
-    See the [Red Hat Lightspeed Remediations guide](https://docs.redhat.com/en/documentation/red_hat_insights/1-latest/html-single/red_hat_insights_remediations_guide/index) for more details. 
+    See the [Red Hat Lightspeed Remediations guide](https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/html-single/red_hat_lightspeed_remediations_guide/index) for more details. 
     <br>
     <br>
   tasks:
@@ -58,7 +58,7 @@ spec:
       review:
         instructions: |-
           - When you navigate to **Automation Toolkit** > **Remediation Plans**, do you see **_My-Plan-1_**> in the table? When you open the plan, can you see the details and status of the remediation plan that you just created?
-        failedTaskHelp: Review your remediation plan setup and adjust the configuration as needed. [Learn more...](https://docs.redhat.com/en/documentation/red_hat_insights/1-latest/html/red_hat_insights_remediations_guide_with_fedramp/creating-managing-playbooks_red-hat-insights-remediation-guide)<i class="pf-icon [fa-external-link-alt]"></i>
+        failedTaskHelp: Review your remediation plan setup and adjust the configuration as needed. [Learn more...](https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/html/red_hat_lightspeed_remediations_guide_with_fedramp/creating-managing-playbooks_red-hat-lightspeed-remediation-guide)<i class="pf-icon [fa-external-link-alt]"></i>
     - title: Confirm execution readiness
       description: |-
         Check that your remediation plan is ready to execute.
@@ -83,7 +83,7 @@ spec:
             - In the console, go to **Inventory** > **System Configurations** > **Remote Host Configuration (RHC)**.
             - Select **Allow permitted Red Hat Lightspeed users to execute remediation playbooks on rhc-connected systems**.
             
-            For more information, see [Remote Host Configuration and Management](https://docs.redhat.com/en/documentation/red_hat_insights/1-latest/html/remote_host_configuration_and_management/index).
+            For more information, see [Remote Host Configuration and Management](https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/html/remote_host_configuration_and_management/index).
             
            </details>
         3. For each system that you want to remediate from within Red Hat Lightspeed, ensure you have enabled the Remote Host Configuration client (`rhc connect`) and have a direct connection to the RHEL system:
@@ -101,7 +101,7 @@ spec:
       review:
         instructions: |-
           - When the execution readiness check reruns, is the **Execute** button now enabled?
-        failedTaskHelp: Review the remediation plan settings again and adjust the configuration as needed. [Learn more ...](https://docs.redhat.com/en/documentation/red_hat_insights/1-latest/html/red_hat_insights_remediations_guide_with_fedramp/creating-managing-playbooks_red-hat-insights-remediation-guide#viewing-archived-remediation-playbook_creating-managing-playbooks)<i class="pf-icon [fa-external-link-alt]"></i>
+        failedTaskHelp: Review the remediation plan settings again and adjust the configuration as needed. [Learn more ...](https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/html/red_hat_lightspeed_remediations_guide/creating-managing-playbooks_red-hat-lightspeed-remediation-guide#viewing-archived-remediation-playbook_creating-managing-playbooks)<i class="pf-icon [fa-external-link-alt]"></i>
     - title: Execute a remediation plan
       description: |-
         In this task, you will execute the remediation plan on the directly connected RHEL systems included in your plan.
@@ -121,12 +121,12 @@ spec:
       review:
         instructions: |-
           - Was your remediation plan successfully executed? Under **Advisor > Recommendations**, are the systems you just remediated no longer listed as having the issue?
-        failedTaskHelp: Review the remediation plan settings and adjust the configuration as needed. You might also need to ensure your plan does not exceed the supported thresholds. [Learn more ...](https://docs.redhat.com/en/documentation/red_hat_insights/1-latest/html-single/red_hat_insights_remediations_guide/index#executing-remediation-playbooks_red-hat-insights-remediation-guide)
+        failedTaskHelp: Review the remediation plan settings and adjust the configuration as needed. You might also need to ensure your plan does not exceed the supported thresholds. [Learn more ...](https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/html-single/red_hat_lightspeed_remediations_guide/index#executing-remediation-playbooks_red-hat-lightspeed-remediation-guide)
   conclusion: |-
     **Thank you for taking the time to learn more about Remediations with Red Hat Lightspeed.**
     
     As well as [Advisor Recommendations](https://console.redhat.com/insights/advisor/recommendations#SIDs=&tags=), you can also address [Content Advisories](https://console.redhat.com/insights/patch/advisories?offset=0), [Vulnerability CVEs](https://console.redhat.com/insights/vulnerability/cves#SIDs=&tags=), and [Compliance reports](https://console.redhat.com/insights/compliance/reports).
     
-    For additional information about this service, see the [Red Hat Lightspeed Remediations Guide](https://docs.redhat.com/en/documentation/red_hat_insights/1-latest/html-single/red_hat_insights_remediations_guide/index). 
+    For additional information about this service, see the [Red Hat Lightspeed Remediations Guide](https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/html-single/red_hat_lightspeed_remediations_guide/index). 
     
     If you need additional assistance, you may also open a [support case](https://access.redhat.com/support).

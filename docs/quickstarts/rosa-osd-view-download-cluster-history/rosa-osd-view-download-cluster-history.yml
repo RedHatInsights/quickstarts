@@ -13,9 +13,9 @@ spec:
     - You must have access to a managed OpenShift cluster.
 
   description: |-
-    View and download your ROSA or OSD cluster history.
+    View and download your Red Hat OpenShift Service on AWS or OpenShift Dedicated cluster history.
   introduction: |-
-    Using OpenShift Cluster Manager, you can view the cluster notifications for your Red Hat OpenShift Service on Amazon Web Services (ROSA) or Red Hat OpenShift Dedicated (OSD) clusters and download your cluster history.
+    Using OpenShift Cluster Manager, you can view the cluster notifications for your Red Hat OpenShift Service on Amazon Web Services or Red Hat OpenShift Dedicated clusters and download your cluster history.
 
     The cluster notifications detail cluster events and cluster resource changes, such as:
 
@@ -25,12 +25,12 @@ spec:
 
     In this quick start, you'll learn how to view cluster notifications and download your cluster's entire history.
 
-    [In this quick start, when we refer to ROSA, we are referring to both ROSA classic architecture and ROSA with HCP, and when we refer to OSD, we are referring to both OSD on GCP and OSD on AWS.]{{admonition note}}
+    [In this quickstart, Red Hat OpenShift Service on AWS refers to both Red Hat OpenShift Service on AWS classic architecture and Red Hat OpenShift Service on AWS, and OpenShift Dedicated refers to both OpenShift Dedicated on Google Cloud and OpenShift Dedicated on AWS.]{{admonition note}}
 
   tasks:
     - title: View and download your cluster history
       description: |-
-        To view your ROSA or OSD cluster history:
+        To view your Red Hat OpenShift Service on AWS or OpenShift Dedicated cluster history:
 
         1. Go to **Cluster List**.
         1. Click your cluster's name.

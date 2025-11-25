@@ -209,14 +209,14 @@ spec:
 
         1. After reviewing the report and resolving all reported issues, click **Run task again** to rerun the analysis and confirm that no issues are outstanding.
 
-        1. Convert to RHEL with the “Convert to RHEL from CentOS Linux 7” task or the command-line interface. For more information, see [converting from an RPM-based Linux distribution to RHEL.](https://docs.redhat.com/en/documentation/red_hat_insights/1-latest/html-single/converting_from_a_linux_distribution_to_rhel_using_the_convert2rhel_utility_in_red_hat_insights/index) 
+        1. Convert to RHEL with the “Convert to RHEL from CentOS Linux 7” task or the command-line interface. For more information, see [converting from an RPM-based Linux distribution to RHEL.](https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/html-single/converting_from_a_linux_distribution_to_rhel_using_the_convert2rhel_utility_in_red_hat_lightspeed/index) 
 
   conclusion: |-
     <br>
     **Thank you for taking the time to explore this feature!**
 
-    For additional information about tasks, [visit the documentation for remediating systems using tasks in Red Hat Lightspeed.](https://docs.redhat.com/en/documentation/red_hat_insights/1-latest/html-single/assessing_and_remediating_system_issues_using_red_hat_insights_tasks/index)
+    For additional information about tasks, [visit the documentation for remediating systems using tasks in Red Hat Lightspeed.](https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/html-single/assessing_and_remediating_system_issues_using_red_hat_lightspeed_tasks/index)
 
-    For additional information about conversions, [visit the conversion documentation.](https://docs.redhat.com/en/documentation/red_hat_insights/1-latest/html-single/converting_from_a_linux_distribution_to_rhel_using_the_convert2rhel_utility_in_red_hat_insights/index)
+    For additional information about conversions, [visit the conversion documentation.](https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/html-single/converting_from_a_linux_distribution_to_rhel_using_the_convert2rhel_utility_in_red_hat_lightspeed/index)
 
     If you need additional assistance, [open a support case](https://access.redhat.com/support). 

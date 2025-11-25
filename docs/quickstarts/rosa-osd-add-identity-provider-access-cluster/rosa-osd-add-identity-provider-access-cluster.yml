@@ -10,14 +10,14 @@ spec:
     color: green
   icon: data:image/svg+xml;base64,PCEtLSBHZW5lcmF0ZWQgYnkgSWNvTW9vbi5pbyAtLT4KPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KPHRpdGxlPjwvdGl0bGU+CjxnIGlkPSJpY29tb29uLWlnbm9yZSI+CjwvZz4KPHBhdGggZD0iTTQ0OCA2NHY0MTZoLTMzNmMtMjYuNTEzIDAtNDgtMjEuNDktNDgtNDhzMjEuNDg3LTQ4IDQ4LTQ4aDMwNHYtMzg0aC0zMjBjLTM1LjE5OSAwLTY0IDI4LjgtNjQgNjR2Mzg0YzAgMzUuMiAyOC44MDEgNjQgNjQgNjRoMzg0di00NDhoLTMyeiI+PC9wYXRoPgo8cGF0aCBkPSJNMTEyLjAyOCA0MTZ2MGMtMC4wMDkgMC4wMDEtMC4wMTkgMC0wLjAyOCAwLTguODM2IDAtMTYgNy4xNjMtMTYgMTZzNy4xNjQgMTYgMTYgMTZjMC4wMDkgMCAwLjAxOS0wLjAwMSAwLjAyOC0wLjAwMXYwLjAwMWgzMDMuOTQ1di0zMmgtMzAzLjk0NXoiPjwvcGF0aD4KPC9zdmc+Cg==
   prerequisites:
-    - You must have a ROSA or an OSD cluster.
+    - You must have a Red Hat OpenShift Service on AWS or an OpenShift Dedicated cluster.
     - You must be a cluster owner or Organization Administrator for the cluster.
 
   description: |-
     Add an identity provider to your managed OpenShift cluster and access that cluster using the web console.
 
   introduction: |-
-    Both Red Hat OpenShift Dedicated (OSD) and Red Hat OpenShift Service on AWS (ROSA) include a built-in OAuth server. Developers and administrators obtain OAuth access tokens to authenticate themselves to the API. 
+    Both Red Hat OpenShift Dedicated and Red Hat OpenShift Service on AWS include a built-in OAuth server. Developers and administrators obtain OAuth access tokens to authenticate themselves to the API.
     
     As an administrator, you can configure OAuth to specify an identity provider after you install your cluster. Configuring identity providers allows users to log in and access the cluster using the web console.
 
@@ -29,7 +29,7 @@ spec:
     - OpenID Connect
     - htpasswd
 
-    [In this quickstart, when we refer to ROSA, we are referring to both ROSA (classic architecture) and ROSA with HCP, and when we refer to OSD, we are referring to both OSD on GCP and OSD on AWS.]{{admonition note}}
+    [In this quickstart, Red Hat OpenShift Service on AWS refers to both Red Hat OpenShift Service on AWS classic architecture and Red Hat OpenShift Service on AWS, and OpenShift Dedicated refers to both OpenShift Dedicated on Google Cloud and OpenShift Dedicated on AWS.]{{admonition note}}
 
   tasks:
     - title: Add and configure an identity provider for your cluster
@@ -50,7 +50,7 @@ spec:
       review:
         instructions: |-
           - Does your chosen identity provider show in the **Identity provider** section?
-        failedTaskHelp: For additional help in learning how to configure your chosen identity provider, see [Understanding identity providers](https://docs.redhat.com/en/documentation/openshift_dedicated/4/html/authentication_and_authorization/sd-configuring-identity-providers#sd-configuring-identity-providers) in the OSD documentation or [Understanding identity providers](https://docs.redhat.com/en/documentation/red_hat_openshift_service_on_aws/4/html/install_rosa_classic_clusters/rosa-sts-config-identity-providers#understanding-idp_rosa-sts-config-identity-providers) in the ROSA documentation.
+        failedTaskHelp: For additional help in learning how to configure your chosen identity provider, see [Understanding identity providers](https://docs.redhat.com/en/documentation/openshift_dedicated/4/html/authentication_and_authorization/sd-configuring-identity-providers#sd-configuring-identity-providers) in the OpenShift Dedicated documentation or [Understanding identity providers](https://docs.redhat.com/en/documentation/red_hat_openshift_service_on_aws/4/html/install_rosa_classic_clusters/rosa-sts-config-identity-providers#understanding-idp_rosa-sts-config-identity-providers) in the Red Hat OpenShift Service on AWS documentation.
   # optional - the task's success and failure messages
       summary:
         success: Shows a success message in the task header
