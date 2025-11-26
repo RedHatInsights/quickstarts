@@ -97,6 +97,19 @@
         },
         "style": "form"
       },
+      "MaxDistance": {
+        "description": "Maximum Levenshtein distance for fuzzy matching (default 3)",
+        "explode": true,
+        "in": "query",
+        "name": "max_distance",
+        "required": false,
+        "schema": {
+          "default": 3,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "style": "form"
+      },
       "Name": {
         "description": "Search content by name",
         "explode": true,
@@ -142,6 +155,17 @@
         "in": "query",
         "name": "name",
         "required": false,
+        "schema": {
+          "type": "string"
+        },
+        "style": "form"
+      },
+      "SearchTerm": {
+        "description": "Search term for fuzzy search",
+        "explode": true,
+        "in": "query",
+        "name": "q",
+        "required": true,
         "schema": {
           "type": "string"
         },
@@ -220,6 +244,26 @@
           }
         },
         "type": "object"
+      },
+      "FuzzySearchResult": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Quickstart"
+          },
+          {
+            "properties": {
+              "distance": {
+                "description": "Levenshtein distance from the search term",
+                "minimum": 0,
+                "type": "integer"
+              }
+            },
+            "required": [
+              "distance"
+            ],
+            "type": "object"
+          }
+        ]
       },
       "HelpTopic": {
         "properties": {
@@ -775,6 +819,74 @@
           }
         },
         "summary": "Returns filters for quickstarts"
+      }
+    },
+    "/quickstarts/fuzzy-search": {
+      "get": {
+        "description": "Performs fuzzy search on quickstart display names using Levenshtein distance for typo tolerance",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/SearchTerm"
+          },
+          {
+            "$ref": "#/components/parameters/MaxDistance"
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Offset"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "data": {
+                      "items": {
+                        "$ref": "#/components/schemas/FuzzySearchResult"
+                      },
+                      "type": "array"
+                    },
+                    "max_distance": {
+                      "description": "The maximum Levenshtein distance used",
+                      "type": "integer"
+                    },
+                    "search_term": {
+                      "description": "The search term used",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "A JSON object with fuzzy search results"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequest"
+                }
+              }
+            },
+            "description": "Bad request"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequest"
+                }
+              }
+            },
+            "description": "Internal server error"
+          }
+        },
+        "summary": "Search quickstarts using fuzzy matching"
       }
     },
     "/quickstarts/{id}": {
