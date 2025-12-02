@@ -79,3 +79,5 @@ require (
 )
 
 replace github.com/chenzhuoyu/iasm v0.9.0 => github.com/chenzhuoyu/iasm v0.0.0-20241031125313-4cba78b3538b
+
+replace github.com/golang-jwt/jwt/v5 v5.0.0 => github.com/golang-jwt/jwt/v5 v5.3.0
