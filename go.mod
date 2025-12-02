@@ -80,8 +80,15 @@ require (
 
 replace github.com/chenzhuoyu/iasm v0.9.0 => github.com/chenzhuoyu/iasm v0.0.0-20241031125313-4cba78b3538b
 
+// Force all JWT dependencies to use secure v5.3.0 (fixes CVE-2025-30204)
+replace github.com/golang-jwt/jwt/v5 v5.2.2 => github.com/golang-jwt/jwt/v5 v5.3.0
+
 // Exclude vulnerable JWT versions (CVE-2025-30204)
 exclude (
+	github.com/golang-jwt/jwt/v5 v5.0.0-rc.1
+	github.com/golang-jwt/jwt/v5 v5.0.0-rc.2
 	github.com/golang-jwt/jwt/v5 v5.0.0
+	github.com/golang-jwt/jwt/v5 v5.1.0
+	github.com/golang-jwt/jwt/v5 v5.2.0
 	github.com/golang-jwt/jwt/v5 v5.2.1
 )
