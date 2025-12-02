@@ -1,0 +1,16 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "baseBranches": ["main"],
+  "extends": [
+    "config:base"
+  ],
+  "packageRules": [
+    {
+      "description": "Group all updates into a single PR to reduce noise",
+      "matchPackagePatterns": ["*"],
+      "groupName": "all dependencies",
+      "groupSlug": "all-deps"
+    }
+  ],
+  "labels": ["dependencies"]
+}
