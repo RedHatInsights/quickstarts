@@ -1,0 +1,27 @@
+# Snyk (https://snyk.io) policy file
+
+# Ignore JWT v5.2.2 vulnerabilities because we force upgrade to v5.3.0 via replace directive
+# See go.mod replace directives - all v5.2.2 and v5.2.3 usage is replaced with v5.3.0
+version: v1.25.0
+ignore:
+  # CVE-2025-30204: Excessive memory allocation in JWT header parsing
+  # Fixed in v5.2.2+, but we use v5.3.0 (forced via replace directive)
+  'SNYK-GOLANG-GITHUBCOMGOLANGJWTJWTV5-*':
+    - '*':
+        reason: 'Vulnerable versions (< v5.2.2) are excluded, and v5.2.2 is upgraded to v5.3.0 via replace directive in go.mod'
+        expires: '2026-12-31T00:00:00.000Z'
+  
+  # CVE-2024-51744: JWT vulnerability
+  # Fixed in v5.2.2+, but we use v5.3.0 (forced via replace directive)
+  'CVE-2024-51744':
+    - '*':
+        reason: 'All JWT dependencies forced to v5.3.0 via replace directive in go.mod'
+        expires: '2026-12-31T00:00:00.000Z'
+  
+  # CVE-2025-30204: JWT vulnerability
+  'CVE-2025-30204':
+    - '*':
+        reason: 'All JWT dependencies forced to v5.3.0 via replace directive in go.mod'
+        expires: '2026-12-31T00:00:00.000Z'
+patch: {}
+
