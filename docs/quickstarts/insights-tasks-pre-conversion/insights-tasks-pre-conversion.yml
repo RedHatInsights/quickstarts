@@ -21,7 +21,7 @@ spec:
     Use this quick start to connect and run a pre-conversion analysis on CentOS Linux 7 systems with Red Hat Lightspeed. The task generates a report that summarizes potential problems and suggests recommended solutions to help you convert to RHEL.
     <br>
     <br>
-    Before running the pre-conversion analysis, make sure you have completed all necessary [preparation steps.](https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/8/html/converting_from_an_rpm-based_linux_distribution_to_rhel/converting-using-insights_converting-from-a-linux-distribution-to-rhel)  
+    Before running the pre-conversion analysis, make sure you have completed all necessary [preparation steps.](https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/html/converting_from_a_linux_distribution_to_rhel_using_the_convert2rhel_utility_in_red_hat_lightspeed/preparation-for-a-rhel-conversion-using-lightspeed_converting-from-a-linux-distribution-to-rhel-in-lightspeed)  
     <br>
     Additional information:
     
@@ -215,7 +215,7 @@ spec:
     <br>
     **Thank you for taking the time to explore this feature!**
 
-    For additional information about tasks, [visit the documentation for remediating systems using tasks in Red Hat Lightspeed.](https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/html-single/assessing_and_remediating_system_issues_using_red_hat_lightspeed_tasks/index)
+    For additional information about tasks, [visit the documentation for remediating systems using tasks in Red Hat Lightspeed.](https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/html/assessing_and_remediating_system_issues_by_using_red_hat_lightspeed_tasks)
 
     For additional information about conversions, [visit the conversion documentation.](https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/html-single/converting_from_a_linux_distribution_to_rhel_using_the_convert2rhel_utility_in_red_hat_lightspeed/index)
 
