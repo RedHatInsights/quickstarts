@@ -171,7 +171,7 @@ If you have created quick starts in the Hybrid Cloud Console before, start here:
 
 Open a Jira for the engineering team to add the quick start to the Hybrid Cloud Console source code.
 
-1. Create a Jira for the platform development team in the [RHCLOUD Jira project](https://issues.redhat.com/projects/RHCLOUD/issues/RHCLOUD-15910?filter=allopenissues). Add the **platform-experience-services** label to the issue and add `platform-experience-services@redhat.com` as a CC. Tag `@crc-experience-services-team` in the #team-consoledot-experience-services channel on Slack.
+1. Create a Jira for the platform development team in the [RHCLOUD Jira project](https://issues.redhat.com/projects/RHCLOUD/issues/RHCLOUD-15910?filter=allopenissues). Add the **platform-experience-services** label to the issue. Tag `@crc-experience-services-team` in the #team-consoledot-experience-services channel on Slack.
 2. In the PR you opened for the quick start, add the developer group `RedHatInsights/experience-services-committers` in the PR description, and add the Jira link in a comment. 
 
 ### Engineering tasks
