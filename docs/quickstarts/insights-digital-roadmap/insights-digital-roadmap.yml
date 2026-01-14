@@ -1,0 +1,16 @@
+apiVersion: console.openshift.io/v1
+kind: QuickStarts 
+metadata:
+  name: insights-digital-roadmap
+  externalDocumentation: true
+spec:
+  version: 0.1
+  type:
+    text: Documentation
+    color: orange
+  displayName: Dynamically creating a digital roadmap to manage RHEL systems
+  icon: ~
+  description: Create tailored information by using RHEL Lightspeed Digital Roadmap to analyze your RHEL systems
+  link:
+    href: https://docs.redhat.com/en/documentation/red_hat_insights/1-latest/html/dynamically_creating_a_digital_roadmap_to_manage_rhel_systems/index
+    text: View documentation
