@@ -11,6 +11,21 @@
       "at any time"
     ]
   },
+  "postUpdateOptions": [
+    "goModTidy"
+  ],
+  "allowedPostUpgradeCommands": [
+    "^make generate$"
+  ],
+  "postUpgradeTasks": {
+    "commands": [
+      "make generate"
+    ],
+    "fileFilters": [
+      "pkg/generated/**"
+    ],
+    "executionMode": "update"
+  },
   "packageRules": [
     {
       "description": "Disable major updates entirely",
