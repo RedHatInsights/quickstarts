@@ -42,41 +42,44 @@ spec:
         2. Scroll through the list of recommendations and select one whose **Remediation type** is set to **Playbook**. 
         3. Click the **Name** hyperlink to open the details of that recommendation. 
         4. On the **Conventional (RPM-DNF)** tab, select at least one system to remediate.
-        5. Click the **Plan Remediation** button.
+        5. Click the **Plan Remediation** button. This opens the **Remediate with Ansible** wizard.
         <details>
             <summary><span style="color:#0066CC">&nbspIs the **Plan remediation** button disabled?</span></summary>
             
             [You must select at least one system to remediate before you can create a remediation plan.]{{admonition note}}
         </details>
-        6. With the help of the wizard, create a remediation plan titled **_My-Plan-1_**, and then click **Next**. Ensure you select the **Create a playbook** option.
-           6.1 Review and adjust the following items in your plan when prompted by the wizard:
-            - **Systems**: Ensure the systems you want to remediate are listed.
-            - **Actions**: Select the actions you want to include in your remediation plan. For some recommendations, you might be prompted to choose between multiple actions to remediate the issue.
-            - **Auto reboot**: If you prefer to reboot the systems manually after the remediation plan is executed, set the **Auto reboot** toggle to off.
-           6.2 When you arrive at the **Remediation review** pane, click **Submit**.
-        7. To view your new plan, click **Return to application** and then go to **Automation Toolkit** > **Remediation Plans** > **My-Plan-1**.
+        6. With the help of the wizard, create a remediation plan titled **_My-Plan-1_**, and then click **Next**. Select the **Create new playbook** option.
+           * Review and adjust the following items in your plan when prompted by the wizard:
+             * **Systems**: Ensure that the systems that you want to remediate are listed.
+             * **Actions**: Review the actions that you want to include in your remediation plan. 
+             * **Auto reboot**: If you prefer to reboot the systems manually after the remediation plan is executed, set the **Auto reboot** toggle to off.
+           * When you arrive at the **Remediation review** pane, click **Submit**.
+
+        7\. To view your new plan, click **Return to application** and then go to **Automation Toolkit** > **Remediation Plans** > **My-Plan-1**.
       review:
         instructions: |-
           - When you navigate to **Automation Toolkit** > **Remediation Plans**, do you see **_My-Plan-1_**> in the table? When you open the plan, can you see the details and status of the remediation plan that you just created?
         failedTaskHelp: Review your remediation plan setup and adjust the configuration as needed. [Learn more...](https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/html/red_hat_lightspeed_remediations_guide_with_fedramp/creating-managing-playbooks_red-hat-lightspeed-remediation-guide)<i class="pf-icon [fa-external-link-alt]"></i>
     - title: Confirm execution readiness
       description: |-
-        Check that your remediation plan is ready to execute.
-        [If the Execute button is enabled, this confirms that your remediation plan has passed the execution readiness check and you are ready to execute your plan! Skip these steps and proceed to the next task.]{{admonition note}}
+        Check that your remediation plan is ready to execute. Make sure that your remediation plan meets the prerequisites in this section.
+        [If the **Execute** button is enabled, this confirms that your remediation plan has passed the execution readiness check and you are ready to execute your plan! Skip these steps and proceed to the next task.]{{admonition note}}
         <br>
         <br>
-        When you view the details of your remediation plan, the **Execution readiness** section will indicate why your remediation plan is not ready for execution.
+        When you view the details of your remediation plan, the **Execution readiness** section indicates why your remediation plan is not ready for execution.
          
-        Ensure the prerequisites are in place so you can execute your remediation plan.
+        Ensure that the prerequisites are in place so you can execute your remediation plan.
 
         1. Check your user access permissions to ensure you have the **Remediations administrator** RBAC role.
-            [You might need to contact your organization administrator to confirm your user access settings and to apply the required permissions.]{{admonition important}}
+            [If you do not have the required user access permissions, contact your Organization administrator.]{{admonition important}}
            <details>
             <summary><span style="color:#0066CC">&nbspNeed help applying the required user access permissions?</span></summary>
             - In the console, go to **Settings** (⚙) > **User Access** > **Groups**.
-            - Create a new group and then ensure that you add the **Remediations administrator** role.
-            - Under **Add members**, add the user accounts that will create and execute remediation plans with Red Hat Lightspeed.</li>
+            - Create a new group.
+            - Add the **Remediations administrator** role to the new group.
+            - Under **Add members**, add the user accounts that will use Red Hat Lightspeed to create and execute remediation plans.
            </details>
+
         2. Enable the Remote Host Configuration Manager (RHC) setting.
            <details>
             <summary><span style="color:#0066CC">&nbspNeed help finding the Remote Host Configuration Manager setting?</span></summary>
@@ -84,9 +87,9 @@ spec:
             - Select **Allow permitted Red Hat Lightspeed users to execute remediation playbooks on rhc-connected systems**.
             
             For more information, see [Remote Host Configuration and Management](https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/html/remote_host_configuration_and_management/index).
-            
            </details>
-        3. For each system that you want to remediate from within Red Hat Lightspeed, ensure you have enabled the Remote Host Configuration client (`rhc connect`) and have a direct connection to the RHEL system:
+
+        3. For each system that you want to remediate from within Red Hat Lightspeed, ensure that you have enabled the Remote Host Configuration client (`rhc connect`) and have a direct connection to the RHEL system.
            <details>
             <summary><span style="color:#0066CC">&nbspNeed help connecting to a RHEL system?</span></summary>
             - Log on as a user with root access to the RHEL system, and execute the following commands: 
