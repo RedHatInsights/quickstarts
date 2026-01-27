@@ -14,7 +14,7 @@
   "postUpdateOptions": [
     "goModTidy"
   ],
-  "allowedPostUpgradeCommands": [
+  "allowedCommands": [
     "^make generate$"
   ],
   "postUpgradeTasks": {
