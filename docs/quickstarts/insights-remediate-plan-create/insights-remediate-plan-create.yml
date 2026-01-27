@@ -77,7 +77,7 @@ spec:
             - In the console, go to **Settings** (⚙) > **User Access** > **Groups**.
             - Create a new group.
             - Add the **Remediations administrator** role to the new group.
-            - Under **Add members**, add the user accounts that will use Red Hat Lightspeed to create and execute remediation plans.</li>
+            - Under **Add members**, add the user accounts that will use Red Hat Lightspeed to create and execute remediation plans.
            </details>
 
         2. Enable the Remote Host Configuration Manager (RHC) setting.
