@@ -25,3 +25,6 @@ fmtcoverage.html
 
 pkg/generated
 spec/openapi.json.backup
+
+# output binary
+quickstarts
