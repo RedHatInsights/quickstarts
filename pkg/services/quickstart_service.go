@@ -1,6 +1,7 @@
 package services
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/RedHatInsights/quickstarts/config"
@@ -75,86 +76,9 @@ func (s *QuickstartService) FindByTagsAndDisplayName(
 	return quickstarts, query.Find(&quickstarts).Error
 }
 
-// FindByDisplayNameFuzzy finds quickstarts by display name using Levenshtein distance for fuzzy matching
-// Falls back to ILIKE search if Levenshtein is not available (e.g., SQLite) or if no fuzzy results found
-// Uses word-level matching for single-word queries to handle typos like "ansibel" → "Ansible"
-func (s *QuickstartService) FindByDisplayNameFuzzy(searchTerm string, limit, offset int) ([]models.Quickstart, error) {
-	var quickstarts []models.Quickstart
-
-	// Check if fuzzy search is supported (PostgreSQL with fuzzystrmatch extension)
-	if !database.IsFuzzySearchSupported() {
-		// Fall back to regular ILIKE search for SQLite or if extension is not available
-		return s.FindByDisplayName(searchTerm, limit, offset)
-	}
-
-	cfg := config.Get()
-	threshold := cfg.MaxFuzzySearchDistance
-
-	// Smart detection: Use word-level matching for single-word queries
-	isSingleWord := !strings.Contains(strings.TrimSpace(searchTerm), " ")
-
-	var err error
-
-	if isSingleWord {
-		// Word-level fuzzy matching: Split display name into words and match against each
-		// This handles "ansibel" → "ansible" in "Create your first Ansible Playbook"
-
-		// Build the SQL query conditionally based on whether we have a limit
-		sqlQuery := `
-			WITH word_distances AS (
-				SELECT
-					q.*,
-					MIN(levenshtein(LOWER(?), word)) as distance
-				FROM quickstarts q,
-				LATERAL unnest(regexp_split_to_array(LOWER(q.content->'spec'->>'displayName'), '\s+')) as word
-				WHERE q.content->'spec'->>'displayName' IS NOT NULL
-				GROUP BY q.id, q.created_at, q.updated_at, q.deleted_at, q.name, q.content
-				HAVING MIN(levenshtein(LOWER(?), word)) <= ?
-			)
-			SELECT * FROM word_distances
-			ORDER BY distance ASC, content->'spec'->>'displayName' ASC`
-
-		if limit == -1 {
-			// No limit - just add offset
-			sqlQuery += ` OFFSET ?`
-			err = database.DB.Raw(sqlQuery, searchTerm, searchTerm, threshold, offset).Find(&quickstarts).Error
-		} else {
-			// With limit
-			sqlQuery += ` LIMIT ? OFFSET ?`
-			err = database.DB.Raw(sqlQuery, searchTerm, searchTerm, threshold, limit, offset).Find(&quickstarts).Error
-		}
-	} else {
-		// Full-phrase fuzzy matching: Compare entire search term to entire display name
-		// This handles "Getting started with automation hb" → "...hub"
-		query := database.DB.
-			Select("quickstarts.*, levenshtein(LOWER(content->'spec'->>'displayName'), LOWER(?)) as distance", searchTerm).
-			Where("levenshtein(LOWER(content->'spec'->>'displayName'), LOWER(?)) <= ?", searchTerm, threshold).
-			Order("distance ASC, content->'spec'->>'displayName' ASC").
-			Offset(offset)
-
-		if limit != -1 {
-			query = query.Limit(limit)
-		}
-
-		err = query.Find(&quickstarts).Error
-	}
-	if err != nil {
-		return quickstarts, err
-	}
-
-	// Hybrid fallback: If no fuzzy results found, fall back to ILIKE for partial matching
-	// This handles cases where the search term is much shorter than the display name
-	// (e.g., "ansible" vs "Create your first Ansible Playbook")
-	if len(quickstarts) == 0 {
-		return s.FindByDisplayName(searchTerm, limit, offset)
-	}
-
-	return quickstarts, nil
-}
-
-// FindByTagsAndDisplayNameFuzzy finds quickstarts by tags and display name using fuzzy matching
-// Falls back to ILIKE search if Levenshtein is not available (e.g., SQLite) or if no fuzzy results found
-func (s *QuickstartService) FindByTagsAndDisplayNameFuzzy(
+// findFuzzy is a unified fuzzy search implementation that supports optional tag filtering
+// Pass nil/empty slices for tagTypes/tagValues when searching without tag filters
+func (s *QuickstartService) findFuzzy(
 	tagTypes []models.TagType,
 	tagValues [][]string,
 	searchTerm string,
@@ -164,50 +88,115 @@ func (s *QuickstartService) FindByTagsAndDisplayNameFuzzy(
 
 	// Check if fuzzy search is supported (PostgreSQL with fuzzystrmatch extension)
 	if !database.IsFuzzySearchSupported() {
-		// Fall back to regular ILIKE search for SQLite or if extension is not available
-		return s.FindByTagsAndDisplayName(tagTypes, tagValues, searchTerm, limit, offset)
+		// Fall back to regular ILIKE search
+		if len(tagTypes) > 0 {
+			return s.FindByTagsAndDisplayName(tagTypes, tagValues, searchTerm, limit, offset)
+		}
+		return s.FindByDisplayName(searchTerm, limit, offset)
 	}
 
 	cfg := config.Get()
 	threshold := cfg.MaxFuzzySearchDistance
 
-	// build "(t.type = ? AND t.value IN (?)) OR …" and collect params
-	conds := make([]string, len(tagTypes))
-	params := make([]interface{}, 0, len(tagTypes)*2)
-	for i, tt := range tagTypes {
-		conds[i] = "(t.type = ? AND t.value IN (?))"
-		params = append(params, tt, tagValues[i])
+	// Build the base query with optional tag filtering
+	var baseTableQuery string
+	var params []interface{}
+
+	// Start with searchTerm (used in query_words CTE)
+	params = append(params, searchTerm)
+
+	if len(tagTypes) > 0 {
+		// Build tag filter conditions
+		conds := make([]string, len(tagTypes))
+
+		// Add tag parameters BEFORE threshold
+		for i, tt := range tagTypes {
+			conds[i] = "(t.type = ? AND t.value IN (?))"
+			params = append(params, tt, tagValues[i])
+		}
+		whereClause := strings.Join(conds, " OR ")
+
+		// CTE that filters quickstarts by tags first
+		baseTableQuery = `
+		tagged_quickstarts AS (
+			SELECT q.id, q.created_at, q.updated_at, q.deleted_at, q.name, q.content
+			FROM quickstarts q
+			JOIN quickstart_tags qt ON qt.quickstart_id = q.id
+			JOIN tags t ON t.id = qt.tag_id
+			WHERE ` + whereClause + `
+			GROUP BY q.id, q.created_at, q.updated_at, q.deleted_at, q.name, q.content
+			HAVING COUNT(DISTINCT t.type) = ` + fmt.Sprintf("%d", len(tagTypes)) + `
+		),`
+	} else {
+		baseTableQuery = ""
 	}
-	whereClause := strings.Join(conds, " OR ")
 
-	query := database.DB.
-		Model(&models.Quickstart{}).
-		Select("quickstarts.*, levenshtein(LOWER(content->'spec'->>'displayName'), LOWER(?)) as distance", searchTerm).
-		Joins("JOIN quickstart_tags qt ON qt.quickstart_id = quickstarts.id").
-		Joins("JOIN tags t ON t.id = qt.tag_id").
-		Where(whereClause, params...).
-		Group("quickstarts.id").
-		Having("COUNT(DISTINCT t.type) = ?", len(tagTypes))
+	// Add threshold AFTER tag parameters (used in WHERE min_distance <= ?)
+	params = append(params, threshold)
 
-	if searchTerm != "" {
-		query = query.
-			Where("levenshtein(LOWER(content->'spec'->>'displayName'), LOWER(?)) <= ?", searchTerm, threshold).
-			Order("distance ASC, content->'spec'->>'displayName' ASC")
+	// Determine which table to use in word_matches CTE
+	sourceTable := "quickstarts q"
+	sourceAlias := "q"
+	if len(tagTypes) > 0 {
+		sourceTable = "tagged_quickstarts tq"
+		sourceAlias = "tq"
 	}
 
-	query = query.Offset(offset)
-	if limit != -1 {
-		query = query.Limit(limit)
+	// Word-by-word fuzzy matching with partial matches:
+	// 1. Split query into words
+	// 2. For each query word, find the best matching word in each display name
+	// 3. Return quickstarts that match at least one query word within threshold
+	// 4. Order by: number of matching words (DESC), then total distance (ASC)
+	sqlQuery := `
+		WITH query_words AS (
+			SELECT unnest(regexp_split_to_array(LOWER(?), '\s+')) as query_word
+		),
+		` + baseTableQuery + `
+		word_matches AS (
+			SELECT
+				` + sourceAlias + `.id,
+				` + sourceAlias + `.created_at,
+				` + sourceAlias + `.updated_at,
+				` + sourceAlias + `.deleted_at,
+				` + sourceAlias + `.name,
+				` + sourceAlias + `.content,
+				qw.query_word,
+				MIN(levenshtein(qw.query_word, display_word)) as min_distance
+			FROM query_words qw
+			CROSS JOIN ` + sourceTable + `
+			CROSS JOIN LATERAL unnest(regexp_split_to_array(LOWER(` + sourceAlias + `.content->'spec'->>'displayName'), '\s+')) as display_word
+			WHERE ` + sourceAlias + `.content->'spec'->>'displayName' IS NOT NULL
+			GROUP BY ` + sourceAlias + `.id, ` + sourceAlias + `.created_at, ` + sourceAlias + `.updated_at, ` + sourceAlias + `.deleted_at, ` + sourceAlias + `.name, ` + sourceAlias + `.content, qw.query_word
+		)
+		SELECT
+			id, created_at, updated_at, deleted_at, name, content,
+			COUNT(*) as match_count,
+			SUM(min_distance) as total_distance
+		FROM word_matches
+		WHERE min_distance <= ?
+		GROUP BY id, created_at, updated_at, deleted_at, name, content
+		ORDER BY match_count DESC, total_distance ASC, content->'spec'->>'displayName' ASC`
+
+	var err error
+	if limit == -1 {
+		sqlQuery += ` OFFSET ?`
+		params = append(params, offset)
+	} else {
+		sqlQuery += ` LIMIT ? OFFSET ?`
+		params = append(params, limit, offset)
 	}
 
-	err := query.Find(&quickstarts).Error
+	err = database.DB.Raw(sqlQuery, params...).Find(&quickstarts).Error
 	if err != nil {
 		return quickstarts, err
 	}
 
 	// Hybrid fallback: If no fuzzy results found, fall back to ILIKE for partial matching
-	if len(quickstarts) == 0 && searchTerm != "" {
-		return s.FindByTagsAndDisplayName(tagTypes, tagValues, searchTerm, limit, offset)
+	if len(quickstarts) == 0 {
+		if len(tagTypes) > 0 {
+			return s.FindByTagsAndDisplayName(tagTypes, tagValues, searchTerm, limit, offset)
+		}
+		return s.FindByDisplayName(searchTerm, limit, offset)
 	}
 
 	return quickstarts, nil
@@ -237,23 +226,11 @@ func (s *QuickstartService) Find(tagTypes []models.TagType, tagValues [][]string
 
 // FindFuzzy finds quickstarts using fuzzy search with Levenshtein distance
 func (s *QuickstartService) FindFuzzy(tagTypes []models.TagType, tagValues [][]string, name string, searchTerm string, limit, offset int) ([]models.Quickstart, error) {
-	var quickstarts []models.Quickstart
-	var err error
-
-	if name != "" {
-		// Exact name match takes precedence
-		err = database.DB.Where("name = ?", name).Find(&quickstarts).Error
-	} else if len(tagTypes) > 0 {
-		quickstarts, err = s.FindByTagsAndDisplayNameFuzzy(tagTypes, tagValues, searchTerm, limit, offset)
-	} else if searchTerm != "" {
-		quickstarts, err = s.FindByDisplayNameFuzzy(searchTerm, limit, offset)
-	} else {
-		query := database.DB.Offset(offset)
-		if limit != -1 {
-			query = query.Limit(limit)
-		}
-		err = query.Find(&quickstarts).Error
+	// Use fuzzy search when there's a search term or tag filters
+	if searchTerm != "" || len(tagTypes) > 0 {
+		return s.findFuzzy(tagTypes, tagValues, searchTerm, limit, offset)
 	}
 
-	return quickstarts, err
+	// Otherwise fall back to normal Find (handles exact name match, all quickstarts, etc.)
+	return s.Find(tagTypes, tagValues, name, "", limit, offset)
 }
