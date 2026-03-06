@@ -45,10 +45,14 @@ func Init() {
 	fuzzyThreshold, ok := os.LookupEnv("FUZZY_SEARCH_DISTANCE_THRESHOLD")
 	if ok {
 		threshold, err := strconv.Atoi(fuzzyThreshold)
-		if err == nil && threshold >= 0 {
-			config.MaxFuzzySearchDistance = threshold
+		if err != nil || threshold < 0 {
+			logrus.Warnf(
+				"Invalid FUZZY_SEARCH_DISTANCE_THRESHOLD=%q: must be an integer; using default %d",
+				fuzzyThreshold,
+				config.MaxFuzzySearchDistance,
+			)
 		} else {
-			config.MaxFuzzySearchDistance = 3
+			config.MaxFuzzySearchDistance = threshold
 		}
 	}
 

@@ -6,8 +6,8 @@ Fuzzy search finds quickstarts even when users make typos, using PostgreSQL's Le
 
 **How it works:**
 - Splits query and display names into words
-- Matches each query word to closest display word
-- Returns results with at least one matching word within threshold (default: 3 characters)
+- Matches each query word to the closest display word
+- Returns results with at least one matching word within the threshold (default: 3 characters)
 - Ranks by: match count (DESC) → total distance (ASC)
 
 ## Configuration

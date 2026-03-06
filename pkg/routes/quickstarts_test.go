@@ -678,12 +678,21 @@ func TestFuzzySearch(t *testing.T) {
 
 		var payload *ResponsePayload
 		json.NewDecoder(response.Body).Decode(&payload)
-		assert.Equal(t, 200, response.Code)
-		assert.GreaterOrEqual(t, len(payload.Data), 1, "Should find at least one result")
-		// The first result should be the closer match
-		if len(payload.Data) > 0 {
-			// "Getting" (1 char distance) should rank higher than "Getting Started with OpenShift" (1+ char distance due to extra words)
-			assert.Contains(t, payload.Data[0].Name, "getting", "Closest match should be first")
+		assert.Equal(t, http.StatusOK, response.Code)
+		// We expect at least the two relevant quickstarts to be returned
+		if assert.GreaterOrEqual(t, len(payload.Data), 2, "should return at least two fuzzy matches") {
+			// First result should be the closer match "getting-guide"
+			assert.Equal(t, "getting-guide", payload.Data[0].Name, "first result should be the closest match")
+
+			// Ensure "getting-started-openshift" appears later in the results
+			foundLater := false
+			for i := 1; i < len(payload.Data); i++ {
+				if payload.Data[i].Name == "getting-started-openshift" {
+					foundLater = true
+					break
+				}
+			}
+			assert.True(t, foundLater, `"getting-started-openshift" should appear after "getting-guide" in ordered results`)
 		}
 	})
 
@@ -774,9 +783,9 @@ func TestFuzzySearch(t *testing.T) {
 	})
 
 	t.Run("Word-by-word: partial word fallback to ILIKE", func(t *testing.T) {
-		// "ansible" is correctly spelled, so fuzzy won't find it by Levenshtein distance
+		// "nsib" is a substring of "Ansible" but not a complete word, so fuzzy won't find it by Levenshtein distance
 		// Should fall back to ILIKE and find partial matches
-		request, _ := http.NewRequest(http.MethodGet, "/?display-name=ansible&fuzzy=true", nil)
+		request, _ := http.NewRequest(http.MethodGet, "/?display-name=nsib&fuzzy=true", nil)
 		response := httptest.NewRecorder()
 		router.ServeHTTP(response, request)
 
