@@ -13,11 +13,24 @@ import (
 func (s *ServerAdapter) GetQuickstarts(w http.ResponseWriter, r *http.Request, params generated.GetQuickstartsParams) {
 	q := NewQuickstartsQuery(r, params)
 
-	items, err := s.quickstartService.Find(
-		q.TagTypes, q.TagValues,
-		q.Name, q.DisplayName,
-		q.Limit, q.Offset,
-	)
+	var items []models.Quickstart
+	var err error
+
+	// Use fuzzy search if enabled, otherwise use regular search
+	if q.UseFuzzySearch {
+		items, err = s.quickstartService.FindFuzzy(
+			q.TagTypes, q.TagValues,
+			q.Name, q.DisplayName,
+			q.Limit, q.Offset,
+		)
+	} else {
+		items, err = s.quickstartService.Find(
+			q.TagTypes, q.TagValues,
+			q.Name, q.DisplayName,
+			q.Limit, q.Offset,
+		)
+	}
+
 	if err != nil {
 		utils.ErrorResponse(w, http.StatusBadRequest, err.Error())
 		return

@@ -63,6 +63,18 @@
         },
         "style": "form"
       },
+      "FuzzySearch": {
+        "description": "Enable fuzzy search using Levenshtein distance for typo tolerance (searches spec.displayName)",
+        "explode": true,
+        "in": "query",
+        "name": "fuzzy",
+        "required": false,
+        "schema": {
+          "default": false,
+          "type": "boolean"
+        },
+        "style": "form"
+      },
       "Id": {
         "description": "identifier",
         "in": "path",
@@ -723,6 +735,9 @@
           },
           {
             "$ref": "#/components/parameters/DisplayName"
+          },
+          {
+            "$ref": "#/components/parameters/FuzzySearch"
           },
           {
             "$ref": "#/components/parameters/Limit"
