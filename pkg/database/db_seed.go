@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -54,27 +53,28 @@ func findTags() []MetadataTemplate {
 	path = strings.TrimRight(path, "pkg")
 	quickstartsFiles, err := filepath.Glob(path + "/docs/quickstarts/**/metadata.y*")
 	if err != nil {
-		log.Fatal(err)
+		logrus.Fatalf("Failed to find quickstarts metadata files: %v", err)
 	}
 
 	helpTopicsFiles, err := filepath.Glob(path + "/docs/help-topics/**/metadata.y*")
 	if err != nil {
-		log.Fatal(err)
+		logrus.Fatalf("Failed to find help topics metadata files: %v", err)
 	}
 
 	files := append(quickstartsFiles, helpTopicsFiles...)
 
-	println(files)
+	logrus.Infof("Found %d metadata files to process (%d quickstarts, %d help topics)", len(files), len(quickstartsFiles), len(helpTopicsFiles))
 
 	for _, file := range files {
 		tagMetadata, err := readMetadata(file)
 		if err != nil {
-			logrus.Warningln(err.Error(), file)
+			logrus.Warnf("Failed to read metadata from %s: %v", file, err)
 		} else {
 			MetadataTemplates = append(MetadataTemplates, tagMetadata)
 		}
 	}
 
+	logrus.Infof("Successfully parsed %d metadata templates", len(MetadataTemplates))
 	return MetadataTemplates
 }
 
@@ -103,13 +103,18 @@ func seedQuickstart(t MetadataTemplate, defaultTag models.Tag) (models.Quickstar
 	var originalQuickstart models.Quickstart
 
 	jsonContent, err := addTags(t)
+	if err != nil {
+		logrus.Errorf("Failed to add tags for quickstart from %s: %v", t.ContentPath, err)
+		return newQuickstart, err
+	}
 	var data map[string]map[string]string
 	json.Unmarshal(jsonContent, &data)
 	name := data["metadata"]["name"]
 	r := DB.Where("name = ?", name).Find(&originalQuickstart)
 	if r.Error != nil {
 		// check for DB error
-		return newQuickstart, err
+		logrus.Errorf("Database error while checking for existing quickstart '%s': %v", name, r.Error)
+		return newQuickstart, r.Error
 	} else if r.RowsAffected == 0 {
 		// Create new quickstart
 		newQuickstart.Content = jsonContent
@@ -117,9 +122,10 @@ func seedQuickstart(t MetadataTemplate, defaultTag models.Tag) (models.Quickstar
 		DB.Create(&newQuickstart)
 		err = DB.Model(&defaultTag).Association("Quickstarts").Append(&newQuickstart)
 		if err != nil {
-			fmt.Println("Failed creating quickstarts default tag associations", err.Error())
+			logrus.Errorf("Failed creating quickstarts default tag associations for '%s': %v", name, err)
 		}
 		DB.Save(&defaultTag)
+		logrus.Infof("Created new quickstart: %s", name)
 		return newQuickstart, nil
 	} else {
 		// Update existing quickstart
@@ -127,19 +133,21 @@ func seedQuickstart(t MetadataTemplate, defaultTag models.Tag) (models.Quickstar
 		// Clear all tags associations
 		err := DB.Model(&originalQuickstart).Association("Tags").Clear()
 		if err != nil {
-			fmt.Println("Failed clearing quickstarts tags associations", err.Error())
+			logrus.Errorf("Failed clearing tags associations for quickstart '%s': %v", name, err)
 		}
 		DB.Save(&originalQuickstart)
 		err = DB.Model(&defaultTag).Association("Quickstarts").Append(&originalQuickstart)
 		if err != nil {
-			fmt.Println("Failed creating quickstarts default tag associations", err.Error())
+			logrus.Errorf("Failed creating quickstarts default tag associations for '%s': %v", name, err)
 		}
 		DB.Save(&defaultTag)
+		logrus.Infof("Updated existing quickstart: %s", name)
 		return originalQuickstart, nil
 	}
 }
 
 func seedDefaultTags() map[string]models.Tag {
+	logrus.Info("Seeding default tags...")
 	quickstartsKindTag := models.Tag{
 		Type:  models.ContentKind,
 		Value: "quickstart",
@@ -150,12 +158,12 @@ func seedDefaultTags() map[string]models.Tag {
 	}
 	err := DB.Where("type = ? AND value = ?", &quickstartsKindTag.Type, &quickstartsKindTag.Value).FirstOrCreate(&quickstartsKindTag).Error
 	if err != nil {
-		fmt.Println("Unable to create quickstarts kind tag!")
+		logrus.Errorf("Unable to create quickstarts kind tag: %v", err)
 	}
 
 	err = DB.Where("type = ? AND value = ?", &helpTopicKindTag.Type, &helpTopicKindTag.Value).FirstOrCreate(&helpTopicKindTag).Error
 	if err != nil {
-		fmt.Println("Unable to create help topic kind tag!")
+		logrus.Errorf("Unable to create help topic kind tag: %v", err)
 	}
 
 	DB.Save(&quickstartsKindTag)
@@ -165,6 +173,7 @@ func seedDefaultTags() map[string]models.Tag {
 	result["quickstart"] = quickstartsKindTag
 	result["helptopic"] = helpTopicKindTag
 
+	logrus.Info("Default tags seeded successfully")
 	return result
 }
 
@@ -172,12 +181,18 @@ func seedHelpTopic(t MetadataTemplate, defaultTag models.Tag) ([]models.HelpTopi
 	yamlfile, err := ioutil.ReadFile(t.ContentPath)
 	returnValue := make([]models.HelpTopic, 0)
 	if err != nil {
+		logrus.Errorf("Failed to read help topic file %s: %v", t.ContentPath, err)
 		return returnValue, err
 	}
 
 	jsonContent, err := yaml.YAMLToJSON(yamlfile)
+	if err != nil {
+		logrus.Errorf("Failed to convert YAML to JSON for %s: %v", t.ContentPath, err)
+		return returnValue, err
+	}
 	var d []map[string]interface{}
 	if err := json.Unmarshal(jsonContent, &d); err != nil {
+		logrus.Errorf("Failed to unmarshal JSON for %s: %v", t.ContentPath, err)
 		return returnValue, err
 	}
 
@@ -189,40 +204,45 @@ func seedHelpTopic(t MetadataTemplate, defaultTag models.Tag) ([]models.HelpTopi
 
 		if r.Error != nil {
 			// check for DB error
-			return returnValue, err
+			logrus.Errorf("Database error while checking for existing help topic '%s': %v", name, r.Error)
+			return returnValue, r.Error
 		} else if r.RowsAffected == 0 {
 			// Create new help topic
 			newHelpTopic.GroupName = t.Name
 			newHelpTopic.Content, err = json.Marshal(c)
 			if err != nil {
+				logrus.Errorf("Failed to marshal content for help topic '%s': %v", name, err)
 				return returnValue, err
 			}
 			newHelpTopic.Name = fmt.Sprintf("%v", name)
 			DB.Create(&newHelpTopic)
 			err = DB.Model(&defaultTag).Association("HelpTopics").Append(&newHelpTopic)
 			if err != nil {
-				fmt.Println("Failed creating help topic default tag associations", err.Error())
+				logrus.Errorf("Failed creating help topic default tag associations for '%s': %v", name, err)
 			}
 			DB.Save(&defaultTag)
+			logrus.Infof("Created new help topic: %s (group: %s)", name, t.Name)
 			returnValue = append(returnValue, newHelpTopic)
 		} else {
 			// Update existing help topic
 			originalHelpTopic.Content, err = json.Marshal(c)
 			originalHelpTopic.GroupName = t.Name
 			if err != nil {
+				logrus.Errorf("Failed to marshal content for help topic '%s': %v", name, err)
 				return returnValue, err
 			}
 			// Clear all tags associations
 			err := DB.Model(&originalHelpTopic).Association("Tags").Clear()
 			if err != nil {
-				fmt.Println("Failed clearing quickstarts tags associations", err.Error())
+				logrus.Errorf("Failed clearing tags associations for help topic '%s': %v", name, err)
 			}
 			DB.Save(&originalHelpTopic)
 			err = DB.Model(&defaultTag).Association("HelpTopics").Append(&originalHelpTopic)
 			if err != nil {
-				fmt.Println("Failed creating help topic default tag associations", err.Error())
+				logrus.Errorf("Failed creating help topic default tag associations for '%s': %v", name, err)
 			}
 			DB.Save(&defaultTag)
+			logrus.Infof("Updated existing help topic: %s (group: %s)", name, t.Name)
 			returnValue = append(returnValue, originalHelpTopic)
 		}
 	}
@@ -230,6 +250,7 @@ func seedHelpTopic(t MetadataTemplate, defaultTag models.Tag) ([]models.HelpTopi
 }
 
 func clearOldContent() []models.FavoriteQuickstart {
+	logrus.Info("Clearing old content...")
 	var favorites []models.FavoriteQuickstart
 	var staleQuickstartsTags []models.Tag
 	var staleTopicsTags []models.Tag
@@ -265,6 +286,8 @@ func clearOldContent() []models.FavoriteQuickstart {
 		DB.Unscoped().Delete(&h)
 	}
 
+	logrus.Infof("Cleared %d favorites, %d quickstarts, %d help topics, and %d tags",
+		len(favorites), len(staleQuickstarts), len(staleHelpTopics), len(staleQuickstartsTags)+len(staleTopicsTags))
 	return favorites
 }
 
@@ -288,11 +311,20 @@ func SeedFavorites(favorites []models.FavoriteQuickstart) {
 }
 
 func SeedTags() {
-	// clear old content pahse
+	logrus.Info("Starting database seeding process...")
+
+	// clear old content phase
 	favorites := clearOldContent()
 	// seeding phase
 	defaultTags := seedDefaultTags()
 	MetadataTemplates := findTags()
+
+	quickstartCount := 0
+	quickstartErrorCount := 0
+	helpTopicCount := 0
+	helpTopicErrorCount := 0
+
+	logrus.Infof("Processing %d templates...", len(MetadataTemplates))
 
 	for _, template := range MetadataTemplates {
 		kind := template.Kind
@@ -302,7 +334,10 @@ func SeedTags() {
 			var tags []models.Tag
 			quickstart, quickstartErr = seedQuickstart(template, defaultTags["quickstart"])
 			if quickstartErr != nil {
-				fmt.Println("Unable to seed quickstart: ", quickstartErr.Error(), template.ContentPath)
+				logrus.Errorf("Unable to seed quickstart from %s: %v", template.ContentPath, quickstartErr)
+				quickstartErrorCount++
+			} else {
+				quickstartCount++
 			}
 			// Clear all tags associations
 			quickstart.Tags = tags
@@ -316,7 +351,7 @@ func SeedTags() {
 
 				r := DB.Preload("Quickstarts").Where("type = ? AND value = ?", models.TagType(newTag.Type), newTag.Value).Find(&originalTag)
 				if r.Error != nil {
-					fmt.Println("Error: ", r.Error.Error())
+					logrus.Errorf("Database error while finding tag (type=%s, value=%s): %v", tag.Kind, tag.Value, r.Error)
 				} else if r.RowsAffected == 0 {
 					DB.Create(&newTag)
 					originalTag = newTag
@@ -325,7 +360,7 @@ func SeedTags() {
 				// Create tags quickstarts associations
 				err := DB.Model(&originalTag).Association("Quickstarts").Append(&quickstart)
 				if err != nil {
-					fmt.Println("Failed creating tags associations", err.Error())
+					logrus.Errorf("Failed creating tag association for quickstart '%s' with tag %s=%s: %v", quickstart.Name, tag.Kind, tag.Value, err)
 				}
 
 				quickstart.Tags = append(quickstart.Tags, originalTag)
@@ -338,7 +373,10 @@ func SeedTags() {
 		if kind == "HelpTopic" {
 			helpTopic, helpTopicErr := seedHelpTopic(template, defaultTags["helptopic"])
 			if helpTopicErr != nil {
-				fmt.Println("Unable to seed help topic: ", helpTopicErr.Error(), template.ContentPath)
+				logrus.Errorf("Unable to seed help topic from %s: %v", template.ContentPath, helpTopicErr)
+				helpTopicErrorCount++
+			} else {
+				helpTopicCount += len(helpTopic)
 			}
 
 			for _, tag := range template.Tags {
@@ -349,7 +387,7 @@ func SeedTags() {
 
 				r := DB.Preload("HelpTopics").Where("type = ? AND value = ?", models.TagType(newTag.Type), newTag.Value).Find(&originalTag)
 				if r.Error != nil {
-					fmt.Println("Error: ", r.Error.Error())
+					logrus.Errorf("Database error while finding tag (type=%s, value=%s): %v", tag.Kind, tag.Value, r.Error)
 				} else if r.RowsAffected == 0 {
 					DB.Create(&newTag)
 					originalTag = newTag
@@ -357,13 +395,13 @@ func SeedTags() {
 				// Clear all tags associations
 				err := DB.Model(&originalTag).Association("HelpTopics").Clear()
 				if err != nil {
-					fmt.Println("Failed clearing tags associations", err.Error())
+					logrus.Errorf("Failed clearing help topic tag associations for tag %s=%s: %v", tag.Kind, tag.Value, err)
 				}
 
 				// Create tags help topic associations
 				err = DB.Model(&originalTag).Association("HelpTopics").Append(&helpTopic)
 				if err != nil {
-					fmt.Println("Failed creating tags associations", err.Error())
+					logrus.Errorf("Failed creating tag association for help topics with tag %s=%s: %v", tag.Kind, tag.Value, err)
 				}
 
 				DB.Save(&originalTag)
@@ -371,5 +409,9 @@ func SeedTags() {
 		}
 	}
 
+	logrus.Infof("Content seeding summary: %d quickstarts (%d errors), %d help topics (%d errors)",
+		quickstartCount, quickstartErrorCount, helpTopicCount, helpTopicErrorCount)
+
 	SeedFavorites(favorites)
+	logrus.Info("Database seeding completed")
 }
