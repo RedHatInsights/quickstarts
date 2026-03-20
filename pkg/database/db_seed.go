@@ -53,12 +53,14 @@ func findTags() []MetadataTemplate {
 	path = strings.TrimRight(path, "pkg")
 	quickstartsFiles, err := filepath.Glob(path + "/docs/quickstarts/**/metadata.y*")
 	if err != nil {
-		logrus.Fatalf("Failed to find quickstarts metadata files: %v", err)
+		logrus.Errorf("Failed to find quickstarts metadata files: %v", err)
+		quickstartsFiles = []string{}
 	}
 
 	helpTopicsFiles, err := filepath.Glob(path + "/docs/help-topics/**/metadata.y*")
 	if err != nil {
-		logrus.Fatalf("Failed to find help topics metadata files: %v", err)
+		logrus.Errorf("Failed to find help topics metadata files: %v", err)
+		helpTopicsFiles = []string{}
 	}
 
 	files := append(quickstartsFiles, helpTopicsFiles...)
@@ -336,9 +338,10 @@ func SeedTags() {
 			if quickstartErr != nil {
 				logrus.Errorf("Unable to seed quickstart from %s: %v", template.ContentPath, quickstartErr)
 				quickstartErrorCount++
-			} else {
-				quickstartCount++
+				continue
 			}
+			quickstartCount++
+
 			// Clear all tags associations
 			quickstart.Tags = tags
 			DB.Save(&quickstart)
@@ -375,9 +378,9 @@ func SeedTags() {
 			if helpTopicErr != nil {
 				logrus.Errorf("Unable to seed help topic from %s: %v", template.ContentPath, helpTopicErr)
 				helpTopicErrorCount++
-			} else {
-				helpTopicCount += len(helpTopic)
+				continue
 			}
+			helpTopicCount += len(helpTopic)
 
 			for _, tag := range template.Tags {
 				var newTag models.Tag
