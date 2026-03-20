@@ -1,6 +1,6 @@
 module github.com/RedHatInsights/quickstarts
 
-go 1.25.5
+go 1.25.7
 
 require (
 	github.com/getkin/kin-openapi v0.133.0
