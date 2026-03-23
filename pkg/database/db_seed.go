@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"log/slog"
 	"os"
 	"path/filepath"
@@ -54,13 +55,13 @@ func findTags() []MetadataTemplate {
 	quickstartsFiles, err := filepath.Glob(path + "/docs/quickstarts/**/metadata.y*")
 	if err != nil {
 		slog.Error("Failed to find quickstarts metadata files", "error", err)
-		quickstartsFiles = []string{}
+		log.Fatal(err)
 	}
 
 	helpTopicsFiles, err := filepath.Glob(path + "/docs/help-topics/**/metadata.y*")
 	if err != nil {
 		slog.Error("Failed to find help topics metadata files", "error", err)
-		helpTopicsFiles = []string{}
+		log.Fatal(err)
 	}
 
 	files := append(quickstartsFiles, helpTopicsFiles...)
