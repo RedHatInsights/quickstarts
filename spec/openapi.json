@@ -206,14 +206,6 @@
         },
         "type": "object"
       },
-      "InternalServerError": {
-        "properties": {
-          "msg": {
-            "type": "string"
-          }
-        },
-        "type": "object"
-      },
       "FavoriteQuickstart": {
         "properties": {
           "accountId": {
@@ -336,6 +328,14 @@
           },
           "updatedAt": {
             "format": "date-time",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "InternalServerError": {
+        "properties": {
+          "msg": {
             "type": "string"
           }
         },
