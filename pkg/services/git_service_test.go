@@ -1,6 +1,8 @@
 package services
 
 import (
+	"encoding/json"
+	"os"
 	"testing"
 
 	"github.com/RedHatInsights/quickstarts/pkg/generated"
@@ -132,22 +134,21 @@ func TestGenerateBranchName_LongTitle(t *testing.T) {
 	assert.Less(t, len(branch), 65)
 }
 
-func TestBuildAuthURL(t *testing.T) {
-	result, err := buildAuthURL("https://github.com/org/repo.git", "my-token")
+func TestCreateAskpassScript(t *testing.T) {
+	tmpDir := t.TempDir()
+	script, err := createAskpassScript("test-token", tmpDir)
 	assert.NoError(t, err)
-	assert.Equal(t, "https://x-access-token:my-token@github.com/org/repo.git", result)
-}
+	defer os.Remove(script)
 
-func TestBuildAuthURL_NonHTTPS(t *testing.T) {
-	_, err := buildAuthURL("http://github.com/org/repo.git", "my-token")
-	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "only HTTPS")
-}
+	// Verify the script exists and is executable
+	info, err := os.Stat(script)
+	assert.NoError(t, err)
+	assert.True(t, info.Mode()&0100 != 0, "script should be executable")
 
-func TestBuildAuthURL_SSHUrl(t *testing.T) {
-	// SSH URLs don't have a scheme recognized by url.Parse in the same way
-	_, err := buildAuthURL("git@github.com:org/repo.git", "my-token")
-	assert.Error(t, err)
+	// Verify the script content echoes the token
+	content, err := os.ReadFile(script)
+	assert.NoError(t, err)
+	assert.Contains(t, string(content), "test-token")
 }
 
 func TestParseGitHubRepo(t *testing.T) {
@@ -203,24 +204,28 @@ func TestRedactToken(t *testing.T) {
 	assert.Contains(t, result, "***@github.com")
 }
 
-func TestExtractPRUrl(t *testing.T) {
-	// Simplified GitHub API response
-	response := `{"url":"https://api.github.com/repos/org/repo/pulls/42","html_url":"https://github.com/org/repo/pull/42","number":42}`
-	prURL, err := extractPRUrl([]byte(response))
+func TestGhPullRequestResponseParsing(t *testing.T) {
+	// Test that the JSON struct correctly parses GitHub API responses
+	response := `{"html_url":"https://github.com/org/repo/pull/42","number":42}`
+	var prResp ghPullRequestResponse
+	err := json.Unmarshal([]byte(response), &prResp)
 	assert.NoError(t, err)
-	assert.Equal(t, "https://github.com/org/repo/pull/42", prURL)
+	assert.Equal(t, "https://github.com/org/repo/pull/42", prResp.HTMLURL)
 }
 
-func TestExtractPRUrl_ErrorResponse(t *testing.T) {
-	response := `{"message":"Validation Failed","errors":[{"resource":"PullRequest"}]}`
-	_, err := extractPRUrl([]byte(response))
-	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "GitHub API error")
+func TestGhPullRequestResponseParsing_ErrorResponse(t *testing.T) {
+	response := `{"message":"Validation Failed"}`
+	var prResp ghPullRequestResponse
+	err := json.Unmarshal([]byte(response), &prResp)
+	assert.NoError(t, err)
+	assert.Equal(t, "Validation Failed", prResp.Message)
+	assert.Empty(t, prResp.HTMLURL)
 }
 
-func TestExtractPRUrl_MissingField(t *testing.T) {
-	response := `{"id":123,"number":42}`
-	_, err := extractPRUrl([]byte(response))
-	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "html_url not found")
+func TestGhPullRequestResponseParsing_EmptyURL(t *testing.T) {
+	response := `{"html_url":"","number":42}`
+	var prResp ghPullRequestResponse
+	err := json.Unmarshal([]byte(response), &prResp)
+	assert.NoError(t, err)
+	assert.Empty(t, prResp.HTMLURL)
 }

@@ -26,6 +26,8 @@ type QuickstartsConfig struct {
 	GitAuthToken           string // Personal access token for git push and PR creation
 	GitDefaultBranch       string // Default branch of the target repo (e.g. main)
 	GitTempDir             string // Temp directory for git clone operations
+	GitUserName            string // Git committer name (default: nachobot)
+	GitUserEmail           string // Git committer email (default: nachobot@redhat.com)
 }
 
 var config *QuickstartsConfig
@@ -70,6 +72,14 @@ func Init() {
 	config.GitTempDir = os.Getenv("GIT_TEMP_DIR")
 	if config.GitTempDir == "" {
 		config.GitTempDir = os.TempDir()
+	}
+	config.GitUserName = os.Getenv("GIT_USER_NAME")
+	if config.GitUserName == "" {
+		config.GitUserName = "nachobot"
+	}
+	config.GitUserEmail = os.Getenv("GIT_USER_EMAIL")
+	if config.GitUserEmail == "" {
+		config.GitUserEmail = "nachobot@redhat.com"
 	}
 
 	if clowder.IsClowderEnabled() {

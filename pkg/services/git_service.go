@@ -1,15 +1,21 @@
 package services
 
 import (
+	"bytes"
+	"context"
 	"crypto/rand"
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
+	"io"
+	"net/http"
 	"net/url"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"regexp"
 	"strings"
+	"time"
 
 	"github.com/RedHatInsights/quickstarts/config"
 	"github.com/RedHatInsights/quickstarts/pkg/generated"
@@ -61,14 +67,16 @@ func (s *GitService) CreatePullRequest(req generated.GitPullRequestRequest) (*Pu
 
 	repoDir := filepath.Join(tmpDir, "repo")
 
-	// Build authenticated clone URL
-	cloneURL, err := buildAuthURL(cfg.GitRepoURL, cfg.GitAuthToken)
+	// Create a GIT_ASKPASS helper script to supply credentials without
+	// embedding tokens in the clone URL (avoids exposure via process listing)
+	askpassScript, err := createAskpassScript(cfg.GitAuthToken, tmpDir)
 	if err != nil {
-		return nil, fmt.Errorf("failed to build authenticated URL: %w", err)
+		return nil, fmt.Errorf("failed to create askpass helper: %w", err)
 	}
+	defer os.Remove(askpassScript)
 
 	// Clone the repository (shallow clone for speed)
-	if err := runGit(tmpDir, "clone", "--depth", "1", "--branch", cfg.GitDefaultBranch, cloneURL, "repo"); err != nil {
+	if err := runGitWithAskpass(tmpDir, askpassScript, "clone", "--depth", "1", "--branch", cfg.GitDefaultBranch, cfg.GitRepoURL, "repo"); err != nil {
 		return nil, fmt.Errorf("failed to clone repository: %w", err)
 	}
 
@@ -96,11 +104,11 @@ func (s *GitService) CreatePullRequest(req generated.GitPullRequestRequest) (*Pu
 		return nil, fmt.Errorf("failed to stage files: %w", err)
 	}
 
-	// Configure git user for the commit
-	if err := runGit(repoDir, "config", "user.email", "nachobot@redhat.com"); err != nil {
+	// Configure git user for the commit (configurable via env vars)
+	if err := runGit(repoDir, "config", "user.email", cfg.GitUserEmail); err != nil {
 		return nil, fmt.Errorf("failed to configure git email: %w", err)
 	}
-	if err := runGit(repoDir, "config", "user.name", "nachobot"); err != nil {
+	if err := runGit(repoDir, "config", "user.name", cfg.GitUserName); err != nil {
 		return nil, fmt.Errorf("failed to configure git name: %w", err)
 	}
 
@@ -113,12 +121,12 @@ func (s *GitService) CreatePullRequest(req generated.GitPullRequestRequest) (*Pu
 		return nil, fmt.Errorf("failed to commit: %w", err)
 	}
 
-	// Push the branch
-	if err := runGit(repoDir, "push", "origin", branch); err != nil {
+	// Push the branch (using askpass for auth)
+	if err := runGitWithAskpass(repoDir, askpassScript, "push", "origin", branch); err != nil {
 		return nil, fmt.Errorf("failed to push branch: %w", err)
 	}
 
-	// Create the pull request using the GitHub API via git
+	// Create the pull request using the GitHub REST API
 	prURL, err := createGitHubPR(cfg, branch, req.Title, req.Description)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create pull request: %w", err)
@@ -198,40 +206,56 @@ func randomHex(n int) (string, error) {
 	return hex.EncodeToString(b), nil
 }
 
-// buildAuthURL injects a token into an HTTPS git URL for authentication
-func buildAuthURL(repoURL, token string) (string, error) {
-	u, err := url.Parse(repoURL)
+// createAskpassScript creates a temporary script that supplies the token
+// via GIT_ASKPASS, keeping credentials out of the process argument list.
+func createAskpassScript(token, tmpDir string) (string, error) {
+	script := fmt.Sprintf("#!/bin/sh\necho '%s'\n", token)
+	f, err := os.CreateTemp(tmpDir, "git-askpass-*.sh")
 	if err != nil {
-		return "", fmt.Errorf("invalid repository URL: %w", err)
+		return "", err
 	}
-
-	if u.Scheme != "https" {
-		return "", fmt.Errorf("only HTTPS repository URLs are supported")
+	if _, err := f.WriteString(script); err != nil {
+		f.Close()
+		os.Remove(f.Name())
+		return "", err
 	}
-
-	u.User = url.UserPassword("x-access-token", token)
-	return u.String(), nil
+	f.Close()
+	if err := os.Chmod(f.Name(), 0700); err != nil {
+		os.Remove(f.Name())
+		return "", err
+	}
+	return f.Name(), nil
 }
 
 // runGit executes a git command in the given directory
 func runGit(dir string, args ...string) error {
 	cmd := exec.Command("git", args...)
 	cmd.Dir = dir
-	// Mask credentials from logs
-	safeArgs := make([]string, len(args))
-	copy(safeArgs, args)
-	for i, arg := range safeArgs {
-		if strings.Contains(arg, "x-access-token") {
-			safeArgs[i] = "<REDACTED_URL>"
-		}
-	}
-	logrus.Debugf("git %s (in %s)", strings.Join(safeArgs, " "), dir)
+	logrus.Debugf("git %s (in %s)", strings.Join(args, " "), dir)
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {
-		// Redact any tokens from the error output
 		sanitized := redactToken(string(output))
-		return fmt.Errorf("git %s failed: %s: %s", safeArgs[0], err, sanitized)
+		return fmt.Errorf("git %s failed: %s: %s", args[0], err, sanitized)
+	}
+	return nil
+}
+
+// runGitWithAskpass executes a git command with GIT_ASKPASS set for auth.
+// This keeps tokens out of the process argument list (visible via ps/top).
+func runGitWithAskpass(dir, askpassScript string, args ...string) error {
+	cmd := exec.Command("git", args...)
+	cmd.Dir = dir
+	cmd.Env = append(os.Environ(),
+		fmt.Sprintf("GIT_ASKPASS=%s", askpassScript),
+		"GIT_TERMINAL_PROMPT=0",
+	)
+	logrus.Debugf("git %s (in %s)", strings.Join(args, " "), dir)
+
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		sanitized := redactToken(string(output))
+		return fmt.Errorf("git %s failed: %s: %s", args[0], err, sanitized)
 	}
 	return nil
 }
@@ -243,9 +267,22 @@ func redactToken(s string) string {
 	return re.ReplaceAllString(s, "${1}***@")
 }
 
-// createGitHubPR creates a pull request using the GitHub REST API
+// ghPullRequestRequest is the JSON body for creating a GitHub PR
+type ghPullRequestRequest struct {
+	Title string `json:"title"`
+	Head  string `json:"head"`
+	Base  string `json:"base"`
+	Body  string `json:"body"`
+}
+
+// ghPullRequestResponse is the relevant part of the GitHub PR response
+type ghPullRequestResponse struct {
+	HTMLURL string `json:"html_url"`
+	Message string `json:"message,omitempty"`
+}
+
+// createGitHubPR creates a pull request using Go's net/http client
 func createGitHubPR(cfg *config.QuickstartsConfig, branch, title string, description *string) (string, error) {
-	// Parse owner/repo from the repo URL
 	owner, repo, err := parseGitHubRepo(cfg.GitRepoURL)
 	if err != nil {
 		return "", err
@@ -256,33 +293,56 @@ func createGitHubPR(cfg *config.QuickstartsConfig, branch, title string, descrip
 		body = *description
 	}
 
-	// Use curl to create the PR via GitHub API
+	reqBody := ghPullRequestRequest{
+		Title: title,
+		Head:  branch,
+		Base:  cfg.GitDefaultBranch,
+		Body:  body,
+	}
+
+	jsonData, err := json.Marshal(reqBody)
+	if err != nil {
+		return "", fmt.Errorf("failed to marshal PR request: %w", err)
+	}
+
 	apiURL := fmt.Sprintf("https://api.github.com/repos/%s/%s/pulls", owner, repo)
-	jsonBody := fmt.Sprintf(
-		`{"title":%q,"head":%q,"base":%q,"body":%q}`,
-		title, branch, cfg.GitDefaultBranch, body,
-	)
 
-	cmd := exec.Command("curl", "-s", "-X", "POST",
-		"-H", "Accept: application/vnd.github+json",
-		"-H", fmt.Sprintf("Authorization: Bearer %s", cfg.GitAuthToken),
-		"-H", "Content-Type: application/json",
-		"-d", jsonBody,
-		apiURL,
-	)
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
 
-	output, err := cmd.CombinedOutput()
+	httpReq, err := http.NewRequestWithContext(ctx, http.MethodPost, apiURL, bytes.NewReader(jsonData))
+	if err != nil {
+		return "", fmt.Errorf("failed to create HTTP request: %w", err)
+	}
+	httpReq.Header.Set("Accept", "application/vnd.github+json")
+	httpReq.Header.Set("Authorization", fmt.Sprintf("Bearer %s", cfg.GitAuthToken))
+	httpReq.Header.Set("Content-Type", "application/json")
+
+	resp, err := http.DefaultClient.Do(httpReq)
 	if err != nil {
 		return "", fmt.Errorf("GitHub API request failed: %w", err)
 	}
+	defer resp.Body.Close()
 
-	// Parse the response to extract the PR URL
-	prURL, err := extractPRUrl(output)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return "", fmt.Errorf("failed to parse GitHub API response: %w: %s", err, redactToken(string(output)))
+		return "", fmt.Errorf("failed to read GitHub API response: %w", err)
 	}
 
-	return prURL, nil
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+		return "", fmt.Errorf("GitHub API returned status %d: %s", resp.StatusCode, string(respBody))
+	}
+
+	var prResp ghPullRequestResponse
+	if err := json.Unmarshal(respBody, &prResp); err != nil {
+		return "", fmt.Errorf("failed to parse GitHub API response: %w", err)
+	}
+
+	if prResp.HTMLURL == "" {
+		return "", fmt.Errorf("GitHub API response missing html_url: %s", string(respBody))
+	}
+
+	return prResp.HTMLURL, nil
 }
 
 // parseGitHubRepo extracts owner and repo name from a GitHub URL
@@ -301,32 +361,4 @@ func parseGitHubRepo(repoURL string) (string, string, error) {
 	}
 
 	return parts[0], parts[1], nil
-}
-
-// extractPRUrl parses the GitHub API JSON response to extract the html_url
-func extractPRUrl(response []byte) (string, error) {
-	// Simple JSON parsing without importing encoding/json to avoid
-	// a dependency on the exact response structure
-	// Look for "html_url": "..." in the response
-	s := string(response)
-
-	// Check for error response
-	if strings.Contains(s, `"message"`) && !strings.Contains(s, `"html_url"`) {
-		return "", fmt.Errorf("GitHub API error: %s", s)
-	}
-
-	// Find the html_url field (first occurrence is the PR URL)
-	marker := `"html_url":"`
-	idx := strings.Index(s, marker)
-	if idx == -1 {
-		return "", fmt.Errorf("html_url not found in response")
-	}
-
-	start := idx + len(marker)
-	end := strings.Index(s[start:], `"`)
-	if end == -1 {
-		return "", fmt.Errorf("malformed html_url in response")
-	}
-
-	return s[start : start+end], nil
 }

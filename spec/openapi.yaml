@@ -5,6 +5,11 @@ components:
         msg:
           type: string
       type: object
+    InternalServerError:
+      properties:
+        msg:
+          type: string
+      type: object
     NotFound:
       properties:
         msg:
@@ -606,5 +611,5 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BadRequest'
+                $ref: '#/components/schemas/InternalServerError'
 
