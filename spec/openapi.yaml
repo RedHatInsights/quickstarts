@@ -134,6 +134,45 @@ components:
         value:
           type: string
       type: object
+    GitFile:
+      properties:
+        path:
+          type: string
+          description: Relative file path within the repository
+        content:
+          type: string
+          description: File content (YAML)
+      required:
+        - path
+        - content
+      type: object
+    GitPullRequestRequest:
+      properties:
+        files:
+          type: array
+          items:
+            $ref: '#/components/schemas/GitFile'
+          minItems: 1
+          description: List of files to include in the pull request
+        title:
+          type: string
+          description: Pull request title
+        description:
+          type: string
+          description: Optional pull request description
+      required:
+        - files
+        - title
+      type: object
+    GitPullRequestResponse:
+      properties:
+        prUrl:
+          type: string
+          description: URL of the created pull request
+        branch:
+          type: string
+          description: Name of the branch created
+      type: object
   parameters:
       ProductFamilies:
         name: product-families
@@ -533,4 +572,39 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/NotFound'
+  /git/pull-request:
+    post:
+      summary: Create a pull request with quickstart files
+      description: >
+        Accepts quickstart YAML files, validates them, clones the target
+        repository, creates a branch, commits the files, pushes, and
+        opens a pull request. Returns the PR URL.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GitPullRequestRequest'
+      responses:
+        '201':
+          description: Pull request created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/GitPullRequestResponse'
+        '400':
+          description: Bad request (validation error)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '500':
+          description: Internal server error (git operation failed)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
 

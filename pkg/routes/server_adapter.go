@@ -16,6 +16,7 @@ type ServerAdapter struct {
 	helpTopicService  *services.HelpTopicService
 	favoriteService   *services.FavoriteService
 	progressService   *services.ProgressService
+	gitService        *services.GitService
 }
 
 // NewServerAdapter creates a new server adapter with service dependencies
@@ -25,5 +26,6 @@ func NewServerAdapter() *ServerAdapter {
 		helpTopicService:  services.NewHelpTopicService(),
 		favoriteService:   services.NewFavoriteService(),
 		progressService:   services.NewProgressService(),
+		gitService:        services.NewGitService(),
 	}
 }

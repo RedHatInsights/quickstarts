@@ -22,6 +22,10 @@ type QuickstartsConfig struct {
 	DbSSLRootCert          string
 	LogLevel               string
 	MaxFuzzySearchDistance int // Max Levenshtein distance for fuzzy search (typo tolerance)
+	GitRepoURL             string // Target repository URL for git proxy (e.g. https://github.com/org/repo.git)
+	GitAuthToken           string // Personal access token for git push and PR creation
+	GitDefaultBranch       string // Default branch of the target repo (e.g. main)
+	GitTempDir             string // Temp directory for git clone operations
 }
 
 var config *QuickstartsConfig
@@ -54,6 +58,18 @@ func Init() {
 		} else {
 			config.MaxFuzzySearchDistance = threshold
 		}
+	}
+
+	// Git proxy configuration
+	config.GitRepoURL = os.Getenv("GIT_REPO_URL")
+	config.GitAuthToken = os.Getenv("GIT_AUTH_TOKEN")
+	config.GitDefaultBranch = os.Getenv("GIT_DEFAULT_BRANCH")
+	if config.GitDefaultBranch == "" {
+		config.GitDefaultBranch = "main"
+	}
+	config.GitTempDir = os.Getenv("GIT_TEMP_DIR")
+	if config.GitTempDir == "" {
+		config.GitTempDir = os.TempDir()
 	}
 
 	if clowder.IsClowderEnabled() {

@@ -233,6 +233,61 @@
         },
         "type": "object"
       },
+      "GitFile": {
+        "properties": {
+          "content": {
+            "description": "File content (YAML)",
+            "type": "string"
+          },
+          "path": {
+            "description": "Relative file path within the repository",
+            "type": "string"
+          }
+        },
+        "required": [
+          "path",
+          "content"
+        ],
+        "type": "object"
+      },
+      "GitPullRequestRequest": {
+        "properties": {
+          "description": {
+            "description": "Optional pull request description",
+            "type": "string"
+          },
+          "files": {
+            "description": "List of files to include in the pull request",
+            "items": {
+              "$ref": "#/components/schemas/GitFile"
+            },
+            "minItems": 1,
+            "type": "array"
+          },
+          "title": {
+            "description": "Pull request title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "files",
+          "title"
+        ],
+        "type": "object"
+      },
+      "GitPullRequestResponse": {
+        "properties": {
+          "branch": {
+            "description": "Name of the branch created",
+            "type": "string"
+          },
+          "prUrl": {
+            "description": "URL of the created pull request",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
       "HelpTopic": {
         "properties": {
           "content": {
@@ -491,6 +546,59 @@
           }
         },
         "summary": "Add a favorite"
+      }
+    },
+    "/git/pull-request": {
+      "post": {
+        "description": "Accepts quickstart YAML files, validates them, clones the target repository, creates a branch, commits the files, pushes, and opens a pull request. Returns the PR URL.\n",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GitPullRequestRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/GitPullRequestResponse"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Pull request created successfully"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequest"
+                }
+              }
+            },
+            "description": "Bad request (validation error)"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequest"
+                }
+              }
+            },
+            "description": "Internal server error (git operation failed)"
+          }
+        },
+        "summary": "Create a pull request with quickstart files"
       }
     },
     "/helptopics": {
