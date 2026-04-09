@@ -26,6 +26,10 @@ RUN CGO_ENABLED=0 go build -o /go/bin/quickstarts-migrate cmd/migrate/migrate.go
  
 FROM registry.access.redhat.com/ubi9-minimal:latest
 
+RUN microdnf install -y git-core && \
+    microdnf clean all && \
+    git --version
+
 COPY --from=builder /go/bin/quickstarts /usr/bin
 COPY --from=builder /go/bin/quickstarts-migrate /usr/bin
 COPY --from=builder /src/mypackage/myapp/spec/openapi.json /var/tmp
