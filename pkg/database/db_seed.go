@@ -123,34 +123,48 @@ func seedQuickstart(tx *gorm.DB, t MetadataTemplate, defaultTag models.Tag) (mod
 		// Create new quickstart
 		newQuickstart.Content = jsonContent
 		newQuickstart.Name = name
-		tx.Create(&newQuickstart)
+		if err := tx.Create(&newQuickstart).Error; err != nil {
+			slog.Error("Failed to create quickstart", "name", name, "error", err)
+			return newQuickstart, err
+		}
 		err = tx.Model(&defaultTag).Association("Quickstarts").Append(&newQuickstart)
 		if err != nil {
 			slog.Error("Failed creating quickstarts default tag associations", "name", name, "error", err)
+			return newQuickstart, err
 		}
-		tx.Save(&defaultTag)
+		if err := tx.Save(&defaultTag).Error; err != nil {
+			slog.Error("Failed to save default tag after quickstart creation", "name", name, "error", err)
+			return newQuickstart, err
+		}
 		slog.Info("Created new quickstart", "name", name)
 		return newQuickstart, nil
 	} else {
 		// Update existing quickstart
 		originalQuickstart.Content = jsonContent
 		// Clear all tags associations
-		err := tx.Model(&originalQuickstart).Association("Tags").Clear()
-		if err != nil {
+		if err := tx.Model(&originalQuickstart).Association("Tags").Clear(); err != nil {
 			slog.Error("Failed clearing tags associations for quickstart", "name", name, "error", err)
+			return originalQuickstart, err
 		}
-		tx.Save(&originalQuickstart)
+		if err := tx.Save(&originalQuickstart).Error; err != nil {
+			slog.Error("Failed to save quickstart", "name", name, "error", err)
+			return originalQuickstart, err
+		}
 		err = tx.Model(&defaultTag).Association("Quickstarts").Append(&originalQuickstart)
 		if err != nil {
 			slog.Error("Failed creating quickstarts default tag associations", "name", name, "error", err)
+			return originalQuickstart, err
 		}
-		tx.Save(&defaultTag)
+		if err := tx.Save(&defaultTag).Error; err != nil {
+			slog.Error("Failed to save default tag after quickstart update", "name", name, "error", err)
+			return originalQuickstart, err
+		}
 		slog.Info("Updated existing quickstart", "name", name)
 		return originalQuickstart, nil
 	}
 }
 
-func seedDefaultTags(tx *gorm.DB) map[string]models.Tag {
+func seedDefaultTags(tx *gorm.DB) (map[string]models.Tag, error) {
 	slog.Info("Seeding default tags...")
 	quickstartsKindTag := models.Tag{
 		Type:  models.ContentKind,
@@ -163,22 +177,30 @@ func seedDefaultTags(tx *gorm.DB) map[string]models.Tag {
 	err := tx.Where("type = ? AND value = ?", &quickstartsKindTag.Type, &quickstartsKindTag.Value).FirstOrCreate(&quickstartsKindTag).Error
 	if err != nil {
 		slog.Error("Unable to create quickstarts kind tag", "error", err)
+		return nil, fmt.Errorf("failed to create quickstarts kind tag: %w", err)
 	}
 
 	err = tx.Where("type = ? AND value = ?", &helpTopicKindTag.Type, &helpTopicKindTag.Value).FirstOrCreate(&helpTopicKindTag).Error
 	if err != nil {
 		slog.Error("Unable to create help topic kind tag", "error", err)
+		return nil, fmt.Errorf("failed to create help topic kind tag: %w", err)
 	}
 
-	tx.Save(&quickstartsKindTag)
-	tx.Save(&helpTopicKindTag)
+	if err := tx.Save(&quickstartsKindTag).Error; err != nil {
+		slog.Error("Failed to save quickstarts kind tag", "error", err)
+		return nil, fmt.Errorf("failed to save quickstarts kind tag: %w", err)
+	}
+	if err := tx.Save(&helpTopicKindTag).Error; err != nil {
+		slog.Error("Failed to save help topic kind tag", "error", err)
+		return nil, fmt.Errorf("failed to save help topic kind tag: %w", err)
+	}
 
 	result := make(map[string]models.Tag)
 	result["quickstart"] = quickstartsKindTag
 	result["helptopic"] = helpTopicKindTag
 
 	slog.Info("Default tags seeded successfully")
-	return result
+	return result, nil
 }
 
 func seedHelpTopic(tx *gorm.DB, t MetadataTemplate, defaultTag models.Tag) ([]models.HelpTopic, error) {
@@ -219,12 +241,18 @@ func seedHelpTopic(tx *gorm.DB, t MetadataTemplate, defaultTag models.Tag) ([]mo
 				return returnValue, err
 			}
 			newHelpTopic.Name = fmt.Sprintf("%v", name)
-			tx.Create(&newHelpTopic)
-			err = tx.Model(&defaultTag).Association("HelpTopics").Append(&newHelpTopic)
-			if err != nil {
-				slog.Error("Failed creating help topic default tag associations", "name", name, "error", err)
+			if err := tx.Create(&newHelpTopic).Error; err != nil {
+				slog.Error("Failed to create help topic", "name", name, "error", err)
+				return returnValue, err
 			}
-			tx.Save(&defaultTag)
+			if err := tx.Model(&defaultTag).Association("HelpTopics").Append(&newHelpTopic); err != nil {
+				slog.Error("Failed creating help topic default tag associations", "name", name, "error", err)
+				return returnValue, err
+			}
+			if err := tx.Save(&defaultTag).Error; err != nil {
+				slog.Error("Failed to save default tag after help topic creation", "name", name, "error", err)
+				return returnValue, err
+			}
 			slog.Info("Created new help topic", "name", name, "group", t.Name)
 			returnValue = append(returnValue, newHelpTopic)
 		} else {
@@ -236,16 +264,22 @@ func seedHelpTopic(tx *gorm.DB, t MetadataTemplate, defaultTag models.Tag) ([]mo
 				return returnValue, err
 			}
 			// Clear all tags associations
-			err := tx.Model(&originalHelpTopic).Association("Tags").Clear()
-			if err != nil {
+			if err := tx.Model(&originalHelpTopic).Association("Tags").Clear(); err != nil {
 				slog.Error("Failed clearing tags associations for help topic", "name", name, "error", err)
+				return returnValue, err
 			}
-			tx.Save(&originalHelpTopic)
-			err = tx.Model(&defaultTag).Association("HelpTopics").Append(&originalHelpTopic)
-			if err != nil {
+			if err := tx.Save(&originalHelpTopic).Error; err != nil {
+				slog.Error("Failed to save help topic", "name", name, "error", err)
+				return returnValue, err
+			}
+			if err := tx.Model(&defaultTag).Association("HelpTopics").Append(&originalHelpTopic); err != nil {
 				slog.Error("Failed creating help topic default tag associations", "name", name, "error", err)
+				return returnValue, err
 			}
-			tx.Save(&defaultTag)
+			if err := tx.Save(&defaultTag).Error; err != nil {
+				slog.Error("Failed to save default tag after help topic update", "name", name, "error", err)
+				return returnValue, err
+			}
 			slog.Info("Updated existing help topic", "name", name, "group", t.Name)
 			returnValue = append(returnValue, originalHelpTopic)
 		}
@@ -253,7 +287,7 @@ func seedHelpTopic(tx *gorm.DB, t MetadataTemplate, defaultTag models.Tag) ([]mo
 	return returnValue, nil
 }
 
-func clearOldContent(tx *gorm.DB) []models.FavoriteQuickstart {
+func clearOldContent(tx *gorm.DB) ([]models.FavoriteQuickstart, error) {
 	slog.Info("Clearing old content...")
 	var favorites []models.FavoriteQuickstart
 	var staleQuickstartsTags []models.Tag
@@ -270,24 +304,51 @@ func clearOldContent(tx *gorm.DB) []models.FavoriteQuickstart {
 	tx.Preload("HelpTopics").Find(&staleTopicsTags)
 
 	for _, favorite := range favorites {
-		tx.Model(&favorite).Association("Quickstart").Clear()
-		tx.Unscoped().Delete(&favorite)
+		if err := tx.Model(&favorite).Association("Quickstart").Clear(); err != nil {
+			slog.Error("Failed to clear favorite quickstart association", "error", err)
+			return favorites, fmt.Errorf("failed to clear favorite association: %w", err)
+		}
+		if err := tx.Unscoped().Delete(&favorite).Error; err != nil {
+			slog.Error("Failed to delete favorite", "error", err)
+			return favorites, fmt.Errorf("failed to delete favorite: %w", err)
+		}
 	}
 
 	for _, tag := range append(staleQuickstartsTags, staleTopicsTags...) {
-		tx.Model(&tag).Association("Quickstarts").Clear()
-		tx.Model(&tag).Association("HelpTopics").Clear()
-		tx.Unscoped().Delete(&tag)
+		if err := tx.Model(&tag).Association("Quickstarts").Clear(); err != nil {
+			slog.Error("Failed to clear tag quickstarts association", "tag", tag.Value, "error", err)
+			return favorites, fmt.Errorf("failed to clear tag quickstarts association: %w", err)
+		}
+		if err := tx.Model(&tag).Association("HelpTopics").Clear(); err != nil {
+			slog.Error("Failed to clear tag help topics association", "tag", tag.Value, "error", err)
+			return favorites, fmt.Errorf("failed to clear tag help topics association: %w", err)
+		}
+		if err := tx.Unscoped().Delete(&tag).Error; err != nil {
+			slog.Error("Failed to delete tag", "tag", tag.Value, "error", err)
+			return favorites, fmt.Errorf("failed to delete tag: %w", err)
+		}
 	}
 
 	for _, q := range staleQuickstarts {
-		tx.Model(&q).Association("Tags").Clear()
-		tx.Unscoped().Delete(&q)
+		if err := tx.Model(&q).Association("Tags").Clear(); err != nil {
+			slog.Error("Failed to clear quickstart tags association", "name", q.Name, "error", err)
+			return favorites, fmt.Errorf("failed to clear quickstart tags: %w", err)
+		}
+		if err := tx.Unscoped().Delete(&q).Error; err != nil {
+			slog.Error("Failed to delete quickstart", "name", q.Name, "error", err)
+			return favorites, fmt.Errorf("failed to delete quickstart: %w", err)
+		}
 	}
 
 	for _, h := range staleHelpTopics {
-		tx.Model(&h).Association("Tags").Clear()
-		tx.Unscoped().Delete(&h)
+		if err := tx.Model(&h).Association("Tags").Clear(); err != nil {
+			slog.Error("Failed to clear help topic tags association", "name", h.Name, "error", err)
+			return favorites, fmt.Errorf("failed to clear help topic tags: %w", err)
+		}
+		if err := tx.Unscoped().Delete(&h).Error; err != nil {
+			slog.Error("Failed to delete help topic", "name", h.Name, "error", err)
+			return favorites, fmt.Errorf("failed to delete help topic: %w", err)
+		}
 	}
 
 	slog.Info("Cleared old content",
@@ -295,17 +356,20 @@ func clearOldContent(tx *gorm.DB) []models.FavoriteQuickstart {
 		"quickstarts", len(staleQuickstarts),
 		"help_topics", len(staleHelpTopics),
 		"tags", len(staleQuickstartsTags)+len(staleTopicsTags))
-	return favorites
+	return favorites, nil
 }
 
-func seedFavorites(tx *gorm.DB, favorites []models.FavoriteQuickstart) {
+func seedFavorites(tx *gorm.DB, favorites []models.FavoriteQuickstart) error {
 	seedSuccess := 0
 	ignoredFalse := 0
 	for _, favorite := range favorites {
 		var quickstart models.Quickstart
 		result := tx.Where("name = ?", favorite.QuickstartName).First(&quickstart)
 		if result.Error == nil && result.RowsAffected != 0 && favorite.Favorite {
-			tx.Create(&favorite)
+			if err := tx.Create(&favorite).Error; err != nil {
+				slog.Error("Failed to re-create favorite", "name", favorite.QuickstartName, "error", err)
+				return fmt.Errorf("failed to re-create favorite %s: %w", favorite.QuickstartName, err)
+			}
 			seedSuccess++
 		} else if !favorite.Favorite {
 			ignoredFalse++
@@ -319,6 +383,7 @@ func seedFavorites(tx *gorm.DB, favorites []models.FavoriteQuickstart) {
 		"total", len(favorites),
 		"ignored_unfavorited", ignoredFalse,
 		"not_found", len(favorites)-seedSuccess-ignoredFalse)
+	return nil
 }
 
 // findOrCreateTag looks up a tag by type and value, creating it if it doesn't
@@ -372,9 +437,15 @@ func SeedTags() {
 		acquireAdvisoryLockIfSupported(tx)
 
 		// clear old content phase
-		favorites := clearOldContent(tx)
+		favorites, err := clearOldContent(tx)
+		if err != nil {
+			return fmt.Errorf("clear old content failed: %w", err)
+		}
 		// seeding phase
-		defaultTags := seedDefaultTags(tx)
+		defaultTags, err := seedDefaultTags(tx)
+		if err != nil {
+			return fmt.Errorf("seed default tags failed: %w", err)
+		}
 
 		quickstartCount := 0
 		quickstartErrorCount := 0
@@ -399,7 +470,10 @@ func SeedTags() {
 
 				// Clear all tags associations
 				quickstart.Tags = tags
-				tx.Save(&quickstart)
+				if err := tx.Save(&quickstart).Error; err != nil {
+					slog.Error("Failed to save quickstart after clearing tags", "name", quickstart.Name, "error", err)
+					return fmt.Errorf("failed to save quickstart %s: %w", quickstart.Name, err)
+				}
 
 				for _, tagTemplate := range template.Tags {
 					foundTag, err := findOrCreateTag(tx, "Quickstarts",
@@ -407,19 +481,25 @@ func SeedTags() {
 					if err != nil {
 						slog.Error("Database error while finding tag",
 							"type", tagTemplate.Kind, "value", tagTemplate.Value, "error", err)
-						continue
+						return fmt.Errorf("failed to find/create tag %s/%s: %w", tagTemplate.Kind, tagTemplate.Value, err)
 					}
 
 					if err := tx.Model(&foundTag).Association("Quickstarts").Append(&quickstart); err != nil {
 						slog.Error("Failed creating tag association for quickstart",
 							"quickstart", quickstart.Name, "tag_type", tagTemplate.Kind,
 							"tag_value", tagTemplate.Value, "error", err)
-						continue
+						return fmt.Errorf("failed to associate tag with quickstart %s: %w", quickstart.Name, err)
 					}
 
 					quickstart.Tags = append(quickstart.Tags, foundTag)
-					tx.Save(&quickstart)
-					tx.Save(&foundTag)
+					if err := tx.Save(&quickstart).Error; err != nil {
+						slog.Error("Failed to save quickstart after tag association", "name", quickstart.Name, "error", err)
+						return fmt.Errorf("failed to save quickstart %s: %w", quickstart.Name, err)
+					}
+					if err := tx.Save(&foundTag).Error; err != nil {
+						slog.Error("Failed to save tag", "type", tagTemplate.Kind, "value", tagTemplate.Value, "error", err)
+						return fmt.Errorf("failed to save tag %s/%s: %w", tagTemplate.Kind, tagTemplate.Value, err)
+					}
 				}
 			}
 
@@ -438,22 +518,25 @@ func SeedTags() {
 					if err != nil {
 						slog.Error("Database error while finding tag",
 							"type", tagTemplate.Kind, "value", tagTemplate.Value, "error", err)
-						continue
+						return fmt.Errorf("failed to find/create tag %s/%s: %w", tagTemplate.Kind, tagTemplate.Value, err)
 					}
 
 					if err := tx.Model(&foundTag).Association("HelpTopics").Clear(); err != nil {
 						slog.Error("Failed clearing help topic tag associations",
 							"tag_type", tagTemplate.Kind, "tag_value", tagTemplate.Value, "error", err)
-						continue
+						return fmt.Errorf("failed to clear help topic tag associations: %w", err)
 					}
 
 					if err := tx.Model(&foundTag).Association("HelpTopics").Append(&helpTopic); err != nil {
 						slog.Error("Failed creating tag association for help topics",
 							"tag_type", tagTemplate.Kind, "tag_value", tagTemplate.Value, "error", err)
-						continue
+						return fmt.Errorf("failed to associate tag with help topics: %w", err)
 					}
 
-					tx.Save(&foundTag)
+					if err := tx.Save(&foundTag).Error; err != nil {
+						slog.Error("Failed to save tag", "type", tagTemplate.Kind, "value", tagTemplate.Value, "error", err)
+						return fmt.Errorf("failed to save tag %s/%s: %w", tagTemplate.Kind, tagTemplate.Value, err)
+					}
 				}
 			}
 		}
@@ -464,7 +547,9 @@ func SeedTags() {
 			"help_topics", helpTopicCount,
 			"help_topic_errors", helpTopicErrorCount)
 
-		seedFavorites(tx, favorites)
+		if err := seedFavorites(tx, favorites); err != nil {
+			return fmt.Errorf("seed favorites failed: %w", err)
+		}
 		return nil
 	})
 
