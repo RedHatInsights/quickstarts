@@ -331,3 +331,17 @@ json.NewEncoder(w).Encode(resp)
 ---
 
 For questions about the API architecture, refer to `spec/openapi.yaml` as the authoritative source of API behavior, with implementation details in `pkg/routes/server_adapter.go`.
+
+## Documentation
+
+| Document | Description |
+|----------|-------------|
+| [AGENTS.md](AGENTS.md) | AI agent onboarding guide, conventions, project overview |
+| [CONTRIBUTING.md](CONTRIBUTING.md) | Setup, development workflow, PR guidelines |
+| [Architecture](docs/ARCHITECTURE.md) | System design, deployment, data flow |
+| [Testing Guidelines](docs/testing-guidelines.md) | Test patterns, SQLite setup, TestMain convention |
+| [API Development Guidelines](docs/api-development-guidelines.md) | Spec-first workflow, parameter handling |
+| [Database Guidelines](docs/database-guidelines.md) | GORM patterns, models, seeding |
+| [Fuzzy Search](docs/developers/FUZZY_SEARCH.md) | Fuzzy search implementation details |
+| [Quickstarts Content](docs/quickstarts/README.md) | How to create/edit quickstart content |
+| [Help Topics Content](docs/help-topics/README.md) | How to create/edit help topic content |
