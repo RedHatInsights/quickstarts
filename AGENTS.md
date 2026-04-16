@@ -132,15 +132,6 @@ Success responses wrap data in a `{"data": [...]}` envelope. Single-item respons
 5. **Content YAML structure** — quickstart metadata files have a specific format. Use `make validate` to check content before committing.
 6. **Legacy parameter support** — removing legacy `[]` parameter format breaks existing frontend clients. Always maintain backward compatibility.
 
-## Documentation Index
+## Documentation
 
-| Document | Description |
-|----------|-------------|
-| [Testing Guidelines](docs/testing-guidelines.md) | Test patterns, SQLite setup, TestMain convention |
-| [API Development Guidelines](docs/api-development-guidelines.md) | OpenAPI spec-first workflow, parameter handling, endpoints |
-| [Database Guidelines](docs/database-guidelines.md) | GORM patterns, models, seeding, migrations |
-| [Architecture](docs/ARCHITECTURE.md) | System design, deployment, data flow |
-| [Contributing](CONTRIBUTING.md) | Setup, workflow, PR conventions |
-| [Quickstarts Content Guide](docs/quickstarts/README.md) | How to create/edit quickstart content |
-| [Help Topics Content Guide](docs/help-topics/README.md) | How to create/edit help topic content |
-| [Fuzzy Search](docs/developers/FUZZY_SEARCH.md) | Fuzzy search implementation details |
+See the [Documentation section in README.md](README.md#documentation) for the full index of project docs (architecture, testing, API development, database guidelines, content guides, etc.).

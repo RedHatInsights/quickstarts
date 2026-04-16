@@ -49,6 +49,8 @@ docs/help-topics/*/metadata.yaml  ──┤
 
 The seeding process runs inside a PostgreSQL transaction with an advisory lock (`pg_advisory_xact_lock`) to prevent race conditions when multiple pods start simultaneously.
 
+**Favorites preservation**: Before clearing content, `clearOldContent()` reads all `FavoriteQuickstart` records into memory. After seeding new content, `seedFavorites()` re-creates the favorites by matching each saved favorite's `QuickstartName` against the newly seeded quickstarts. Favorites whose quickstart no longer exists (removed from YAML) are silently dropped. See `pkg/database/db_seed.go` for the implementation.
+
 ## Deployment Architecture
 
 ### Kubernetes / ClowdApp

@@ -94,7 +94,7 @@ go test ./pkg/database -run TestSeedTags -v
 make coverage
 ```
 
-Tests use SQLite in-memory databases. See [Testing Guidelines](docs/testing-guidelines.md) for patterns and conventions.
+Tests use SQLite databases backed by timestamped `.db` files on disk that are cleaned up in test teardown. See [Testing Guidelines](docs/testing-guidelines.md) for patterns and conventions.
 
 ## Project Structure
 
