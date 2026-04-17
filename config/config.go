@@ -9,18 +9,19 @@ import (
 )
 
 type QuickstartsConfig struct {
-	ServerAddr      string
-	OpenApiSpecPath string
-	DbHost          string
-	DbUser          string
-	DbPassword      string
-	DbPort          int
-	DbName          string
-	MetricsPort     int
-	Test            bool
-	DbSSLMode       string
-	DbSSLRootCert   string
-	LogLevel        string
+	ServerAddr             string
+	OpenApiSpecPath        string
+	DbHost                 string
+	DbUser                 string
+	DbPassword             string
+	DbPort                 int
+	DbName                 string
+	MetricsPort            int
+	Test                   bool
+	DbSSLMode              string
+	DbSSLRootCert          string
+	LogLevel               string
+	MaxFuzzySearchDistance int // Max Levenshtein distance for fuzzy search (typo tolerance)
 }
 
 var config *QuickstartsConfig
@@ -37,6 +38,24 @@ func Init() {
 		level = logrus.ErrorLevel.String()
 	}
 	config.LogLevel = level
+	config.MaxFuzzySearchDistance = 3
+
+	// Set fuzzy search distance threshold (default: 3)
+	// This controls how many character changes are allowed in fuzzy search
+	fuzzyThreshold, ok := os.LookupEnv("FUZZY_SEARCH_DISTANCE_THRESHOLD")
+	if ok {
+		threshold, err := strconv.Atoi(fuzzyThreshold)
+		if err != nil || threshold < 0 {
+			logrus.Warnf(
+				"Invalid FUZZY_SEARCH_DISTANCE_THRESHOLD=%q: must be an integer; using default %d",
+				fuzzyThreshold,
+				config.MaxFuzzySearchDistance,
+			)
+		} else {
+			config.MaxFuzzySearchDistance = threshold
+		}
+	}
+
 	if clowder.IsClowderEnabled() {
 		cfg := clowder.LoadedConfig
 		config.DbHost = cfg.Database.Hostname

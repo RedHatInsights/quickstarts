@@ -12,6 +12,12 @@ import (
 )
 
 var DB *gorm.DB
+var isFuzzySearchSupported bool
+
+// IsFuzzySearchSupported returns true if the database supports Levenshtein fuzzy search
+func IsFuzzySearchSupported() bool {
+	return isFuzzySearchSupported
+}
 
 func Init() {
 	var err error
@@ -33,6 +39,24 @@ func Init() {
 
 	DB, err = gorm.Open(dia, &gorm.Config{})
 
+	if err != nil {
+		panic(fmt.Sprintf("failed to connect database: %s", err.Error()))
+	}
+
+	// Enable fuzzystrmatch extension for Levenshtein distance fuzzy search (postgres only)
+	if cfg.Test {
+		logrus.Info("Using SQLite - fuzzy search will fall back to ILIKE")
+		isFuzzySearchSupported = false
+	} else {
+		if err := DB.Exec("CREATE EXTENSION IF NOT EXISTS fuzzystrmatch").Error; err != nil {
+			logrus.Warnf("Failed to enable fuzzystrmatch extension: %s", err.Error())
+			isFuzzySearchSupported = false
+		} else {
+			logrus.Info("Fuzzystrmatch extension enabled for fuzzy search")
+			isFuzzySearchSupported = true
+		}
+	}
+
 	if !DB.Migrator().HasTable(&models.Quickstart{}) {
 		DB.Migrator().CreateTable(&models.Quickstart{})
 	}
@@ -44,10 +68,6 @@ func Init() {
 	}
 	if !DB.Migrator().HasTable(&models.FavoriteQuickstart{}) {
 		DB.Migrator().CreateTable(&models.FavoriteQuickstart{})
-	}
-
-	if err != nil {
-		panic(fmt.Sprintf("failed to connect database: %s", err.Error()))
 	}
 
 	logrus.Infoln("Database connection established")

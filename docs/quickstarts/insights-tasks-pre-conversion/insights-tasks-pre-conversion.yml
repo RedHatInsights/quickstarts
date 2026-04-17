@@ -164,14 +164,15 @@ spec:
         1. The pre-conversion analysis utility generates a new report in the **Activity** tab. Select the report to view a summary of issues found in each system.
 
         1. After task completion, you can drill down further by selecting a system to view each issue and, when applicable, a potential remediation in detail.<br>
-        <br>
-        Each issue is assigned a severity level:         
-              - **Inhibitor:** Would cause the conversion to fail because it is very likely to result in a deteriorated system state. This issue must be resolved before converting.
-              - **Overridable inhibitor**: Would cause the conversion to fail because it is very likely to result in a deteriorated system state. This issue must be resolved or manually overridden before converting.
-              - **Skipped:** This test could not be run because a prerequisite test failed, which could cause the conversion to fail.
-              - **Warning:** Would not cause the conversion to fail. System and application issues might occur after the conversion.
-              - **Info:** Informational with no expected impact to the system or applications.
-              - **Ready for conversion:** No issues were found.
+
+            Each issue is assigned a severity level:
+
+            - **Inhibitor:** Would cause the conversion to fail because it is very likely to result in a deteriorated system state. This issue must be resolved before converting.
+            - **Overridable inhibitor**: Would cause the conversion to fail because it is very likely to result in a deteriorated system state. This issue must be resolved or manually overridden before converting.
+            - **Skipped:** This test could not be run because a prerequisite test failed, which could cause the conversion to fail.
+            - **Warning:** Would not cause the conversion to fail. System and application issues might occur after the conversion.
+            - **Info:** Informational with no expected impact to the system or applications.
+            - **Ready for conversion:** No issues were found.
         
           <details>
             <summary><span style="color:#0066CC">&nbsp**Why did the Pre-conversion analysis task fail to be completed?**</span></summary>
@@ -212,10 +213,9 @@ spec:
         1. Convert to RHEL with the “Convert to RHEL from CentOS Linux 7” task or the command-line interface. For more information, see [converting from an RPM-based Linux distribution to RHEL.](https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/html-single/converting_from_a_linux_distribution_to_rhel_using_the_convert2rhel_utility_in_red_hat_lightspeed/index) 
 
   conclusion: |-
-    <br>
     **Thank you for taking the time to explore this feature!**
 
-    For additional information about tasks, [visit the documentation for remediating systems using tasks in Red Hat Lightspeed.](https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/html-single/assessing_and_remediating_system_issues_using_red_hat_lightspeed_tasks/index)
+    For additional information about tasks, [visit the documentation for remediating systems using tasks in Red Hat Lightspeed.](https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/html-single/assessing_and_remediating_system_issues_by_using_red_hat_lightspeed_tasks/index)
 
     For additional information about conversions, [visit the conversion documentation.](https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/html-single/converting_from_a_linux_distribution_to_rhel_using_the_convert2rhel_utility_in_red_hat_lightspeed/index)
 

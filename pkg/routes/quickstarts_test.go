@@ -68,6 +68,10 @@ func setupRouter() *chi.Mux {
 		if displayName := query.Get("display-name"); displayName != "" {
 			params.DisplayName = &displayName
 		}
+		if fuzzy := query.Get("fuzzy"); fuzzy == "true" {
+			fuzzyBool := true
+			params.Fuzzy = &fuzzyBool
+		}
 
 		// Handle array parameters
 		if bundles := query["bundle"]; len(bundles) > 0 {
@@ -378,5 +382,454 @@ func TestGetAll(t *testing.T) {
 		fmt.Println(response.Body)
 		assert.Equal(t, 200, response.Code)
 		assert.Equal(t, 1, len(payload.Data))
+	})
+}
+
+func TestFuzzySearch(t *testing.T) {
+	// IMPORTANT: These tests validate word-by-word fuzzy matching which requires PostgreSQL.
+	//
+	// The test suite runs on SQLite by default, which does NOT support:
+	// - PostgreSQL Levenshtein distance functions (fuzzystrmatch extension)
+	// - PostgreSQL ILIKE operator
+	// - PostgreSQL JSON operators (->>, ->)
+	//
+	// As a result, most of these tests will FAIL when run with `make test` (SQLite).
+	// These tests are designed to validate the PostgreSQL implementation and should
+	// pass when running against a real PostgreSQL database.
+	//
+	// Fuzzy search uses word-by-word Levenshtein matching:
+	// 1. Both query and display names are split into words
+	// 2. Each query word is matched to the closest word in the display name
+	// 3. All query words must match within the threshold (default: 3)
+	// 4. Results are ordered by total distance (sum of all word distances)
+	//
+	// To run these tests against PostgreSQL:
+	// 1. Start PostgreSQL: make infra
+	// 2. Run migrations: make migrate
+	// 3. Run the server and test manually with curl
+
+	if !database.IsFuzzySearchSupported() {
+		t.Skip("Fuzzy search tests require PostgreSQL with fuzzystrmatch extension")
+	}
+
+	router := setupRouter()
+
+	// Create quickstarts with realistic display names for fuzzy search testing
+	qs1 := models.Quickstart{
+		Name:    "getting-started-openshift",
+		Content: []byte(`{"spec":{"displayName":"Getting Started with OpenShift"}}`),
+	}
+	database.DB.Create(&qs1)
+
+	qs2 := models.Quickstart{
+		Name:    "ansible-automation-platform",
+		Content: []byte(`{"spec":{"displayName":"Ansible Automation Platform"}}`),
+	}
+	database.DB.Create(&qs2)
+
+	qs3 := models.Quickstart{
+		Name:    "configure-remediations",
+		Content: []byte(`{"spec":{"displayName":"Configure Remediations"}}`),
+	}
+	database.DB.Create(&qs3)
+
+	qs4 := models.Quickstart{
+		Name:    "monitoring-kubernetes",
+		Content: []byte(`{"spec":{"displayName":"Monitoring Kubernetes Clusters"}}`),
+	}
+	database.DB.Create(&qs4)
+
+	qs5 := models.Quickstart{
+		Name:    "security-compliance",
+		Content: []byte(`{"spec":{"displayName":"Security and Compliance"}}`),
+	}
+	database.DB.Create(&qs5)
+
+	qs6 := models.Quickstart{
+		Name:    "deploy-java-app",
+		Content: []byte(`{"spec":{"displayName":"Deploy a Java Application"}}`),
+	}
+	database.DB.Create(&qs6)
+
+	qs7 := models.Quickstart{
+		Name:    "automation-hub-intro",
+		Content: []byte(`{"spec":{"displayName":"Getting started with automation hub"}}`),
+	}
+	database.DB.Create(&qs7)
+
+	t.Run("Word-by-word: two-word query with typos 'Geting Startd'", func(t *testing.T) {
+		// Word-by-word matching: "Geting" → "Getting" (dist:1), "Startd" → "Started" (dist:1)
+		// Total distance: 2 (well within threshold of 3)
+		request, _ := http.NewRequest(http.MethodGet, "/?display-name=Geting Startd&fuzzy=true", nil)
+		response := httptest.NewRecorder()
+		router.ServeHTTP(response, request)
+
+		var payload *ResponsePayload
+		json.NewDecoder(response.Body).Decode(&payload)
+		assert.Equal(t, 200, response.Code)
+		assert.GreaterOrEqual(t, len(payload.Data), 1, "Should find 'Getting Started with OpenShift'")
+	})
+
+	t.Run("Word-by-word: single-word query with typo 'Openshft'", func(t *testing.T) {
+		// Single word "Openshft" matches "OpenShift" (dist:1) in any quickstart
+		request, _ := http.NewRequest(http.MethodGet, "/?display-name=Openshft&fuzzy=true", nil)
+		response := httptest.NewRecorder()
+		router.ServeHTTP(response, request)
+
+		var payload *ResponsePayload
+		json.NewDecoder(response.Body).Decode(&payload)
+		assert.Equal(t, 200, response.Code)
+		assert.GreaterOrEqual(t, len(payload.Data), 1, "Should find 'Getting Started with OpenShift'")
+	})
+
+	t.Run("Word-by-word: single-word query 'Ansibel' finds 'Ansible'", func(t *testing.T) {
+		// Single word "Ansibel" matches "Ansible" (dist:2) in display names
+		request, _ := http.NewRequest(http.MethodGet, "/?display-name=Ansibel&fuzzy=true", nil)
+		response := httptest.NewRecorder()
+		router.ServeHTTP(response, request)
+
+		var payload *ResponsePayload
+		json.NewDecoder(response.Body).Decode(&payload)
+		assert.Equal(t, 200, response.Code)
+		assert.GreaterOrEqual(t, len(payload.Data), 1, "Should find 'Ansible Automation Platform'")
+	})
+
+	t.Run("Word-by-word: 'Automaton' matches 'Automation'", func(t *testing.T) {
+		// "Automaton" matches "Automation" (dist:1) - one character deletion
+		request, _ := http.NewRequest(http.MethodGet, "/?display-name=Automaton&fuzzy=true", nil)
+		response := httptest.NewRecorder()
+		router.ServeHTTP(response, request)
+
+		var payload *ResponsePayload
+		json.NewDecoder(response.Body).Decode(&payload)
+		assert.Equal(t, 200, response.Code)
+		assert.GreaterOrEqual(t, len(payload.Data), 1, "Should find 'Ansible Automation Platform' and 'automation hub'")
+	})
+
+	t.Run("should find 'Remediations' with typo 'Remidations'", func(t *testing.T) {
+		// Search for "Remidations" (missing 'e')
+		request, _ := http.NewRequest(http.MethodGet, "/?display-name=Remidations&fuzzy=true", nil)
+		response := httptest.NewRecorder()
+		router.ServeHTTP(response, request)
+
+		var payload *ResponsePayload
+		json.NewDecoder(response.Body).Decode(&payload)
+		assert.Equal(t, 200, response.Code)
+		assert.GreaterOrEqual(t, len(payload.Data), 1, "Should find 'Configure Remediations'")
+	})
+
+	t.Run("should find 'Configure' with typo 'Confgure'", func(t *testing.T) {
+		// Search for "Confgure" (missing 'i')
+		request, _ := http.NewRequest(http.MethodGet, "/?display-name=Confgure&fuzzy=true", nil)
+		response := httptest.NewRecorder()
+		router.ServeHTTP(response, request)
+
+		var payload *ResponsePayload
+		json.NewDecoder(response.Body).Decode(&payload)
+		assert.Equal(t, 200, response.Code)
+		assert.GreaterOrEqual(t, len(payload.Data), 1, "Should find 'Configure Remediations'")
+	})
+
+	t.Run("Word-by-word: 'Kuberntes' matches 'Kubernetes'", func(t *testing.T) {
+		// "Kuberntes" matches "Kubernetes" (dist:1) - missing one 'e'
+		request, _ := http.NewRequest(http.MethodGet, "/?display-name=Kuberntes&fuzzy=true", nil)
+		response := httptest.NewRecorder()
+		router.ServeHTTP(response, request)
+
+		var payload *ResponsePayload
+		json.NewDecoder(response.Body).Decode(&payload)
+		assert.Equal(t, 200, response.Code)
+		assert.GreaterOrEqual(t, len(payload.Data), 1, "Should find 'Monitoring Kubernetes Clusters'")
+	})
+
+	t.Run("should find 'Monitoring' with typo 'Monitring'", func(t *testing.T) {
+		// Search for "Monitring" (missing 'o')
+		request, _ := http.NewRequest(http.MethodGet, "/?display-name=Monitring&fuzzy=true", nil)
+		response := httptest.NewRecorder()
+		router.ServeHTTP(response, request)
+
+		var payload *ResponsePayload
+		json.NewDecoder(response.Body).Decode(&payload)
+		assert.Equal(t, 200, response.Code)
+		assert.GreaterOrEqual(t, len(payload.Data), 1, "Should find 'Monitoring Kubernetes Clusters'")
+	})
+
+	t.Run("should find 'Clusters' with typo 'Clustrs'", func(t *testing.T) {
+		// Search for "Clustrs" (missing 'e')
+		request, _ := http.NewRequest(http.MethodGet, "/?display-name=Clustrs&fuzzy=true", nil)
+		response := httptest.NewRecorder()
+		router.ServeHTTP(response, request)
+
+		var payload *ResponsePayload
+		json.NewDecoder(response.Body).Decode(&payload)
+		assert.Equal(t, 200, response.Code)
+		assert.GreaterOrEqual(t, len(payload.Data), 1, "Should find 'Monitoring Kubernetes Clusters'")
+	})
+
+	t.Run("should find 'Security' with typo 'Securty'", func(t *testing.T) {
+		// Search for "Securty" (missing 'i')
+		request, _ := http.NewRequest(http.MethodGet, "/?display-name=Securty&fuzzy=true", nil)
+		response := httptest.NewRecorder()
+		router.ServeHTTP(response, request)
+
+		var payload *ResponsePayload
+		json.NewDecoder(response.Body).Decode(&payload)
+		assert.Equal(t, 200, response.Code)
+		assert.GreaterOrEqual(t, len(payload.Data), 1, "Should find 'Security and Compliance'")
+	})
+
+	t.Run("should find 'Compliance' with typo 'Complance'", func(t *testing.T) {
+		// Search for "Complance" (missing 'i')
+		request, _ := http.NewRequest(http.MethodGet, "/?display-name=Complance&fuzzy=true", nil)
+		response := httptest.NewRecorder()
+		router.ServeHTTP(response, request)
+
+		var payload *ResponsePayload
+		json.NewDecoder(response.Body).Decode(&payload)
+		assert.Equal(t, 200, response.Code)
+		assert.GreaterOrEqual(t, len(payload.Data), 1, "Should find 'Security and Compliance'")
+	})
+
+	t.Run("should find with case insensitive search 'openshift' lowercase", func(t *testing.T) {
+		// Search for "openshift" in lowercase
+		request, _ := http.NewRequest(http.MethodGet, "/?display-name=openshift&fuzzy=true", nil)
+		response := httptest.NewRecorder()
+		router.ServeHTTP(response, request)
+
+		var payload *ResponsePayload
+		json.NewDecoder(response.Body).Decode(&payload)
+		assert.Equal(t, 200, response.Code)
+		assert.GreaterOrEqual(t, len(payload.Data), 1, "Should find 'Getting Started with OpenShift' (case insensitive)")
+	})
+
+	t.Run("Word-by-word: multiple typos 'Ansble Automatn'", func(t *testing.T) {
+		// "Ansble" → "Ansible" (dist:1), "Automatn" → "Automation" (dist:1)
+		// Total distance: 2 (within threshold)
+		request, _ := http.NewRequest(http.MethodGet, "/?display-name=Ansble Automatn&fuzzy=true", nil)
+		response := httptest.NewRecorder()
+		router.ServeHTTP(response, request)
+
+		var payload *ResponsePayload
+		json.NewDecoder(response.Body).Decode(&payload)
+		assert.Equal(t, 200, response.Code)
+		assert.GreaterOrEqual(t, len(payload.Data), 1, "Should find 'Ansible Automation Platform'")
+	})
+
+	t.Run("should not find with regular search when typo exists", func(t *testing.T) {
+		// Without fuzzy search, exact ILIKE match won't find "Geting" in "Getting"
+		request, _ := http.NewRequest(http.MethodGet, "/?display-name=Geting Started", nil)
+		response := httptest.NewRecorder()
+		router.ServeHTTP(response, request)
+
+		var payload *ResponsePayload
+		json.NewDecoder(response.Body).Decode(&payload)
+		assert.Equal(t, 200, response.Code)
+		assert.Equal(t, 0, len(payload.Data), "Regular search should not find results with typos")
+	})
+
+	t.Run("should respect distance threshold with completely wrong term", func(t *testing.T) {
+		// Search with completely unrelated term (high distance)
+		request, _ := http.NewRequest(http.MethodGet, "/?display-name=XyzAbc&fuzzy=true", nil)
+		response := httptest.NewRecorder()
+		router.ServeHTTP(response, request)
+
+		var payload *ResponsePayload
+		json.NewDecoder(response.Body).Decode(&payload)
+		assert.Equal(t, 200, response.Code)
+		assert.Equal(t, 0, len(payload.Data), "Should not find anything with very high distance")
+	})
+
+	t.Run("should work with exact match in fuzzy search", func(t *testing.T) {
+		// Fuzzy search should still work with exact matches
+		request, _ := http.NewRequest(http.MethodGet, "/?display-name=Ansible&fuzzy=true", nil)
+		response := httptest.NewRecorder()
+		router.ServeHTTP(response, request)
+
+		var payload *ResponsePayload
+		json.NewDecoder(response.Body).Decode(&payload)
+		assert.Equal(t, 200, response.Code)
+		assert.GreaterOrEqual(t, len(payload.Data), 1, "Fuzzy search should work with exact matches")
+	})
+
+	t.Run("should find partial word match with typo", func(t *testing.T) {
+		// Search for "Kubernetis" (typo in partial word)
+		request, _ := http.NewRequest(http.MethodGet, "/?display-name=Kubernetis&fuzzy=true", nil)
+		response := httptest.NewRecorder()
+		router.ServeHTTP(response, request)
+
+		var payload *ResponsePayload
+		json.NewDecoder(response.Body).Decode(&payload)
+		assert.Equal(t, 200, response.Code)
+		assert.GreaterOrEqual(t, len(payload.Data), 1, "Should find 'Monitoring Kubernetes Clusters'")
+	})
+
+	t.Run("should order results by relevance (distance)", func(t *testing.T) {
+		// Create two quickstarts with similar names
+		qs6 := models.Quickstart{
+			Name:    "getting-guide",
+			Content: []byte(`{"spec":{"displayName":"Getting"}}`),
+		}
+		database.DB.Create(&qs6)
+
+		// Search for "Geting" - should find "Getting" before "Getting Started with OpenShift"
+		request, _ := http.NewRequest(http.MethodGet, "/?display-name=Geting&fuzzy=true", nil)
+		response := httptest.NewRecorder()
+		router.ServeHTTP(response, request)
+
+		var payload *ResponsePayload
+		json.NewDecoder(response.Body).Decode(&payload)
+		assert.Equal(t, http.StatusOK, response.Code)
+		// We expect at least the two relevant quickstarts to be returned
+		if assert.GreaterOrEqual(t, len(payload.Data), 2, "should return at least two fuzzy matches") {
+			// First result should be the closer match "getting-guide"
+			assert.Equal(t, "getting-guide", payload.Data[0].Name, "first result should be the closest match")
+
+			// Ensure "getting-started-openshift" appears later in the results
+			foundLater := false
+			for i := 1; i < len(payload.Data); i++ {
+				if payload.Data[i].Name == "getting-started-openshift" {
+					foundLater = true
+					break
+				}
+			}
+			assert.True(t, foundLater, `"getting-started-openshift" should appear after "getting-guide" in ordered results`)
+		}
+	})
+
+	t.Run("should find multi-word phrase 'Getting Started'", func(t *testing.T) {
+		// Search for exact multi-word phrase
+		request, _ := http.NewRequest(http.MethodGet, "/?display-name=Getting Started&fuzzy=true", nil)
+		response := httptest.NewRecorder()
+		router.ServeHTTP(response, request)
+
+		var payload *ResponsePayload
+		json.NewDecoder(response.Body).Decode(&payload)
+		assert.Equal(t, 200, response.Code)
+		assert.GreaterOrEqual(t, len(payload.Data), 1, "Should find 'Getting Started with OpenShift'")
+	})
+
+	t.Run("Word-by-word: three-word query 'Geting Startd Openshft'", func(t *testing.T) {
+		// Three-word query: "Geting" → "Getting" (1), "Startd" → "Started" (1), "Openshft" → "OpenShift" (1)
+		// Total distance: 3 (exactly at threshold)
+		request, _ := http.NewRequest(http.MethodGet, "/?display-name=Geting Startd Openshft&fuzzy=true", nil)
+		response := httptest.NewRecorder()
+		router.ServeHTTP(response, request)
+
+		var payload *ResponsePayload
+		json.NewDecoder(response.Body).Decode(&payload)
+		assert.Equal(t, 200, response.Code)
+		assert.GreaterOrEqual(t, len(payload.Data), 1, "Should find 'Getting Started with OpenShift'")
+	})
+
+	t.Run("should find phrase 'Ansible Automation' with typo 'Ansble Automaton'", func(t *testing.T) {
+		// Search for phrase with multiple typos
+		request, _ := http.NewRequest(http.MethodGet, "/?display-name=Ansble Automaton&fuzzy=true", nil)
+		response := httptest.NewRecorder()
+		router.ServeHTTP(response, request)
+
+		var payload *ResponsePayload
+		json.NewDecoder(response.Body).Decode(&payload)
+		assert.Equal(t, 200, response.Code)
+		assert.GreaterOrEqual(t, len(payload.Data), 1, "Should find 'Ansible Automation Platform'")
+	})
+
+	t.Run("should find phrase 'Monitoring Kubernetes' exactly", func(t *testing.T) {
+		// Search for exact two-word phrase
+		request, _ := http.NewRequest(http.MethodGet, "/?display-name=Monitoring Kubernetes&fuzzy=true", nil)
+		response := httptest.NewRecorder()
+		router.ServeHTTP(response, request)
+
+		var payload *ResponsePayload
+		json.NewDecoder(response.Body).Decode(&payload)
+		assert.Equal(t, 200, response.Code)
+		assert.GreaterOrEqual(t, len(payload.Data), 1, "Should find 'Monitoring Kubernetes Clusters'")
+	})
+
+	t.Run("should find phrase 'Security Compliance' with missing word connector 'and'", func(t *testing.T) {
+		// Search for phrase without the connecting word "and"
+		request, _ := http.NewRequest(http.MethodGet, "/?display-name=Security Compliance&fuzzy=true", nil)
+		response := httptest.NewRecorder()
+		router.ServeHTTP(response, request)
+
+		var payload *ResponsePayload
+		json.NewDecoder(response.Body).Decode(&payload)
+		assert.Equal(t, 200, response.Code)
+		assert.GreaterOrEqual(t, len(payload.Data), 1, "Should find 'Security and Compliance'")
+	})
+
+	t.Run("should find full phrase 'Getting Started with OpenShift' exactly", func(t *testing.T) {
+		// Search for complete phrase
+		request, _ := http.NewRequest(http.MethodGet, "/?display-name=Getting Started with OpenShift&fuzzy=true", nil)
+		response := httptest.NewRecorder()
+		router.ServeHTTP(response, request)
+
+		var payload *ResponsePayload
+		json.NewDecoder(response.Body).Decode(&payload)
+		assert.Equal(t, 200, response.Code)
+		assert.GreaterOrEqual(t, len(payload.Data), 1, "Should find exact phrase match")
+	})
+
+	t.Run("Word-by-word: four-word query with typos", func(t *testing.T) {
+		// Four-word query: "Geting" → "Getting" (1), "Startd" → "started" (1), "with" (0), "automaton" → "automation" (1)
+		// Total distance: 3 (at threshold)
+		request, _ := http.NewRequest(http.MethodGet, "/?display-name=Geting Startd with automaton&fuzzy=true", nil)
+		response := httptest.NewRecorder()
+		router.ServeHTTP(response, request)
+
+		var payload *ResponsePayload
+		json.NewDecoder(response.Body).Decode(&payload)
+		assert.Equal(t, 200, response.Code)
+		assert.GreaterOrEqual(t, len(payload.Data), 1, "Should find 'Getting started with automation hub'")
+	})
+
+	t.Run("Word-by-word: partial word fallback to ILIKE", func(t *testing.T) {
+		// "nsib" is a substring of "Ansible" but not a complete word, so fuzzy won't find it by Levenshtein distance
+		// Should fall back to ILIKE and find partial matches
+		request, _ := http.NewRequest(http.MethodGet, "/?display-name=nsib&fuzzy=true", nil)
+		response := httptest.NewRecorder()
+		router.ServeHTTP(response, request)
+
+		var payload *ResponsePayload
+		json.NewDecoder(response.Body).Decode(&payload)
+		assert.Equal(t, 200, response.Code)
+		assert.GreaterOrEqual(t, len(payload.Data), 1, "Should fall back to ILIKE and find 'Ansible Automation Platform'")
+	})
+
+	t.Run("Word-by-word: 'automaton hb' finds 'automation hub'", func(t *testing.T) {
+		// "automaton" → "automation" (1), "hb" → "hub" (1)
+		// Total distance: 2
+		request, _ := http.NewRequest(http.MethodGet, "/?display-name=automaton hb&fuzzy=true", nil)
+		response := httptest.NewRecorder()
+		router.ServeHTTP(response, request)
+
+		var payload *ResponsePayload
+		json.NewDecoder(response.Body).Decode(&payload)
+		assert.Equal(t, 200, response.Code)
+		assert.GreaterOrEqual(t, len(payload.Data), 1, "Should find 'Getting started with automation hub'")
+	})
+
+	t.Run("Word-by-word: 'deployy java applicaton' with multiple typos", func(t *testing.T) {
+		// "deployy" → "Deploy" (1), "java" (0), "applicaton" → "Application" (1)
+		// Total distance: 2
+		request, _ := http.NewRequest(http.MethodGet, "/?display-name=deployy java applicaton&fuzzy=true", nil)
+		response := httptest.NewRecorder()
+		router.ServeHTTP(response, request)
+
+		var payload *ResponsePayload
+		json.NewDecoder(response.Body).Decode(&payload)
+		assert.Equal(t, 200, response.Code)
+		assert.GreaterOrEqual(t, len(payload.Data), 1, "Should find 'Deploy a Java Application'")
+	})
+
+	t.Run("Word-by-word: 'remediaton' finds 'Remediations'", func(t *testing.T) {
+		// "remediaton" → "Remediations" (1) - missing one 'i'
+		request, _ := http.NewRequest(http.MethodGet, "/?display-name=remediaton&fuzzy=true", nil)
+		response := httptest.NewRecorder()
+		router.ServeHTTP(response, request)
+
+		var payload *ResponsePayload
+		json.NewDecoder(response.Body).Decode(&payload)
+		assert.Equal(t, 200, response.Code)
+		assert.GreaterOrEqual(t, len(payload.Data), 1, "Should find 'Configure Remediations'")
 	})
 }

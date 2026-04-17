@@ -12,6 +12,7 @@ import (
 type QuickstartsQuery struct {
 	Name, DisplayName string
 	Limit, Offset     int
+	UseFuzzySearch    bool
 	TagTypes          []models.TagType
 	TagValues         [][]string
 }
@@ -22,10 +23,11 @@ func NewQuickstartsQuery(r *http.Request, p generated.GetQuickstartsParams) Quic
 	utils.ParseLegacyQuickstartParams(r, &p)
 
 	q := QuickstartsQuery{
-		Name:        optionalQuickstartName(p.Name),
-		DisplayName: optionalDisplayName(p.DisplayName),
-		Limit:       sanitizeLimit(utils.ConvertIntPtr(p.Limit, 50)),
-		Offset:      sanitizeOffset(utils.ConvertIntPtr(p.Offset, 0)),
+		Name:           optionalQuickstartName(p.Name),
+		DisplayName:    optionalDisplayName(p.DisplayName),
+		UseFuzzySearch: optionalFuzzySearch(p.Fuzzy),
+		Limit:          sanitizeLimit(utils.ConvertIntPtr(p.Limit, 50)),
+		Offset:         sanitizeOffset(utils.ConvertIntPtr(p.Offset, 0)),
 	}
 
 	// build a quick map of all tag types → values
@@ -78,4 +80,11 @@ func sanitizeOffset(o int) int {
 		return 0
 	}
 	return o
+}
+
+func optionalFuzzySearch(f *generated.FuzzySearch) bool {
+	if f != nil {
+		return bool(*f)
+	}
+	return false
 }
