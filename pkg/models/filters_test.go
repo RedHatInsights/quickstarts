@@ -136,7 +136,27 @@ func TestFrontendFilters_UseCase_HasExpectedItems(t *testing.T) {
 	require.Len(t, cat.CategoryData, 1)
 
 	items := cat.CategoryData[0].Data
-	assert.Len(t, items, 12)
-	assert.Equal(t, "automation", items[0].Id)
-	assert.Equal(t, "security", items[9].Id)
+
+	// Lock in the full expected UseCase filter structure so that any change
+	// (addition/removal/rename/reordering) is caught by this test.
+	expectedIDs := []string{
+		"automation",
+		"clusters",
+		"containers",
+		"data-services",
+		"deploy",
+		"identity-and-access",
+		"images",
+		"infrastructure",
+		"observability",
+		"security",
+		"spend-management",
+		"system-configuration",
+	}
+
+	require.Len(t, items, len(expectedIDs))
+
+	for i, expectedID := range expectedIDs {
+		assert.Equalf(t, expectedID, items[i].Id, "unexpected UseCase ID at index %d", i)
+	}
 }

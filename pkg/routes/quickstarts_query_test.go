@@ -21,24 +21,28 @@ func TestNewQuickstartsQuery_TagMap_UsesAllTagTypes(t *testing.T) {
 	params := generated.GetQuickstartsParams{}
 	q := NewQuickstartsQuery(req, params)
 
-	// All 7 tag types should be present
+	// All 7 tag types should be present with aligned values
 	require.Len(t, q.TagTypes, 7, "all 7 tag types should be populated")
 	require.Len(t, q.TagValues, 7, "all 7 tag value slices should be populated")
 
-	// Verify all expected TagType constants appear
-	var tagTypeInstance models.TagType
-	allTags := tagTypeInstance.GetAllTags()
-
-	for _, expected := range allTags {
-		found := false
-		for _, actual := range q.TagTypes {
-			if actual == expected {
-				found = true
-				break
-			}
-		}
-		assert.True(t, found, "TagType %q should be in query results", expected)
+	// Build a TagType → values map from the parallel TagTypes / TagValues slices
+	tagValuesByType := make(map[models.TagType][]string, len(q.TagTypes))
+	for i, tagType := range q.TagTypes {
+		tagValuesByType[tagType] = q.TagValues[i]
 	}
+
+	// All 7 tag types should be present and mapped to the correct values
+	expected := map[models.TagType][]string{
+		models.BundleTag:       {"rhel"},
+		models.ApplicationTag:  {"rbac"},
+		models.ProductFamilies: {"openshift"},
+		models.UseCase:         {"deploy"},
+		models.ContentType:     {"quickstart"},
+		models.ContentKind:     {"QuickStart"},
+		models.TopicTag:        {"automation"},
+	}
+
+	assert.Equal(t, expected, tagValuesByType)
 }
 
 func TestNewQuickstartsQuery_TagMap_EmptyParams(t *testing.T) {
