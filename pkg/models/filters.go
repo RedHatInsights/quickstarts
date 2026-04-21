@@ -6,7 +6,7 @@ type FilterData struct {
 
 type FiltersCategory struct {
 	CategoryName string          `json:"categoryName"`
-	CategoryID   string          `json:"categoryId"`
+	CategoryID   TagType         `json:"categoryId"`
 	CategoryData []CategoryGroup `json:"categoryData"`
 }
 
@@ -36,7 +36,7 @@ var (
 		Categories: []FiltersCategory{
 			{
 				CategoryName: "Product families",
-				CategoryID:   "product-families",
+				CategoryID:   ProductFamilies,
 				CategoryData: []CategoryGroup{{
 					Group: "Platforms",
 					Data: []FilterItem{
@@ -57,7 +57,7 @@ var (
 			},
 			{
 				CategoryName: "Content type",
-				CategoryID:   "content",
+				CategoryID:   ContentType,
 				CategoryData: []CategoryGroup{{
 					Data: []FilterItem{
 						{Id: "documentation", CardLabel: "Documentation", FilterLabel: "Documentation", Color: "orange"},
@@ -69,7 +69,7 @@ var (
 			},
 			{
 				CategoryName: "Use case",
-				CategoryID:   "use-case",
+				CategoryID:   UseCase,
 				CategoryData: []CategoryGroup{{
 					Data: []FilterItem{
 						{Id: "automation", CardLabel: "Automation", FilterLabel: "Automation"},
