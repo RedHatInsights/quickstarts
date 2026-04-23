@@ -2,8 +2,6 @@ module github.com/RedHatInsights/quickstarts
 
 go 1.25.9
 
-toolchain go1.25.9
-
 require (
 	github.com/getkin/kin-openapi v0.133.0
 	github.com/ghodss/yaml v1.0.0
