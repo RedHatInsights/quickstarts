@@ -11,6 +11,7 @@ COPY cmd cmd
 COPY config config
 COPY docs docs
 ENV GO111MODULE=on
+ENV GOTOOLCHAIN=go1.25.9
 USER root
 RUN make generate
 RUN make validate-api
