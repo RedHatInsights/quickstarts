@@ -48,12 +48,24 @@ func Init() {
 		logrus.Info("Using SQLite - fuzzy search will fall back to ILIKE")
 		isFuzzySearchSupported = false
 	} else {
-		if err := DB.Exec("CREATE EXTENSION IF NOT EXISTS fuzzystrmatch").Error; err != nil {
-			logrus.Warnf("Failed to enable fuzzystrmatch extension: %s", err.Error())
+		// Check if fuzzystrmatch extension is already installed to avoid issuing DDL.
+		// CREATE EXTENSION IF NOT EXISTS still executes DDL internally, which breaks
+		// PostgreSQL logical replication used by RDS blue/green deployments.
+		var count int64
+		if err := DB.Raw("SELECT COUNT(*) FROM pg_extension WHERE extname = 'fuzzystrmatch'").Scan(&count).Error; err != nil {
+			logrus.Warnf("Failed to check fuzzystrmatch extension status: %s", err.Error())
 			isFuzzySearchSupported = false
-		} else {
-			logrus.Info("Fuzzystrmatch extension enabled for fuzzy search")
+		} else if count > 0 {
+			logrus.Info("Fuzzystrmatch extension already installed")
 			isFuzzySearchSupported = true
+		} else {
+			if err := DB.Exec("CREATE EXTENSION IF NOT EXISTS fuzzystrmatch").Error; err != nil {
+				logrus.Warnf("Failed to enable fuzzystrmatch extension: %s", err.Error())
+				isFuzzySearchSupported = false
+			} else {
+				logrus.Info("Fuzzystrmatch extension enabled for fuzzy search")
+				isFuzzySearchSupported = true
+			}
 		}
 	}
 
