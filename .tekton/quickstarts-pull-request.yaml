@@ -701,7 +701,7 @@ spec:
             value: $(params.PGSQL_USER)
           - name: POSTGRESQL_PASSWORD
             value: $(params.PGSQL_PASSWORD)
-          image: quay.io/sclorg/postgresql-15-c9s:latest
+          image: quay.io/sclorg/postgresql-15-c9s:c9s
           name: postgresql
         params:
         - description: The Trusted Artifact URI pointing to the artifact with the application source code.
@@ -738,6 +738,8 @@ spec:
           workingDir: /var/workdir
           name: unit-tests
           securityContext:
+            # Root required: trusted artifact extraction writes to /var/workdir as root;
+            # go-toolset and test execution need matching UID to read source files.
             runAsUser: 0
           script: |
             #!/bin/bash
