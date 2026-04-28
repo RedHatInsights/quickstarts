@@ -15,9 +15,13 @@ func TestMain(m *testing.M) {
 }
 ```
 
-### SQLite for Tests
+### Database Backend for Tests
 
-Tests use ephemeral SQLite databases instead of PostgreSQL:
+Tests support two database backends:
+
+#### SQLite (default)
+
+When no `TEST_DATABASE_URL` environment variable is set, tests use ephemeral SQLite databases:
 
 ```go
 cfg.Test = true
@@ -27,6 +31,28 @@ database.Init()
 ```
 
 Each test run creates a unique `.db` file (timestamped) and removes it in `tearDown()`. This ensures test isolation without external dependencies.
+
+#### PostgreSQL (recommended for full coverage)
+
+Set `TEST_DATABASE_URL` to run tests against PostgreSQL, enabling full coverage of fuzzy search (fuzzystrmatch/Levenshtein), advisory locks, and other PostgreSQL-specific features:
+
+```bash
+# Start local PostgreSQL
+make infra
+
+# Run tests with PostgreSQL
+make test-pg
+```
+
+Or set the variable directly:
+
+```bash
+TEST_DATABASE_URL="host=localhost user=quickstarts password=quickstarts dbname=quickstarts_test port=5432 sslmode=disable" go test -p 1 ./... -v
+```
+
+**Important**: Use `-p 1` (or `make test-pg`) when running against PostgreSQL. By default `go test ./...` runs packages in parallel, which causes race conditions on the shared test database (concurrent `TRUNCATE`/`INSERT` across packages). The `-p 1` flag serialises package execution.
+
+When using PostgreSQL, `CleanTestTables()` truncates all tables at the start of each test run to ensure a clean state (SQLite achieves this by creating a fresh file).
 
 ### Schema Setup
 
@@ -95,10 +121,12 @@ if db.Dialector.Name() == "postgres" {
 }
 ```
 
-These features are skipped in tests (SQLite) and should have fallback behavior:
+These features have fallback behavior when running with SQLite:
 - **Advisory locks** (`pg_advisory_xact_lock`) — skipped on non-PostgreSQL
 - **Fuzzy search** (`fuzzystrmatch` extension) — falls back to `ILIKE`
 - **SSL/TLS** — not applicable in tests
+
+When running tests with `TEST_DATABASE_URL` (PostgreSQL), all of these features are fully tested including fuzzystrmatch-based fuzzy search.
 
 ## Running Tests
 
@@ -118,4 +146,4 @@ make coverage
 
 ## CI Testing
 
-Tests run as part of the Docker build (`make test` in Dockerfile) and in the Konflux CI pipeline (`quickstarts-on-pull-request`). The CI environment uses the same SQLite-based test setup.
+Tests run as part of the Docker build (`make test` in Dockerfile) and in the Konflux CI pipeline (`quickstarts-on-pull-request`). By default, CI uses SQLite. To enable PostgreSQL testing in Konflux, add a PostgreSQL sidecar container to the Tekton pipeline and set the `TEST_DATABASE_URL` environment variable during the build step.

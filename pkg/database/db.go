@@ -26,7 +26,9 @@ func Init() {
 	cfg := config.Get()
 
 	var dbdns string
-	if cfg.Test {
+	if cfg.Test && cfg.TestDatabaseURL != "" {
+		dia = postgres.Open(cfg.TestDatabaseURL)
+	} else if cfg.Test {
 		dia = sqlite.Open(cfg.DbName)
 	} else {
 		dbdns = fmt.Sprintf("host=%v user=%v password=%v dbname=%v port=%v sslmode=%v", cfg.DbHost, cfg.DbUser, cfg.DbPassword, cfg.DbName, cfg.DbPort, cfg.DbSSLMode)
@@ -43,10 +45,20 @@ func Init() {
 		panic(fmt.Sprintf("failed to connect database: %s", err.Error()))
 	}
 
-	// Enable fuzzystrmatch extension for Levenshtein distance fuzzy search (postgres only)
-	if cfg.Test {
+	// Enable fuzzystrmatch extension for Levenshtein distance fuzzy search.
+	// Use the actual database dialect to decide — this correctly handles
+	// PostgreSQL in both production and test modes.
+	if DB.Dialector.Name() != "postgres" {
 		logrus.Info("Using SQLite - fuzzy search will fall back to ILIKE")
 		isFuzzySearchSupported = false
+	} else if cfg.Test {
+		if err := DB.Exec("CREATE EXTENSION IF NOT EXISTS fuzzystrmatch").Error; err != nil {
+			logrus.Warnf("Failed to enable fuzzystrmatch extension: %s", err.Error())
+			isFuzzySearchSupported = false
+		} else {
+			logrus.Info("Fuzzystrmatch extension enabled for fuzzy search (test mode)")
+			isFuzzySearchSupported = true
+		}
 	} else {
 		// Check if fuzzystrmatch extension is already installed to avoid issuing DDL.
 		// CREATE EXTENSION IF NOT EXISTS still executes DDL internally, which breaks
@@ -84,3 +96,4 @@ func Init() {
 
 	logrus.Infoln("Database connection established")
 }
+

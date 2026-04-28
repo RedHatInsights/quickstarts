@@ -18,6 +18,7 @@ type QuickstartsConfig struct {
 	DbName                 string
 	MetricsPort            int
 	Test                   bool
+	TestDatabaseURL        string // PostgreSQL DSN for tests; when set, tests use PG instead of SQLite
 	DbSSLMode              string
 	DbSSLRootCert          string
 	LogLevel               string
@@ -85,6 +86,10 @@ func Init() {
 		config.DbSSLMode = "disable"
 		config.DbSSLRootCert = ""
 	}
+	if testDBURL := os.Getenv("TEST_DATABASE_URL"); testDBURL != "" {
+		config.TestDatabaseURL = testDBURL
+	}
+	config.Test = os.Getenv("TEST") == "true"
 
 }
 
