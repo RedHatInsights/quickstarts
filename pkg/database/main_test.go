@@ -43,7 +43,7 @@ func setUp() {
 	}
 
 	Init()
-	err = DB.AutoMigrate(&models.Tag{}, &models.Quickstart{}, &models.QuickstartProgress{}, &models.HelpTopic{})
+	err = DB.AutoMigrate(&models.Tag{}, &models.Quickstart{}, &models.QuickstartProgress{}, &models.HelpTopic{}, &models.FavoriteQuickstart{})
 	if err != nil {
 		panic(err)
 	}

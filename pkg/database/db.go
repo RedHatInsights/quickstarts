@@ -93,6 +93,9 @@ func Init() {
 	if !DB.Migrator().HasTable(&models.FavoriteQuickstart{}) {
 		DB.Migrator().CreateTable(&models.FavoriteQuickstart{})
 	}
+	if !DB.Migrator().HasTable(&models.QuickstartProgress{}) {
+		DB.Migrator().CreateTable(&models.QuickstartProgress{})
+	}
 
 	logrus.Infoln("Database connection established")
 }
