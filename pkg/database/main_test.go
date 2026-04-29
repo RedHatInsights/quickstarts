@@ -33,19 +33,32 @@ func setUp() {
 	config.Init()
 	cfg := config.Get()
 	cfg.Test = true
-	time := time.Now().UnixNano()
-	dbName = fmt.Sprintf("%d-services.db", time)
-	config.Get().DbName = dbName
+
+	if testDBURL := os.Getenv("TEST_DATABASE_URL"); testDBURL != "" {
+		cfg.TestDatabaseURL = testDBURL
+	} else {
+		time := time.Now().UnixNano()
+		dbName = fmt.Sprintf("%d-services.db", time)
+		cfg.DbName = dbName
+	}
 
 	Init()
-	err = DB.AutoMigrate(&models.Quickstart{}, &models.QuickstartProgress{}, &models.Tag{}, &models.HelpTopic{})
+	err = DB.AutoMigrate(&models.Tag{}, &models.Quickstart{}, &models.QuickstartProgress{}, &models.HelpTopic{}, &models.FavoriteQuickstart{})
 	if err != nil {
 		panic(err)
 	}
 	fmt.Println("Migration complete")
+
+	// Ensure clean state for PostgreSQL (SQLite creates a fresh file each run)
+	if err := CleanTestTables(); err != nil {
+		panic(fmt.Sprintf("CleanTestTables failed: %s", err.Error()))
+	}
+
 	SeedTags()
 }
 
 func tearDown() {
-	os.Remove(dbName)
+	if dbName != "" {
+		os.Remove(dbName)
+	}
 }

@@ -38,21 +38,27 @@ func TestCreateTags(t *testing.T) {
 		tag.Type = "nonsense"
 		tag.Value = "foo"
 		error := DB.Create(&tag).Error
-		assert.Equal(t, "sql: converting argument $4 type: invalid tag value", error.Error())
+		// Error message differs between SQLite and PostgreSQL drivers,
+		// but the Go-level Valuer always returns "invalid tag value".
+		assert.Error(t, error)
+		assert.Contains(t, error.Error(), "invalid tag value")
 	})
 
 	t.Run("fail to create tag with empty tag type", func(t *testing.T) {
 		var tag models.Tag
 		tag.Value = "foo"
 		error := DB.Create(&tag).Error
-		assert.Equal(t, "sql: converting argument $4 type: invalid tag value", error.Error())
+		assert.Error(t, error)
+		assert.Contains(t, error.Error(), "invalid tag value")
 	})
 
 	t.Run("fail to create tag with empty tag value", func(t *testing.T) {
 		var tag models.Tag
 		tag.Type = models.BundleTag
 		error := DB.Create(&tag).Error
-		assert.Equal(t, "NOT NULL constraint failed: tags.value", error.Error())
+		// SQLite: "NOT NULL constraint failed: tags.value"
+		// PostgreSQL: 'null value in column "value" ... violates not-null constraint'
+		assert.Error(t, error)
 	})
 }
 

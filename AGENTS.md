@@ -127,7 +127,7 @@ Success responses wrap data in a `{"data": [...]}` envelope. Single-item respons
 
 1. **Forgetting `make generate`** after changing `spec/openapi.yaml` — the generated code will be stale and compilation may fail or behavior may diverge from the spec.
 2. **Editing `pkg/generated/api.go`** — changes are lost on next generation. Implement behavior in `server_adapter.go`.
-3. **SQLite vs PostgreSQL differences** — tests use SQLite. Features like `fuzzystrmatch`, advisory locks, and certain SQL syntax are PostgreSQL-only. Guard with dialect checks (`db.Dialector.Name() == "postgres"`).
+3. **SQLite vs PostgreSQL differences** — tests use SQLite by default, or PostgreSQL when `TEST_DATABASE_URL` is set. Features like `fuzzystrmatch`, advisory locks, and certain SQL syntax are PostgreSQL-only. Guard with dialect checks (`db.Dialector.Name() == "postgres"`). Run `make test-pg` for full PostgreSQL coverage.
 4. **Seeding race conditions** — multiple pods seed concurrently. Always use the transaction handle (`tx`) inside seeding functions, not the global `DB`.
 5. **Content YAML structure** — quickstart metadata files have a specific format. Use `make validate` to check content before committing.
 6. **Legacy parameter support** — removing legacy `[]` parameter format breaks existing frontend clients. Always maintain backward compatibility.
