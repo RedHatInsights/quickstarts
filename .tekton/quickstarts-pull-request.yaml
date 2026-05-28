@@ -47,11 +47,11 @@ spec:
       export TEST_DATABASE_URL="host=$(params.PGSQL_HOSTNAME) user=$(params.PGSQL_USER) password=$(params.PGSQL_PASSWORD) dbname=$(params.PGSQL_DATABASE) port=$(params.PGSQL_PORT) sslmode=disable"
       export TEST=true
 
-      # Use explicit Go 1.25.9 toolchain — matches Dockerfile.
+      # Use explicit Go 1.26.3 toolchain — matches Dockerfile.
       # GOTOOLCHAIN=auto fails on the Red Hat go-toolset image because
-      # the toolchain switch leaves the system Go 1.25.8 compiler binary
-      # in place while setting the version to 1.25.9, causing a mismatch.
-      export GOTOOLCHAIN=go1.25.9
+      # the toolchain switch leaves the system Go compiler binary
+      # in place while setting the version to a newer patch, causing a mismatch.
+      export GOTOOLCHAIN=go1.26.3
 
       # Wait for PostgreSQL sidecar to be ready
       echo "Waiting for PostgreSQL..."
