@@ -17,23 +17,13 @@ import (
 	"gorm.io/datatypes"
 )
 
-func mockQuickstartProgress(id uint) *models.QuickstartProgress {
+// mockQuickstartProgress creates a progress record and lets the DB auto-generate
+// the ID. Explicit IDs desync PostgreSQL's serial sequence, causing duplicate-key
+// errors when later inserts rely on auto-increment.
+func mockQuickstartProgress(name string) *models.QuickstartProgress {
 	var quickstartProgress models.QuickstartProgress
 
-	quickstartProgress.ID = id
-	quickstartProgress.QuickstartName = strconv.Itoa(1234 + int(id))
-	quickstartProgress.AccountId = 4321
-
-	database.DB.Create(&quickstartProgress)
-
-	return &quickstartProgress
-}
-
-func mockQuickstartProgressWithSpecificName(id uint, qsName string) *models.QuickstartProgress {
-	var quickstartProgress models.QuickstartProgress
-
-	quickstartProgress.ID = id
-	quickstartProgress.QuickstartName = qsName
+	quickstartProgress.QuickstartName = name
 	quickstartProgress.AccountId = 4321
 
 	database.DB.Create(&quickstartProgress)
@@ -85,9 +75,9 @@ func TestGetAllQuickstartProgresses(t *testing.T) {
 		Data models.QuickstartProgress
 	}
 
-	qp1 := mockQuickstartProgress(1)
-	qp2 := mockQuickstartProgress(2)
-	qp3 := mockQuickstartProgressWithSpecificName(3, "TestingQS")
+	qp1 := mockQuickstartProgress("progress-1")
+	qp2 := mockQuickstartProgress("progress-2")
+	qp3 := mockQuickstartProgress("TestingQS")
 
 	t.Run("returns GET all quickstarts successfully", func(t *testing.T) {
 		request, _ := http.NewRequest(http.MethodGet, "/", nil)
@@ -140,7 +130,7 @@ func TestGetAllQuickstartProgresses(t *testing.T) {
 
 func TestUpdateQuickstartsProgress(t *testing.T) {
 	router := setupQuickstartProgressRouter()
-	qp1 := mockQuickstartProgress(11)
+	qp1 := mockQuickstartProgress("existing-progress")
 	type responsePayload struct {
 		Data models.QuickstartProgress
 	}
@@ -207,10 +197,10 @@ func TestUpdateQuickstartsProgress(t *testing.T) {
 func TestDeleteQuickstartProgress(t *testing.T) {
 	router := setupQuickstartProgressRouter()
 
-	mockQuickstartProgress(10)
+	qp := mockQuickstartProgress("delete-me")
 
 	t.Run("deletes quickstart progress successfuly", func(t *testing.T) {
-		request, _ := http.NewRequest(http.MethodDelete, "/10", nil)
+		request, _ := http.NewRequest(http.MethodDelete, fmt.Sprintf("/%d", qp.ID), nil)
 		response := httptest.NewRecorder()
 		router.ServeHTTP(response, request)
 		type responsePayload struct {
@@ -221,7 +211,7 @@ func TestDeleteQuickstartProgress(t *testing.T) {
 		json.NewDecoder(response.Body).Decode(&payload)
 		assert.Equal(t, 200, response.Code)
 		var removedProgress models.QuickstartProgress
-		err := database.DB.First(&removedProgress, 10).Error
+		err := database.DB.First(&removedProgress, qp.ID).Error
 		assert.Equal(t, "record not found", err.Error())
 	})
 

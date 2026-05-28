@@ -280,6 +280,16 @@ components:
           type: string
         explode: true
         style: form
+      FuzzySearch:
+        name: fuzzy
+        description: Enable fuzzy search using Levenshtein distance for typo tolerance (searches spec.displayName)
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: false
+        explode: true
+        style: form
 info:
   license:
     name: MIT
@@ -312,6 +322,7 @@ paths:
       - $ref: '#/components/parameters/Topic'
       - $ref: '#/components/parameters/QuickstartName'
       - $ref: '#/components/parameters/DisplayName'
+      - $ref: '#/components/parameters/FuzzySearch'
       - $ref: '#/components/parameters/Limit'
       - $ref: '#/components/parameters/Offset'      
   /quickstarts/{id}:

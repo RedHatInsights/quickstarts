@@ -1,53 +1,10 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "baseBranchPatterns": [
-    "main"
-  ],
-  "extends": [
-    "config:recommended"
-  ],
-  "tekton": {
-    "schedule": [
-      "at any time"
-    ]
-  },
-  "postUpdateOptions": [
-    "goModTidy"
-  ],
-  "allowedCommands": [
-    "^make generate$"
-  ],
+  "extends": ["github>RedHatInsights/shared-workflows//renovate/backend"],
+  "allowedCommands": ["^make generate$"],
   "postUpgradeTasks": {
-    "commands": [
-      "make generate"
-    ],
-    "fileFilters": [
-      "pkg/generated/**"
-    ],
+    "commands": ["make generate"],
+    "fileFilters": ["pkg/generated/**"],
     "executionMode": "update"
-  },
-  "packageRules": [
-    {
-      "description": "Disable major updates entirely",
-      "matchUpdateTypes": [
-        "major"
-      ],
-      "enabled": false
-    },
-    {
-      "description": "Group minor and patch updates into a single PR",
-      "matchUpdateTypes": [
-        "minor",
-        "patch"
-      ],
-      "groupName": "all dependencies",
-      "groupSlug": "all-deps",
-      "matchPackageNames": [
-        "*"
-      ]
-    }
-  ],
-  "labels": [
-    "dependencies"
-  ]
+  }
 }

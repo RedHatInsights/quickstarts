@@ -12,6 +12,7 @@ import (
 type QuickstartsQuery struct {
 	Name, DisplayName string
 	Limit, Offset     int
+	UseFuzzySearch    bool
 	TagTypes          []models.TagType
 	TagValues         [][]string
 }
@@ -22,21 +23,22 @@ func NewQuickstartsQuery(r *http.Request, p generated.GetQuickstartsParams) Quic
 	utils.ParseLegacyQuickstartParams(r, &p)
 
 	q := QuickstartsQuery{
-		Name:        optionalQuickstartName(p.Name),
-		DisplayName: optionalDisplayName(p.DisplayName),
-		Limit:       sanitizeLimit(utils.ConvertIntPtr(p.Limit, 50)),
-		Offset:      sanitizeOffset(utils.ConvertIntPtr(p.Offset, 0)),
+		Name:           optionalQuickstartName(p.Name),
+		DisplayName:    optionalDisplayName(p.DisplayName),
+		UseFuzzySearch: optionalFuzzySearch(p.Fuzzy),
+		Limit:          sanitizeLimit(utils.ConvertIntPtr(p.Limit, 50)),
+		Offset:         sanitizeOffset(utils.ConvertIntPtr(p.Offset, 0)),
 	}
 
 	// build a quick map of all tag types → values
 	tagMap := map[models.TagType][]string{
-		"bundle":           utils.ConvertStringSlice(p.Bundle),
-		"application":      utils.ConvertStringSlice(p.Application),
-		"product-families": utils.ConvertStringSlice(p.ProductFamilies),
-		"use-case":         utils.ConvertStringSlice(p.UseCase),
-		"content":          utils.ConvertStringSlice(p.Content),
-		"kind":             utils.ConvertStringSlice(p.Kind),
-		"topic":            utils.ConvertStringSlice(p.Topic),
+		models.BundleTag:       utils.ConvertStringSlice(p.Bundle),
+		models.ApplicationTag:  utils.ConvertStringSlice(p.Application),
+		models.ProductFamilies: utils.ConvertStringSlice(p.ProductFamilies),
+		models.UseCase:         utils.ConvertStringSlice(p.UseCase),
+		models.ContentType:     utils.ConvertStringSlice(p.Content),
+		models.ContentKind:     utils.ConvertStringSlice(p.Kind),
+		models.TopicTag:        utils.ConvertStringSlice(p.Topic),
 	}
 
 	var tagTypeInstance models.TagType
@@ -78,4 +80,11 @@ func sanitizeOffset(o int) int {
 		return 0
 	}
 	return o
+}
+
+func optionalFuzzySearch(f *generated.FuzzySearch) bool {
+	if f != nil {
+		return bool(*f)
+	}
+	return false
 }

@@ -12,6 +12,12 @@ import (
 )
 
 var DB *gorm.DB
+var isFuzzySearchSupported bool
+
+// IsFuzzySearchSupported returns true if the database supports Levenshtein fuzzy search
+func IsFuzzySearchSupported() bool {
+	return isFuzzySearchSupported
+}
 
 func Init() {
 	var err error
@@ -20,7 +26,9 @@ func Init() {
 	cfg := config.Get()
 
 	var dbdns string
-	if cfg.Test {
+	if cfg.Test && cfg.TestDatabaseURL != "" {
+		dia = postgres.Open(cfg.TestDatabaseURL)
+	} else if cfg.Test {
 		dia = sqlite.Open(cfg.DbName)
 	} else {
 		dbdns = fmt.Sprintf("host=%v user=%v password=%v dbname=%v port=%v sslmode=%v", cfg.DbHost, cfg.DbUser, cfg.DbPassword, cfg.DbName, cfg.DbPort, cfg.DbSSLMode)
@@ -32,6 +40,46 @@ func Init() {
 	}
 
 	DB, err = gorm.Open(dia, &gorm.Config{})
+
+	if err != nil {
+		panic(fmt.Sprintf("failed to connect database: %s", err.Error()))
+	}
+
+	// Enable fuzzystrmatch extension for Levenshtein distance fuzzy search.
+	// Use the actual database dialect to decide — this correctly handles
+	// PostgreSQL in both production and test modes.
+	if DB.Dialector.Name() != "postgres" {
+		logrus.Info("Using SQLite - fuzzy search will fall back to ILIKE")
+		isFuzzySearchSupported = false
+	} else if cfg.Test {
+		if err := DB.Exec("CREATE EXTENSION IF NOT EXISTS fuzzystrmatch").Error; err != nil {
+			logrus.Warnf("Failed to enable fuzzystrmatch extension: %s", err.Error())
+			isFuzzySearchSupported = false
+		} else {
+			logrus.Info("Fuzzystrmatch extension enabled for fuzzy search (test mode)")
+			isFuzzySearchSupported = true
+		}
+	} else {
+		// Check if fuzzystrmatch extension is already installed to avoid issuing DDL.
+		// CREATE EXTENSION IF NOT EXISTS still executes DDL internally, which breaks
+		// PostgreSQL logical replication used by RDS blue/green deployments.
+		var count int64
+		if err := DB.Raw("SELECT COUNT(*) FROM pg_extension WHERE extname = 'fuzzystrmatch'").Scan(&count).Error; err != nil {
+			logrus.Warnf("Failed to check fuzzystrmatch extension status: %s", err.Error())
+			isFuzzySearchSupported = false
+		} else if count > 0 {
+			logrus.Info("Fuzzystrmatch extension already installed")
+			isFuzzySearchSupported = true
+		} else {
+			if err := DB.Exec("CREATE EXTENSION IF NOT EXISTS fuzzystrmatch").Error; err != nil {
+				logrus.Warnf("Failed to enable fuzzystrmatch extension: %s", err.Error())
+				isFuzzySearchSupported = false
+			} else {
+				logrus.Info("Fuzzystrmatch extension enabled for fuzzy search")
+				isFuzzySearchSupported = true
+			}
+		}
+	}
 
 	if !DB.Migrator().HasTable(&models.Quickstart{}) {
 		DB.Migrator().CreateTable(&models.Quickstart{})
@@ -45,10 +93,10 @@ func Init() {
 	if !DB.Migrator().HasTable(&models.FavoriteQuickstart{}) {
 		DB.Migrator().CreateTable(&models.FavoriteQuickstart{})
 	}
-
-	if err != nil {
-		panic(fmt.Sprintf("failed to connect database: %s", err.Error()))
+	if !DB.Migrator().HasTable(&models.QuickstartProgress{}) {
+		DB.Migrator().CreateTable(&models.QuickstartProgress{})
 	}
 
 	logrus.Infoln("Database connection established")
 }
+

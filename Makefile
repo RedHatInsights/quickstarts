@@ -2,7 +2,8 @@ help:
 	@echo "Available commands:"
 	@echo "------------------"
 	@echo "dev		- generate API and start development server"
-	@echo "test		- run tests"
+	@echo "test		- run tests (SQLite)"
+	@echo "test-pg		- run tests against PostgreSQL (requires 'make infra')"
 	@echo "coverage	- open browser with detailed test coverage report"
 	@echo "migrate		- run database migration"
 	@echo	"validate-topics - run help topics validator"
@@ -21,6 +22,9 @@ help:
 	
 test:
 	go test ./... -coverprofile=c.out
+
+test-pg:
+	TEST_DATABASE_URL="host=localhost user=quickstarts password=quickstarts dbname=quickstarts_test port=5432 sslmode=disable" go test -p 1 ./... -v -coverprofile=c.out
 
 coverage:
 	go tool cover -html=c.out
