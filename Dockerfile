@@ -1,4 +1,4 @@
-FROM registry.access.redhat.com/ubi9/go-toolset:1.25.8-1776370298 AS builder
+FROM registry.access.redhat.com/ubi9/go-toolset:1.26.2-1779886993 AS builder
 WORKDIR $GOPATH/src/mypackage/myapp/
 COPY go.mod go.mod
 COPY go.sum go.sum
@@ -11,7 +11,7 @@ COPY cmd cmd
 COPY config config
 COPY docs docs
 ENV GO111MODULE=on
-ENV GOTOOLCHAIN=go1.25.9
+ENV GOTOOLCHAIN=go1.26.2
 USER root
 RUN make generate
 RUN make validate-api
