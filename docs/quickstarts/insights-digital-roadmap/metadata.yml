@@ -1,0 +1,11 @@
+kind: QuickStarts # kind must always be "QuickStarts"
+name: insights-digital-roadmap 
+tags: 
+  - kind: bundle 
+    value: insights
+  - kind: content
+    value: documentation
+  - kind: product-families
+    value: rhel  
+  - kind: content
+    value: quickstart
