@@ -27,4 +27,4 @@ pkg/generated
 spec/openapi.json.backup
 
 # output binary
-quickstarts
+/quickstarts
