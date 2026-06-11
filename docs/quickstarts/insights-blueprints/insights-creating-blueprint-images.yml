@@ -40,7 +40,7 @@ spec:
 
     - title: Creating an image using a blueprint
       description: |-
-        ### Use the image that you created as a persistent definition for image customizations. To create an image from the blueprint you just defined:
+        ### Use the blueprint that you created as a persistent definition for image customizations. To create an image from the blueprint you just defined:
 
         1. In the **Blueprint** panel, click the blueprint that you want to use.
 
@@ -53,7 +53,7 @@ spec:
           Do you see the images related to your blueprint in the **Images** dashboard?
         failedTaskHelp: This task isn’t verified yet. Try the task again.
       summary:
-        success: You have verified that your customized images was successfully built! Congratulations, your image is ready to be deployed!
+        success: You have verified that your customized image was successfully built! Congratulations, your image is ready to be deployed!
         failed: Try the steps again.
         
     - title: Editing an existing blueprint
