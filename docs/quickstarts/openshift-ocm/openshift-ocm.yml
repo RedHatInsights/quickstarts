@@ -12,5 +12,5 @@ spec:
   icon: 
   description: Work with OpenShift clusters using Red Hat OpenShift Cluster Manager.
   link:
-    href: https://access.redhat.com/documentation/en-us/openshift_cluster_manager
+    href: https://docs.redhat.com/en/documentation/openshift_cluster_manager
     text: View documentation

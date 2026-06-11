@@ -6,8 +6,8 @@ metadata:
 spec:
   version: 0.1
   type:
-    text: Tutorial
-    color: grey
+    text: Learning path
+    color: cyan
   displayName: Deploy a sample application in the Developer Sandbox
   icon: ~
   description: |

@@ -14,5 +14,5 @@ spec:
   description: |-
     Learn how to scan a software bill of materials (SBOM) file for analysis by using the Red Hat Trusted Profile Analyzer service.
   link:
-    href: https://access.redhat.com/documentation/en-us/red_hat_trusted_profile_analyzer/1/html/quick_start_guide/scanning-an-sbom-file_qsg
+    href: https://docs.redhat.com/en/documentation/red_hat_trusted_profile_analyzer/1/html/quick_start_guide/scanning-an-sbom-file_qsg
     text: View documentation 

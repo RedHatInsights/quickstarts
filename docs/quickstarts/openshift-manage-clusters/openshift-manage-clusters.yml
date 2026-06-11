@@ -12,5 +12,5 @@ spec:
   icon: 
   description: Set up and manage your OpenShift clusters.
   link:
-    href: https://access.redhat.com/documentation/en-us/openshift_cluster_manager/2023/html/managing_clusters/index
+    href: https://docs.redhat.com/en/documentation/openshift_cluster_manager/1-latest/html/managing_clusters/index
     text: View documentation

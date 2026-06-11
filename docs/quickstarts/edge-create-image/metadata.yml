@@ -1,6 +1,0 @@
----
-kind: QuickStarts
-name: edge-create-image
-tags:
-- kind: bundle
-  value: edge

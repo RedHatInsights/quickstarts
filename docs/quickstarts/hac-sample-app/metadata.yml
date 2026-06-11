@@ -1,8 +1,19 @@
-kind: QuickStarts # kind must always be "QuickStarts"
+kind: QuickStarts
 name: hac-sample-app
-tags: # If you want to use more granular filtering add tags to the quickstart
-  - kind: bundle
-    value: hac
-  - kind: bundle
-    value: application-studio
-    
+tags:
+- kind: bundle
+  value: hac
+- kind: bundle
+  value: application-studio
+- kind: content
+  value: learningPath
+- kind: product-families
+  value: openshift 
+- kind: use-case
+  value: application
+- kind: use-case
+  value: clusters
+- kind: use-case
+  value: containers
+- kind: use-case
+  value: deploy

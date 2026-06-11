@@ -1,0 +1,53 @@
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+metadata:
+  annotations:
+    build.appstudio.openshift.io/repo: https://github.com/RedHatInsights/quickstarts?rev={{revision}}
+    build.appstudio.redhat.com/commit_sha: '{{revision}}'
+    build.appstudio.redhat.com/target_branch: '{{target_branch}}'
+    pipelinesascode.tekton.dev/max-keep-runs: '3'
+    pipelinesascode.tekton.dev/on-cel-expression: event == "push" && target_branch == "main"
+  creationTimestamp:
+  labels:
+    appstudio.openshift.io/application: quickstarts
+    appstudio.openshift.io/component: quickstarts
+    pipelines.appstudio.openshift.io/type: build
+  name: quickstarts-on-push
+  namespace: hcc-platex-services-tenant
+spec:
+  params:
+  - name: git-url
+    value: '{{source_url}}'
+  - name: revision
+    value: '{{revision}}'
+  - name: output-image
+    value: quay.io/redhat-user-workloads/hcc-platex-services-tenant/hcc-platex-services/quickstarts:{{revision}}
+  - name: dockerfile
+    value: Dockerfile
+  pipelineRef:
+    params:
+    - name: url
+      value: https://github.com/RedHatInsights/konflux-pipelines
+    - name: revision
+      value: main
+    - name: pathInRepo
+      value: pipelines/docker-build-oci-ta.yaml
+    resolver: git
+  taskRunTemplate:
+    serviceAccountName: build-pipeline-quickstarts
+  workspaces:
+  - name: workspace
+    volumeClaimTemplate:
+      metadata:
+        creationTimestamp:
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi
+      status: {}
+  - name: git-auth
+    secret:
+      secretName: '{{ git_auth_secret }}'
+status: {}

@@ -10,7 +10,7 @@ spec:
     color: cyan
   displayName: Learn about OpenShift AI resources
   icon: ~
-  description: Learn about the Red Hat OpenShift AI managed service, and associated software offered by our partners
+  description: Learn about the Red Hat OpenShift AI managed service, and associated software offered by our partners.
   link:
-    href: https://developers.redhat.com/learn/openshift-data-science/red-hat-openshift-data-science-documentation-and-resources
+    href: https://developers.redhat.com/learn/openshift-ai
     text: View documentation

@@ -1,0 +1,10 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["github>RedHatInsights/shared-workflows//renovate/backend"],
+  "allowedCommands": ["^make generate$"],
+  "postUpgradeTasks": {
+    "commands": ["make generate"],
+    "fileFilters": ["pkg/generated/**"],
+    "executionMode": "update"
+  }
+}

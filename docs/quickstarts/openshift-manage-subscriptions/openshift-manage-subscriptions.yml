@@ -12,5 +12,5 @@ spec:
   icon: 
   description: Deploy and track your subscriptions.
   link:
-    href: https://access.redhat.com/documentation/en-us/red_hat_subscription_management
+    href: https://docs.redhat.com/en/documentation/subscription_central/1-latest/html-single/getting_started_with_rhel_system_registration/index#understanding_rhsm_con
     text: View documentation

@@ -1,6 +1,13 @@
-kind: QuickStarts # kind must always be "QuickStarts"
+kind: QuickStarts
 name: integrations-slack-notifs-qs
-tags: # If you want to use more granular filtering add tags to the quickstart
-  - kind: bundle # use bundle tag for a topic to be accessed from a whole bundle eg. console.redhat.com/insights
-    value: settings
- 
+tags:
+- kind: bundle
+  value: settings
+- kind: content
+  value: quickstart
+- kind: product-families
+  value: settings
+- kind: use-case
+  value: automation
+- kind: use-case
+  value: system-configuration

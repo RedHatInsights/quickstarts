@@ -1,0 +1,11 @@
+kind: QuickStarts
+name: insights-sending-discovery-reports-to-hcc
+tags:
+- kind: content
+  value: documentation
+- kind: bundle
+  value: insights
+- kind: product-families
+  value: rhel
+- kind: use-case
+  value: infrastructure

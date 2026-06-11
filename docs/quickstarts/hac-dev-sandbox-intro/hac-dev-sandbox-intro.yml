@@ -6,11 +6,11 @@ metadata:
 spec:
   version: 0.1
   type:
-    text: Video
-    color: grey
+    text: Other
+    color: purple
   displayName: Introduction to the OpenShift Developer Sandbox Series
   icon: ~
-  description: ''
+  description: Learn about the Red Hat OpenShift Sandbox, which gives you free access to a shared OpenShift cluster for learning Kubernetes and OpenShift. Advance your container-based application skills without spending any money.
   link:
     href: https://developers.redhat.com/devnation/shorts/introduction-to-the-openshift-developer-sandbox-series
     text: View documentation

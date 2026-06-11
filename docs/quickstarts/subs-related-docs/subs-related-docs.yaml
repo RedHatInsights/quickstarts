@@ -12,5 +12,5 @@ spec:
   icon: ~
   description: A complete list of documentation related to subscriptions.
   link:
-    href: https://access.redhat.com/documentation/en-us/subscription_central
+    href: https://docs.redhat.com/en/documentation/subscription_central
     text: View documentation

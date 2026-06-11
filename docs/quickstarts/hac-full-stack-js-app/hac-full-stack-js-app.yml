@@ -6,12 +6,11 @@ metadata:
 spec:
   version: 0.1
   type:
-    text: Tutorial
-    color: grey
+    text: Learning path
+    color: cyan
   displayName: Deploying full-stack JavaScript applications to the Developer Sandbox for Red Hat OpenShift
   icon: ~
-  description: |
-    Starting from source code, you will take an application that runs locally and deploy it in the Developer Sandbox for Red Hat OpenShift.
+  description: Starting from source code, you will take an application that runs locally and deploy it in the Developer Sandbox for Red Hat OpenShift.
   link:
     href: https://developers.redhat.com/developer-sandbox/activities/deploying-full-stack-javascript-applications-to-the-sandbox/part1
     text: View documentation

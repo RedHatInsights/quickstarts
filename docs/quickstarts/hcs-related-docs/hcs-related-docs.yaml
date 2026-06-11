@@ -12,5 +12,5 @@ spec:
   icon: ~
   description: A complete list of documentation related to hybrid committed spend.
   link:
-    href: https://access.redhat.com/documentation/en-us/hybrid_committed_spend/
+    href: https://docs.redhat.com/en/documentation/hybrid_committed_spend/
     text: View documentation

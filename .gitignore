@@ -22,3 +22,9 @@ fmtcoverage.html
 
 # Mac OS specific files
 **/.DS_Store
+
+pkg/generated
+spec/openapi.json.backup
+
+# output binary
+quickstarts

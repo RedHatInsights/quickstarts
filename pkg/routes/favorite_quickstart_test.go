@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	"github.com/RedHatInsights/quickstarts/pkg/database"
+	"github.com/RedHatInsights/quickstarts/pkg/generated"
 	"github.com/RedHatInsights/quickstarts/pkg/models"
 	"github.com/go-chi/chi/v5"
 	"github.com/stretchr/testify/assert"
@@ -36,8 +37,10 @@ func mockQuickstartFavoritable(qsName string) *models.FavoriteQuickstart {
 
 func setupFavoriteQuickstartRouter() *chi.Mux {
 	r := chi.NewRouter()
-	r.Get("/", GetAllFavoriteQuickstarts)
-	r.Post("/", UpdateFavoriteQuickstart)
+
+	adapter := NewServerAdapter()
+	generated.HandlerFromMux(adapter, r)
+
 	return r
 }
 
@@ -55,7 +58,7 @@ func TestGetFavoriteQuickstarts(t *testing.T) {
 	}
 
 	t.Run("should return all favorite quickstarts for specific AccountID", func(t *testing.T) {
-		request, _ := http.NewRequest(http.MethodGet, fmt.Sprintf("/?account=%s", accountTestId), nil)
+		request, _ := http.NewRequest(http.MethodGet, fmt.Sprintf("/favorites?account=%s", accountTestId), nil)
 		response := httptest.NewRecorder()
 		router.ServeHTTP(response, request)
 
@@ -66,27 +69,26 @@ func TestGetFavoriteQuickstarts(t *testing.T) {
 	})
 
 	t.Run("should return bad request if no accountId was provided", func(t *testing.T) {
-		request, _ := http.NewRequest(http.MethodGet, "/", nil)
+		request, _ := http.NewRequest(http.MethodGet, "/favorites", nil)
 		response := httptest.NewRecorder()
 		router.ServeHTTP(response, request)
 
-		var payload *messageResponsePayload
-
-		json.NewDecoder(response.Body).Decode(&payload)
 		assert.Equal(t, 400, response.Code)
-		assert.Equal(t, "Account query param is required", payload.Msg)
+		assert.Equal(t, "Query argument account is required, but not found\n", response.Body.String())
 	})
 }
 
 func TestUpdateFavoriteQuickstarts(t *testing.T) {
 	router := setupFavoriteQuickstartRouter()
+	// Set up the test data needed for unfavoriting
+	mockQuickstartFavoritable("test-qs-1")
 
 	type localResponsePayload struct {
 		Data responseBodyFavQs
 	}
 	t.Run("should unfavorite exisitng favorite quickstart", func(t *testing.T) {
 		jsonParams := `{"quickstartName": "test-qs-1", "favorite": false}`
-		request, _ := http.NewRequest(http.MethodPost, fmt.Sprintf("/?account=%s", accountTestId), strings.NewReader(string(jsonParams)))
+		request, _ := http.NewRequest(http.MethodPost, fmt.Sprintf("/favorites?account=%s", accountTestId), strings.NewReader(string(jsonParams)))
 		response := httptest.NewRecorder()
 		router.ServeHTTP(response, request)
 
@@ -102,7 +104,7 @@ func TestUpdateFavoriteQuickstarts(t *testing.T) {
 		database.DB.Create(&quickstart)
 
 		jsonParams := `{"quickstartName": "first-switch-qs", "favorite": true}`
-		request, _ := http.NewRequest(http.MethodPost, fmt.Sprintf("/?account=%s", accountTestId), strings.NewReader(string(jsonParams)))
+		request, _ := http.NewRequest(http.MethodPost, fmt.Sprintf("/favorites?account=%s", accountTestId), strings.NewReader(string(jsonParams)))
 		response := httptest.NewRecorder()
 
 		router.ServeHTTP(response, request)
@@ -117,15 +119,12 @@ func TestUpdateFavoriteQuickstarts(t *testing.T) {
 	})
 	t.Run("should return bad request if no accountId was provided", func(t *testing.T) {
 		jsonParams := `{"quickstartName": "test-qs-1", "favorite": false}`
-		request, _ := http.NewRequest(http.MethodPost, "/", strings.NewReader(string(jsonParams)))
+		request, _ := http.NewRequest(http.MethodPost, "/favorites", strings.NewReader(string(jsonParams)))
 		response := httptest.NewRecorder()
 		router.ServeHTTP(response, request)
 
-		var payload *messageResponsePayload
-
-		json.NewDecoder(response.Body).Decode(&payload)
 		assert.Equal(t, 400, response.Code)
-		assert.Equal(t, "Account query param is required", payload.Msg)
+		assert.Equal(t, "Query argument account is required, but not found\n", response.Body.String())
 	})
 	database.DB.Delete(&models.Quickstart{}, "name IN (?)", []string{"first-switch-qs", "test-qs-1"})
 }
