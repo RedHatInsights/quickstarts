@@ -28,6 +28,7 @@ type Config struct {
 	accessToken      string
 	accountID        string
 	favoriteState    bool
+	tokenRefreshTime time.Time
 }
 
 type SSOTokenResponse struct {
@@ -147,10 +148,13 @@ func createHTTPClient(proxyURL string) *http.Client {
 
 	if proxyURL != "" {
 		proxy, err := url.Parse(proxyURL)
-		if err == nil {
+		if err != nil {
+			log.Printf("[WARN] Invalid proxy URL '%s': %v. Continuing without proxy.\n", proxyURL, err)
+		} else {
 			client.Transport = &http.Transport{
 				Proxy: http.ProxyURL(proxy),
 			}
+			fmt.Printf("[INFO] Using proxy: %s\n", proxyURL)
 		}
 	}
 
@@ -192,6 +196,7 @@ func (c *Config) refreshAccessToken() error {
 	}
 
 	c.accessToken = tokenResp.AccessToken
+	c.tokenRefreshTime = time.Now()
 	fmt.Println("[INFO] Successfully obtained access token")
 	return nil
 }
@@ -202,7 +207,7 @@ func (c *Config) extractAccountFromJWT() error {
 		return fmt.Errorf("invalid JWT token format")
 	}
 
-	// Decode the payload (second part)
+	// Decode the payload (second part) using base64url encoding (RFC 7515)
 	payload := parts[1]
 
 	// Add padding if needed
@@ -210,7 +215,7 @@ func (c *Config) extractAccountFromJWT() error {
 		payload += strings.Repeat("=", 4-padding)
 	}
 
-	decoded, err := base64.StdEncoding.DecodeString(payload)
+	decoded, err := base64.RawURLEncoding.DecodeString(payload)
 	if err != nil {
 		return fmt.Errorf("failed to decode JWT payload: %w", err)
 	}
@@ -357,6 +362,10 @@ func (c *Config) runContinuous() {
 	ticker := time.NewTicker(time.Duration(c.Interval) * time.Second)
 	defer ticker.Stop()
 
+	// Refresh token every 4 minutes (tokens expire in ~5 minutes)
+	tokenRefreshTicker := time.NewTicker(4 * time.Minute)
+	defer tokenRefreshTicker.Stop()
+
 	// Run first iteration immediately
 	iteration++
 	fmt.Printf("\n%s\n", strings.Repeat("=", 60))
@@ -372,6 +381,12 @@ func (c *Config) runContinuous() {
 		case <-sigChan:
 			fmt.Println("\n\n[STOPPED] Test interrupted by user")
 			return
+		case <-tokenRefreshTicker.C:
+			fmt.Println("\n[INFO] Refreshing access token (tokens expire after ~5 minutes)...")
+			if err := c.refreshAccessToken(); err != nil {
+				log.Printf("[ERROR] Failed to refresh token: %v\n", err)
+				fmt.Println("[WARN] Continuing with existing token, may fail on next request")
+			}
 		case <-ticker.C:
 			iteration++
 			fmt.Printf("\n%s\n", strings.Repeat("=", 60))

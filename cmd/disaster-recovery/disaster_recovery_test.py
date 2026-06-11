@@ -16,12 +16,27 @@ from datetime import datetime
 
 
 class QuickstartsFavoriteTester:
+    """
+    Disaster recovery tester for Quickstarts API favorite functionality.
+
+    Continuously toggles the favorite state of a quickstart to test API resilience
+    and generate sustained load for disaster recovery testing.
+
+    Args:
+        base_url: Base URL for the Quickstarts API (e.g., https://console.stage.redhat.com)
+        offline_token: Offline refresh token from access.redhat.com for SSO authentication
+        sso_url: SSO token refresh endpoint URL
+        quickstart_name: Optional quickstart name to toggle (fetches from API if not provided)
+        proxy: Optional HTTP/HTTPS proxy URL
+    """
+
     def __init__(self, base_url, offline_token, sso_url, quickstart_name=None, proxy=None):
         self.base_url = base_url.rstrip('/')
         self.offline_token = offline_token
         self.sso_url = sso_url
         self.favorite_state = False
         self.proxies = {'http': proxy, 'https': proxy} if proxy else None
+        self.token_refresh_time = None
 
         # Exchange offline token for access token
         print("[INFO] Exchanging offline token for access token...")
@@ -34,7 +49,18 @@ class QuickstartsFavoriteTester:
         self.quickstart_name = quickstart_name or self._fetch_available_quickstart()
 
     def _refresh_access_token(self):
-        """Exchange offline token for access token via SSO"""
+        """
+        Exchange offline token for access token via SSO.
+
+        Posts to the SSO refresh endpoint with the offline token to obtain a new
+        short-lived access token (expires in ~5 minutes).
+
+        Returns:
+            str: SSO access token
+
+        Raises:
+            SystemExit: If token exchange fails or returns invalid response
+        """
         try:
             payload = {
                 'grant_type': 'refresh_token',
@@ -56,6 +82,7 @@ class QuickstartsFavoriteTester:
                 if not access_token:
                     print("[ERROR] No access_token in SSO response")
                     sys.exit(1)
+                self.token_refresh_time = time.time()
                 print("[INFO] Successfully obtained access token")
                 return access_token
             else:
@@ -70,22 +97,33 @@ class QuickstartsFavoriteTester:
             sys.exit(1)
 
     def _extract_account_from_jwt(self):
-        """Extract account_id from JWT access token"""
+        """
+        Extract account_id from JWT access token.
+
+        Decodes the JWT payload using base64url encoding (RFC 7515) and extracts
+        the account_id field, falling back to the sub field if not present.
+
+        Returns:
+            str: Account ID extracted from JWT payload
+
+        Raises:
+            SystemExit: If JWT is malformed or decoding fails
+        """
         try:
             clean_token = ''.join(self.access_token.split())
             parts = clean_token.split('.')
 
             if len(parts) != 3:
-                print(f"[ERROR] Invalid JWT token format")
+                print("[ERROR] Invalid JWT token format")
                 sys.exit(1)
 
-            # Decode the payload (second part)
+            # Decode the payload (second part) using base64url encoding (RFC 7515)
             payload = parts[1]
             padding = 4 - len(payload) % 4
             if padding != 4:
                 payload += '=' * padding
 
-            decoded = base64.b64decode(payload)
+            decoded = base64.urlsafe_b64decode(payload)
             jwt_data = json.loads(decoded)
 
             # Extract account_id from JWT payload
@@ -100,24 +138,50 @@ class QuickstartsFavoriteTester:
             sys.exit(1)
 
     def _get_auth_headers(self):
-        """Get authentication headers"""
+        """
+        Get authentication headers for API requests.
+
+        Returns:
+            dict: Headers with Bearer token authentication and JSON content type
+        """
         return {
             'Authorization': f'Bearer {self.access_token}',
             'Content-Type': 'application/json'
         }
 
     def _get_request_id(self, response):
-        """Extract request ID from response headers"""
+        """
+        Extract request ID from response headers.
+
+        Checks multiple common header names used for request tracking in Red Hat services.
+
+        Args:
+            response: HTTP response object
+
+        Returns:
+            str or None: Request ID if found, None otherwise
+        """
         for header in ['x-rh-insights-request-id', 'x-rh-request-id', 'x-request-id']:
             if header in response.headers:
                 return response.headers[header]
         return None
 
     def _fetch_available_quickstart(self):
-        """Fetch an available quickstart from the API"""
+        """
+        Fetch an available quickstart from the API.
+
+        Queries the Quickstarts API for the user's account and selects the first
+        available quickstart to use for testing.
+
+        Returns:
+            str: Name of the first available quickstart
+
+        Raises:
+            SystemExit: If API request fails or no quickstarts are available
+        """
         url = f"{self.base_url}/api/quickstarts/v1/quickstarts?account={self.account_id}"
 
-        print(f"[INIT] Fetching available quickstarts from API...")
+        print("[INIT] Fetching available quickstarts from API...")
         print(f"[REQUEST] GET {url}")
 
         try:
@@ -159,7 +223,12 @@ class QuickstartsFavoriteTester:
             sys.exit(1)
 
     def toggle_favorite(self):
-        """Toggle the favorite state of the quickstart"""
+        """
+        Toggle the favorite state of the quickstart.
+
+        Alternates between favoriting and unfavoriting the quickstart by POSTing
+        to the favorites API endpoint. Logs the request details and response status.
+        """
         timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
         self.favorite_state = not self.favorite_state
@@ -203,21 +272,45 @@ class QuickstartsFavoriteTester:
             print(f"[ERROR] Request failed: {e}")
 
     def run_continuous(self, interval=15):
-        """Run the toggle operation continuously"""
+        """
+        Run the toggle operation continuously in an infinite loop.
+
+        Executes the favorite toggle operation at regular intervals while
+        automatically refreshing the access token every 4 minutes to prevent
+        authentication failures (tokens expire after ~5 minutes).
+
+        Args:
+            interval: Time in seconds between toggle operations (default: 15)
+
+        Raises:
+            SystemExit: On KeyboardInterrupt (Ctrl+C)
+        """
         print(f"=== Quickstarts Disaster Recovery Test ===")
         print(f"Target: {self.base_url}")
         print(f"Quickstart: {self.quickstart_name}")
         print(f"Account: {self.account_id}")
         print(f"Interval: {interval}s")
-        print(f"===")
+        print("===")
 
         try:
             iteration = 0
+            # Refresh token every 4 minutes (tokens expire in ~5 minutes)
+            TOKEN_REFRESH_INTERVAL = 240  # 4 minutes in seconds
+
             while True:
                 iteration += 1
                 print(f"\n{'='*60}")
                 print(f"Iteration #{iteration}")
                 print(f"{'='*60}")
+
+                # Check if we need to refresh the token
+                if time.time() - self.token_refresh_time >= TOKEN_REFRESH_INTERVAL:
+                    print("\n[INFO] Refreshing access token (tokens expire after ~5 minutes)...")
+                    try:
+                        self.access_token = self._refresh_access_token()
+                    except Exception as e:
+                        print(f"[ERROR] Failed to refresh token: {e}")
+                        print("[WARN] Continuing with existing token, may fail on next request")
 
                 self.toggle_favorite()
 
@@ -230,6 +323,15 @@ class QuickstartsFavoriteTester:
 
 
 def main():
+    """
+    Main entry point for the disaster recovery test script.
+
+    Parses command-line arguments, initializes the QuickstartsFavoriteTester,
+    and starts the continuous toggle operation.
+
+    Raises:
+        SystemExit: If offline token is not provided or initialization fails
+    """
     parser = argparse.ArgumentParser(
         description='Disaster Recovery Test - Toggle Quickstart Favorites',
         formatter_class=argparse.RawDescriptionHelpFormatter,
