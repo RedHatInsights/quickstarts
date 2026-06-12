@@ -21,7 +21,7 @@ spec:
     After running the [Pre-conversion analysis for converting to RHEL](https://console.redhat.com/insights/learning-resources?quickstart=insights-tasks-pre-conversion) task and resolving all reported issues, use this quick start to convert your CentOS Linux 7 systems to RHEL 7.
     <br>
     <br>
-    Before performing the conversion, make sure you have completed all necessary [preparation steps.](https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/8/html/converting_from_an_rpm-based_linux_distribution_to_rhel/converting-using-insights_converting-from-a-linux-distribution-to-rhel)
+    Before performing the conversion, make sure you have completed all necessary [preparation steps.](https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/8/html/converting_from_a_linux_distribution_to_rhel_using_the_convert2rhel_utility/converting-using-lightspeed_converting-from-a-linux-distribution-to-rhel)
     <br>
     <br>
     Additional information:
@@ -81,7 +81,7 @@ spec:
             If a system has been successfully converted with no issues, reboot the system and skip the next step.<br>
             <br>
             If the system was not converted, review the message for more information on the found problems and how to resolve them. Additionally, verify the following:<br>
-              - You have completed all the steps to [prepare for a conversion using Red Hat Lightspeed.](https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/8/html/converting_from_an_rpm-based_linux_distribution_to_rhel/converting-using-insights_converting-from-a-linux-distribution-to-rhel)
+              - You have completed all the steps to [prepare for a conversion using Red Hat Lightspeed.](https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/8/html/converting_from_a_linux_distribution_to_rhel_using_the_convert2rhel_utility/converting-using-lightspeed_converting-from-a-linux-distribution-to-rhel)
               - The system contains all packages required for the conversion.
               - The system is running.
               - You have resolved all issues in the Pre-conversion analysis for converting to RHEL task.
