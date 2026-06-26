@@ -129,3 +129,116 @@ func TestPullLatest_AlreadyUpToDate(t *testing.T) {
 	err = mgr.PullLatest()
 	assert.NoError(t, err)
 }
+
+func TestCreateBranch(t *testing.T) {
+	bare := createBareRepo(t)
+	cloneDest := filepath.Join(t.TempDir(), "repo")
+
+	mgr, err := InitRepo(bare, cloneDest, "", "master")
+	require.NoError(t, err)
+
+	err = mgr.CreateBranch("feature/test-branch")
+	require.NoError(t, err)
+
+	head, err := mgr.Repo.Head()
+	require.NoError(t, err)
+	assert.Equal(t, "refs/heads/feature/test-branch", head.Name().String())
+}
+
+func TestWriteFiles(t *testing.T) {
+	bare := createBareRepo(t)
+	cloneDest := filepath.Join(t.TempDir(), "repo")
+
+	mgr, err := InitRepo(bare, cloneDest, "", "master")
+	require.NoError(t, err)
+
+	files := []File{
+		{Name: "metadata.yaml", Content: "name: test-quickstart"},
+		{Name: "content.yaml", Content: "steps: []"},
+	}
+
+	err = mgr.WriteFiles("docs/quickstarts/test", files)
+	require.NoError(t, err)
+
+	content, err := os.ReadFile(filepath.Join(cloneDest, "docs/quickstarts/test/metadata.yaml"))
+	require.NoError(t, err)
+	assert.Equal(t, "name: test-quickstart", string(content))
+
+	content, err = os.ReadFile(filepath.Join(cloneDest, "docs/quickstarts/test/content.yaml"))
+	require.NoError(t, err)
+	assert.Equal(t, "steps: []", string(content))
+}
+
+func TestCommitChanges(t *testing.T) {
+	bare := createBareRepo(t)
+	cloneDest := filepath.Join(t.TempDir(), "repo")
+
+	mgr, err := InitRepo(bare, cloneDest, "", "master")
+	require.NoError(t, err)
+
+	err = os.WriteFile(filepath.Join(cloneDest, "newfile.txt"), []byte("hello"), 0644)
+	require.NoError(t, err)
+
+	sha, err := mgr.CommitChanges("test commit", "Test User", "test@test.com")
+	require.NoError(t, err)
+	assert.Len(t, sha, 40)
+
+	head, err := mgr.Repo.Head()
+	require.NoError(t, err)
+
+	commit, err := mgr.Repo.CommitObject(head.Hash())
+	require.NoError(t, err)
+	assert.Equal(t, "test commit", commit.Message)
+	assert.Equal(t, "Test User", commit.Author.Name)
+	assert.Equal(t, "test@test.com", commit.Author.Email)
+}
+
+func TestPushBranch(t *testing.T) {
+	bare := createBareRepo(t)
+	cloneDest := filepath.Join(t.TempDir(), "repo")
+
+	mgr, err := InitRepo(bare, cloneDest, "", "master")
+	require.NoError(t, err)
+
+	err = mgr.CreateBranch("feature/push-test")
+	require.NoError(t, err)
+
+	err = os.WriteFile(filepath.Join(cloneDest, "pushed.txt"), []byte("pushed"), 0644)
+	require.NoError(t, err)
+
+	_, err = mgr.CommitChanges("push test", "Test", "test@test.com")
+	require.NoError(t, err)
+
+	err = mgr.PushBranch("feature/push-test")
+	require.NoError(t, err)
+
+	// Verify by cloning bare and checking the branch exists
+	verify := t.TempDir()
+	_, err = gogit.PlainClone(verify, false, &gogit.CloneOptions{
+		URL:           bare,
+		ReferenceName: "refs/heads/feature/push-test",
+		SingleBranch:  true,
+	})
+	require.NoError(t, err)
+
+	_, err = os.Stat(filepath.Join(verify, "pushed.txt"))
+	assert.NoError(t, err)
+}
+
+func TestCleanup(t *testing.T) {
+	bare := createBareRepo(t)
+	cloneDest := filepath.Join(t.TempDir(), "repo")
+
+	mgr, err := InitRepo(bare, cloneDest, "", "master")
+	require.NoError(t, err)
+
+	err = mgr.CreateBranch("feature/cleanup-test")
+	require.NoError(t, err)
+
+	err = mgr.Cleanup("feature/cleanup-test")
+	require.NoError(t, err)
+
+	head, err := mgr.Repo.Head()
+	require.NoError(t, err)
+	assert.Equal(t, "refs/heads/master", head.Name().String())
+}

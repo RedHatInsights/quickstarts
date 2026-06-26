@@ -3,13 +3,21 @@ package git
 import (
 	"fmt"
 	"os"
+	"path/filepath"
+	"time"
 
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/config"
 	"github.com/go-git/go-git/v5/plumbing"
+	"github.com/go-git/go-git/v5/plumbing/object"
 	"github.com/go-git/go-git/v5/plumbing/transport/http"
 	"github.com/sirupsen/logrus"
 )
+
+type File struct {
+	Name    string
+	Content string
+}
 
 type RepoManager struct {
 	Repo       *git.Repository
@@ -95,6 +103,104 @@ func (m *RepoManager) EnsureRemote(name, url string) error {
 		return nil
 	}
 	return err
+}
+
+func (m *RepoManager) CreateBranch(name string) error {
+	w, err := m.Repo.Worktree()
+	if err != nil {
+		return fmt.Errorf("failed to get worktree: %w", err)
+	}
+
+	ref := plumbing.NewBranchReferenceName(name)
+	err = w.Checkout(&git.CheckoutOptions{
+		Branch: ref,
+		Create: true,
+	})
+	if err != nil {
+		return fmt.Errorf("failed to create branch %s: %w", name, err)
+	}
+
+	logrus.WithField("branch", name).Info("Branch created")
+	return nil
+}
+
+func (m *RepoManager) WriteFiles(dir string, files []File) error {
+	absDir := filepath.Join(m.RepoPath, dir)
+	if err := os.MkdirAll(absDir, 0755); err != nil {
+		return fmt.Errorf("failed to create directory %s: %w", dir, err)
+	}
+
+	for _, f := range files {
+		path := filepath.Join(absDir, f.Name)
+		if err := os.WriteFile(path, []byte(f.Content), 0644); err != nil {
+			return fmt.Errorf("failed to write file %s: %w", f.Name, err)
+		}
+	}
+
+	logrus.WithFields(logrus.Fields{
+		"dir":   dir,
+		"count": len(files),
+	}).Info("Files written")
+	return nil
+}
+
+func (m *RepoManager) CommitChanges(message, authorName, authorEmail string) (string, error) {
+	w, err := m.Repo.Worktree()
+	if err != nil {
+		return "", fmt.Errorf("failed to get worktree: %w", err)
+	}
+
+	if _, err := w.Add("."); err != nil {
+		return "", fmt.Errorf("failed to stage changes: %w", err)
+	}
+
+	hash, err := w.Commit(message, &git.CommitOptions{
+		Author: &object.Signature{
+			Name:  authorName,
+			Email: authorEmail,
+			When:  time.Now(),
+		},
+	})
+	if err != nil {
+		return "", fmt.Errorf("failed to commit: %w", err)
+	}
+
+	logrus.WithField("sha", hash.String()[:8]).Info("Changes committed")
+	return hash.String(), nil
+}
+
+func (m *RepoManager) PushBranch(branch string) error {
+	ref := plumbing.NewBranchReferenceName(branch)
+	err := m.Repo.Push(&git.PushOptions{
+		RemoteName: "origin",
+		RefSpecs:   []config.RefSpec{config.RefSpec(ref + ":" + ref)},
+		Auth:       m.auth(),
+	})
+	if err != nil {
+		return fmt.Errorf("failed to push branch %s: %w", branch, err)
+	}
+
+	logrus.WithField("branch", branch).Info("Branch pushed")
+	return nil
+}
+
+func (m *RepoManager) Cleanup(branch string) error {
+	w, err := m.Repo.Worktree()
+	if err != nil {
+		return fmt.Errorf("failed to get worktree: %w", err)
+	}
+
+	baseRef := plumbing.NewBranchReferenceName(m.BaseBranch)
+	if err := w.Checkout(&git.CheckoutOptions{Branch: baseRef}); err != nil {
+		return fmt.Errorf("failed to checkout %s: %w", m.BaseBranch, err)
+	}
+
+	if err := m.Repo.Storer.RemoveReference(plumbing.NewBranchReferenceName(branch)); err != nil {
+		return fmt.Errorf("failed to delete branch %s: %w", branch, err)
+	}
+
+	logrus.WithField("branch", branch).Info("Branch cleaned up")
+	return nil
 }
 
 func (m *RepoManager) auth() *http.BasicAuth {
