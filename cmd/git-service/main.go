@@ -7,6 +7,8 @@ import (
 	"os/signal"
 	"syscall"
 
+	gitconfig "github.com/RedHatInsights/quickstarts/pkg/git-service/config"
+	gitops "github.com/RedHatInsights/quickstarts/pkg/git-service/git"
 	githandlers "github.com/RedHatInsights/quickstarts/pkg/git-service/handlers"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -16,11 +18,14 @@ import (
 
 func main() {
 	godotenv.Load()
+	gitconfig.Init()
+	cfg := gitconfig.Get()
 
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8000"
+	repoMgr, err := gitops.InitRepo(cfg.RepoURL, cfg.RepoPath, cfg.GitHubToken, cfg.BaseBranch)
+	if err != nil {
+		logrus.WithError(err).Fatal("Failed to initialize repository")
 	}
+	_ = repoMgr
 
 	r := chi.NewRouter()
 	r.Use(middleware.RequestID)
@@ -38,7 +43,7 @@ func main() {
 	})
 
 	server := &http.Server{
-		Addr:    fmt.Sprintf(":%s", port),
+		Addr:    fmt.Sprintf(":%s", cfg.Port),
 		Handler: r,
 	}
 
@@ -46,7 +51,7 @@ func main() {
 	signal.Notify(done, os.Interrupt, syscall.SIGTERM)
 
 	go func() {
-		logrus.WithField("port", port).Info("Starting quickstarts-git-service")
+		logrus.WithField("port", cfg.Port).Info("Starting quickstarts-git-service")
 		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			logrus.WithError(err).Fatal("Server failed to start")
 		}
