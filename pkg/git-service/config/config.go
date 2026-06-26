@@ -3,11 +3,13 @@ package config
 import "os"
 
 type GitServiceConfig struct {
-	GitHubToken string
-	RepoURL     string
-	BaseBranch  string
-	RepoPath    string
-	Port        string
+	GitHubToken       string
+	RepoURL           string
+	BaseBranch        string
+	RepoPath          string
+	Port              string
+	ReviewersTeam     string
+	QuickstartsDirPath string
 }
 
 var cfg *GitServiceConfig
@@ -18,7 +20,9 @@ func Init() {
 		RepoURL:     os.Getenv("GITHUB_REPO_URL"),
 		BaseBranch:  getEnvOrDefault("GITHUB_BASE_BRANCH", "main"),
 		RepoPath:    getEnvOrDefault("QUICKSTARTS_REPO_PATH", "/var/quickstarts-repo"),
-		Port:        getEnvOrDefault("PORT", "8000"),
+		Port:               getEnvOrDefault("PORT", "8000"),
+		ReviewersTeam:      os.Getenv("PR_REVIEWERS_TEAM"),
+		QuickstartsDirPath: getEnvOrDefault("QUICKSTARTS_DIR_PATH", "/docs/quickstarts/"),
 	}
 }
 

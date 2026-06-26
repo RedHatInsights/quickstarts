@@ -9,6 +9,7 @@ import (
 
 	gitconfig "github.com/RedHatInsights/quickstarts/pkg/git-service/config"
 	gitops "github.com/RedHatInsights/quickstarts/pkg/git-service/git"
+	ghclient "github.com/RedHatInsights/quickstarts/pkg/git-service/github"
 	githandlers "github.com/RedHatInsights/quickstarts/pkg/git-service/handlers"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -25,7 +26,18 @@ func main() {
 	if err != nil {
 		logrus.WithError(err).Fatal("Failed to initialize repository")
 	}
-	_ = repoMgr
+
+	ghClient, err := ghclient.NewClient(cfg.GitHubToken, cfg.RepoURL)
+	if err != nil {
+		logrus.WithError(err).Fatal("Failed to initialize GitHub client")
+	}
+
+	handler := &githandlers.Handler{
+		RepoMgr:            repoMgr,
+		GitHubClient:       ghClient,
+		ReviewersTeam:      cfg.ReviewersTeam,
+		QuickstartsDirPath: cfg.QuickstartsDirPath,
+	}
 
 	r := chi.NewRouter()
 	r.Use(middleware.RequestID)
@@ -39,7 +51,7 @@ func main() {
 	})
 
 	r.Route("/api/v1", func(r chi.Router) {
-		r.Post("/submit-pr", githandlers.SubmitPR)
+		r.Post("/submit-pr", handler.SubmitPR)
 	})
 
 	server := &http.Server{
