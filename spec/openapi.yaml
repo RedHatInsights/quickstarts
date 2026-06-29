@@ -134,6 +134,62 @@ components:
         value:
           type: string
       type: object
+    SubmitPrFile:
+      type: object
+      required:
+        - name
+        - content
+      properties:
+        name:
+          type: string
+        content:
+          type: string
+    SubmitPrMetadata:
+      type: object
+      required:
+        - branchName
+        - commitMessage
+        - prTitle
+      properties:
+        branchName:
+          type: string
+        commitMessage:
+          type: string
+        prTitle:
+          type: string
+        prBody:
+          type: string
+        userEmail:
+          type: string
+        isUpdate:
+          type: boolean
+          default: false
+        existingPath:
+          type: string
+    SubmitPrRequest:
+      type: object
+      required:
+        - files
+        - metadata
+      properties:
+        files:
+          type: array
+          items:
+            $ref: '#/components/schemas/SubmitPrFile'
+          minItems: 1
+        metadata:
+          $ref: '#/components/schemas/SubmitPrMetadata'
+    SubmitPrResponse:
+      type: object
+      properties:
+        prUrl:
+          type: string
+        branchName:
+          type: string
+        commitSha:
+          type: string
+        status:
+          type: string
   parameters:
       ProductFamilies:
         name: product-families
@@ -533,4 +589,35 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/NotFound'
+  /pull-request:
+    post:
+      summary: Create a pull request via git-service
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubmitPrRequest'
+      responses:
+        '200':
+          description: PR created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/SubmitPrResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '502':
+          description: Git service error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
 

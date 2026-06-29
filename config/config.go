@@ -23,6 +23,7 @@ type QuickstartsConfig struct {
 	DbSSLRootCert          string
 	LogLevel               string
 	MaxFuzzySearchDistance int // Max Levenshtein distance for fuzzy search (typo tolerance)
+	GitServiceURL          string
 }
 
 var config *QuickstartsConfig
@@ -91,6 +92,9 @@ func Init() {
 	}
 	config.Test = os.Getenv("TEST") == "true"
 
+	if gitServiceURL := os.Getenv("GIT_SERVICE_URL"); gitServiceURL != "" {
+		config.GitServiceURL = gitServiceURL
+	}
 }
 
 // Get returns a quickstarts service configuration
