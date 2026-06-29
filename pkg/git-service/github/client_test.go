@@ -22,10 +22,10 @@ func TestParseRepoURL_WithGitSuffix(t *testing.T) {
 }
 
 func TestParseRepoURL_SSH(t *testing.T) {
-	owner, repo, err := ParseRepoURL("git@github.com:hossam-farid/quickstarts-test.git")
+	owner, repo, err := ParseRepoURL("git@github.com:RedHatInsights/quickstarts.git")
 	require.NoError(t, err)
-	assert.Equal(t, "hossam-farid", owner)
-	assert.Equal(t, "quickstarts-test", repo)
+	assert.Equal(t, "RedHatInsights", owner)
+	assert.Equal(t, "quickstarts", repo)
 }
 
 func TestParseRepoURL_Invalid(t *testing.T) {
