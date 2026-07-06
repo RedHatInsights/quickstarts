@@ -19,6 +19,16 @@ type File struct {
 	Content string
 }
 
+type RepoOperations interface {
+	PullLatest() error
+	CreateBranch(name string) error
+	WriteFiles(dir string, files []File) error
+	CommitChanges(message, authorName, authorEmail string) (string, error)
+	PushBranch(branch string) error
+	Cleanup(branch string) error
+	GetBaseBranch() string
+}
+
 type RepoManager struct {
 	Repo       *git.Repository
 	RepoPath   string
@@ -201,6 +211,10 @@ func (m *RepoManager) Cleanup(branch string) error {
 
 	logrus.WithField("branch", branch).Info("Branch cleaned up")
 	return nil
+}
+
+func (m *RepoManager) GetBaseBranch() string {
+	return m.BaseBranch
 }
 
 func (m *RepoManager) auth() *http.BasicAuth {

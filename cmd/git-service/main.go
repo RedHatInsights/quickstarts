@@ -32,12 +32,7 @@ func main() {
 		logrus.WithError(err).Fatal("Failed to initialize GitHub client")
 	}
 
-	handler := &githandlers.Handler{
-		RepoMgr:            repoMgr,
-		GitHubClient:       ghClient,
-		ReviewersTeam:      cfg.ReviewersTeam,
-		QuickstartsDirPath: cfg.QuickstartsDirPath,
-	}
+	handler := githandlers.NewHandler(repoMgr, ghClient, cfg.ReviewersTeam, cfg.QuickstartsDirPath)
 
 	r := chi.NewRouter()
 	r.Use(middleware.RequestID)

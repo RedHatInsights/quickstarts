@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"sync"
 
 	gitops "github.com/RedHatInsights/quickstarts/pkg/git-service/git"
 	ghclient "github.com/RedHatInsights/quickstarts/pkg/git-service/github"
@@ -38,10 +39,20 @@ type SubmitPRResponse struct {
 }
 
 type Handler struct {
-	RepoMgr          *gitops.RepoManager
-	GitHubClient     *ghclient.Client
-	ReviewersTeam    string
-	QuickstartsDirPath string
+	repoMgr            gitops.RepoOperations
+	gitHubClient       ghclient.PRCreator
+	reviewersTeam      string
+	quickstartsDirPath string
+	mu                 sync.Mutex
+}
+
+func NewHandler(repoMgr gitops.RepoOperations, ghClient ghclient.PRCreator, reviewersTeam, quickstartsDirPath string) *Handler {
+	return &Handler{
+		repoMgr:            repoMgr,
+		gitHubClient:       ghClient,
+		reviewersTeam:      reviewersTeam,
+		quickstartsDirPath: quickstartsDirPath,
+	}
 }
 
 func (h *Handler) SubmitPR(w http.ResponseWriter, r *http.Request) {
@@ -58,13 +69,16 @@ func (h *Handler) SubmitPR(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := h.RepoMgr.PullLatest(); err != nil {
+	h.mu.Lock()
+	defer h.mu.Unlock()
+
+	if err := h.repoMgr.PullLatest(); err != nil {
 		logrus.WithError(err).Error("Failed to pull latest")
 		writeError(w, http.StatusInternalServerError, "failed to pull latest changes")
 		return
 	}
 
-	if err := h.RepoMgr.CreateBranch(req.Metadata.BranchName); err != nil {
+	if err := h.repoMgr.CreateBranch(req.Metadata.BranchName); err != nil {
 		logrus.WithError(err).Error("Failed to create branch")
 		writeError(w, http.StatusInternalServerError, "failed to create branch")
 		return
@@ -72,7 +86,7 @@ func (h *Handler) SubmitPR(w http.ResponseWriter, r *http.Request) {
 
 	dir := req.Metadata.ExistingPath
 	if !req.Metadata.IsUpdate {
-		dir = h.QuickstartsDirPath + req.Metadata.BranchName + "/"
+		dir = h.quickstartsDirPath + req.Metadata.BranchName + "/"
 	}
 
 	gitFiles := make([]gitops.File, len(req.Files))
@@ -80,14 +94,14 @@ func (h *Handler) SubmitPR(w http.ResponseWriter, r *http.Request) {
 		gitFiles[i] = gitops.File{Name: f.Name, Content: f.Content}
 	}
 
-	if err := h.RepoMgr.WriteFiles(dir, gitFiles); err != nil {
+	if err := h.repoMgr.WriteFiles(dir, gitFiles); err != nil {
 		logrus.WithError(err).Error("Failed to write files")
 		h.cleanup(req.Metadata.BranchName)
 		writeError(w, http.StatusInternalServerError, "failed to write files")
 		return
 	}
 
-	sha, err := h.RepoMgr.CommitChanges(req.Metadata.CommitMessage, "quickstarts-git-service", req.Metadata.UserEmail)
+	sha, err := h.repoMgr.CommitChanges(req.Metadata.CommitMessage, "quickstarts-git-service", req.Metadata.UserEmail)
 	if err != nil {
 		logrus.WithError(err).Error("Failed to commit")
 		h.cleanup(req.Metadata.BranchName)
@@ -95,7 +109,7 @@ func (h *Handler) SubmitPR(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := h.RepoMgr.PushBranch(req.Metadata.BranchName); err != nil {
+	if err := h.repoMgr.PushBranch(req.Metadata.BranchName); err != nil {
 		logrus.WithError(err).Error("Failed to push")
 		h.cleanup(req.Metadata.BranchName)
 		writeError(w, http.StatusInternalServerError, "failed to push branch")
@@ -107,12 +121,12 @@ func (h *Handler) SubmitPR(w http.ResponseWriter, r *http.Request) {
 		body += fmt.Sprintf("\n\nSubmitted by: %s", req.Metadata.UserEmail)
 	}
 
-	prURL, prNumber, err := h.GitHubClient.CreatePullRequest(
+	prURL, prNumber, err := h.gitHubClient.CreatePullRequest(
 		r.Context(),
 		req.Metadata.PRTitle,
 		body,
 		req.Metadata.BranchName,
-		h.RepoMgr.BaseBranch,
+		h.repoMgr.GetBaseBranch(),
 	)
 	if err != nil {
 		logrus.WithError(err).Error("Failed to create PR")
@@ -121,7 +135,7 @@ func (h *Handler) SubmitPR(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.GitHubClient.AssignReviewers(r.Context(), prNumber, h.ReviewersTeam)
+	h.gitHubClient.AssignReviewers(r.Context(), prNumber, h.reviewersTeam)
 	h.cleanup(req.Metadata.BranchName)
 
 	status := "created"
@@ -138,7 +152,7 @@ func (h *Handler) SubmitPR(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) cleanup(branch string) {
-	if err := h.RepoMgr.Cleanup(branch); err != nil {
+	if err := h.repoMgr.Cleanup(branch); err != nil {
 		logrus.WithError(err).Warn("Branch cleanup failed")
 	}
 }
