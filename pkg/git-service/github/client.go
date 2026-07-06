@@ -10,6 +10,11 @@ import (
 	"golang.org/x/oauth2"
 )
 
+type PRCreator interface {
+	CreatePullRequest(ctx context.Context, title, body, head, base string) (string, int, error)
+	AssignReviewers(ctx context.Context, prNumber int, team string) error
+}
+
 type Client struct {
 	gh    *github.Client
 	Owner string
