@@ -29,4 +29,3 @@ spec/openapi.json.backup
 # output binaries
 quickstarts
 /quickstarts-git-service
-/git-service
