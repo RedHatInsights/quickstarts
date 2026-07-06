@@ -20,7 +20,7 @@ func Init() {
 		RepoURL:     os.Getenv("GITHUB_REPO_URL"),
 		BaseBranch:  getEnvOrDefault("GITHUB_BASE_BRANCH", "main"),
 		RepoPath:    getEnvOrDefault("QUICKSTARTS_REPO_PATH", "/var/quickstarts-repo"),
-		Port:               getEnvOrDefault("PORT", "8000"),
+		Port:               getEnvOrDefault("PORT", "8001"),
 		ReviewersTeam:      os.Getenv("PR_REVIEWERS_TEAM"),
 		QuickstartsDirPath: getEnvOrDefault("QUICKSTARTS_DIR_PATH", "/docs/quickstarts/"),
 	}
