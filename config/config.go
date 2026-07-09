@@ -25,6 +25,7 @@ type QuickstartsConfig struct {
 	LogLevel               string
 	MaxFuzzySearchDistance int // Max Levenshtein distance for fuzzy search (typo tolerance)
 	GitServiceURL          string
+	PSKToken               string
 }
 
 var config *QuickstartsConfig
@@ -100,6 +101,8 @@ func Init() {
 	if gitURL := os.Getenv("GIT_SERVICE_URL"); gitURL != "" {
 		config.GitServiceURL = gitURL
 	}
+
+	config.PSKToken = os.Getenv("PSK_TOKEN")
 }
 
 // Get returns a quickstarts service configuration
