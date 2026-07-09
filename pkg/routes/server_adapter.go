@@ -29,6 +29,6 @@ func NewServerAdapter() *ServerAdapter {
 		helpTopicService:  services.NewHelpTopicService(),
 		favoriteService:   services.NewFavoriteService(),
 		progressService:   services.NewProgressService(),
-		gitServiceClient:  clients.NewGitService(cfg.GitServiceURL),
+		gitServiceClient:  clients.NewGitService(cfg.GitServiceURL, cfg.PSKToken),
 	}
 }

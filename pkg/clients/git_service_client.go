@@ -13,14 +13,16 @@ import (
 type GitService struct {
 	baseURL    string
 	httpClient *http.Client
+	pskToken   string
 }
 
-func NewGitService(baseURL string) *GitService {
+func NewGitService(baseURL, pskToken string) *GitService {
 	return &GitService{
 		baseURL: baseURL,
 		httpClient: &http.Client{
 			Timeout: 60 * time.Second,
 		},
+		pskToken: pskToken,
 	}
 }
 
@@ -72,6 +74,9 @@ func (c *GitService) SubmitPR(ctx context.Context, files []GitServiceFile, metad
 		return nil, fmt.Errorf("failed to create request: %w", err)
 	}
 	req.Header.Set("Content-Type", "application/json")
+	if c.pskToken != "" {
+		req.Header.Set("X-PSK-Token", c.pskToken)
+	}
 
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
