@@ -11,6 +11,7 @@ import (
 	gitops "github.com/RedHatInsights/quickstarts/pkg/git-service/git"
 	ghclient "github.com/RedHatInsights/quickstarts/pkg/git-service/github"
 	githandlers "github.com/RedHatInsights/quickstarts/pkg/git-service/handlers"
+	pskmw "github.com/RedHatInsights/quickstarts/pkg/git-service/middleware"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/joho/godotenv"
@@ -46,6 +47,7 @@ func main() {
 	})
 
 	r.Route("/api/v1", func(r chi.Router) {
+		r.Use(pskmw.PSKAuth(cfg.PSKToken))
 		r.Post("/submit-pr", handler.SubmitPR)
 	})
 

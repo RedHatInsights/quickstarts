@@ -16,6 +16,7 @@ type GitServiceConfig struct {
 	MetricsPort        int
 	ReviewersTeam      string
 	QuickstartsDirPath string
+	PSKToken           string
 }
 
 var cfg *GitServiceConfig
@@ -30,6 +31,7 @@ func Init() {
 		MetricsPort:        8080,
 		ReviewersTeam:      os.Getenv("PR_REVIEWERS_TEAM"),
 		QuickstartsDirPath: getEnvOrDefault("QUICKSTARTS_DIR_PATH", "/docs/quickstarts/"),
+		PSKToken:           os.Getenv("PSK_TOKEN"),
 	}
 
 	if clowder.IsClowderEnabled() {
