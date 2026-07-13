@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/go-git/go-git/v5"
@@ -135,13 +136,21 @@ func (m *RepoManager) CreateBranch(name string) error {
 }
 
 func (m *RepoManager) WriteFiles(dir string, files []File) error {
-	absDir := filepath.Join(m.RepoPath, dir)
+	repoRoot := filepath.Clean(m.RepoPath) + string(os.PathSeparator)
+	absDir := filepath.Clean(filepath.Join(m.RepoPath, dir))
+	if !strings.HasPrefix(absDir+string(os.PathSeparator), repoRoot) {
+		return fmt.Errorf("directory path escapes repository root: %s", dir)
+	}
+
 	if err := os.MkdirAll(absDir, 0755); err != nil {
 		return fmt.Errorf("failed to create directory %s: %w", dir, err)
 	}
 
 	for _, f := range files {
-		path := filepath.Join(absDir, f.Name)
+		path := filepath.Clean(filepath.Join(absDir, f.Name))
+		if !strings.HasPrefix(path, repoRoot) {
+			return fmt.Errorf("file path escapes repository root: %s", f.Name)
+		}
 		if err := os.WriteFile(path, []byte(f.Content), 0644); err != nil {
 			return fmt.Errorf("failed to write file %s: %w", f.Name, err)
 		}
@@ -198,6 +207,14 @@ func (m *RepoManager) Cleanup(branch string) error {
 	w, err := m.Repo.Worktree()
 	if err != nil {
 		return fmt.Errorf("failed to get worktree: %w", err)
+	}
+
+	if err := w.Reset(&git.ResetOptions{Mode: git.HardReset}); err != nil {
+		return fmt.Errorf("failed to reset worktree: %w", err)
+	}
+
+	if err := w.Clean(&git.CleanOptions{Dir: true}); err != nil {
+		return fmt.Errorf("failed to clean worktree: %w", err)
 	}
 
 	baseRef := plumbing.NewBranchReferenceName(m.BaseBranch)

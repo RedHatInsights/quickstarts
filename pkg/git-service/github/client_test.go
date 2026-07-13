@@ -127,3 +127,15 @@ func TestAssignReviewers_EmptyTeam(t *testing.T) {
 	err := client.AssignReviewers(context.Background(), 42, "")
 	assert.NoError(t, err)
 }
+
+func TestParseRepoURL_RejectsLookalikeHost(t *testing.T) {
+	_, _, err := ParseRepoURL("https://github.com.evil.com/owner/repo")
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "unsupported host")
+}
+
+func TestParseRepoURL_RejectsHTTP(t *testing.T) {
+	_, _, err := ParseRepoURL("http://github.com/owner/repo")
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "unsupported scheme")
+}

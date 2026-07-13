@@ -273,3 +273,49 @@ func TestCleanup(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, "refs/heads/master", head.Name().String())
 }
+
+func TestCleanup_RemovesUntrackedFiles(t *testing.T) {
+	bare := createBareRepo(t)
+	cloneDest := filepath.Join(t.TempDir(), "repo")
+
+	mgr, err := InitRepo(bare, cloneDest, "", "master")
+	require.NoError(t, err)
+
+	err = mgr.CreateBranch("feature/dirty-test")
+	require.NoError(t, err)
+
+	leftover := filepath.Join(cloneDest, "leftover.txt")
+	require.NoError(t, os.WriteFile(leftover, []byte("stale"), 0644))
+
+	err = mgr.Cleanup("feature/dirty-test")
+	require.NoError(t, err)
+
+	_, err = os.Stat(leftover)
+	assert.True(t, os.IsNotExist(err), "untracked file should be removed by cleanup")
+}
+
+func TestWriteFiles_PathTraversal_Dir(t *testing.T) {
+	bare := createBareRepo(t)
+	cloneDest := filepath.Join(t.TempDir(), "repo")
+
+	mgr, err := InitRepo(bare, cloneDest, "", "master")
+	require.NoError(t, err)
+
+	files := []File{{Name: "evil.txt", Content: "pwned"}}
+	err = mgr.WriteFiles("../../etc", files)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "escapes repository root")
+}
+
+func TestWriteFiles_PathTraversal_FileName(t *testing.T) {
+	bare := createBareRepo(t)
+	cloneDest := filepath.Join(t.TempDir(), "repo")
+
+	mgr, err := InitRepo(bare, cloneDest, "", "master")
+	require.NoError(t, err)
+
+	files := []File{{Name: "../../etc/passwd", Content: "pwned"}}
+	err = mgr.WriteFiles("docs", files)
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "escapes repository root")
+}

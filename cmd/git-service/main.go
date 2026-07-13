@@ -17,6 +17,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/joho/godotenv"
+	clowder "github.com/redhatinsights/app-common-go/pkg/api/v1"
 	"github.com/sirupsen/logrus"
 )
 
@@ -24,6 +25,13 @@ func main() {
 	godotenv.Load()
 	gitconfig.Init()
 	cfg := gitconfig.Get()
+
+	if cfg.PSKToken == "" {
+		if clowder.IsClowderEnabled() {
+			logrus.Fatal("PSK_TOKEN must be set in production (Clowder-enabled) environments")
+		}
+		logrus.Warn("PSK_TOKEN is not set; authentication is disabled (local development mode)")
+	}
 
 	repoMgr, err := gitops.InitRepo(cfg.RepoURL, cfg.RepoPath, cfg.GitHubToken, cfg.BaseBranch)
 	if err != nil {
