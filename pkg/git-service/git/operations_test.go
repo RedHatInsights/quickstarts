@@ -225,6 +225,37 @@ func TestPushBranch(t *testing.T) {
 	assert.NoError(t, err)
 }
 
+func TestEnsureRemote(t *testing.T) {
+	bare := createBareRepo(t)
+	cloneDest := filepath.Join(t.TempDir(), "repo")
+
+	mgr, err := InitRepo(bare, cloneDest, "", "master")
+	require.NoError(t, err)
+
+	secondBare := createBareRepo(t)
+	err = mgr.EnsureRemote("upstream", secondBare)
+	require.NoError(t, err)
+
+	remote, err := mgr.Repo.Remote("upstream")
+	require.NoError(t, err)
+	assert.Equal(t, secondBare, remote.Config().URLs[0])
+}
+
+func TestEnsureRemote_AlreadyExists(t *testing.T) {
+	bare := createBareRepo(t)
+	cloneDest := filepath.Join(t.TempDir(), "repo")
+
+	mgr, err := InitRepo(bare, cloneDest, "", "master")
+	require.NoError(t, err)
+
+	secondBare := createBareRepo(t)
+	err = mgr.EnsureRemote("upstream", secondBare)
+	require.NoError(t, err)
+
+	err = mgr.EnsureRemote("upstream", secondBare)
+	assert.NoError(t, err)
+}
+
 func TestCleanup(t *testing.T) {
 	bare := createBareRepo(t)
 	cloneDest := filepath.Join(t.TempDir(), "repo")
