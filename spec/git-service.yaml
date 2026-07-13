@@ -1,0 +1,128 @@
+openapi: 3.0.3
+info:
+  title: quickstarts-git-service
+  description: Git operations service for creating quickstart PRs
+  version: 1.0.0
+
+paths:
+  /api/v1/submit-pr:
+    post:
+      summary: Create a pull request with quickstart content
+      operationId: submitPR
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubmitPrRequest'
+      responses:
+        '200':
+          description: PR created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubmitPrResponse'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /test:
+    get:
+      summary: Health check
+      operationId: healthCheck
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: OK
+
+components:
+  schemas:
+    SubmitPrRequest:
+      type: object
+      required:
+        - files
+        - metadata
+      properties:
+        files:
+          type: array
+          items:
+            $ref: '#/components/schemas/File'
+        metadata:
+          $ref: '#/components/schemas/PrMetadata'
+
+    File:
+      type: object
+      required:
+        - name
+        - content
+      properties:
+        name:
+          type: string
+          description: File name (e.g. metadata.yaml)
+        content:
+          type: string
+          description: File content
+
+    PrMetadata:
+      type: object
+      required:
+        - branchName
+        - commitMessage
+        - prTitle
+        - prBody
+        - userEmail
+      properties:
+        branchName:
+          type: string
+          description: Branch name (e.g. quickstart/my-quickstart-1234567890)
+        commitMessage:
+          type: string
+        prTitle:
+          type: string
+        prBody:
+          type: string
+        userEmail:
+          type: string
+          description: User email to mention in PR for notifications
+        isUpdate:
+          type: boolean
+          default: false
+          description: true = update existing quickstart, false = create new
+        existingPath:
+          type: string
+          description: Path to existing quickstart directory (required when isUpdate is true)
+
+    SubmitPrResponse:
+      type: object
+      properties:
+        prUrl:
+          type: string
+          description: URL of the created pull request
+        branchName:
+          type: string
+        commitSha:
+          type: string
+        status:
+          type: string
+          enum: [created, updated, error]
+
+    ErrorResponse:
+      type: object
+      properties:
+        status:
+          type: string
+        msg:
+          type: string

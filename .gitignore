@@ -26,5 +26,6 @@ fmtcoverage.html
 pkg/generated
 spec/openapi.json.backup
 
-# output binary
+# output binaries
 quickstarts
+/quickstarts-git-service
