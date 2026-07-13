@@ -3,6 +3,7 @@ package github
 import (
 	"context"
 	"fmt"
+	"net/url"
 	"strings"
 
 	"github.com/google/go-github/v66/github"
@@ -80,20 +81,31 @@ func (c *Client) AssignReviewers(ctx context.Context, prNumber int, team string)
 
 func ParseRepoURL(repoURL string) (owner, repo string, err error) {
 	repoURL = strings.TrimSuffix(repoURL, ".git")
-	// Normalize SSH format (git@github.com:owner/repo) to slash separator
-	repoURL = strings.Replace(repoURL, "github.com:", "github.com/", 1)
 
-	if strings.Contains(repoURL, "github.com") {
-		parts := strings.Split(repoURL, "github.com/")
-		if len(parts) != 2 {
-			return "", "", fmt.Errorf("invalid GitHub URL: %s", repoURL)
-		}
-		segments := strings.SplitN(parts[1], "/", 2)
+	if strings.HasPrefix(repoURL, "git@github.com:") {
+		path := strings.TrimPrefix(repoURL, "git@github.com:")
+		segments := strings.SplitN(path, "/", 2)
 		if len(segments) != 2 || segments[0] == "" || segments[1] == "" {
-			return "", "", fmt.Errorf("invalid GitHub URL: %s", repoURL)
+			return "", "", fmt.Errorf("invalid GitHub SSH URL: %s", repoURL)
 		}
 		return segments[0], segments[1], nil
 	}
 
-	return "", "", fmt.Errorf("unsupported repo URL format: %s", repoURL)
+	parsed, parseErr := url.Parse(repoURL)
+	if parseErr != nil {
+		return "", "", fmt.Errorf("invalid URL: %w", parseErr)
+	}
+	if parsed.Scheme != "https" {
+		return "", "", fmt.Errorf("unsupported scheme %q, only HTTPS is supported: %s", parsed.Scheme, repoURL)
+	}
+	if parsed.Host != "github.com" {
+		return "", "", fmt.Errorf("unsupported host %q, only github.com is supported: %s", parsed.Host, repoURL)
+	}
+
+	path := strings.TrimPrefix(parsed.Path, "/")
+	segments := strings.SplitN(path, "/", 2)
+	if len(segments) != 2 || segments[0] == "" || segments[1] == "" {
+		return "", "", fmt.Errorf("invalid GitHub URL path (expected /owner/repo): %s", repoURL)
+	}
+	return segments[0], segments[1], nil
 }

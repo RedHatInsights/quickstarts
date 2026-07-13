@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"path/filepath"
+	"strings"
 	"sync"
 
 	gitops "github.com/RedHatInsights/quickstarts/pkg/git-service/git"
@@ -180,7 +182,27 @@ func validateRequest(req *SubmitPRRequest) error {
 	if m.IsUpdate && m.ExistingPath == "" {
 		return fmt.Errorf("existingPath is required when isUpdate is true")
 	}
+	if containsTraversal(m.BranchName) {
+		return fmt.Errorf("branchName contains invalid path segment")
+	}
+	if m.ExistingPath != "" && containsTraversal(m.ExistingPath) {
+		return fmt.Errorf("existingPath contains invalid path segment")
+	}
+	for _, f := range req.Files {
+		if containsTraversal(f.Name) {
+			return fmt.Errorf("file name contains invalid path segment: %s", f.Name)
+		}
+	}
 	return nil
+}
+
+func containsTraversal(path string) bool {
+	for _, part := range strings.Split(filepath.ToSlash(path), "/") {
+		if part == ".." {
+			return true
+		}
+	}
+	return false
 }
 
 func writeError(w http.ResponseWriter, status int, msg string) {
