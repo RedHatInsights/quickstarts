@@ -1,11 +1,13 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	gitconfig "github.com/RedHatInsights/quickstarts/pkg/git-service/config"
 	gitops "github.com/RedHatInsights/quickstarts/pkg/git-service/git"
@@ -52,8 +54,12 @@ func main() {
 	})
 
 	server := &http.Server{
-		Addr:    fmt.Sprintf(":%s", cfg.Port),
-		Handler: r,
+		Addr:              fmt.Sprintf(":%s", cfg.Port),
+		Handler:           r,
+		ReadTimeout:       10 * time.Second,
+		ReadHeaderTimeout: 10 * time.Second,
+		WriteTimeout:      30 * time.Second,
+		IdleTimeout:       120 * time.Second,
 	}
 
 	done := make(chan os.Signal, 1)
@@ -68,4 +74,10 @@ func main() {
 
 	<-done
 	logrus.Info("Shutting down server")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	if err := server.Shutdown(ctx); err != nil {
+		logrus.WithError(err).Error("Server shutdown error")
+	}
 }
