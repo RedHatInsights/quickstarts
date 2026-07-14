@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/RedHatInsights/quickstarts/pkg/generated"
+	"github.com/RedHatInsights/quickstarts/pkg/securitylog"
 	"github.com/RedHatInsights/quickstarts/pkg/utils"
 )
 
@@ -54,9 +55,12 @@ func (s *ServerAdapter) PostFavorites(w http.ResponseWriter, r *http.Request, pa
 	// Use service to switch favorite status
 	result, err := s.favoriteService.SwitchFavorite(params.Account, quickstartName, favorite)
 	if err != nil {
+		securitylog.LogWithReason(r.Context(), "CREATE", "favorite", quickstartName, "failure", err.Error())
 		utils.ErrorResponse(w, http.StatusBadRequest, err.Error())
 		return
 	}
+
+	securitylog.Log(r.Context(), "CREATE", "favorite", quickstartName, "success")
 
 	// Convert to generated type and respond
 	genFavorite := result.ToAPI()
