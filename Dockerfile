@@ -46,6 +46,8 @@ COPY --from=builder /workspace/quickstarts-migrate /usr/bin/
 COPY --from=builder /workspace/spec/openapi.json /var/tmp
 COPY --from=builder /workspace/docs /docs
 
+ENV QUICKSTARTS_CONTENT_DIR=/docs
+
 USER 1001
 
 CMD ["quickstarts"]

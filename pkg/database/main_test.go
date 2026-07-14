@@ -29,6 +29,9 @@ func setUp() {
 	if err != nil {
 		panic(err)
 	}
+	// Set content directory to absolute path so findTags() resolves docs
+	// regardless of the working directory.
+	os.Setenv("QUICKSTARTS_CONTENT_DIR", path.Join(path.Dir(filename), "..", "..", "docs"))
 	godotenv.Load()
 	config.Init()
 	cfg := config.Get()
