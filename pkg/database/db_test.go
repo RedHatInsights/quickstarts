@@ -106,6 +106,9 @@ func TestDBSeeding(t *testing.T) {
 		log.Fatal(err)
 	}
 	helpTopicsFiles, err := filepath.Glob(filepath.Join(base, "help-topics", "*", "metadata.y*"))
+	if err != nil {
+		log.Fatal(err)
+	}
 	files := append(quickstartsFiles, helpTopicsFiles...)
 	t.Log(files)
 
