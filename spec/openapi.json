@@ -391,6 +391,10 @@
           "commitMessage": {
             "type": "string"
           },
+          "directoryName": {
+            "description": "Directory name for the quickstart (e.g. insights-integrate-satellite-iop). Defaults to branchName if not set.",
+            "type": "string"
+          },
           "existingPath": {
             "type": "string"
           },
