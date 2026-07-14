@@ -99,6 +99,61 @@ func TestCreateQuickstartWithBundle(t *testing.T) {
 	})
 }
 
+func TestClearOldContentWithFavorites(t *testing.T) {
+	t.Run("seeding succeeds with pre-existing favorites", func(t *testing.T) {
+		// Insert a quickstart so we can create a favorite referencing it.
+		qs := models.Quickstart{Name: "test-favorite-qs", Content: []byte(`{"metadata":{"name":"test-favorite-qs"}}`)}
+		assert.NoError(t, DB.Create(&qs).Error)
+
+		fav := models.FavoriteQuickstart{
+			AccountId:      "test-account",
+			QuickstartName: "test-favorite-qs",
+			Favorite:       true,
+		}
+		assert.NoError(t, DB.Create(&fav).Error)
+
+		// Verify favorite exists before seeding.
+		var count int64
+		DB.Model(&models.FavoriteQuickstart{}).Count(&count)
+		assert.Greater(t, count, int64(0), "favorites should exist before re-seed")
+
+		// Re-seed — this previously crashed with "unsupported relations: Quickstart".
+		SeedTags()
+
+		// Seeding should complete without panic/error.
+		// Favorites are cleared then restored for quickstarts that still exist.
+		var quickstarts []models.Quickstart
+		DB.Find(&quickstarts)
+		assert.Greater(t, len(quickstarts), 0, "quickstarts should exist after seeding")
+	})
+}
+
+func TestIdempotentReseeding(t *testing.T) {
+	t.Run("running SeedTags twice produces consistent state", func(t *testing.T) {
+		SeedTags()
+
+		var firstQuickstarts []models.Quickstart
+		var firstHelpTopics []models.HelpTopic
+		var firstTags []models.Tag
+		DB.Find(&firstQuickstarts)
+		DB.Find(&firstHelpTopics)
+		DB.Find(&firstTags)
+
+		SeedTags()
+
+		var secondQuickstarts []models.Quickstart
+		var secondHelpTopics []models.HelpTopic
+		var secondTags []models.Tag
+		DB.Find(&secondQuickstarts)
+		DB.Find(&secondHelpTopics)
+		DB.Find(&secondTags)
+
+		assert.Equal(t, len(firstQuickstarts), len(secondQuickstarts), "quickstart count should be stable across re-seeds")
+		assert.Equal(t, len(firstHelpTopics), len(secondHelpTopics), "help topic count should be stable across re-seeds")
+		assert.Equal(t, len(firstTags), len(secondTags), "tag count should be stable across re-seeds")
+	})
+}
+
 func TestDBSeeding(t *testing.T) {
 	base := contentDir()
 	quickstartsFiles, err := filepath.Glob(filepath.Join(base, "quickstarts", "*", "metadata.y*"))
