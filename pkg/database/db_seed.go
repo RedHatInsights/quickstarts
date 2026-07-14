@@ -9,7 +9,6 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
-	"strings"
 
 	"github.com/RedHatInsights/quickstarts/pkg/models"
 	"github.com/ghodss/yaml"
@@ -49,17 +48,26 @@ func readMetadata(loc string) (MetadataTemplate, error) {
 	return template, nil
 }
 
+// contentDir returns the base directory containing quickstart and help-topic
+// content. It reads QUICKSTARTS_CONTENT_DIR from the environment; when unset
+// it falls back to "docs" relative to the current working directory.
+func contentDir() string {
+	if dir := os.Getenv("QUICKSTARTS_CONTENT_DIR"); dir != "" {
+		return dir
+	}
+	return "docs"
+}
+
 func findTags() []MetadataTemplate {
 	var MetadataTemplates []MetadataTemplate
-	path, err := os.Getwd()
-	path = strings.TrimRight(path, "pkg")
-	quickstartsFiles, err := filepath.Glob(path + "/docs/quickstarts/**/metadata.y*")
+	base := contentDir()
+	quickstartsFiles, err := filepath.Glob(filepath.Join(base, "quickstarts", "*", "metadata.y*"))
 	if err != nil {
 		slog.Error("Failed to find quickstarts metadata files", "error", err)
 		log.Fatal(err)
 	}
 
-	helpTopicsFiles, err := filepath.Glob(path + "/docs/help-topics/**/metadata.y*")
+	helpTopicsFiles, err := filepath.Glob(filepath.Join(base, "help-topics", "*", "metadata.y*"))
 	if err != nil {
 		slog.Error("Failed to find help topics metadata files", "error", err)
 		log.Fatal(err)

@@ -4,9 +4,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"log"
-	"os"
 	"path/filepath"
-	"strings"
 	"testing"
 
 	"github.com/RedHatInsights/quickstarts/pkg/models"
@@ -83,9 +81,7 @@ func TestCreateQuickstartWithBundle(t *testing.T) {
 		error = DB.Save(&tag).Error
 		assert.Equal(t, nil, error)
 
-		path, _ := os.Getwd()
-		path = strings.TrimRight(path, "pkg")
-		quickstartFiles, _ := filepath.Glob(path + "/docs/quickstarts/**/metadata.y*")
+		quickstartFiles, _ := filepath.Glob(filepath.Join(contentDir(), "quickstarts", "*", "metadata.y*"))
 		t.Log(quickstartFiles)
 		quickstart_len := len(quickstartFiles)
 		t.Log(quickstart_len)
@@ -104,13 +100,15 @@ func TestCreateQuickstartWithBundle(t *testing.T) {
 }
 
 func TestDBSeeding(t *testing.T) {
-	path, err := os.Getwd()
-	path = strings.TrimRight(path, "pkg")
-	quickstartsFiles, err := filepath.Glob(path + "/docs/quickstarts/**/metadata.y*")
+	base := contentDir()
+	quickstartsFiles, err := filepath.Glob(filepath.Join(base, "quickstarts", "*", "metadata.y*"))
 	if err != nil {
 		log.Fatal(err)
 	}
-	helpTopicsFiles, err := filepath.Glob(path + "/docs/help-topics/**/metadata.y*")
+	helpTopicsFiles, err := filepath.Glob(filepath.Join(base, "help-topics", "*", "metadata.y*"))
+	if err != nil {
+		log.Fatal(err)
+	}
 	files := append(quickstartsFiles, helpTopicsFiles...)
 	t.Log(files)
 
