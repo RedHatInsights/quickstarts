@@ -43,6 +43,7 @@ func (s *ServerAdapter) PostPullRequest(w http.ResponseWriter, r *http.Request) 
 		UserEmail:     derefString(reqBody.Metadata.UserEmail),
 		IsUpdate:      derefBool(reqBody.Metadata.IsUpdate),
 		ExistingPath:  derefString(reqBody.Metadata.ExistingPath),
+		DirectoryName: derefString(reqBody.Metadata.DirectoryName),
 	}
 
 	result, err := s.gitServiceClient.SubmitPR(r.Context(), files, metadata)

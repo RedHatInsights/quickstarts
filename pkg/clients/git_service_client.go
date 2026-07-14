@@ -39,6 +39,7 @@ type GitServiceMetadata struct {
 	UserEmail     string `json:"userEmail"`
 	IsUpdate      bool   `json:"isUpdate"`
 	ExistingPath  string `json:"existingPath,omitempty"`
+	DirectoryName string `json:"directoryName,omitempty"`
 }
 
 type GitServiceResponse struct {

@@ -166,6 +166,9 @@ components:
           default: false
         existingPath:
           type: string
+        directoryName:
+          type: string
+          description: Directory name for the quickstart (e.g. insights-integrate-satellite-iop). Defaults to branchName if not set.
     SubmitPrRequest:
       type: object
       required:
