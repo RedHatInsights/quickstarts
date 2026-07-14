@@ -197,6 +197,32 @@ func TestSubmitPR_Success(t *testing.T) {
 	assert.Equal(t, "team-reviewers", gh.assignedTeam)
 }
 
+func TestSubmitPR_DirectoryName(t *testing.T) {
+	repo := &mockRepoManager{commitSHA: "abc123def456abc123def456abc123def456abcd", baseBranch: "main"}
+	gh := &mockGitHubClient{createPRURL: "https://github.com/org/repo/pull/44", createPRNumber: 44}
+	handler := NewHandler(repo, gh, "", "/docs/quickstarts/")
+
+	body := `{
+		"files": [{"name": "metadata.yml", "content": "name: test"}],
+		"metadata": {
+			"branchName": "quickstart/my-quickstart-1720000000",
+			"commitMessage": "Add quickstart",
+			"prTitle": "New quickstart",
+			"prBody": "Adding new quickstart",
+			"userEmail": "user@example.com",
+			"directoryName": "my-quickstart"
+		}
+	}`
+
+	req := httptest.NewRequest(http.MethodPost, "/api/v1/submit-pr", bytes.NewBufferString(body))
+	rec := httptest.NewRecorder()
+
+	handler.SubmitPR(rec, req)
+
+	require.Equal(t, http.StatusOK, rec.Code)
+	assert.Equal(t, "/docs/quickstarts/my-quickstart/", repo.writtenDir)
+}
+
 func TestSubmitPR_UpdateMode(t *testing.T) {
 	repo := &mockRepoManager{commitSHA: "abc123def456abc123def456abc123def456abcd", baseBranch: "main"}
 	gh := &mockGitHubClient{createPRURL: "https://github.com/org/repo/pull/43", createPRNumber: 43}
