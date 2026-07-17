@@ -312,10 +312,9 @@ func clearOldContent(tx *gorm.DB) ([]models.FavoriteQuickstart, error) {
 	tx.Preload("HelpTopics").Find(&staleTopicsTags)
 
 	for _, favorite := range favorites {
-		if err := tx.Model(&favorite).Association("Quickstart").Clear(); err != nil {
-			slog.Error("Failed to clear favorite quickstart association", "error", err)
-			return favorites, fmt.Errorf("failed to clear favorite association: %w", err)
-		}
+		// FavoriteQuickstart has no GORM-managed Quickstart association
+		// (QuickstartName is a plain string column, not a relationship field).
+		// Unscoped().Delete() is sufficient to remove the row.
 		if err := tx.Unscoped().Delete(&favorite).Error; err != nil {
 			slog.Error("Failed to delete favorite", "error", err)
 			return favorites, fmt.Errorf("failed to delete favorite: %w", err)
