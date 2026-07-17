@@ -2,11 +2,13 @@ package routes
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 
 	"github.com/RedHatInsights/quickstarts/pkg/generated"
 	"github.com/RedHatInsights/quickstarts/pkg/models"
+	"github.com/RedHatInsights/quickstarts/pkg/securitylog"
 	"github.com/RedHatInsights/quickstarts/pkg/utils"
 	"gorm.io/datatypes"
 )
@@ -51,7 +53,8 @@ func (s *ServerAdapter) GetProgress(w http.ResponseWriter, r *http.Request, para
 
 // PostProgress handles POST /progress
 func (s *ServerAdapter) PostProgress(w http.ResponseWriter, r *http.Request) {
-	// Parse request body
+	// Parse request body — parse/validation failures are not security-relevant
+	// (malformed client requests, not data access attempts) so no security log here.
 	var reqBody generated.QuickstartProgressRequest
 	if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
 		utils.ErrorResponse(w, http.StatusBadRequest, err.Error())
@@ -80,11 +83,15 @@ func (s *ServerAdapter) PostProgress(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Use service to update progress
+	resourceID := fmt.Sprintf("%d/%s", reqBody.AccountId, reqBody.QuickstartName)
 	progress, err := s.progressService.UpdateProgress(reqBody.AccountId, reqBody.QuickstartName, progressData)
 	if err != nil {
+		securitylog.LogWithReason(r.Context(), "UPDATE", "progress", resourceID, "failure", err.Error())
 		utils.ErrorResponse(w, http.StatusBadRequest, err.Error())
 		return
 	}
+
+	securitylog.Log(r.Context(), "UPDATE", "progress", resourceID, "success")
 
 	// Convert to generated type and respond
 	genProgress := progress.ToAPI()
@@ -93,12 +100,17 @@ func (s *ServerAdapter) PostProgress(w http.ResponseWriter, r *http.Request) {
 
 // DeleteProgressId handles DELETE /progress/{id}
 func (s *ServerAdapter) DeleteProgressId(w http.ResponseWriter, r *http.Request, id int) {
+	resourceID := strconv.Itoa(id)
+
 	// Use service to delete progress
 	err := s.progressService.DeleteProgress(id)
 	if err != nil {
+		securitylog.LogWithReason(r.Context(), "DELETE", "progress", resourceID, "failure", err.Error())
 		utils.NotFoundResponse(w, "Progress record")
 		return
 	}
+
+	securitylog.Log(r.Context(), "DELETE", "progress", resourceID, "success")
 
 	// Success response
 	utils.MessageResponse(w, http.StatusOK, "Quickstart progress successfully removed")
