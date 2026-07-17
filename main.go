@@ -101,9 +101,10 @@ func main() {
 	securitylog.LogStartup("quickstarts", cfg.ServerAddr)
 	logrus.Infoln("Starting http server")
 	if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-		securitylog.LogShutdown("quickstarts", err.Error())
+		securitylog.LogShutdown("quickstarts", "failure", err.Error())
 		logrus.Fatal("Api server has stopped")
 	}
+	securitylog.LogShutdown("quickstarts", "success", "")
 
 	// <-done
 	// logrus.Info("Gracefully stopping server")

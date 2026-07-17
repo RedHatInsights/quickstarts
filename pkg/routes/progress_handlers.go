@@ -53,7 +53,8 @@ func (s *ServerAdapter) GetProgress(w http.ResponseWriter, r *http.Request, para
 
 // PostProgress handles POST /progress
 func (s *ServerAdapter) PostProgress(w http.ResponseWriter, r *http.Request) {
-	// Parse request body
+	// Parse request body — parse/validation failures are not security-relevant
+	// (malformed client requests, not data access attempts) so no security log here.
 	var reqBody generated.QuickstartProgressRequest
 	if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
 		utils.ErrorResponse(w, http.StatusBadRequest, err.Error())
@@ -104,7 +105,7 @@ func (s *ServerAdapter) DeleteProgressId(w http.ResponseWriter, r *http.Request,
 	// Use service to delete progress
 	err := s.progressService.DeleteProgress(id)
 	if err != nil {
-		securitylog.LogWithReason(r.Context(), "DELETE", "progress", resourceID, "failure", "not found")
+		securitylog.LogWithReason(r.Context(), "DELETE", "progress", resourceID, "failure", err.Error())
 		utils.NotFoundResponse(w, "Progress record")
 		return
 	}

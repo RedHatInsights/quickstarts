@@ -100,6 +100,51 @@ func TestExtractIdentity_InvalidJSON(t *testing.T) {
 	assert.Equal(t, http.StatusOK, rr.Code)
 }
 
+func TestExtractIdentity_MissingHeader_GET_NoSecurityLog(t *testing.T) {
+	// GET requests with missing identity should NOT generate a security log
+	// (only mutating methods log auth failures to avoid health probe noise)
+	called := false
+	handler := ExtractIdentity(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		called = true
+		w.WriteHeader(http.StatusOK)
+	}))
+
+	req := httptest.NewRequest(http.MethodGet, "/test", nil)
+	rr := httptest.NewRecorder()
+
+	handler.ServeHTTP(rr, req)
+
+	assert.True(t, called, "next handler should be called")
+	assert.Equal(t, http.StatusOK, rr.Code)
+}
+
+func TestExtractIdentity_MissingHeader_POST_LogsSecurityEvent(t *testing.T) {
+	// POST requests with missing identity SHOULD generate a security log
+	called := false
+	handler := ExtractIdentity(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		called = true
+		w.WriteHeader(http.StatusOK)
+	}))
+
+	req := httptest.NewRequest(http.MethodPost, "/api/quickstarts/v1/favorites", nil)
+	rr := httptest.NewRecorder()
+
+	handler.ServeHTTP(rr, req)
+
+	assert.True(t, called, "next handler should be called even without identity")
+	assert.Equal(t, http.StatusOK, rr.Code)
+}
+
+func TestIsMutatingMethod(t *testing.T) {
+	assert.True(t, isMutatingMethod(http.MethodPost))
+	assert.True(t, isMutatingMethod(http.MethodPut))
+	assert.True(t, isMutatingMethod(http.MethodPatch))
+	assert.True(t, isMutatingMethod(http.MethodDelete))
+	assert.False(t, isMutatingMethod(http.MethodGet))
+	assert.False(t, isMutatingMethod(http.MethodHead))
+	assert.False(t, isMutatingMethod(http.MethodOptions))
+}
+
 func TestExtractIdentity_InternalOrgIDFallback(t *testing.T) {
 	xrhid := identity.XRHID{
 		Identity: identity.Identity{

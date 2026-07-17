@@ -84,15 +84,28 @@ func TestLogStartup(t *testing.T) {
 	assert.Contains(t, output, "level=info")
 }
 
-func TestLogShutdown(t *testing.T) {
+func TestLogShutdownFailure(t *testing.T) {
 	output := captureOutput(func() {
-		LogShutdown("quickstarts", "server stopped")
+		LogShutdown("quickstarts", "failure", "server stopped")
 	})
 
 	assert.Contains(t, output, "security_event")
 	assert.Contains(t, output, "SHUTDOWN")
 	assert.Contains(t, output, "server stopped")
+	assert.Contains(t, output, "failure")
 	assert.Contains(t, output, "level=error")
+}
+
+func TestLogShutdownSuccess(t *testing.T) {
+	output := captureOutput(func() {
+		LogShutdown("quickstarts", "success", "")
+	})
+
+	assert.Contains(t, output, "security_event")
+	assert.Contains(t, output, "SHUTDOWN")
+	assert.Contains(t, output, "success")
+	assert.Contains(t, output, "level=info")
+	assert.False(t, strings.Contains(output, "reason"))
 }
 
 func TestLogWithPrincipal(t *testing.T) {

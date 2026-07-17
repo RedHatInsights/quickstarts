@@ -62,15 +62,22 @@ func LogStartup(serviceName string, port string) {
 
 // LogShutdown emits a process shutdown event.
 // SEC-MON-REQ-1 compliance (EOI-5 process_status)
-func LogShutdown(serviceName, reason string) {
-	logrus.WithFields(logrus.Fields{
+func LogShutdown(serviceName, outcome, reason string) {
+	fields := logrus.Fields{
 		"event":         "security",
 		"action":        "SHUTDOWN",
 		"resource_type": "process",
 		"resource_id":   serviceName,
-		"outcome":       "failure",
-		"reason":        reason,
-	}).Error("security_event")
+		"outcome":       outcome,
+	}
+	if reason != "" {
+		fields["reason"] = reason
+	}
+	if outcome == "failure" {
+		logrus.WithFields(fields).Error("security_event")
+	} else {
+		logrus.WithFields(fields).Info("security_event")
+	}
 }
 
 // addPrincipal extracts user_id and org_id from the request context and adds

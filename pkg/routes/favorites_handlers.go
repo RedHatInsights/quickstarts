@@ -35,7 +35,8 @@ func (s *ServerAdapter) GetFavorites(w http.ResponseWriter, r *http.Request, par
 
 // PostFavorites handles POST /favorites
 func (s *ServerAdapter) PostFavorites(w http.ResponseWriter, r *http.Request, params generated.PostFavoritesParams) {
-	// Parse request body
+	// Parse request body — parse failures are not security-relevant
+	// (malformed client requests, not data access attempts) so no security log here.
 	var reqBody generated.FavoriteQuickstart
 	if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
 		utils.ErrorResponse(w, http.StatusBadRequest, err.Error())
