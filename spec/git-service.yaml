@@ -35,6 +35,55 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /api/v1/list-quickstarts:
+    get:
+      summary: List all quickstarts in the repository
+      operationId: listQuickstarts
+      responses:
+        '200':
+          description: List of quickstarts
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListQuickstartsResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/quickstart-content/{name}:
+    get:
+      summary: Get the file contents of a specific quickstart
+      operationId: getQuickstartContent
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Quickstart directory name
+      responses:
+        '200':
+          description: Quickstart files
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuickstartContentResponse'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Quickstart not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
   /test:
     get:
       summary: Health check
@@ -118,6 +167,34 @@ components:
         status:
           type: string
           enum: [created, updated, error]
+
+    QuickstartEntry:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Directory name (e.g. insights-integrate-satellite-iop)
+        displayName:
+          type: string
+          description: Human-readable name from spec.displayName
+
+    ListQuickstartsResponse:
+      type: object
+      properties:
+        quickstarts:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuickstartEntry'
+
+    QuickstartContentResponse:
+      type: object
+      properties:
+        name:
+          type: string
+        files:
+          type: array
+          items:
+            $ref: '#/components/schemas/File'
 
     ErrorResponse:
       type: object

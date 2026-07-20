@@ -278,6 +278,17 @@
         },
         "type": "object"
       },
+      "ListRepoQuickstartsResponse": {
+        "properties": {
+          "quickstarts": {
+            "items": {
+              "$ref": "#/components/schemas/RepoQuickstartEntry"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
       "NotFound": {
         "properties": {
           "msg": {
@@ -334,6 +345,20 @@
         },
         "type": "object"
       },
+      "QuickstartContentResponse": {
+        "properties": {
+          "files": {
+            "items": {
+              "$ref": "#/components/schemas/SubmitPrFile"
+            },
+            "type": "array"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
       "QuickstartProgress": {
         "properties": {
           "accountId": {
@@ -366,6 +391,17 @@
           "accountId",
           "quickstartName"
         ],
+        "type": "object"
+      },
+      "RepoQuickstartEntry": {
+        "properties": {
+          "displayName": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
         "type": "object"
       },
       "SubmitPrFile": {
@@ -971,6 +1007,91 @@
           }
         },
         "summary": "Return a quickstarts by ID"
+      }
+    },
+    "/repo-quickstarts": {
+      "get": {
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/ListRepoQuickstartsResponse"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "List of quickstarts in the repo"
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequest"
+                }
+              }
+            },
+            "description": "Git service error"
+          }
+        },
+        "summary": "List quickstarts from the GitHub repository"
+      }
+    },
+    "/repo-quickstarts/{name}": {
+      "get": {
+        "parameters": [
+          {
+            "description": "Quickstart directory name",
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/QuickstartContentResponse"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Quickstart files"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequest"
+                }
+              }
+            },
+            "description": "Bad request"
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequest"
+                }
+              }
+            },
+            "description": "Git service error"
+          }
+        },
+        "summary": "Get quickstart content from the GitHub repository"
       }
     }
   }

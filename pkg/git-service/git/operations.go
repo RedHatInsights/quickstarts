@@ -28,6 +28,9 @@ type RepoOperations interface {
 	PushBranch(branch string) error
 	Cleanup(branch string) error
 	GetBaseBranch() string
+	ListDirectories(basePath string) ([]string, error)
+	ListFiles(basePath string) ([]string, error)
+	ReadFile(path string) (string, error)
 }
 
 type RepoManager struct {
@@ -232,6 +235,62 @@ func (m *RepoManager) Cleanup(branch string) error {
 
 func (m *RepoManager) GetBaseBranch() string {
 	return m.BaseBranch
+}
+
+func (m *RepoManager) ListDirectories(basePath string) ([]string, error) {
+	absPath := filepath.Clean(filepath.Join(m.RepoPath, basePath))
+	repoRoot := filepath.Clean(m.RepoPath) + string(os.PathSeparator)
+	if !strings.HasPrefix(absPath+string(os.PathSeparator), repoRoot) {
+		return nil, fmt.Errorf("path escapes repository root: %s", basePath)
+	}
+
+	entries, err := os.ReadDir(absPath)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read directory %s: %w", basePath, err)
+	}
+
+	var dirs []string
+	for _, entry := range entries {
+		if entry.IsDir() {
+			dirs = append(dirs, entry.Name())
+		}
+	}
+	return dirs, nil
+}
+
+func (m *RepoManager) ListFiles(basePath string) ([]string, error) {
+	absPath := filepath.Clean(filepath.Join(m.RepoPath, basePath))
+	repoRoot := filepath.Clean(m.RepoPath) + string(os.PathSeparator)
+	if !strings.HasPrefix(absPath+string(os.PathSeparator), repoRoot) {
+		return nil, fmt.Errorf("path escapes repository root: %s", basePath)
+	}
+
+	entries, err := os.ReadDir(absPath)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read directory %s: %w", basePath, err)
+	}
+
+	var files []string
+	for _, entry := range entries {
+		if !entry.IsDir() {
+			files = append(files, entry.Name())
+		}
+	}
+	return files, nil
+}
+
+func (m *RepoManager) ReadFile(path string) (string, error) {
+	absPath := filepath.Clean(filepath.Join(m.RepoPath, path))
+	repoRoot := filepath.Clean(m.RepoPath) + string(os.PathSeparator)
+	if !strings.HasPrefix(absPath, repoRoot) {
+		return "", fmt.Errorf("path escapes repository root: %s", path)
+	}
+
+	data, err := os.ReadFile(absPath)
+	if err != nil {
+		return "", fmt.Errorf("failed to read file %s: %w", path, err)
+	}
+	return string(data), nil
 }
 
 func (m *RepoManager) auth() *http.BasicAuth {
