@@ -193,6 +193,29 @@ components:
           type: string
         status:
           type: string
+    RepoQuickstartEntry:
+      type: object
+      properties:
+        name:
+          type: string
+        displayName:
+          type: string
+    ListRepoQuickstartsResponse:
+      type: object
+      properties:
+        quickstarts:
+          type: array
+          items:
+            $ref: '#/components/schemas/RepoQuickstartEntry'
+    QuickstartContentResponse:
+      type: object
+      properties:
+        name:
+          type: string
+        files:
+          type: array
+          items:
+            $ref: '#/components/schemas/SubmitPrFile'
   parameters:
       ProductFamilies:
         name: product-families
@@ -611,6 +634,57 @@ paths:
                 properties:
                   data:
                     $ref: '#/components/schemas/SubmitPrResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '502':
+          description: Git service error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+  /repo-quickstarts:
+    get:
+      summary: List quickstarts from the GitHub repository
+      responses:
+        '200':
+          description: List of quickstarts in the repo
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ListRepoQuickstartsResponse'
+        '502':
+          description: Git service error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+  /repo-quickstarts/{name}:
+    get:
+      summary: Get quickstart content from the GitHub repository
+      parameters:
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Quickstart directory name
+      responses:
+        '200':
+          description: Quickstart files
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/QuickstartContentResponse'
         '400':
           description: Bad request
           content:

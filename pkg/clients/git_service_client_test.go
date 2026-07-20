@@ -94,3 +94,88 @@ func TestSubmitPR_Unreachable(t *testing.T) {
 	require.Error(t, err)
 	assert.Contains(t, err.Error(), "git-service request failed")
 }
+
+func TestListQuickstarts_Success(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, "/api/v1/list-quickstarts", r.URL.Path)
+		assert.Equal(t, http.MethodGet, r.Method)
+
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(GitServiceListQuickstartsResponse{
+			Quickstarts: []GitServiceQuickstartEntry{
+				{Name: "getting-started", DisplayName: "Getting Started"},
+				{Name: "cost-mgmt", DisplayName: "Cost Management"},
+			},
+		})
+	}))
+	defer server.Close()
+
+	client := NewGitService(server.URL, "token")
+	resp, err := client.ListQuickstarts(context.Background())
+	require.NoError(t, err)
+	assert.Len(t, resp.Quickstarts, 2)
+	assert.Equal(t, "getting-started", resp.Quickstarts[0].Name)
+	assert.Equal(t, "Getting Started", resp.Quickstarts[0].DisplayName)
+}
+
+func TestListQuickstarts_PSKHeader(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, "my-token", r.Header.Get("X-PSK-Token"))
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(GitServiceListQuickstartsResponse{})
+	}))
+	defer server.Close()
+
+	client := NewGitService(server.URL, "my-token")
+	_, err := client.ListQuickstarts(context.Background())
+	require.NoError(t, err)
+}
+
+func TestListQuickstarts_Error(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(gitServiceError{Status: "error", Msg: "pull failed"})
+	}))
+	defer server.Close()
+
+	client := NewGitService(server.URL, "")
+	_, err := client.ListQuickstarts(context.Background())
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "pull failed")
+}
+
+func TestGetQuickstartContent_Success(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, "/api/v1/quickstart-content/my-qs", r.URL.Path)
+		assert.Equal(t, http.MethodGet, r.Method)
+
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(GitServiceQuickstartContentResponse{
+			Name: "my-qs",
+			Files: []GitServiceFile{
+				{Name: "metadata.yaml", Content: "kind: QuickStarts"},
+				{Name: "my-qs.yml", Content: "spec:\n  displayName: My QS"},
+			},
+		})
+	}))
+	defer server.Close()
+
+	client := NewGitService(server.URL, "")
+	resp, err := client.GetQuickstartContent(context.Background(), "my-qs")
+	require.NoError(t, err)
+	assert.Equal(t, "my-qs", resp.Name)
+	assert.Len(t, resp.Files, 2)
+}
+
+func TestGetQuickstartContent_NotFound(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode(gitServiceError{Status: "error", Msg: "quickstart not found"})
+	}))
+	defer server.Close()
+
+	client := NewGitService(server.URL, "")
+	_, err := client.GetQuickstartContent(context.Background(), "nonexistent")
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "quickstart not found")
+}

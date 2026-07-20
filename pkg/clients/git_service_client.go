@@ -59,6 +59,90 @@ type gitServiceError struct {
 	Msg    string `json:"msg"`
 }
 
+type GitServiceQuickstartEntry struct {
+	Name        string `json:"name"`
+	DisplayName string `json:"displayName"`
+}
+
+type GitServiceListQuickstartsResponse struct {
+	Quickstarts []GitServiceQuickstartEntry `json:"quickstarts"`
+}
+
+type GitServiceQuickstartContentResponse struct {
+	Name  string           `json:"name"`
+	Files []GitServiceFile `json:"files"`
+}
+
+func (c *GitService) ListQuickstarts(ctx context.Context) (*GitServiceListQuickstartsResponse, error) {
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, c.baseURL+"/api/v1/list-quickstarts", nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create request: %w", err)
+	}
+	if c.pskToken != "" {
+		req.Header.Set("X-PSK-Token", c.pskToken)
+	}
+
+	resp, err := c.httpClient.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("git-service request failed: %w", err)
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read git-service response: %w", err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		var errResp gitServiceError
+		if jsonErr := json.Unmarshal(body, &errResp); jsonErr == nil && errResp.Msg != "" {
+			return nil, fmt.Errorf("git-service error (%d): %s", resp.StatusCode, errResp.Msg)
+		}
+		return nil, fmt.Errorf("git-service returned status %d", resp.StatusCode)
+	}
+
+	var result GitServiceListQuickstartsResponse
+	if err := json.Unmarshal(body, &result); err != nil {
+		return nil, fmt.Errorf("failed to decode git-service response: %w", err)
+	}
+	return &result, nil
+}
+
+func (c *GitService) GetQuickstartContent(ctx context.Context, name string) (*GitServiceQuickstartContentResponse, error) {
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, c.baseURL+"/api/v1/quickstart-content/"+name, nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create request: %w", err)
+	}
+	if c.pskToken != "" {
+		req.Header.Set("X-PSK-Token", c.pskToken)
+	}
+
+	resp, err := c.httpClient.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("git-service request failed: %w", err)
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read git-service response: %w", err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		var errResp gitServiceError
+		if jsonErr := json.Unmarshal(body, &errResp); jsonErr == nil && errResp.Msg != "" {
+			return nil, fmt.Errorf("git-service error (%d): %s", resp.StatusCode, errResp.Msg)
+		}
+		return nil, fmt.Errorf("git-service returned status %d", resp.StatusCode)
+	}
+
+	var result GitServiceQuickstartContentResponse
+	if err := json.Unmarshal(body, &result); err != nil {
+		return nil, fmt.Errorf("failed to decode git-service response: %w", err)
+	}
+	return &result, nil
+}
+
 func (c *GitService) SubmitPR(ctx context.Context, files []GitServiceFile, metadata GitServiceMetadata) (*GitServiceResponse, error) {
 	reqBody := gitServiceRequest{
 		Files:    files,

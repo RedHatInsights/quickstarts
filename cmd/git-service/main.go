@@ -64,6 +64,8 @@ func main() {
 		r.Route("/api/v1", func(r chi.Router) {
 			r.Use(pskmw.PSKAuth(cfg.PSKToken))
 			r.Post("/submit-pr", handler.SubmitPR)
+			r.Get("/list-quickstarts", handler.ListQuickstarts)
+			r.Get("/quickstart-content/{name}", handler.GetQuickstartContent)
 		})
 	}
 
