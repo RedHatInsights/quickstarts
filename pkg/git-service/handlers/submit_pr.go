@@ -129,7 +129,7 @@ func (h *Handler) SubmitPR(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	sha, err := h.repoMgr.CommitChanges(req.Metadata.CommitMessage, "quickstarts-git-service", req.Metadata.UserEmail)
+	sha, err := h.repoMgr.CommitChanges(req.Metadata.CommitMessage, "nacho-bot", "crc-nachobot@redhat.com")
 	if err != nil {
 		logrus.WithError(err).Error("Failed to commit")
 		h.cleanup(req.Metadata.BranchName)
@@ -212,9 +212,6 @@ func validateRequest(req *SubmitPRRequest) error {
 	}
 	if m.PRBody == "" {
 		return fmt.Errorf("prBody is required")
-	}
-	if m.UserEmail == "" {
-		return fmt.Errorf("userEmail is required")
 	}
 	if m.IsUpdate && m.ExistingPath == "" {
 		return fmt.Errorf("existingPath is required when isUpdate is true")
