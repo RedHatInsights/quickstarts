@@ -368,6 +368,93 @@
         ],
         "type": "object"
       },
+      "SubmitPrFile": {
+        "properties": {
+          "content": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "content"
+        ],
+        "type": "object"
+      },
+      "SubmitPrMetadata": {
+        "properties": {
+          "branchName": {
+            "type": "string"
+          },
+          "commitMessage": {
+            "type": "string"
+          },
+          "directoryName": {
+            "description": "Directory name for the quickstart (e.g. insights-integrate-satellite-iop). Defaults to branchName if not set.",
+            "type": "string"
+          },
+          "existingPath": {
+            "type": "string"
+          },
+          "isUpdate": {
+            "default": false,
+            "type": "boolean"
+          },
+          "prBody": {
+            "type": "string"
+          },
+          "prTitle": {
+            "type": "string"
+          },
+          "userEmail": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "branchName",
+          "commitMessage",
+          "prTitle"
+        ],
+        "type": "object"
+      },
+      "SubmitPrRequest": {
+        "properties": {
+          "files": {
+            "items": {
+              "$ref": "#/components/schemas/SubmitPrFile"
+            },
+            "minItems": 1,
+            "type": "array"
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/SubmitPrMetadata"
+          }
+        },
+        "required": [
+          "files",
+          "metadata"
+        ],
+        "type": "object"
+      },
+      "SubmitPrResponse": {
+        "properties": {
+          "branchName": {
+            "type": "string"
+          },
+          "commitSha": {
+            "type": "string"
+          },
+          "prUrl": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
       "Tag": {
         "properties": {
           "createdAt": {
@@ -704,6 +791,58 @@
           }
         },
         "summary": "Delete progress record by ID"
+      }
+    },
+    "/pull-request": {
+      "post": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubmitPrRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/SubmitPrResponse"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "PR created successfully"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequest"
+                }
+              }
+            },
+            "description": "Bad request"
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequest"
+                }
+              }
+            },
+            "description": "Git service error"
+          }
+        },
+        "summary": "Create a pull request via git-service"
       }
     },
     "/quickstarts": {

@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"os"
 	"strconv"
 
@@ -23,6 +24,8 @@ type QuickstartsConfig struct {
 	DbSSLRootCert          string
 	LogLevel               string
 	MaxFuzzySearchDistance int // Max Levenshtein distance for fuzzy search (typo tolerance)
+	GitServiceURL          string
+	PSKToken               string
 }
 
 var config *QuickstartsConfig
@@ -75,6 +78,10 @@ func Init() {
 			config.DbSSLRootCert = certPath
 		}
 
+		if endpoint, ok := clowder.PrivateDependencyEndpoints["quickstarts"]["git-service"]; ok {
+			config.GitServiceURL = fmt.Sprintf("http://%s:%d", endpoint.Hostname, endpoint.Port)
+		}
+
 	} else {
 		config.DbUser = os.Getenv("PGSQL_USER")
 		config.DbPassword = os.Getenv("PGSQL_PASSWORD")
@@ -91,6 +98,11 @@ func Init() {
 	}
 	config.Test = os.Getenv("TEST") == "true"
 
+	if gitURL := os.Getenv("GIT_SERVICE_URL"); gitURL != "" {
+		config.GitServiceURL = gitURL
+	}
+
+	config.PSKToken = os.Getenv("PSK_TOKEN")
 }
 
 // Get returns a quickstarts service configuration
