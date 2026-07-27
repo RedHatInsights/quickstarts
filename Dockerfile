@@ -1,19 +1,7 @@
-################################
-# STEP 1 build executable binary
-################################
-FROM registry.access.redhat.com/hi/go:latest-fips-builder AS builder
-
-USER 0
-
-WORKDIR /workspace
-
-# Cache deps before copying source so that we do not need to re-download for every build
-COPY go.mod go.sum ./
-
-# Fetch dependencies
-RUN go mod download
-
-# Copy source files
+FROM registry.access.redhat.com/ubi9/go-toolset:1.26.2-1779886993 AS builder
+WORKDIR $GOPATH/src/mypackage/myapp/
+COPY go.mod go.mod
+COPY go.sum go.sum
 COPY Makefile Makefile
 COPY oapi-codegen.yaml oapi-codegen.yaml
 COPY main.go main.go
@@ -22,33 +10,32 @@ COPY pkg pkg
 COPY cmd cmd
 COPY config config
 COPY docs docs
-
-# Generate API code and validate
+ENV GO111MODULE=on
+ENV GOTOOLCHAIN=go1.26.5
+USER root
 RUN make generate
 RUN make validate-api
+RUN go get -d -v
 RUN make openapi-json
 RUN make validate
-
-# Run tests
 RUN make test
+RUN CGO_ENABLED=0 go build -buildvcs=false -o /go/bin/quickstarts
 
-# Build all binaries
-RUN CGO_ENABLED=1 go build -ldflags "-w -s" -buildvcs=false -o quickstarts
-RUN CGO_ENABLED=1 go build -ldflags "-w -s" -o quickstarts-migrate cmd/migrate/migrate.go
+# Build the migration binary.
+RUN CGO_ENABLED=0 go build -o /go/bin/quickstarts-migrate cmd/migrate/migrate.go
 
-############################
-# STEP 2 build a small image
-############################
-FROM registry.access.redhat.com/hi/go:latest-fips
+ 
+FROM registry.access.redhat.com/ubi9-minimal:latest
 
-COPY --from=builder /workspace/quickstarts /usr/bin/
-COPY --from=builder /workspace/quickstarts-migrate /usr/bin/
-COPY --from=builder /workspace/spec/openapi.json /var/tmp
-COPY --from=builder /workspace/docs /docs
+COPY --from=builder /go/bin/quickstarts /usr/bin
+COPY --from=builder /go/bin/quickstarts-migrate /usr/bin
+COPY --from=builder /src/mypackage/myapp/spec/openapi.json /var/tmp
+COPY --from=builder /src/mypackage/myapp/docs /docs
 
 ENV QUICKSTARTS_CONTENT_DIR=/docs
 
 USER 1001
+
 
 CMD ["quickstarts"]
 EXPOSE 8000
