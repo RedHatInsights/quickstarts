@@ -13,6 +13,7 @@ COPY docs docs
 ENV GO111MODULE=on
 ENV GOTOOLCHAIN=go1.26.3
 USER root
+RUN make generate
 RUN go get -d -v
 RUN CGO_ENABLED=0 go build -buildvcs=false -o /go/bin/git-service cmd/git-service/main.go
 
