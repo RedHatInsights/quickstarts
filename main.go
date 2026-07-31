@@ -74,6 +74,12 @@ func main() {
 	// Use the generated handler with our adapter
 	generated.HandlerFromMuxWithBaseURL(serverAdapter, apiRouter, "/api/quickstarts/v1")
 
+	if os.Getenv("PSK_TOKEN") != "" {
+		logrus.Info("PSK_TOKEN is set, git-service proxy endpoints enabled")
+	} else {
+		logrus.Info("PSK_TOKEN is not set, git-service proxy endpoints disabled")
+	}
+
 	// Add spec serving
 	root := "./spec/"
 	fs := http.FileServer(http.Dir(root))
