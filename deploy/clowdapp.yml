@@ -15,6 +15,7 @@ objects:
       version: 13
     optionalDependencies:
     - rbac
+    - quickstarts-git-service
     deployments:
     - name: service
       minReplicas: ${{MIN_REPLICAS}}
@@ -59,6 +60,7 @@ objects:
             secretKeyRef:
               name: quickstarts-git-service
               key: PSK_TOKEN
+              optional: true
         resources:
           limits:
             cpu: ${CPU_LIMIT}
@@ -72,69 +74,6 @@ objects:
         volumeMounts:
         - mountPath: /tmp
           name: tmpdir
-    - name: git-service
-      minReplicas: ${{GIT_SERVICE_MIN_REPLICAS}}
-      webServices:
-        private:
-          enabled: true
-      podSpec:
-        image: ${GIT_SERVICE_IMAGE}:${GIT_SERVICE_IMAGE_TAG}
-        livenessProbe:
-          failureThreshold: 3
-          httpGet:
-            path: /test
-            port: 8001
-            scheme: HTTP
-          initialDelaySeconds: 30
-          periodSeconds: 10
-          timeoutSeconds: 5
-        readinessProbe:
-          failureThreshold: 3
-          httpGet:
-            path: /test
-            port: 8001
-            scheme: HTTP
-          initialDelaySeconds: 30
-          periodSeconds: 10
-          timeoutSeconds: 5
-        env:
-        - name: GITHUB_TOKEN
-          valueFrom:
-            secretKeyRef:
-              name: quickstarts-git-service
-              key: GITHUB_TOKEN
-        - name: GITHUB_REPO_URL
-          value: ${GITHUB_REPO_URL}
-        - name: GITHUB_BASE_BRANCH
-          value: ${GITHUB_BASE_BRANCH}
-        - name: PR_REVIEWERS_TEAM
-          value: ${PR_REVIEWERS_TEAM}
-        - name: QUICKSTARTS_REPO_PATH
-          value: /var/quickstarts-repo
-        - name: QUICKSTARTS_DIR_PATH
-          value: ${QUICKSTARTS_DIR_PATH}
-        - name: PORT
-          value: "8001"
-        - name: CLOWDER_ENABLED
-          value: ${CLOWDER_ENABLED}
-        - name: PSK_TOKEN
-          valueFrom:
-            secretKeyRef:
-              name: quickstarts-git-service
-              key: PSK_TOKEN
-        resources:
-          limits:
-            cpu: 200m
-            memory: 256Mi
-          requests:
-            cpu: 100m
-            memory: 128Mi
-        volumes:
-        - emptyDir: {}
-          name: quickstarts-repo
-        volumeMounts:
-        - mountPath: /var/quickstarts-repo
-          name: quickstarts-repo
 
 parameters:
 - name: LOG_LEVEL
@@ -160,24 +99,3 @@ parameters:
   name: ENV_NAME
   value: "quickstarts"
   required: true
-- name: GIT_SERVICE_MIN_REPLICAS
-  value: '1'
-- description: Git service image name
-  name: GIT_SERVICE_IMAGE
-  value: quay.io/redhat-services-prod/hcc-platex-services/quickstarts-git-service
-- description: Git service image tag
-  name: GIT_SERVICE_IMAGE_TAG
-  value: 'latest'
-  required: true
-- description: GitHub repository URL for git-service
-  name: GITHUB_REPO_URL
-  value: https://github.com/RedHatInsights/quickstarts
-- description: Base branch for PRs
-  name: GITHUB_BASE_BRANCH
-  value: main
-- description: GitHub team slug for PR reviewers
-  name: PR_REVIEWERS_TEAM
-  value: ""
-- description: Directory path for quickstart files within the repo
-  name: QUICKSTARTS_DIR_PATH
-  value: /docs/quickstarts/
