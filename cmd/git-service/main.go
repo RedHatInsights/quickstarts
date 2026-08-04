@@ -23,12 +23,21 @@ import (
 
 func main() {
 	godotenv.Load()
+
+	if os.Getenv("GIT_SERVICE_ENABLED") != "true" {
+		if clowder.IsClowderEnabled() {
+			logrus.Info("GIT_SERVICE_ENABLED is not set, git-service is not enabled in this environment, exiting")
+			os.Exit(0)
+		}
+		logrus.Warn("GIT_SERVICE_ENABLED is not set; assuming local development mode")
+	}
+
 	gitconfig.Init()
 	cfg := gitconfig.Get()
 
 	if cfg.PSKToken == "" {
-		if clowder.IsClowderEnabled() {
-			logrus.Fatal("PSK_TOKEN must be set in production (Clowder-enabled) environments")
+		if os.Getenv("GIT_SERVICE_ENABLED") == "true" {
+			logrus.Fatal("PSK_TOKEN is required when GIT_SERVICE_ENABLED is set")
 		}
 		logrus.Warn("PSK_TOKEN is not set; authentication is disabled (local development mode)")
 	}

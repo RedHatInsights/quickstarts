@@ -56,6 +56,8 @@ objects:
           value: "8001"
         - name: CLOWDER_ENABLED
           value: ${CLOWDER_ENABLED}
+        - name: GIT_SERVICE_ENABLED
+          value: ${GIT_SERVICE_ENABLED}
         - name: PSK_TOKEN
           valueFrom:
             secretKeyRef:
@@ -91,6 +93,9 @@ parameters:
   required: true
 - description: Determines Clowder deployment
   name: CLOWDER_ENABLED
+  value: "false"
+- description: Enable git-service in this environment
+  name: GIT_SERVICE_ENABLED
   value: "false"
 - description: GitHub repository URL for git-service
   name: GITHUB_REPO_URL
