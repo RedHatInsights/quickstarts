@@ -17,7 +17,7 @@ objects:
         private:
           enabled: true
       podSpec:
-        image: ${GIT_SERVICE_IMAGE}:${GIT_SERVICE_IMAGE_TAG}
+        image: ${IMAGE}:${IMAGE_TAG}
         livenessProbe:
           failureThreshold: 3
           httpGet:
@@ -84,11 +84,11 @@ parameters:
   required: true
 - name: GIT_SERVICE_MIN_REPLICAS
   value: '1'
-- description: Git service image name
-  name: GIT_SERVICE_IMAGE
+- description: Image name
+  name: IMAGE
   value: quay.io/redhat-services-prod/hcc-platex-services/quickstarts-git-service
-- description: Git service image tag
-  name: GIT_SERVICE_IMAGE_TAG
+- description: Image tag
+  name: IMAGE_TAG
   value: 'latest'
   required: true
 - description: Determines Clowder deployment
