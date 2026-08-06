@@ -24,35 +24,14 @@ import (
 func main() {
 	godotenv.Load()
 
-	if os.Getenv("GIT_SERVICE_ENABLED") != "true" {
-		if clowder.IsClowderEnabled() {
-			logrus.Info("GIT_SERVICE_ENABLED is not set, git-service is not enabled in this environment, exiting")
-			os.Exit(0)
-		}
+	disabled := os.Getenv("GIT_SERVICE_ENABLED") != "true"
+
+	if disabled && !clowder.IsClowderEnabled() {
 		logrus.Warn("GIT_SERVICE_ENABLED is not set; assuming local development mode")
 	}
 
 	gitconfig.Init()
 	cfg := gitconfig.Get()
-
-	if cfg.PSKToken == "" {
-		if os.Getenv("GIT_SERVICE_ENABLED") == "true" {
-			logrus.Fatal("PSK_TOKEN is required when GIT_SERVICE_ENABLED is set")
-		}
-		logrus.Warn("PSK_TOKEN is not set; authentication is disabled (local development mode)")
-	}
-
-	repoMgr, err := gitops.InitRepo(cfg.RepoURL, cfg.RepoPath, cfg.GitHubToken, cfg.BaseBranch)
-	if err != nil {
-		logrus.WithError(err).Fatal("Failed to initialize repository")
-	}
-
-	ghClient, err := ghclient.NewClient(cfg.GitHubToken, cfg.RepoURL)
-	if err != nil {
-		logrus.WithError(err).Fatal("Failed to initialize GitHub client")
-	}
-
-	handler := githandlers.NewHandler(repoMgr, ghClient, cfg.ReviewersTeam, cfg.QuickstartsDirPath)
 
 	r := chi.NewRouter()
 	r.Use(middleware.RequestID)
@@ -65,10 +44,30 @@ func main() {
 		w.Write([]byte("OK"))
 	})
 
-	r.Route("/api/v1", func(r chi.Router) {
-		r.Use(pskmw.PSKAuth(cfg.PSKToken))
-		r.Post("/submit-pr", handler.SubmitPR)
-	})
+	if disabled {
+		logrus.Info("GIT_SERVICE_ENABLED is not set, running in health-only mode")
+	} else {
+		if cfg.PSKToken == "" {
+			logrus.Fatal("PSK_TOKEN is required when GIT_SERVICE_ENABLED is set")
+		}
+
+		repoMgr, err := gitops.InitRepo(cfg.RepoURL, cfg.RepoPath, cfg.GitHubToken, cfg.BaseBranch)
+		if err != nil {
+			logrus.WithError(err).Fatal("Failed to initialize repository")
+		}
+
+		ghClient, err := ghclient.NewClient(cfg.GitHubToken, cfg.RepoURL)
+		if err != nil {
+			logrus.WithError(err).Fatal("Failed to initialize GitHub client")
+		}
+
+		handler := githandlers.NewHandler(repoMgr, ghClient, cfg.ReviewersTeam, cfg.QuickstartsDirPath)
+
+		r.Route("/api/v1", func(r chi.Router) {
+			r.Use(pskmw.PSKAuth(cfg.PSKToken))
+			r.Post("/submit-pr", handler.SubmitPR)
+		})
+	}
 
 	server := &http.Server{
 		Addr:              fmt.Sprintf(":%s", cfg.Port),
