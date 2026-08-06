@@ -42,6 +42,7 @@ objects:
             secretKeyRef:
               name: quickstarts-git-service
               key: GITHUB_TOKEN
+              optional: true
         - name: GITHUB_REPO_URL
           value: ${GITHUB_REPO_URL}
         - name: GITHUB_BASE_BRANCH
@@ -63,6 +64,7 @@ objects:
             secretKeyRef:
               name: quickstarts-git-service
               key: PSK_TOKEN
+              optional: true
         resources:
           limits:
             cpu: 200m
