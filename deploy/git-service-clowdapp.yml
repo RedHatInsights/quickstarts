@@ -17,7 +17,7 @@ objects:
         private:
           enabled: true
       podSpec:
-        image: ${GIT_SERVICE_IMAGE}:${GIT_SERVICE_IMAGE_TAG}
+        image: ${IMAGE}:${IMAGE_TAG}
         livenessProbe:
           failureThreshold: 3
           httpGet:
@@ -40,8 +40,9 @@ objects:
         - name: GITHUB_TOKEN
           valueFrom:
             secretKeyRef:
-              name: quickstarts-git-service
+              name: git-service-credentials
               key: GITHUB_TOKEN
+              optional: true
         - name: GITHUB_REPO_URL
           value: ${GITHUB_REPO_URL}
         - name: GITHUB_BASE_BRANCH
@@ -56,11 +57,14 @@ objects:
           value: "8001"
         - name: CLOWDER_ENABLED
           value: ${CLOWDER_ENABLED}
+        - name: GIT_SERVICE_ENABLED
+          value: ${GIT_SERVICE_ENABLED}
         - name: PSK_TOKEN
           valueFrom:
             secretKeyRef:
-              name: quickstarts-git-service
+              name: git-service-credentials
               key: PSK_TOKEN
+              optional: true
         resources:
           limits:
             cpu: 200m
@@ -82,15 +86,18 @@ parameters:
   required: true
 - name: GIT_SERVICE_MIN_REPLICAS
   value: '1'
-- description: Git service image name
-  name: GIT_SERVICE_IMAGE
+- description: Image name
+  name: IMAGE
   value: quay.io/redhat-services-prod/hcc-platex-services/quickstarts-git-service
-- description: Git service image tag
-  name: GIT_SERVICE_IMAGE_TAG
+- description: Image tag
+  name: IMAGE_TAG
   value: 'latest'
   required: true
 - description: Determines Clowder deployment
   name: CLOWDER_ENABLED
+  value: "false"
+- description: Enable git-service in this environment
+  name: GIT_SERVICE_ENABLED
   value: "false"
 - description: GitHub repository URL for git-service
   name: GITHUB_REPO_URL
