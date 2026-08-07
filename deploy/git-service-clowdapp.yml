@@ -40,7 +40,7 @@ objects:
         - name: GITHUB_TOKEN
           valueFrom:
             secretKeyRef:
-              name: quickstarts-git-service
+              name: git-service-credentials
               key: GITHUB_TOKEN
               optional: true
         - name: GITHUB_REPO_URL
@@ -62,7 +62,7 @@ objects:
         - name: PSK_TOKEN
           valueFrom:
             secretKeyRef:
-              name: quickstarts-git-service
+              name: git-service-credentials
               key: PSK_TOKEN
               optional: true
         resources:
