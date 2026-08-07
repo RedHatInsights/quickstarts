@@ -2,7 +2,6 @@ package config
 
 import (
 	"os"
-	"strconv"
 
 	clowder "github.com/redhatinsights/app-common-go/pkg/api/v1"
 )
@@ -36,9 +35,6 @@ func Init() {
 
 	if clowder.IsClowderEnabled() {
 		lcfg := clowder.LoadedConfig
-		if lcfg.PrivatePort != nil {
-			cfg.Port = strconv.Itoa(*lcfg.PrivatePort)
-		}
 		cfg.MetricsPort = lcfg.MetricsPort
 	}
 }
