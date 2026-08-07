@@ -44,7 +44,7 @@ func InitRepo(repoURL, repoPath, token, baseBranch string) (*RepoManager, error)
 		BaseBranch: baseBranch,
 	}
 
-	if _, err := os.Stat(repoPath); err == nil {
+	if _, err := os.Stat(filepath.Join(repoPath, ".git")); err == nil {
 		logrus.WithField("path", repoPath).Info("Repo directory exists, opening")
 		repo, err := git.PlainOpen(repoPath)
 		if err != nil {
