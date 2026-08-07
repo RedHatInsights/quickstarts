@@ -46,11 +46,9 @@ func main() {
 
 	if disabled {
 		logrus.Info("GIT_SERVICE_ENABLED is not set, running in health-only mode")
+	} else if cfg.PSKToken == "" || cfg.GitHubToken == "" {
+		logrus.Warn("GIT_SERVICE_ENABLED is true but secrets not available, running in health-only mode")
 	} else {
-		if cfg.PSKToken == "" {
-			logrus.Fatal("PSK_TOKEN is required when GIT_SERVICE_ENABLED is set")
-		}
-
 		repoMgr, err := gitops.InitRepo(cfg.RepoURL, cfg.RepoPath, cfg.GitHubToken, cfg.BaseBranch)
 		if err != nil {
 			logrus.WithError(err).Fatal("Failed to initialize repository")
