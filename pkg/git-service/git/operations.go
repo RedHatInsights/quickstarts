@@ -2,6 +2,7 @@ package git
 
 import (
 	"fmt"
+	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
@@ -23,9 +24,11 @@ type File struct {
 type RepoOperations interface {
 	PullLatest() error
 	CreateBranch(name string) error
+	CheckoutExistingBranch(name string) error
 	WriteFiles(dir string, files []File) error
 	CommitChanges(message, authorName, authorEmail string) (string, error)
 	PushBranch(branch string) error
+	PushBranchForce(branch string) error
 	Cleanup(branch string) error
 	GetBaseBranch() string
 }
@@ -35,6 +38,30 @@ type RepoManager struct {
 	RepoPath   string
 	Token      string
 	BaseBranch string
+}
+
+func validateRepoURL(repoURL string) error {
+	trimmed := strings.TrimSuffix(repoURL, ".git")
+	if strings.HasPrefix(trimmed, "git@github.com:") {
+		return nil
+	}
+	if strings.HasPrefix(trimmed, "/") || strings.HasPrefix(trimmed, ".") {
+		return nil
+	}
+	parsed, err := url.Parse(trimmed)
+	if err != nil {
+		return fmt.Errorf("invalid repository URL: %w", err)
+	}
+	if parsed.Scheme == "file" {
+		return nil
+	}
+	if parsed.Scheme != "https" {
+		return fmt.Errorf("unsupported scheme %q, only HTTPS is supported", parsed.Scheme)
+	}
+	if parsed.Host != "github.com" {
+		return fmt.Errorf("unsupported host %q, only github.com is supported", parsed.Host)
+	}
+	return nil
 }
 
 func InitRepo(repoURL, repoPath, token, baseBranch string) (*RepoManager, error) {
@@ -52,6 +79,10 @@ func InitRepo(repoURL, repoPath, token, baseBranch string) (*RepoManager, error)
 		}
 		mgr.Repo = repo
 		return mgr, nil
+	}
+
+	if err := validateRepoURL(repoURL); err != nil {
+		return nil, err
 	}
 
 	logrus.WithFields(logrus.Fields{
@@ -135,6 +166,39 @@ func (m *RepoManager) CreateBranch(name string) error {
 	return nil
 }
 
+func (m *RepoManager) CheckoutExistingBranch(name string) error {
+	err := m.Repo.Fetch(&git.FetchOptions{
+		RemoteName: "origin",
+		RefSpecs:   []config.RefSpec{config.RefSpec("+refs/heads/" + name + ":refs/remotes/origin/" + name)},
+		Auth:       m.auth(),
+	})
+	if err != nil && err != git.NoErrAlreadyUpToDate {
+		return fmt.Errorf("failed to fetch branch %s: %w", name, err)
+	}
+
+	remoteRef, err := m.Repo.Reference(plumbing.NewRemoteReferenceName("origin", name), true)
+	if err != nil {
+		return fmt.Errorf("remote branch %s not found: %w", name, err)
+	}
+
+	localRef := plumbing.NewBranchReferenceName(name)
+	if err := m.Repo.Storer.SetReference(plumbing.NewHashReference(localRef, remoteRef.Hash())); err != nil {
+		return fmt.Errorf("failed to set local ref for %s: %w", name, err)
+	}
+
+	w, err := m.Repo.Worktree()
+	if err != nil {
+		return fmt.Errorf("failed to get worktree: %w", err)
+	}
+
+	if err := w.Checkout(&git.CheckoutOptions{Branch: localRef}); err != nil {
+		return fmt.Errorf("failed to checkout branch %s: %w", name, err)
+	}
+
+	logrus.WithField("branch", name).Info("Checked out existing remote branch")
+	return nil
+}
+
 func (m *RepoManager) WriteFiles(dir string, files []File) error {
 	repoRoot := filepath.Clean(m.RepoPath) + string(os.PathSeparator)
 	absDir := filepath.Clean(filepath.Join(m.RepoPath, dir))
@@ -189,11 +253,20 @@ func (m *RepoManager) CommitChanges(message, authorName, authorEmail string) (st
 }
 
 func (m *RepoManager) PushBranch(branch string) error {
+	return m.pushBranch(branch, false)
+}
+
+func (m *RepoManager) PushBranchForce(branch string) error {
+	return m.pushBranch(branch, true)
+}
+
+func (m *RepoManager) pushBranch(branch string, force bool) error {
 	ref := plumbing.NewBranchReferenceName(branch)
 	err := m.Repo.Push(&git.PushOptions{
 		RemoteName: "origin",
 		RefSpecs:   []config.RefSpec{config.RefSpec(ref + ":" + ref)},
 		Auth:       m.auth(),
+		Force:      force,
 	})
 	if err != nil {
 		return fmt.Errorf("failed to push branch %s: %w", branch, err)

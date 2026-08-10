@@ -58,11 +58,18 @@ func NewHandler(repoMgr gitops.RepoOperations, ghClient ghclient.PRCreator, revi
 	}
 }
 
+const maxRequestSize = 10 << 20 // 10 MB
+
 func (h *Handler) SubmitPR(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
+	r.Body = http.MaxBytesReader(w, r.Body, maxRequestSize)
 	var req SubmitPRRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		if err.Error() == "http: request body too large" {
+			writeError(w, http.StatusRequestEntityTooLarge, "request body too large")
+			return
+		}
 		writeError(w, http.StatusBadRequest, "invalid request body")
 		return
 	}
@@ -81,10 +88,24 @@ func (h *Handler) SubmitPR(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := h.repoMgr.CreateBranch(req.Metadata.BranchName); err != nil {
-		logrus.WithError(err).Error("Failed to create branch")
-		writeError(w, http.StatusInternalServerError, "failed to create branch")
-		return
+	branchExisted := false
+	if req.Metadata.IsUpdate {
+		if err := h.repoMgr.CheckoutExistingBranch(req.Metadata.BranchName); err != nil {
+			logrus.WithError(err).Info("Existing branch not found, creating new branch for update")
+			if err := h.repoMgr.CreateBranch(req.Metadata.BranchName); err != nil {
+				logrus.WithError(err).Error("Failed to create branch")
+				writeError(w, http.StatusInternalServerError, "failed to create branch")
+				return
+			}
+		} else {
+			branchExisted = true
+		}
+	} else {
+		if err := h.repoMgr.CreateBranch(req.Metadata.BranchName); err != nil {
+			logrus.WithError(err).Error("Failed to create branch")
+			writeError(w, http.StatusInternalServerError, "failed to create branch")
+			return
+		}
 	}
 
 	dir := req.Metadata.ExistingPath
@@ -116,46 +137,57 @@ func (h *Handler) SubmitPR(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := h.repoMgr.PushBranch(req.Metadata.BranchName); err != nil {
-		logrus.WithError(err).Error("Failed to push")
+	if req.Metadata.IsUpdate && branchExisted {
+		if err := h.repoMgr.PushBranchForce(req.Metadata.BranchName); err != nil {
+			logrus.WithError(err).Error("Failed to push update")
+			h.cleanup(req.Metadata.BranchName)
+			writeError(w, http.StatusInternalServerError, "failed to push branch")
+			return
+		}
+
 		h.cleanup(req.Metadata.BranchName)
-		writeError(w, http.StatusInternalServerError, "failed to push branch")
-		return
-	}
+		json.NewEncoder(w).Encode(SubmitPRResponse{
+			BranchName: req.Metadata.BranchName,
+			CommitSHA:  sha,
+			Status:     "updated",
+		})
+	} else {
+		if err := h.repoMgr.PushBranch(req.Metadata.BranchName); err != nil {
+			logrus.WithError(err).Error("Failed to push")
+			h.cleanup(req.Metadata.BranchName)
+			writeError(w, http.StatusInternalServerError, "failed to push branch")
+			return
+		}
 
-	body := req.Metadata.PRBody
-	if req.Metadata.UserEmail != "" {
-		body += fmt.Sprintf("\n\nSubmitted by: %s", req.Metadata.UserEmail)
-	}
+		body := req.Metadata.PRBody
+		if req.Metadata.UserEmail != "" {
+			body += fmt.Sprintf("\n\nSubmitted by: %s", req.Metadata.UserEmail)
+		}
 
-	prURL, prNumber, err := h.gitHubClient.CreatePullRequest(
-		r.Context(),
-		req.Metadata.PRTitle,
-		body,
-		req.Metadata.BranchName,
-		h.repoMgr.GetBaseBranch(),
-	)
-	if err != nil {
-		logrus.WithError(err).Error("Failed to create PR")
+		prURL, prNumber, err := h.gitHubClient.CreatePullRequest(
+			r.Context(),
+			req.Metadata.PRTitle,
+			body,
+			req.Metadata.BranchName,
+			h.repoMgr.GetBaseBranch(),
+		)
+		if err != nil {
+			logrus.WithError(err).Error("Failed to create PR")
+			h.cleanup(req.Metadata.BranchName)
+			writeError(w, http.StatusInternalServerError, "failed to create pull request")
+			return
+		}
+
+		h.gitHubClient.AssignReviewers(r.Context(), prNumber, h.reviewersTeam)
 		h.cleanup(req.Metadata.BranchName)
-		writeError(w, http.StatusInternalServerError, "failed to create pull request")
-		return
+
+		json.NewEncoder(w).Encode(SubmitPRResponse{
+			PRURL:      prURL,
+			BranchName: req.Metadata.BranchName,
+			CommitSHA:  sha,
+			Status:     "created",
+		})
 	}
-
-	h.gitHubClient.AssignReviewers(r.Context(), prNumber, h.reviewersTeam)
-	h.cleanup(req.Metadata.BranchName)
-
-	status := "created"
-	if req.Metadata.IsUpdate {
-		status = "updated"
-	}
-
-	json.NewEncoder(w).Encode(SubmitPRResponse{
-		PRURL:      prURL,
-		BranchName: req.Metadata.BranchName,
-		CommitSHA:  sha,
-		Status:     status,
-	})
 }
 
 func (h *Handler) cleanup(branch string) {

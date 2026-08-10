@@ -15,24 +15,28 @@ import (
 )
 
 type mockRepoManager struct {
-	pullLatestErr   error
-	createBranchErr error
-	writeFilesErr   error
-	commitSHA       string
-	commitErr       error
-	pushErr         error
-	cleanupErr      error
-	baseBranch      string
+	pullLatestErr          error
+	createBranchErr        error
+	checkoutExistingErr    error
+	writeFilesErr          error
+	commitSHA              string
+	commitErr              error
+	pushErr                error
+	cleanupErr             error
+	baseBranch             string
 
 	writtenDir   string
 	writtenFiles []gitops.File
 	pushedBranch string
+	forcePushed  bool
 	cleanedUp    string
 }
 
 func (m *mockRepoManager) PullLatest() error                            { return m.pullLatestErr }
 func (m *mockRepoManager) CreateBranch(name string) error               { return m.createBranchErr }
+func (m *mockRepoManager) CheckoutExistingBranch(name string) error     { return m.checkoutExistingErr }
 func (m *mockRepoManager) PushBranch(branch string) error               { m.pushedBranch = branch; return m.pushErr }
+func (m *mockRepoManager) PushBranchForce(branch string) error          { m.pushedBranch = branch; m.forcePushed = true; return m.pushErr }
 func (m *mockRepoManager) Cleanup(branch string) error                  { m.cleanedUp = branch; return m.cleanupErr }
 func (m *mockRepoManager) GetBaseBranch() string                        { return m.baseBranch }
 func (m *mockRepoManager) WriteFiles(dir string, files []gitops.File) error {
@@ -252,6 +256,46 @@ func TestSubmitPR_UpdateMode(t *testing.T) {
 	require.NoError(t, json.NewDecoder(rec.Body).Decode(&resp))
 	assert.Equal(t, "updated", resp.Status)
 	assert.Equal(t, "/docs/quickstarts/existing-qs/", repo.writtenDir)
+	assert.True(t, repo.forcePushed, "update mode should force-push")
+	assert.Empty(t, gh.createdTitle, "update mode should not create a new PR")
+}
+
+func TestSubmitPR_UpdateMode_NewBranch(t *testing.T) {
+	repo := &mockRepoManager{
+		commitSHA:           "abc123def456abc123def456abc123def456abcd",
+		baseBranch:          "main",
+		checkoutExistingErr: fmt.Errorf("remote branch not found"),
+	}
+	gh := &mockGitHubClient{createPRURL: "https://github.com/org/repo/pull/45", createPRNumber: 45}
+	handler := NewHandler(repo, gh, "team-reviewers", "/docs/quickstarts/")
+
+	body := `{
+		"files": [{"name": "metadata.yaml", "content": "updated"}],
+		"metadata": {
+			"branchName": "quickstart/update-123",
+			"commitMessage": "Update quickstart",
+			"prTitle": "Update test quickstart",
+			"prBody": "Updating existing",
+			"userEmail": "user@example.com",
+			"isUpdate": true,
+			"existingPath": "/docs/quickstarts/existing-qs/"
+		}
+	}`
+
+	req := httptest.NewRequest(http.MethodPost, "/api/v1/submit-pr", bytes.NewBufferString(body))
+	rec := httptest.NewRecorder()
+
+	handler.SubmitPR(rec, req)
+
+	require.Equal(t, http.StatusOK, rec.Code)
+
+	var resp SubmitPRResponse
+	require.NoError(t, json.NewDecoder(rec.Body).Decode(&resp))
+	assert.Equal(t, "created", resp.Status, "first-time update should create a PR")
+	assert.Equal(t, "https://github.com/org/repo/pull/45", resp.PRURL)
+	assert.Equal(t, "/docs/quickstarts/existing-qs/", repo.writtenDir)
+	assert.False(t, repo.forcePushed, "first-time update should not force-push")
+	assert.Equal(t, "Update test quickstart", gh.createdTitle, "first-time update should create a PR")
 }
 
 func TestSubmitPR_PullLatestError(t *testing.T) {
