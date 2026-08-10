@@ -104,6 +104,9 @@ components:
         existingPath:
           type: string
           description: Path to existing quickstart directory (required when isUpdate is true)
+        directoryName:
+          type: string
+          description: Directory name for the quickstart (e.g. insights-integrate-satellite-iop). Defaults to branchName if not set.
 
     SubmitPrResponse:
       type: object
