@@ -8,7 +8,7 @@ require (
 	github.com/go-chi/chi/v5 v5.2.5
 	github.com/go-git/go-git/v5 v5.19.1
 	github.com/go-ozzo/ozzo-validation v3.6.0+incompatible
-	github.com/google/go-github/v66 v66.0.0
+	github.com/google/go-github/v90 v90.0.0
 	github.com/joho/godotenv v1.5.1
 	github.com/oapi-codegen/oapi-codegen/v2 v2.6.0
 	github.com/oapi-codegen/runtime v1.4.0
