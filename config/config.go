@@ -78,7 +78,7 @@ func Init() {
 			config.DbSSLRootCert = certPath
 		}
 
-		if endpoint, ok := clowder.PrivateDependencyEndpoints["quickstarts"]["git-service"]; ok {
+		if endpoint, ok := clowder.PrivateDependencyEndpoints["quickstarts-git-service"]["app"]; ok {
 			config.GitServiceURL = fmt.Sprintf("http://%s:%d", endpoint.Hostname, endpoint.Port)
 		}
 
