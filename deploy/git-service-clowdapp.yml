@@ -22,7 +22,7 @@ objects:
           failureThreshold: 3
           httpGet:
             path: /test
-            port: 8001
+            port: 10000
             scheme: HTTP
           initialDelaySeconds: 30
           periodSeconds: 10
@@ -31,7 +31,7 @@ objects:
           failureThreshold: 3
           httpGet:
             path: /test
-            port: 8001
+            port: 10000
             scheme: HTTP
           initialDelaySeconds: 30
           periodSeconds: 10
