@@ -204,6 +204,25 @@ func TestGetQuickstartContent_PullLatestError(t *testing.T) {
 	assert.Contains(t, rec.Body.String(), "failed to pull latest changes")
 }
 
+func TestGetQuickstartContent_ReadFileError(t *testing.T) {
+	repo := &mockRepoManager{
+		files:       []string{"metadata.yaml", "broken.yml"},
+		readFileErr: fmt.Errorf("permission denied"),
+	}
+	handler := NewHandler(repo, &mockGitHubClient{}, "", "/docs/quickstarts/")
+
+	r := chi.NewRouter()
+	r.Get("/api/v1/quickstart-content/{name}", handler.GetQuickstartContent)
+
+	req := httptest.NewRequest(http.MethodGet, "/api/v1/quickstart-content/test-qs", nil)
+	rec := httptest.NewRecorder()
+
+	r.ServeHTTP(rec, req)
+
+	assert.Equal(t, http.StatusInternalServerError, rec.Code)
+	assert.Contains(t, rec.Body.String(), "failed to read quickstart files")
+}
+
 func TestExtractDisplayName(t *testing.T) {
 	tests := []struct {
 		name     string

@@ -100,8 +100,9 @@ func (h *Handler) GetQuickstartContent(w http.ResponseWriter, r *http.Request) {
 	for _, fileName := range fileNames {
 		content, err := h.repoMgr.ReadFile(filepath.Join(dirPath, fileName))
 		if err != nil {
-			logrus.WithError(err).WithField("file", fileName).Warn("Failed to read file")
-			continue
+			logrus.WithError(err).WithField("file", fileName).Error("Failed to read file")
+			writeError(w, http.StatusInternalServerError, "failed to read quickstart files")
+			return
 		}
 		files = append(files, File{Name: fileName, Content: content})
 	}

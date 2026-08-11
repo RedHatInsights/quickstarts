@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"time"
 )
 
@@ -114,7 +115,7 @@ func (c *GitService) ListQuickstarts(ctx context.Context) (*GitServiceListQuicks
 }
 
 func (c *GitService) GetQuickstartContent(ctx context.Context, name string) (*GitServiceQuickstartContentResponse, error) {
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, c.baseURL+"/api/v1/quickstart-content/"+name, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, c.baseURL+"/api/v1/quickstart-content/"+url.PathEscape(name), nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create request: %w", err)
 	}

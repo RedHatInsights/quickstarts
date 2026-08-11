@@ -359,6 +359,14 @@ func (m *RepoManager) ReadFile(path string) (string, error) {
 		return "", fmt.Errorf("path escapes repository root: %s", path)
 	}
 
+	info, err := os.Lstat(absPath)
+	if err != nil {
+		return "", fmt.Errorf("failed to stat file %s: %w", path, err)
+	}
+	if info.Mode()&os.ModeSymlink != 0 {
+		return "", fmt.Errorf("symlinks are not allowed: %s", path)
+	}
+
 	data, err := os.ReadFile(absPath)
 	if err != nil {
 		return "", fmt.Errorf("failed to read file %s: %w", path, err)

@@ -319,3 +319,22 @@ func TestWriteFiles_PathTraversal_FileName(t *testing.T) {
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "escapes repository root")
 }
+
+func TestReadFile_RejectsSymlinks(t *testing.T) {
+	bare := createBareRepo(t)
+	cloneDest := filepath.Join(t.TempDir(), "repo")
+
+	mgr, err := InitRepo(bare, cloneDest, "", "master")
+	require.NoError(t, err)
+
+	secret := filepath.Join(t.TempDir(), "secret.txt")
+	require.NoError(t, os.WriteFile(secret, []byte("sensitive data"), 0644))
+
+	docsDir := filepath.Join(cloneDest, "docs")
+	require.NoError(t, os.MkdirAll(docsDir, 0755))
+	require.NoError(t, os.Symlink(secret, filepath.Join(docsDir, "link.txt")))
+
+	_, err = mgr.ReadFile("docs/link.txt")
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "symlinks are not allowed")
+}
