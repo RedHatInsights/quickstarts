@@ -152,7 +152,8 @@ func TestPostPullRequest_GitServiceError(t *testing.T) {
 	adapter.PostPullRequest(w, req)
 
 	assert.Equal(t, http.StatusBadGateway, w.Code)
-	assert.Contains(t, w.Body.String(), "failed to push branch")
+	assert.Contains(t, w.Body.String(), "git-service request failed")
+	assert.NotContains(t, w.Body.String(), "failed to push branch")
 }
 
 func TestPostPullRequest_GitServiceUnreachable(t *testing.T) {

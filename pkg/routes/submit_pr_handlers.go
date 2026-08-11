@@ -17,8 +17,15 @@ func (s *ServerAdapter) PostPullRequest(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
+	const maxRequestSize = 5 * 1024 * 1024 // 5MB
+	r.Body = http.MaxBytesReader(w, r.Body, maxRequestSize)
+
 	var reqBody generated.SubmitPrRequest
 	if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
+		if err.Error() == "http: request body too large" {
+			utils.ErrorResponse(w, http.StatusRequestEntityTooLarge, "request body too large")
+			return
+		}
 		utils.ErrorResponse(w, http.StatusBadRequest, "invalid request body")
 		return
 	}
@@ -54,7 +61,7 @@ func (s *ServerAdapter) PostPullRequest(w http.ResponseWriter, r *http.Request) 
 	result, err := s.gitServiceClient.SubmitPR(r.Context(), files, metadata)
 	if err != nil {
 		logrus.WithError(err).Error("git-service request failed")
-		utils.ErrorResponse(w, http.StatusBadGateway, err.Error())
+		utils.ErrorResponse(w, http.StatusBadGateway, "git-service request failed")
 		return
 	}
 

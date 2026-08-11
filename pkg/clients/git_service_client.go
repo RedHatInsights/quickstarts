@@ -85,7 +85,12 @@ func (c *GitService) SubmitPR(ctx context.Context, files []GitServiceFile, metad
 	}
 	defer resp.Body.Close()
 
-	body, err := io.ReadAll(resp.Body)
+	const maxResponseSize = 5 * 1024 * 1024 // 5MB
+	limitedReader := io.LimitReader(resp.Body, maxResponseSize+1)
+	body, err := io.ReadAll(limitedReader)
+	if err == nil && int64(len(body)) > maxResponseSize {
+		return nil, fmt.Errorf("git-service response exceeded %d bytes", maxResponseSize)
+	}
 	if err != nil {
 		return nil, fmt.Errorf("failed to read git-service response: %w", err)
 	}
