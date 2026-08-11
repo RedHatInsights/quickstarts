@@ -219,7 +219,8 @@ func TestSubmitPR_Success(t *testing.T) {
 	assert.Equal(t, "quickstart/test-123", repo.cleanedUp)
 
 	assert.Equal(t, "Create test quickstart", gh.createdTitle)
-	assert.Equal(t, "Generated from creator", gh.createdBody)
+	assert.Contains(t, gh.createdBody, "Generated from creator")
+	assert.Contains(t, gh.createdBody, "Submitted by: user@example.com")
 	assert.Equal(t, "quickstart/test-123", gh.createdHead)
 	assert.Equal(t, "main", gh.createdBase)
 	assert.Equal(t, "team-reviewers", gh.assignedTeam)

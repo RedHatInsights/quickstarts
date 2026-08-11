@@ -9,10 +9,15 @@ import (
 )
 
 func (s *ServerAdapter) GetRepoQuickstarts(w http.ResponseWriter, r *http.Request) {
+	if !s.gitServiceEnabled {
+		utils.ErrorResponse(w, http.StatusNotFound, "git-service is not available")
+		return
+	}
+
 	result, err := s.gitServiceClient.ListQuickstarts(r.Context())
 	if err != nil {
 		logrus.WithError(err).Error("git-service request failed")
-		utils.ErrorResponse(w, http.StatusBadGateway, err.Error())
+		utils.ErrorResponse(w, http.StatusBadGateway, "git-service request failed")
 		return
 	}
 
@@ -32,10 +37,15 @@ func (s *ServerAdapter) GetRepoQuickstarts(w http.ResponseWriter, r *http.Reques
 }
 
 func (s *ServerAdapter) GetRepoQuickstartsName(w http.ResponseWriter, r *http.Request, name string) {
+	if !s.gitServiceEnabled {
+		utils.ErrorResponse(w, http.StatusNotFound, "git-service is not available")
+		return
+	}
+
 	result, err := s.gitServiceClient.GetQuickstartContent(r.Context(), name)
 	if err != nil {
 		logrus.WithError(err).Error("git-service request failed")
-		utils.ErrorResponse(w, http.StatusBadGateway, err.Error())
+		utils.ErrorResponse(w, http.StatusBadGateway, "git-service request failed")
 		return
 	}
 

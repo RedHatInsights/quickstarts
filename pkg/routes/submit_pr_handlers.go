@@ -75,19 +75,6 @@ func (s *ServerAdapter) PostPullRequest(w http.ResponseWriter, r *http.Request) 
 	utils.DataResponse(w, http.StatusOK, resp)
 }
 
-func (s *ServerAdapter) GetRepoQuickstarts(w http.ResponseWriter, r *http.Request) {
-	if !s.gitServiceEnabled {
-		utils.ErrorResponse(w, http.StatusNotFound, "git-service is not available")
-		return
-	}
-}
-
-func (s *ServerAdapter) GetRepoQuickstartsName(w http.ResponseWriter, r *http.Request, name string) {
-	if !s.gitServiceEnabled {
-		utils.ErrorResponse(w, http.StatusNotFound, "git-service is not available")
-		return
-	}
-}
 
 func derefString(s *string) string {
 	if s == nil {
