@@ -34,6 +34,7 @@ func TestPostPullRequest_Success(t *testing.T) {
 
 	adapter := NewServerAdapter()
 	adapter.gitServiceClient = clients.NewGitService(mockGitService.URL, "")
+	adapter.gitServiceEnabled = true
 
 	body := `{
 		"files": [{"name": "metadata.yaml", "content": "test content"}],
@@ -64,6 +65,7 @@ func TestPostPullRequest_Success(t *testing.T) {
 
 func TestPostPullRequest_InvalidJSON(t *testing.T) {
 	adapter := NewServerAdapter()
+	adapter.gitServiceEnabled = true
 
 	req := httptest.NewRequest("POST", "/pull-request", strings.NewReader("not json"))
 	req.Header.Set("Content-Type", "application/json")
@@ -77,6 +79,7 @@ func TestPostPullRequest_InvalidJSON(t *testing.T) {
 
 func TestPostPullRequest_EmptyFiles(t *testing.T) {
 	adapter := NewServerAdapter()
+	adapter.gitServiceEnabled = true
 
 	body := `{
 		"files": [],
@@ -99,6 +102,7 @@ func TestPostPullRequest_EmptyFiles(t *testing.T) {
 
 func TestPostPullRequest_MissingMetadataFields(t *testing.T) {
 	adapter := NewServerAdapter()
+	adapter.gitServiceEnabled = true
 
 	body := `{
 		"files": [{"name": "test.yaml", "content": "content"}],
@@ -130,6 +134,7 @@ func TestPostPullRequest_GitServiceError(t *testing.T) {
 
 	adapter := NewServerAdapter()
 	adapter.gitServiceClient = clients.NewGitService(mockGitService.URL, "")
+	adapter.gitServiceEnabled = true
 
 	body := `{
 		"files": [{"name": "test.yaml", "content": "content"}],
@@ -153,6 +158,7 @@ func TestPostPullRequest_GitServiceError(t *testing.T) {
 func TestPostPullRequest_GitServiceUnreachable(t *testing.T) {
 	adapter := NewServerAdapter()
 	adapter.gitServiceClient = clients.NewGitService("http://localhost:1", "")
+	adapter.gitServiceEnabled = true
 
 	body := `{
 		"files": [{"name": "test.yaml", "content": "content"}],

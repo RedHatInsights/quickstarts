@@ -12,6 +12,11 @@ import (
 
 // PostPullRequest handles POST /pull-request
 func (s *ServerAdapter) PostPullRequest(w http.ResponseWriter, r *http.Request) {
+	if !s.gitServiceEnabled {
+		utils.ErrorResponse(w, http.StatusNotFound, "git-service is not available")
+		return
+	}
+
 	var reqBody generated.SubmitPrRequest
 	if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
 		utils.ErrorResponse(w, http.StatusBadRequest, "invalid request body")
@@ -61,6 +66,20 @@ func (s *ServerAdapter) PostPullRequest(w http.ResponseWriter, r *http.Request) 
 	}
 
 	utils.DataResponse(w, http.StatusOK, resp)
+}
+
+func (s *ServerAdapter) GetRepoQuickstarts(w http.ResponseWriter, r *http.Request) {
+	if !s.gitServiceEnabled {
+		utils.ErrorResponse(w, http.StatusNotFound, "git-service is not available")
+		return
+	}
+}
+
+func (s *ServerAdapter) GetRepoQuickstartsName(w http.ResponseWriter, r *http.Request, name string) {
+	if !s.gitServiceEnabled {
+		utils.ErrorResponse(w, http.StatusNotFound, "git-service is not available")
+		return
+	}
 }
 
 func derefString(s *string) string {
