@@ -30,6 +30,13 @@ type mockRepoManager struct {
 	pushedBranch string
 	forcePushed  bool
 	cleanedUp    string
+
+	directories    []string
+	listDirsErr    error
+	files          []string
+	listFilesErr   error
+	fileContents   map[string]string
+	readFileErr    error
 }
 
 func (m *mockRepoManager) PullLatest() error                            { return m.pullLatestErr }
@@ -46,6 +53,23 @@ func (m *mockRepoManager) WriteFiles(dir string, files []gitops.File) error {
 }
 func (m *mockRepoManager) CommitChanges(message, authorName, authorEmail string) (string, error) {
 	return m.commitSHA, m.commitErr
+}
+func (m *mockRepoManager) ListDirectories(basePath string) ([]string, error) {
+	return m.directories, m.listDirsErr
+}
+func (m *mockRepoManager) ListFiles(basePath string) ([]string, error) {
+	return m.files, m.listFilesErr
+}
+func (m *mockRepoManager) ReadFile(path string) (string, error) {
+	if m.readFileErr != nil {
+		return "", m.readFileErr
+	}
+	if m.fileContents != nil {
+		if content, ok := m.fileContents[path]; ok {
+			return content, nil
+		}
+	}
+	return "", fmt.Errorf("file not found: %s", path)
 }
 
 type mockGitHubClient struct {
@@ -195,6 +219,7 @@ func TestSubmitPR_Success(t *testing.T) {
 	assert.Equal(t, "quickstart/test-123", repo.cleanedUp)
 
 	assert.Equal(t, "Create test quickstart", gh.createdTitle)
+	assert.Contains(t, gh.createdBody, "Generated from creator")
 	assert.Contains(t, gh.createdBody, "Submitted by: user@example.com")
 	assert.Equal(t, "quickstart/test-123", gh.createdHead)
 	assert.Equal(t, "main", gh.createdBase)

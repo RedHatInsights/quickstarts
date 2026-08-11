@@ -55,6 +55,8 @@ objects:
         env:
         - name: CLOWDER_ENABLED
           value: ${CLOWDER_ENABLED}
+        - name: GIT_SERVICE_ENABLED
+          value: ${GIT_SERVICE_ENABLED}
         - name: PSK_TOKEN
           valueFrom:
             secretKeyRef:
@@ -94,6 +96,9 @@ parameters:
   value: quay.io/redhat-services-prod/hcc-platex-services/quickstarts
 - description: Determines Clowder deployment
   name: CLOWDER_ENABLED
+  value: "false"
+- description: Enable git-service integration
+  name: GIT_SERVICE_ENABLED
   value: "false"
 - description: ClowdEnv Name
   name: ENV_NAME
