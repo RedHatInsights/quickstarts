@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"os"
 
 	clowder "github.com/redhatinsights/app-common-go/pkg/api/v1"
@@ -36,6 +37,9 @@ func Init() {
 	if clowder.IsClowderEnabled() {
 		lcfg := clowder.LoadedConfig
 		cfg.MetricsPort = lcfg.MetricsPort
+		if lcfg.PrivatePort != nil {
+			cfg.Port = fmt.Sprintf("%d", *lcfg.PrivatePort)
+		}
 	}
 }
 
