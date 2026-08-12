@@ -60,7 +60,7 @@ objects:
         - name: PSK_TOKEN
           valueFrom:
             secretKeyRef:
-              name: quickstarts-git-service
+              name: git-service-credentials
               key: PSK_TOKEN
               optional: true
         resources:
