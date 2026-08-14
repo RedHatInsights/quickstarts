@@ -1,0 +1,8 @@
+apiVersion: console.openshift.io/v1
+kind: ConsoleQuickStart
+metadata:
+  name: test-signed-commit
+spec:
+  displayName: Test Signed Commit
+  description: Testing GPG-signed commits via fork workflow
+  version: 1
