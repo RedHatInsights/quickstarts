@@ -1,0 +1,7 @@
+kind: QuickStarts
+name: full-test-pull-request
+tags:
+  - kind: bundle
+    value: insights
+  - kind: content
+    value: quickstart
