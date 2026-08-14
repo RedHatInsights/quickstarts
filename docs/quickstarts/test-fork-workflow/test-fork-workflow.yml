@@ -1,0 +1,8 @@
+apiVersion: console.openshift.io/v1
+kind: ConsoleQuickStart
+metadata:
+  name: test-fork-workflow
+spec:
+  displayName: Test Fork Workflow
+  description: Testing the fork-based PR workflow
+  version: 1

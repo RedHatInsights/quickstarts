@@ -1,0 +1,5 @@
+kind: QuickStarts
+name: test-fork-workflow
+tags:
+- kind: bundle
+  value: settings
