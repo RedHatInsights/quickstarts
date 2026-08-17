@@ -51,7 +51,7 @@ func (m *mockRepoManager) WriteFiles(dir string, files []gitops.File) error {
 	m.writtenFiles = files
 	return m.writeFilesErr
 }
-func (m *mockRepoManager) CommitChanges(message, authorName, authorEmail string) (string, error) {
+func (m *mockRepoManager) CommitChanges(message, authorName, authorEmail, dir string, files []gitops.File) (string, error) {
 	return m.commitSHA, m.commitErr
 }
 func (m *mockRepoManager) ListDirectories(basePath string) ([]string, error) {

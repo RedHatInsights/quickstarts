@@ -129,7 +129,7 @@ func (h *Handler) SubmitPR(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	sha, err := h.repoMgr.CommitChanges(req.Metadata.CommitMessage, "nacho-bot", "crc-nachobot@redhat.com")
+	sha, err := h.repoMgr.CommitChanges(req.Metadata.CommitMessage, "nacho-bot", "crc-nachobot@redhat.com", dir, gitFiles)
 	if err != nil {
 		logrus.WithError(err).Error("Failed to commit")
 		h.cleanup(req.Metadata.BranchName)

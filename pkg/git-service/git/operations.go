@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/ProtonMail/go-crypto/openpgp"
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/config"
 	"github.com/go-git/go-git/v5/plumbing"
@@ -26,7 +27,7 @@ type RepoOperations interface {
 	CreateBranch(name string) error
 	CheckoutExistingBranch(name string) error
 	WriteFiles(dir string, files []File) error
-	CommitChanges(message, authorName, authorEmail string) (string, error)
+	CommitChanges(message, authorName, authorEmail, dir string, files []File) (string, error)
 	PushBranch(branch string) error
 	PushBranchForce(branch string) error
 	Cleanup(branch string) error
@@ -40,7 +41,9 @@ type RepoManager struct {
 	Repo       *git.Repository
 	RepoPath   string
 	Token      string
+	ForkToken  string
 	BaseBranch string
+	SignKey    *openpgp.Entity
 }
 
 func validateRepoURL(repoURL string) error {
@@ -67,12 +70,34 @@ func validateRepoURL(repoURL string) error {
 	return nil
 }
 
-func InitRepo(repoURL, repoPath, token, baseBranch string) (*RepoManager, error) {
+func parseGPGKey(armoredKey string) (*openpgp.Entity, error) {
+	if armoredKey == "" {
+		return nil, nil
+	}
+	entities, err := openpgp.ReadArmoredKeyRing(strings.NewReader(armoredKey))
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse GPG signing key: %w", err)
+	}
+	if len(entities) == 0 {
+		return nil, fmt.Errorf("GPG key contains no entities")
+	}
+	logrus.Info("GPG signing key loaded")
+	return entities[0], nil
+}
+
+func InitRepo(repoURL, repoPath, token, baseBranch, forkRepoURL, forkToken, gpgKey string) (*RepoManager, error) {
 	mgr := &RepoManager{
 		RepoPath:   repoPath,
 		Token:      token,
+		ForkToken:  forkToken,
 		BaseBranch: baseBranch,
 	}
+
+	signKey, err := parseGPGKey(gpgKey)
+	if err != nil {
+		return nil, err
+	}
+	mgr.SignKey = signKey
 
 	if _, err := os.Stat(filepath.Join(repoPath, ".git")); err == nil {
 		logrus.WithField("path", repoPath).Info("Repo directory exists, opening")
@@ -81,6 +106,13 @@ func InitRepo(repoURL, repoPath, token, baseBranch string) (*RepoManager, error)
 			return nil, fmt.Errorf("failed to open existing repo at %s: %w", repoPath, err)
 		}
 		mgr.Repo = repo
+
+		if forkRepoURL != "" {
+			if err := mgr.EnsureRemote("fork", forkRepoURL); err != nil {
+				return nil, fmt.Errorf("failed to add fork remote: %w", err)
+			}
+		}
+
 		return mgr, nil
 	}
 
@@ -105,6 +137,13 @@ func InitRepo(repoURL, repoPath, token, baseBranch string) (*RepoManager, error)
 
 	mgr.Repo = repo
 	logrus.Info("Repository cloned successfully")
+
+	if forkRepoURL != "" {
+		if err := mgr.EnsureRemote("fork", forkRepoURL); err != nil {
+			return nil, fmt.Errorf("failed to add fork remote: %w", err)
+		}
+	}
+
 	return mgr, nil
 }
 
@@ -170,16 +209,23 @@ func (m *RepoManager) CreateBranch(name string) error {
 }
 
 func (m *RepoManager) CheckoutExistingBranch(name string) error {
+	remoteName := "origin"
+	auth := m.auth()
+	if m.ForkToken != "" {
+		remoteName = "fork"
+		auth = &http.BasicAuth{Username: "git", Password: m.ForkToken}
+	}
+
 	err := m.Repo.Fetch(&git.FetchOptions{
-		RemoteName: "origin",
-		RefSpecs:   []config.RefSpec{config.RefSpec("+refs/heads/" + name + ":refs/remotes/origin/" + name)},
-		Auth:       m.auth(),
+		RemoteName: remoteName,
+		RefSpecs:   []config.RefSpec{config.RefSpec("+refs/heads/" + name + ":refs/remotes/" + remoteName + "/" + name)},
+		Auth:       auth,
 	})
 	if err != nil && err != git.NoErrAlreadyUpToDate {
 		return fmt.Errorf("failed to fetch branch %s: %w", name, err)
 	}
 
-	remoteRef, err := m.Repo.Reference(plumbing.NewRemoteReferenceName("origin", name), true)
+	remoteRef, err := m.Repo.Reference(plumbing.NewRemoteReferenceName(remoteName, name), true)
 	if err != nil {
 		return fmt.Errorf("remote branch %s not found: %w", name, err)
 	}
@@ -230,14 +276,18 @@ func (m *RepoManager) WriteFiles(dir string, files []File) error {
 	return nil
 }
 
-func (m *RepoManager) CommitChanges(message, authorName, authorEmail string) (string, error) {
+func (m *RepoManager) CommitChanges(message, authorName, authorEmail, dir string, files []File) (string, error) {
 	w, err := m.Repo.Worktree()
 	if err != nil {
 		return "", fmt.Errorf("failed to get worktree: %w", err)
 	}
 
-	if _, err := w.Add("."); err != nil {
-		return "", fmt.Errorf("failed to stage changes: %w", err)
+	dir = strings.TrimPrefix(dir, "/")
+	for _, f := range files {
+		relPath := filepath.Join(dir, f.Name)
+		if _, err := w.Add(relPath); err != nil {
+			return "", fmt.Errorf("failed to stage %s: %w", relPath, err)
+		}
 	}
 
 	hash, err := w.Commit(message, &git.CommitOptions{
@@ -246,6 +296,7 @@ func (m *RepoManager) CommitChanges(message, authorName, authorEmail string) (st
 			Email: authorEmail,
 			When:  time.Now(),
 		},
+		SignKey: m.SignKey,
 	})
 	if err != nil {
 		return "", fmt.Errorf("failed to commit: %w", err)
@@ -265,17 +316,28 @@ func (m *RepoManager) PushBranchForce(branch string) error {
 
 func (m *RepoManager) pushBranch(branch string, force bool) error {
 	ref := plumbing.NewBranchReferenceName(branch)
+
+	remoteName := "origin"
+	auth := m.auth()
+	if m.ForkToken != "" {
+		remoteName = "fork"
+		auth = &http.BasicAuth{Username: "git", Password: m.ForkToken}
+	}
+
 	err := m.Repo.Push(&git.PushOptions{
-		RemoteName: "origin",
+		RemoteName: remoteName,
 		RefSpecs:   []config.RefSpec{config.RefSpec(ref + ":" + ref)},
-		Auth:       m.auth(),
+		Auth:       auth,
 		Force:      force,
 	})
 	if err != nil {
 		return fmt.Errorf("failed to push branch %s: %w", branch, err)
 	}
 
-	logrus.WithField("branch", branch).Info("Branch pushed")
+	logrus.WithFields(logrus.Fields{
+		"branch": branch,
+		"remote": remoteName,
+	}).Info("Branch pushed")
 	return nil
 }
 

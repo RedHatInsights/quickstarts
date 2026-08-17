@@ -65,6 +65,20 @@ objects:
               name: git-service-credentials
               key: PSK_TOKEN
               optional: true
+        - name: FORK_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: git-service-credentials
+              key: FORK_TOKEN
+              optional: true
+        - name: FORK_REPO_URL
+          value: ${FORK_REPO_URL}
+        - name: GPG_PRIVATE_KEY
+          valueFrom:
+            secretKeyRef:
+              name: git-service-credentials
+              key: GPG_PRIVATE_KEY
+              optional: true
         resources:
           limits:
             cpu: 200m
@@ -111,3 +125,6 @@ parameters:
 - description: Directory path for quickstart files within the repo
   name: QUICKSTARTS_DIR_PATH
   value: /docs/quickstarts/
+- description: GitHub fork repository URL for push access
+  name: FORK_REPO_URL
+  value: https://github.com/nacho-bot/quickstarts

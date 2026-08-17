@@ -17,13 +17,14 @@ type PRCreator interface {
 }
 
 type Client struct {
-	gh    *github.Client
-	Owner string
-	Repo  string
-	Token string
+	gh        *github.Client
+	Owner     string
+	Repo      string
+	Token     string
+	ForkOwner string
 }
 
-func NewClient(token, repoURL string) (*Client, error) {
+func NewClient(token, repoURL, forkOwner string) (*Client, error) {
 	owner, repo, err := ParseRepoURL(repoURL)
 	if err != nil {
 		return nil, err
@@ -33,14 +34,19 @@ func NewClient(token, repoURL string) (*Client, error) {
 	tc := oauth2.NewClient(context.Background(), ts)
 
 	return &Client{
-		gh:    github.NewClient(tc),
-		Owner: owner,
-		Repo:  repo,
-		Token: token,
+		gh:        github.NewClient(tc),
+		Owner:     owner,
+		Repo:      repo,
+		Token:     token,
+		ForkOwner: forkOwner,
 	}, nil
 }
 
 func (c *Client) CreatePullRequest(ctx context.Context, title, body, head, base string) (string, int, error) {
+	if c.ForkOwner != "" {
+		head = c.ForkOwner + ":" + head
+	}
+
 	pr, _, err := c.gh.PullRequests.Create(ctx, c.Owner, c.Repo, &github.NewPullRequest{
 		Title: &title,
 		Body:  &body,

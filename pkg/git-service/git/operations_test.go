@@ -49,7 +49,7 @@ func TestInitRepo_Clone(t *testing.T) {
 	bare := createBareRepo(t)
 	cloneDest := filepath.Join(t.TempDir(), "repo")
 
-	mgr, err := InitRepo(bare, cloneDest, "", "master")
+	mgr, err := InitRepo(bare, cloneDest, "", "master", "", "", "")
 	require.NoError(t, err)
 	assert.NotNil(t, mgr.Repo)
 	assert.Equal(t, cloneDest, mgr.RepoPath)
@@ -62,10 +62,10 @@ func TestInitRepo_OpensExisting(t *testing.T) {
 	bare := createBareRepo(t)
 	cloneDest := filepath.Join(t.TempDir(), "repo")
 
-	mgr1, err := InitRepo(bare, cloneDest, "", "master")
+	mgr1, err := InitRepo(bare, cloneDest, "", "master", "", "", "")
 	require.NoError(t, err)
 
-	mgr2, err := InitRepo(bare, cloneDest, "", "master")
+	mgr2, err := InitRepo(bare, cloneDest, "", "master", "", "", "")
 	require.NoError(t, err)
 
 	head1, _ := mgr1.Repo.Head()
@@ -75,7 +75,7 @@ func TestInitRepo_OpensExisting(t *testing.T) {
 
 func TestInitRepo_BadURL(t *testing.T) {
 	cloneDest := filepath.Join(t.TempDir(), "repo")
-	_, err := InitRepo("/nonexistent/repo", cloneDest, "", "master")
+	_, err := InitRepo("/nonexistent/repo", cloneDest, "", "master", "", "", "")
 	assert.Error(t, err)
 }
 
@@ -83,7 +83,7 @@ func TestPullLatest(t *testing.T) {
 	bare := createBareRepo(t)
 	cloneDest := filepath.Join(t.TempDir(), "repo")
 
-	mgr, err := InitRepo(bare, cloneDest, "", "master")
+	mgr, err := InitRepo(bare, cloneDest, "", "master", "", "", "")
 	require.NoError(t, err)
 
 	// Push a new commit to the bare repo via a separate clone
@@ -123,7 +123,7 @@ func TestPullLatest_AlreadyUpToDate(t *testing.T) {
 	bare := createBareRepo(t)
 	cloneDest := filepath.Join(t.TempDir(), "repo")
 
-	mgr, err := InitRepo(bare, cloneDest, "", "master")
+	mgr, err := InitRepo(bare, cloneDest, "", "master", "", "", "")
 	require.NoError(t, err)
 
 	err = mgr.PullLatest()
@@ -134,7 +134,7 @@ func TestCreateBranch(t *testing.T) {
 	bare := createBareRepo(t)
 	cloneDest := filepath.Join(t.TempDir(), "repo")
 
-	mgr, err := InitRepo(bare, cloneDest, "", "master")
+	mgr, err := InitRepo(bare, cloneDest, "", "master", "", "", "")
 	require.NoError(t, err)
 
 	err = mgr.CreateBranch("feature/test-branch")
@@ -149,7 +149,7 @@ func TestWriteFiles(t *testing.T) {
 	bare := createBareRepo(t)
 	cloneDest := filepath.Join(t.TempDir(), "repo")
 
-	mgr, err := InitRepo(bare, cloneDest, "", "master")
+	mgr, err := InitRepo(bare, cloneDest, "", "master", "", "", "")
 	require.NoError(t, err)
 
 	files := []File{
@@ -173,13 +173,14 @@ func TestCommitChanges(t *testing.T) {
 	bare := createBareRepo(t)
 	cloneDest := filepath.Join(t.TempDir(), "repo")
 
-	mgr, err := InitRepo(bare, cloneDest, "", "master")
+	mgr, err := InitRepo(bare, cloneDest, "", "master", "", "", "")
 	require.NoError(t, err)
 
-	err = os.WriteFile(filepath.Join(cloneDest, "newfile.txt"), []byte("hello"), 0644)
+	files := []File{{Name: "newfile.txt", Content: "hello"}}
+	err = mgr.WriteFiles(".", files)
 	require.NoError(t, err)
 
-	sha, err := mgr.CommitChanges("test commit", "Test User", "test@test.com")
+	sha, err := mgr.CommitChanges("test commit", "Test User", "test@test.com", ".", files)
 	require.NoError(t, err)
 	assert.Len(t, sha, 40)
 
@@ -193,20 +194,87 @@ func TestCommitChanges(t *testing.T) {
 	assert.Equal(t, "test@test.com", commit.Author.Email)
 }
 
+func TestCommitChanges_NewDirectory(t *testing.T) {
+	bare := createBareRepo(t)
+	cloneDest := filepath.Join(t.TempDir(), "repo")
+
+	mgr, err := InitRepo(bare, cloneDest, "", "master", "", "", "")
+	require.NoError(t, err)
+
+	files := []File{
+		{Name: "metadata.yaml", Content: "name: new-quickstart"},
+		{Name: "new-quickstart.yaml", Content: "spec:\n  displayName: New\n"},
+	}
+	err = mgr.WriteFiles("docs/quickstarts/new-quickstart", files)
+	require.NoError(t, err)
+
+	sha, err := mgr.CommitChanges("add new quickstart", "Test User", "test@test.com", "docs/quickstarts/new-quickstart", files)
+	require.NoError(t, err)
+	assert.Len(t, sha, 40)
+
+	head, err := mgr.Repo.Head()
+	require.NoError(t, err)
+
+	commit, err := mgr.Repo.CommitObject(head.Hash())
+	require.NoError(t, err)
+	assert.Equal(t, "add new quickstart", commit.Message)
+
+	tree, err := commit.Tree()
+	require.NoError(t, err)
+	_, err = tree.File("docs/quickstarts/new-quickstart/metadata.yaml")
+	assert.NoError(t, err, "metadata.yaml should be committed")
+	_, err = tree.File("docs/quickstarts/new-quickstart/new-quickstart.yaml")
+	assert.NoError(t, err, "content yaml should be committed")
+}
+
+func TestCommitChanges_LeadingSlashDir(t *testing.T) {
+	bare := createBareRepo(t)
+	cloneDest := filepath.Join(t.TempDir(), "repo")
+
+	mgr, err := InitRepo(bare, cloneDest, "", "master", "", "", "")
+	require.NoError(t, err)
+
+	files := []File{
+		{Name: "metadata.yaml", Content: "name: stage-quickstart"},
+		{Name: "stage-quickstart.yaml", Content: "spec:\n  displayName: Stage\n"},
+	}
+	err = mgr.WriteFiles("/docs/quickstarts/stage-quickstart", files)
+	require.NoError(t, err)
+
+	sha, err := mgr.CommitChanges("add stage quickstart", "Test User", "test@test.com", "/docs/quickstarts/stage-quickstart", files)
+	require.NoError(t, err)
+	assert.Len(t, sha, 40)
+
+	head, err := mgr.Repo.Head()
+	require.NoError(t, err)
+
+	commit, err := mgr.Repo.CommitObject(head.Hash())
+	require.NoError(t, err)
+	assert.Equal(t, "add stage quickstart", commit.Message)
+
+	tree, err := commit.Tree()
+	require.NoError(t, err)
+	_, err = tree.File("docs/quickstarts/stage-quickstart/metadata.yaml")
+	assert.NoError(t, err, "metadata.yaml should be committed")
+	_, err = tree.File("docs/quickstarts/stage-quickstart/stage-quickstart.yaml")
+	assert.NoError(t, err, "content yaml should be committed")
+}
+
 func TestPushBranch(t *testing.T) {
 	bare := createBareRepo(t)
 	cloneDest := filepath.Join(t.TempDir(), "repo")
 
-	mgr, err := InitRepo(bare, cloneDest, "", "master")
+	mgr, err := InitRepo(bare, cloneDest, "", "master", "", "", "")
 	require.NoError(t, err)
 
 	err = mgr.CreateBranch("feature/push-test")
 	require.NoError(t, err)
 
-	err = os.WriteFile(filepath.Join(cloneDest, "pushed.txt"), []byte("pushed"), 0644)
+	pushFiles := []File{{Name: "pushed.txt", Content: "pushed"}}
+	err = mgr.WriteFiles(".", pushFiles)
 	require.NoError(t, err)
 
-	_, err = mgr.CommitChanges("push test", "Test", "test@test.com")
+	_, err = mgr.CommitChanges("push test", "Test", "test@test.com", ".", pushFiles)
 	require.NoError(t, err)
 
 	err = mgr.PushBranch("feature/push-test")
@@ -229,7 +297,7 @@ func TestEnsureRemote(t *testing.T) {
 	bare := createBareRepo(t)
 	cloneDest := filepath.Join(t.TempDir(), "repo")
 
-	mgr, err := InitRepo(bare, cloneDest, "", "master")
+	mgr, err := InitRepo(bare, cloneDest, "", "master", "", "", "")
 	require.NoError(t, err)
 
 	secondBare := createBareRepo(t)
@@ -245,7 +313,7 @@ func TestEnsureRemote_AlreadyExists(t *testing.T) {
 	bare := createBareRepo(t)
 	cloneDest := filepath.Join(t.TempDir(), "repo")
 
-	mgr, err := InitRepo(bare, cloneDest, "", "master")
+	mgr, err := InitRepo(bare, cloneDest, "", "master", "", "", "")
 	require.NoError(t, err)
 
 	secondBare := createBareRepo(t)
@@ -260,7 +328,7 @@ func TestCleanup(t *testing.T) {
 	bare := createBareRepo(t)
 	cloneDest := filepath.Join(t.TempDir(), "repo")
 
-	mgr, err := InitRepo(bare, cloneDest, "", "master")
+	mgr, err := InitRepo(bare, cloneDest, "", "master", "", "", "")
 	require.NoError(t, err)
 
 	err = mgr.CreateBranch("feature/cleanup-test")
@@ -278,7 +346,7 @@ func TestCleanup_RemovesUntrackedFiles(t *testing.T) {
 	bare := createBareRepo(t)
 	cloneDest := filepath.Join(t.TempDir(), "repo")
 
-	mgr, err := InitRepo(bare, cloneDest, "", "master")
+	mgr, err := InitRepo(bare, cloneDest, "", "master", "", "", "")
 	require.NoError(t, err)
 
 	err = mgr.CreateBranch("feature/dirty-test")
@@ -298,7 +366,7 @@ func TestWriteFiles_PathTraversal_Dir(t *testing.T) {
 	bare := createBareRepo(t)
 	cloneDest := filepath.Join(t.TempDir(), "repo")
 
-	mgr, err := InitRepo(bare, cloneDest, "", "master")
+	mgr, err := InitRepo(bare, cloneDest, "", "master", "", "", "")
 	require.NoError(t, err)
 
 	files := []File{{Name: "evil.txt", Content: "pwned"}}
@@ -311,7 +379,7 @@ func TestWriteFiles_PathTraversal_FileName(t *testing.T) {
 	bare := createBareRepo(t)
 	cloneDest := filepath.Join(t.TempDir(), "repo")
 
-	mgr, err := InitRepo(bare, cloneDest, "", "master")
+	mgr, err := InitRepo(bare, cloneDest, "", "master", "", "", "")
 	require.NoError(t, err)
 
 	files := []File{{Name: "../../etc/passwd", Content: "pwned"}}
@@ -324,7 +392,7 @@ func TestReadFile_RejectsSymlinks(t *testing.T) {
 	bare := createBareRepo(t)
 	cloneDest := filepath.Join(t.TempDir(), "repo")
 
-	mgr, err := InitRepo(bare, cloneDest, "", "master")
+	mgr, err := InitRepo(bare, cloneDest, "", "master", "", "", "")
 	require.NoError(t, err)
 
 	secret := filepath.Join(t.TempDir(), "secret.txt")
@@ -337,4 +405,89 @@ func TestReadFile_RejectsSymlinks(t *testing.T) {
 	_, err = mgr.ReadFile("docs/link.txt")
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "symlinks are not allowed")
+}
+
+func TestInitRepo_BadGPGKey(t *testing.T) {
+	bare := createBareRepo(t)
+	cloneDest := filepath.Join(t.TempDir(), "repo")
+
+	_, err := InitRepo(bare, cloneDest, "", "master", "", "", "not-a-valid-gpg-key")
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "failed to parse GPG signing key")
+}
+
+func TestCommitChanges_Signed(t *testing.T) {
+	gpgKey := os.Getenv("GPG_PRIVATE_KEY")
+	if gpgKey == "" {
+		t.Skip("GPG_PRIVATE_KEY not set, skipping signing test")
+	}
+
+	bare := createBareRepo(t)
+	cloneDest := filepath.Join(t.TempDir(), "repo")
+
+	mgr, err := InitRepo(bare, cloneDest, "", "master", "", "", gpgKey)
+	require.NoError(t, err)
+	assert.NotNil(t, mgr.SignKey)
+
+	files := []File{{Name: "signed.txt", Content: "signed content"}}
+	err = mgr.WriteFiles(".", files)
+	require.NoError(t, err)
+
+	sha, err := mgr.CommitChanges("signed commit", "nacho-bot", "crc-nachobot@redhat.com", ".", files)
+	require.NoError(t, err)
+	assert.Len(t, sha, 40)
+
+	head, err := mgr.Repo.Head()
+	require.NoError(t, err)
+
+	commit, err := mgr.Repo.CommitObject(head.Hash())
+	require.NoError(t, err)
+	assert.NotEmpty(t, commit.PGPSignature, "commit should have a PGP signature")
+}
+
+func TestInitRepo_WithForkRemote(t *testing.T) {
+	bare := createBareRepo(t)
+	forkBare := createBareRepo(t)
+	cloneDest := filepath.Join(t.TempDir(), "repo")
+
+	mgr, err := InitRepo(bare, cloneDest, "", "master", forkBare, "fork-token", "")
+	require.NoError(t, err)
+	assert.Equal(t, "fork-token", mgr.ForkToken)
+
+	remote, err := mgr.Repo.Remote("fork")
+	require.NoError(t, err)
+	assert.Equal(t, forkBare, remote.Config().URLs[0])
+}
+
+func TestPushBranch_ToForkRemote(t *testing.T) {
+	bare := createBareRepo(t)
+	forkBare := createBareRepo(t)
+	cloneDest := filepath.Join(t.TempDir(), "repo")
+
+	mgr, err := InitRepo(bare, cloneDest, "", "master", forkBare, "fork-token", "")
+	require.NoError(t, err)
+
+	err = mgr.CreateBranch("feature/fork-push-test")
+	require.NoError(t, err)
+
+	pushFiles := []File{{Name: "fork-pushed.txt", Content: "fork pushed"}}
+	err = mgr.WriteFiles(".", pushFiles)
+	require.NoError(t, err)
+
+	_, err = mgr.CommitChanges("fork push test", "Test", "test@test.com", ".", pushFiles)
+	require.NoError(t, err)
+
+	err = mgr.PushBranch("feature/fork-push-test")
+	require.NoError(t, err)
+
+	verify := t.TempDir()
+	_, err = gogit.PlainClone(verify, false, &gogit.CloneOptions{
+		URL:           forkBare,
+		ReferenceName: "refs/heads/feature/fork-push-test",
+		SingleBranch:  true,
+	})
+	require.NoError(t, err)
+
+	_, err = os.Stat(filepath.Join(verify, "fork-pushed.txt"))
+	assert.NoError(t, err)
 }
