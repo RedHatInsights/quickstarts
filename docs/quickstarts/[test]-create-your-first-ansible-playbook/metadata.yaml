@@ -1,0 +1,11 @@
+kind: QuickStarts
+name: "[test]-create-your-first-ansible-playbook"
+tags:
+  - kind: bundle
+    value: ansible
+  - kind: content
+    value: documentation
+  - kind: product-families
+    value: ansible
+  - kind: use-case
+    value: automation

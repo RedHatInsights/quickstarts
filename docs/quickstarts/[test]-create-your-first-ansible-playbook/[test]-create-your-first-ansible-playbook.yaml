@@ -1,0 +1,27 @@
+apiVersion: console.openshift.io/v1
+kind: QuickStarts
+metadata:
+  name: "[test]-create-your-first-ansible-playbook"
+  tags:
+    - kind: bundle
+      value: ansible
+    - kind: content
+      value: documentation
+    - kind: product-families
+      value: ansible
+    - kind: use-case
+      value: automation
+  externalDocumentation: true
+spec:
+  version: 0.1
+  displayName: "[TEST] Create your first Ansible Playbook"
+  icon: ~
+  description: Automate simple infrastructure tasks by writing a Red Hat Ansible
+    Automation Platform playbook.
+  type:
+    text: Documentation
+    color: orange
+  link:
+    text: View documentation
+    href: https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.5/html/getting_started_with_playbooks/index
+  prerequisites: []
