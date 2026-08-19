@@ -62,11 +62,18 @@ func TestParseRepoURL_MissingRepo(t *testing.T) {
 }
 
 func TestNewClient_Success(t *testing.T) {
-	client, err := NewClient("my-token", "https://github.com/acme/widgets")
+	client, err := NewClient("my-token", "https://github.com/acme/widgets", "")
 	require.NoError(t, err)
 	assert.Equal(t, "acme", client.Owner)
 	assert.Equal(t, "widgets", client.Repo)
 	assert.Equal(t, "my-token", client.Token)
+	assert.Empty(t, client.ForkOwner)
+}
+
+func TestNewClient_WithForkOwner(t *testing.T) {
+	client, err := NewClient("my-token", "https://github.com/acme/widgets", "fork-user")
+	require.NoError(t, err)
+	assert.Equal(t, "fork-user", client.ForkOwner)
 }
 
 func TestCreatePullRequest_Success(t *testing.T) {
@@ -126,6 +133,28 @@ func TestAssignReviewers_EmptyTeam(t *testing.T) {
 	client := &Client{}
 	err := client.AssignReviewers(context.Background(), 42, "")
 	assert.NoError(t, err)
+}
+
+func TestCreatePullRequest_CrossRepo(t *testing.T) {
+	mux := http.NewServeMux()
+	mux.HandleFunc("/repos/test-owner/test-repo/pulls", func(w http.ResponseWriter, r *http.Request) {
+		var req map[string]string
+		json.NewDecoder(r.Body).Decode(&req)
+		assert.Equal(t, "nacho-bot:feature-branch", req["head"])
+
+		w.WriteHeader(http.StatusCreated)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"html_url": "https://github.com/test-owner/test-repo/pull/99",
+			"number":   99,
+		})
+	})
+
+	client := newTestClient(t, mux)
+	client.ForkOwner = "nacho-bot"
+	prURL, prNum, err := client.CreatePullRequest(context.Background(), "Cross-repo PR", "body", "feature-branch", "main")
+	require.NoError(t, err)
+	assert.Equal(t, "https://github.com/test-owner/test-repo/pull/99", prURL)
+	assert.Equal(t, 99, prNum)
 }
 
 func TestParseRepoURL_RejectsLookalikeHost(t *testing.T) {

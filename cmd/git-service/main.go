@@ -48,12 +48,17 @@ func main() {
 	} else if cfg.PSKToken == "" || cfg.GitHubToken == "" {
 		logrus.Warn("GIT_SERVICE_ENABLED is true but secrets not available, running in health-only mode")
 	} else {
-		repoMgr, err := gitops.InitRepo(cfg.RepoURL, cfg.RepoPath, cfg.GitHubToken, cfg.BaseBranch)
+		repoMgr, err := gitops.InitRepo(cfg.RepoURL, cfg.RepoPath, cfg.GitHubToken, cfg.BaseBranch, cfg.ForkRepoURL, cfg.ForkToken, cfg.GPGPrivateKey)
 		if err != nil {
 			logrus.WithError(err).Fatal("Failed to initialize repository")
 		}
 
-		ghClient, err := ghclient.NewClient(cfg.GitHubToken, cfg.RepoURL)
+		var forkOwner string
+		if cfg.ForkRepoURL != "" {
+			forkOwner, _, _ = ghclient.ParseRepoURL(cfg.ForkRepoURL)
+		}
+
+		ghClient, err := ghclient.NewClient(cfg.GitHubToken, cfg.RepoURL, forkOwner)
 		if err != nil {
 			logrus.WithError(err).Fatal("Failed to initialize GitHub client")
 		}
