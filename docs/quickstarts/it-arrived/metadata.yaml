@@ -1,0 +1,7 @@
+kind: QuickStarts
+name: it-arrived
+tags:
+  - kind: bundle
+    value: insights
+  - kind: content
+    value: quickstart
