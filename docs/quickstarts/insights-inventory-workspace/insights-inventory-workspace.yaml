@@ -24,6 +24,8 @@ spec:
         - Create a workspace.
         - Learn how to add systems to a workspace.
         - Learn how to remove systems from a workspace.
+
+        Please note, you can create up to 1,000 workspaces per organization.
   
   tasks:
     - title: Create a workspace

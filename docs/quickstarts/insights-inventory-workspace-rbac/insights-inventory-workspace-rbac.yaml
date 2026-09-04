@@ -24,6 +24,8 @@ spec:
     Use this quick start to assign user-specific access to:
     - Certain workspaces but not others, and/or
     - All ungrouped systems
+
+    Please note, you can create up to 1,000 workspaces per organization.
     
   tasks:
     - title: Create a custom role
