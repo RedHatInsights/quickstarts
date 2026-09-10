@@ -1,0 +1,13 @@
+kind: QuickStarts # kind must always be "QuickStarts"
+name: insights-integrate-satellite-iop
+tags:
+- kind: bundle
+  value: insights
+- kind: content
+  value: documentation
+- kind: product-families
+  value: rhel
+- kind: use-case
+  value: infrastructure
+- kind: use-case
+  value: system-configuration

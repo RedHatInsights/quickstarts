@@ -1,0 +1,130 @@
+---
+apiVersion: v1
+kind: Template
+metadata:
+  name: quickstarts-git-service
+objects:
+- apiVersion: cloud.redhat.com/v1alpha1
+  kind: ClowdApp
+  metadata:
+    name: quickstarts-git-service
+  spec:
+    envName: ${ENV_NAME}
+    deployments:
+    - name: app
+      minReplicas: ${{GIT_SERVICE_MIN_REPLICAS}}
+      webServices:
+        private:
+          enabled: true
+      podSpec:
+        image: ${IMAGE}:${IMAGE_TAG}
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /test
+            port: 10000
+            scheme: HTTP
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /test
+            port: 10000
+            scheme: HTTP
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+        env:
+        - name: GITHUB_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: git-service-credentials
+              key: GITHUB_TOKEN
+              optional: true
+        - name: GITHUB_REPO_URL
+          value: ${GITHUB_REPO_URL}
+        - name: GITHUB_BASE_BRANCH
+          value: ${GITHUB_BASE_BRANCH}
+        - name: PR_REVIEWERS_TEAM
+          value: ${PR_REVIEWERS_TEAM}
+        - name: QUICKSTARTS_REPO_PATH
+          value: /var/quickstarts-repo
+        - name: QUICKSTARTS_DIR_PATH
+          value: ${QUICKSTARTS_DIR_PATH}
+        - name: PORT
+          value: "8001"
+        - name: CLOWDER_ENABLED
+          value: ${CLOWDER_ENABLED}
+        - name: GIT_SERVICE_ENABLED
+          value: ${GIT_SERVICE_ENABLED}
+        - name: PSK_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: git-service-credentials
+              key: PSK_TOKEN
+              optional: true
+        - name: FORK_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: git-service-credentials
+              key: FORK_TOKEN
+              optional: true
+        - name: FORK_REPO_URL
+          value: ${FORK_REPO_URL}
+        - name: GPG_PRIVATE_KEY
+          valueFrom:
+            secretKeyRef:
+              name: git-service-credentials
+              key: GPG_PRIVATE_KEY
+              optional: true
+        resources:
+          limits:
+            cpu: 200m
+            memory: 256Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+        volumes:
+        - emptyDir: {}
+          name: quickstarts-repo
+        volumeMounts:
+        - mountPath: /var/quickstarts-repo
+          name: quickstarts-repo
+
+parameters:
+- description: ClowdEnv Name
+  name: ENV_NAME
+  value: "quickstarts"
+  required: true
+- name: GIT_SERVICE_MIN_REPLICAS
+  value: '1'
+- description: Image name
+  name: IMAGE
+  value: quay.io/redhat-services-prod/hcc-platex-services/quickstarts-git-service
+- description: Image tag
+  name: IMAGE_TAG
+  value: 'latest'
+  required: true
+- description: Determines Clowder deployment
+  name: CLOWDER_ENABLED
+  value: "false"
+- description: Enable git-service in this environment
+  name: GIT_SERVICE_ENABLED
+  value: "false"
+- description: GitHub repository URL for git-service
+  name: GITHUB_REPO_URL
+  value: https://github.com/RedHatInsights/quickstarts
+- description: Base branch for PRs
+  name: GITHUB_BASE_BRANCH
+  value: main
+- description: GitHub team slug for PR reviewers
+  name: PR_REVIEWERS_TEAM
+  value: ""
+- description: Directory path for quickstart files within the repo
+  name: QUICKSTARTS_DIR_PATH
+  value: /docs/quickstarts/
+- description: GitHub fork repository URL for push access
+  name: FORK_REPO_URL
+  value: https://github.com/nacho-bot/quickstarts

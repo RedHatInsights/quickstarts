@@ -15,6 +15,7 @@ objects:
       version: 13
     optionalDependencies:
     - rbac
+    - quickstarts-git-service
     deployments:
     - name: service
       minReplicas: ${{MIN_REPLICAS}}
@@ -54,6 +55,14 @@ objects:
         env:
         - name: CLOWDER_ENABLED
           value: ${CLOWDER_ENABLED}
+        - name: GIT_SERVICE_ENABLED
+          value: ${GIT_SERVICE_ENABLED}
+        - name: PSK_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: git-service-credentials
+              key: PSK_TOKEN
+              optional: true
         resources:
           limits:
             cpu: ${CPU_LIMIT}
@@ -87,6 +96,9 @@ parameters:
   value: quay.io/redhat-services-prod/hcc-platex-services/quickstarts
 - description: Determines Clowder deployment
   name: CLOWDER_ENABLED
+  value: "false"
+- description: Enable git-service integration
+  name: GIT_SERVICE_ENABLED
   value: "false"
 - description: ClowdEnv Name
   name: ENV_NAME

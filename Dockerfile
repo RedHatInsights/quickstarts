@@ -11,7 +11,7 @@ COPY cmd cmd
 COPY config config
 COPY docs docs
 ENV GO111MODULE=on
-ENV GOTOOLCHAIN=go1.26.3
+ENV GOTOOLCHAIN=go1.26.5
 USER root
 RUN make generate
 RUN make validate-api
@@ -31,6 +31,8 @@ COPY --from=builder /go/bin/quickstarts /usr/bin
 COPY --from=builder /go/bin/quickstarts-migrate /usr/bin
 COPY --from=builder /src/mypackage/myapp/spec/openapi.json /var/tmp
 COPY --from=builder /src/mypackage/myapp/docs /docs
+
+ENV QUICKSTARTS_CONTENT_DIR=/docs
 
 USER 1001
 

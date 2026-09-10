@@ -18,6 +18,11 @@ help:
 	@echo "openapi-json    - convert OpenAPI YAML to JSON"
 	@echo "validate-api    - validate API responses against spec"
 	@echo "clean-generated - clean generated files"
+	@echo ""
+	@echo "=== Git Service ==="
+	@echo "build-git-service - build git-service binary"
+	@echo "test-git-service  - run git-service tests"
+	@echo "dev-git-service   - start git-service dev server"
 
 	
 test:
@@ -80,3 +85,14 @@ validate-api:
 clean-generated:
 	rm -rf pkg/generated/
 	@echo "Generated files cleaned"
+
+# === Git Service Targets ===
+
+build-git-service:
+	CGO_ENABLED=0 go build -o quickstarts-git-service cmd/git-service/main.go
+
+test-git-service:
+	go test ./pkg/git-service/... -coverprofile=c.out
+
+dev-git-service:
+	go run cmd/git-service/main.go

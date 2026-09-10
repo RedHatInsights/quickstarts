@@ -9,7 +9,6 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
-	"strings"
 
 	"github.com/RedHatInsights/quickstarts/pkg/models"
 	"github.com/ghodss/yaml"
@@ -49,17 +48,26 @@ func readMetadata(loc string) (MetadataTemplate, error) {
 	return template, nil
 }
 
+// contentDir returns the base directory containing quickstart and help-topic
+// content. It reads QUICKSTARTS_CONTENT_DIR from the environment; when unset
+// it falls back to "docs" relative to the current working directory.
+func contentDir() string {
+	if dir := os.Getenv("QUICKSTARTS_CONTENT_DIR"); dir != "" {
+		return dir
+	}
+	return "docs"
+}
+
 func findTags() []MetadataTemplate {
 	var MetadataTemplates []MetadataTemplate
-	path, err := os.Getwd()
-	path = strings.TrimRight(path, "pkg")
-	quickstartsFiles, err := filepath.Glob(path + "/docs/quickstarts/**/metadata.y*")
+	base := contentDir()
+	quickstartsFiles, err := filepath.Glob(filepath.Join(base, "quickstarts", "*", "metadata.y*"))
 	if err != nil {
 		slog.Error("Failed to find quickstarts metadata files", "error", err)
 		log.Fatal(err)
 	}
 
-	helpTopicsFiles, err := filepath.Glob(path + "/docs/help-topics/**/metadata.y*")
+	helpTopicsFiles, err := filepath.Glob(filepath.Join(base, "help-topics", "*", "metadata.y*"))
 	if err != nil {
 		slog.Error("Failed to find help topics metadata files", "error", err)
 		log.Fatal(err)
@@ -304,10 +312,9 @@ func clearOldContent(tx *gorm.DB) ([]models.FavoriteQuickstart, error) {
 	tx.Preload("HelpTopics").Find(&staleTopicsTags)
 
 	for _, favorite := range favorites {
-		if err := tx.Model(&favorite).Association("Quickstart").Clear(); err != nil {
-			slog.Error("Failed to clear favorite quickstart association", "error", err)
-			return favorites, fmt.Errorf("failed to clear favorite association: %w", err)
-		}
+		// FavoriteQuickstart has no GORM-managed Quickstart association
+		// (QuickstartName is a plain string column, not a relationship field).
+		// Unscoped().Delete() is sufficient to remove the row.
 		if err := tx.Unscoped().Delete(&favorite).Error; err != nil {
 			slog.Error("Failed to delete favorite", "error", err)
 			return favorites, fmt.Errorf("failed to delete favorite: %w", err)

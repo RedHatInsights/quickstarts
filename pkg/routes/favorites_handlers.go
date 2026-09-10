@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/RedHatInsights/quickstarts/pkg/generated"
+	"github.com/RedHatInsights/quickstarts/pkg/securitylog"
 	"github.com/RedHatInsights/quickstarts/pkg/utils"
 )
 
@@ -34,7 +35,8 @@ func (s *ServerAdapter) GetFavorites(w http.ResponseWriter, r *http.Request, par
 
 // PostFavorites handles POST /favorites
 func (s *ServerAdapter) PostFavorites(w http.ResponseWriter, r *http.Request, params generated.PostFavoritesParams) {
-	// Parse request body
+	// Parse request body — parse failures are not security-relevant
+	// (malformed client requests, not data access attempts) so no security log here.
 	var reqBody generated.FavoriteQuickstart
 	if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
 		utils.ErrorResponse(w, http.StatusBadRequest, err.Error())
@@ -54,9 +56,12 @@ func (s *ServerAdapter) PostFavorites(w http.ResponseWriter, r *http.Request, pa
 	// Use service to switch favorite status
 	result, err := s.favoriteService.SwitchFavorite(params.Account, quickstartName, favorite)
 	if err != nil {
+		securitylog.LogWithReason(r.Context(), "CREATE", "favorite", quickstartName, "failure", err.Error())
 		utils.ErrorResponse(w, http.StatusBadRequest, err.Error())
 		return
 	}
+
+	securitylog.Log(r.Context(), "CREATE", "favorite", quickstartName, "success")
 
 	// Convert to generated type and respond
 	genFavorite := result.ToAPI()

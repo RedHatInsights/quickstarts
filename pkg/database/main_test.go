@@ -3,7 +3,7 @@ package database
 import (
 	"fmt"
 	"os"
-	"path"
+	"path/filepath"
 	"runtime"
 	"testing"
 	"time"
@@ -24,11 +24,14 @@ var dbName string
 
 func setUp() {
 	_, filename, _, _ := runtime.Caller(0)
-	dir := path.Join(path.Dir(filename), "..")
+	dir := filepath.Join(filepath.Dir(filename), "..")
 	err := os.Chdir(dir)
 	if err != nil {
 		panic(err)
 	}
+	// Set content directory to absolute path so findTags() resolves docs
+	// regardless of the working directory.
+	os.Setenv("QUICKSTARTS_CONTENT_DIR", filepath.Join(filepath.Dir(filename), "..", "..", "docs"))
 	godotenv.Load()
 	config.Init()
 	cfg := config.Get()

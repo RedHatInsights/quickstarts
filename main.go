@@ -9,7 +9,9 @@ import (
 	"github.com/RedHatInsights/quickstarts/pkg/database"
 	"github.com/RedHatInsights/quickstarts/pkg/generated"
 	"github.com/RedHatInsights/quickstarts/pkg/logger"
+	qsmiddleware "github.com/RedHatInsights/quickstarts/pkg/middleware"
 	"github.com/RedHatInsights/quickstarts/pkg/routes"
+	"github.com/RedHatInsights/quickstarts/pkg/securitylog"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/joho/godotenv"
@@ -60,6 +62,7 @@ func main() {
 		middleware.RealIP,
 		middleware.Recoverer,
 		middleware.RequestLogger(logger.NewLogger(cfg, routerLogger)),
+		qsmiddleware.ExtractIdentity,
 	)
 
 	// Create the adapter that implements the generated ServerInterface
@@ -70,6 +73,12 @@ func main() {
 
 	// Use the generated handler with our adapter
 	generated.HandlerFromMuxWithBaseURL(serverAdapter, apiRouter, "/api/quickstarts/v1")
+
+	if os.Getenv("PSK_TOKEN") != "" {
+		logrus.Info("PSK_TOKEN is set, git-service proxy endpoints enabled")
+	} else {
+		logrus.Info("PSK_TOKEN is not set, git-service proxy endpoints disabled")
+	}
 
 	// Add spec serving
 	root := "./spec/"
@@ -95,10 +104,13 @@ func main() {
 		}
 	}()
 
+	securitylog.LogStartup("quickstarts", cfg.ServerAddr)
 	logrus.Infoln("Starting http server")
 	if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		securitylog.LogShutdown("quickstarts", "failure", err.Error())
 		logrus.Fatal("Api server has stopped")
 	}
+	securitylog.LogShutdown("quickstarts", "success", "")
 
 	// <-done
 	// logrus.Info("Gracefully stopping server")
