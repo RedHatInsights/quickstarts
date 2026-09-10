@@ -8,9 +8,9 @@ spec:
   type:
     text: Documentation
     color: orange
-  displayName: Configuring notifications and integrations
+  displayName: Configure notifications for console services
   icon: ~
-  description: Configuring settings for event-triggered notifications for your services and applications.
+  description: Customize your settings to receive event-triggered notifications for your services. 
   link:
-    href: https://docs.redhat.com/en/documentation/red_hat_hybrid_cloud_console/1-latest/html/configuring_notifications_on_the_red_hat_hybrid_cloud_console/index
+    href: https://docs.redhat.com/en/documentation/red_hat_hybrid_cloud_console/1-latest/observe-configure_notifications_hcc_services
     text: View documentation

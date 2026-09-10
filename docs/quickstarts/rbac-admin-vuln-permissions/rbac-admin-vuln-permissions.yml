@@ -67,7 +67,7 @@ spec:
         - **Default access**
         - *Vulnerability admins*
 
-        To learn more, see the [User Access Configuration Guide for Role-based Access Control (RBAC)](https://docs.redhat.com/en/documentation/red_hat_hybrid_cloud_console/1-latest/html/user_access_configuration_guide_for_role-based_access_control_rbac/index).
+        To learn more, see [Manage user permissions with Role-based Access Control (RBAC)](https://docs.redhat.com/en/documentation/red_hat_hybrid_cloud_console/1-latest/administer-manage_user_permissions_rbac_models).
       # optional - the task's Check your work module
       review:
         instructions: |-
@@ -84,7 +84,7 @@ spec:
     To grant additional permissions to your team, edit the group from **Groups** > *Vulnerability Admins* and add additional roles or users.
     
     **Learn more:**
-      - See the [User Access Configuration Guide for Role-based Access Control (RBAC)](https://docs.redhat.com/en/documentation/red_hat_hybrid_cloud_console/1-latest/html/user_access_configuration_guide_for_role-based_access_control_rbac/index) 
+      - See [Manage user permissions with Role-based Access Control (RBAC)](https://docs.redhat.com/en/documentation/red_hat_hybrid_cloud_console/1-latest/administer-manage_user_permissions_rbac_models) 
       - See the [Red Hat Lightspeed documentation](https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest) for information about using the vulnerability service, including:
           - [Assessing and monitoring security vulnerabilities on RHEL systems](https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/html-single/assessing_and_monitoring_security_vulnerabilities_on_rhel_systems/index)
           - [Red Hat Lightspeed remediations guide](https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/html-single/red_hat_lightspeed_remediations_guide/index)

@@ -8,9 +8,9 @@ spec:
   type:
     text: Documentation
     color: orange
-  displayName: Integration with third-party applications 
+  displayName: Manage alerts from your preferred platform
   icon: ~
-  description: Define delivery and involvement of event notifications with third-party applications.
+  description: Integrate third-party applications with the console to receive event notifications in your preferred tool.
   link:
-    href: https://docs.redhat.com/en/documentation/red_hat_hybrid_cloud_console/1-latest/html/integrating_the_red_hat_hybrid_cloud_console_with_third-party_applications
+    href: https://docs.redhat.com/en/documentation/red_hat_hybrid_cloud_console/1-latest/extend-manage_alerts_preferred_platform
     text: View documentation
