@@ -70,6 +70,13 @@ You will need to complete these steps the first time you are contributing to the
 
   **Option A: Sign commits with a GPG key**
 
+  GPG may not be pre-installed on your system. If `gpg --version` is not recognized, install it first:
+  - **macOS**: `brew install gnupg`
+  - **Fedora/RHEL**: `sudo dnf install gnupg2`
+  - **Ubuntu/Debian**: `sudo apt-get install gnupg`
+
+  If you need help installing or configuring GPG, reach out to your team for guidance.
+
   1. Generate a new GPG key (press Enter to accept the defaults when prompted):
      ```
      gpg --full-generate-key
