@@ -66,9 +66,9 @@ You will need to complete these steps the first time you are contributing to the
 **Prerequisites**
 - You have a GitHub account (https://github.com) 
 - You have configured your SSH keys on your system following the instructions here: https://help.github.com/articles/connecting-to-github-with-ssh/
-- You have set up commit signing. All pull requests to this repository must contain signed commits. You can sign commits with either a **GPG key** or an **SSH key**. Follow one of the methods below.
+- You have set up commit signing. All pull requests to this repository must contain signed commits. Follow the GPG key method below.
 
-  **Option A: Sign commits with a GPG key**
+  **Sign commits with a GPG key**
 
   GPG may not be pre-installed on your system. If `gpg --version` is not recognized, install it first:
   - **macOS**: `brew install gnupg`
@@ -101,19 +101,6 @@ You will need to complete these steps the first time you are contributing to the
      git config --global commit.gpgsign true
      ```
      Replace `EXAMPLE_KEY_ID` with your actual key ID from step 2.
-
-  **Option B: Sign commits with an SSH key**
-
-  If you already have an SSH key configured for GitHub, you can reuse it for commit signing.
-
-  1. Add your SSH **public** key as a **signing key** in your GitHub account at https://github.com/settings/ssh/new. Select **Signing Key** as the key type.
-  2. Tell Git to use SSH for signing and sign all commits automatically:
-     ```
-     git config --global gpg.format ssh
-     git config --global user.signingkey ~/.ssh/id_ed25519.pub
-     git config --global commit.gpgsign true
-     ```
-     Replace `~/.ssh/id_ed25519.pub` with the path to your SSH public key if it has a different name.
 
   **Verify your setup**
 
