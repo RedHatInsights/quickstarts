@@ -90,11 +90,16 @@ You will need to complete these steps the first time you are contributing to the
      sec   ed25519/EXAMPLE_KEY_ID 2024-01-01 [SC]
      ```
      In this example, the key ID is `EXAMPLE_KEY_ID`.
-  3. Export your GPG public key:
-     ```
-     gpg --armor --export EXAMPLE_KEY_ID
-     ```
-  4. Copy the entire output block printed by the command above and add it to your GitHub account at https://github.com/settings/gpg/new.
+  3. Export your GPG public key and copy it to the clipboard:
+     - **macOS**:
+       ```
+       gpg --armor --export EXAMPLE_KEY_ID | pbcopy
+       ```
+     - **Linux** (requires `xclip`):
+       ```
+       gpg --armor --export EXAMPLE_KEY_ID | xclip -selection clipboard
+       ```
+  4. Paste the copied key into your GitHub account at https://github.com/settings/gpg/new.
   5. Tell Git to use your GPG key and sign all commits automatically:
      ```
      git config --global user.signingkey EXAMPLE_KEY_ID
