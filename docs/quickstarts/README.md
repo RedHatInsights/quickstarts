@@ -66,6 +66,53 @@ You will need to complete these steps the first time you are contributing to the
 **Prerequisites**
 - You have a GitHub account (https://github.com) 
 - You have configured your SSH keys on your system following the instructions here: https://help.github.com/articles/connecting-to-github-with-ssh/
+- You have set up commit signing. All pull requests to this repository must contain signed commits. Follow the GPG key method below.
+
+  **Sign commits with a GPG key**
+
+  GPG may not be pre-installed on your system. If `gpg --version` is not recognized, install it first:
+  - **macOS**: `brew install gnupg`
+  - **Fedora/RHEL**: `sudo dnf install gnupg2`
+  - **Ubuntu/Debian**: `sudo apt-get install gnupg`
+
+  If you need help installing or configuring GPG, reach out to your team for guidance.
+
+  1. Generate a new GPG key (press Enter to accept the defaults when prompted):
+     ```
+     gpg --full-generate-key
+     ```
+  2. List your GPG keys and copy the key ID (the long string on the `sec` line after the `/`):
+     ```
+     gpg --list-secret-keys --keyid-format=long
+     ```
+     Example output:
+     ```
+     sec   ed25519/EXAMPLE_KEY_ID 2024-01-01 [SC]
+     ```
+     In this example, the key ID is `EXAMPLE_KEY_ID`.
+  3. Export your GPG public key and copy it to the clipboard:
+     - **macOS**:
+       ```
+       gpg --armor --export EXAMPLE_KEY_ID | pbcopy
+       ```
+     - **Linux** (requires `xclip`):
+       ```
+       gpg --armor --export EXAMPLE_KEY_ID | xclip -selection clipboard
+       ```
+  4. Paste the copied key into your GitHub account at https://github.com/settings/gpg/new.
+  5. Tell Git to use your GPG key and sign all commits automatically:
+     ```
+     git config --global user.signingkey EXAMPLE_KEY_ID
+     git config --global commit.gpgsign true
+     ```
+     Replace `EXAMPLE_KEY_ID` with your actual key ID from step 2.
+
+  **Verify your setup**
+
+  Create a test commit and check that it is signed:
+  ```
+  git log --show-signature -1
+  ```
 
 1. Create a fork of the `Red Hat Lightspeed quick starts` repository:
 
@@ -153,10 +200,16 @@ If you have created quick starts in the Hybrid Cloud Console before, start here:
     ```
     git status
     ``` 
-    c. Commit your quick start files:
+    c. Commit your quick start files. All commits must be signed (see _Initial setup_ prerequisites). If you enabled automatic signing with `git config --global commit.gpgsign true`, use:
 
     ```
     git commit -am "descriptive commit message"
+    ```
+
+    If you have not enabled automatic signing, add the `-S` flag:
+
+    ```
+    git commit -S -am "descriptive commit message"
     ```
 
     d. Push your quick start files to the remote branch:

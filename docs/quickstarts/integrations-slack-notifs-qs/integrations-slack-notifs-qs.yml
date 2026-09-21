@@ -153,11 +153,11 @@ spec:
         2. Continue to the **Associate event types** step in the wizard, and add or remove events.
         3. Continue to the final screen in the wizard and click **Submit** to save your changes.  
 
-        [Alternatively, you can configure event notifications for Slack in a behavior group. To create or edit a behavior group, see [Configure notification behavior groups](https://docs.redhat.com/en/documentation/red_hat_hybrid_cloud_console/1-latest/html-single/configuring_notifications_on_the_red_hat_hybrid_cloud_console/index#assembly-config-behavior-groups_notifications) for instructions.]{{admonition note}}
+        [Alternatively, you can configure event notifications for Slack in a behavior group. To create or edit a behavior group, see [Configure notification behavior groups](https://docs.redhat.com/en/documentation/red_hat_hybrid_cloud_console/1-latest/observe-manage_notification_rules_delivery_for_teams#proc-notif-creating-behavior-group) for instructions.]{{admonition note}}
 
     Learn more about console integrations and notifications:
-      - [Integrating the Red Hat Hybrid Cloud Console with third-party applications](https://docs.redhat.com/en/documentation/red_hat_hybrid_cloud_console/1-latest/html-single/integrating_the_red_hat_hybrid_cloud_console_with_third-party_applications/index#assembly-configuring-insights-integration-with-slack_integrations)
-      - [Configuring notifications on the Red Hat Hybrid Cloud Console](https://docs.redhat.com/en/documentation/red_hat_hybrid_cloud_console/1-latest/html-single/configuring_notifications_on_the_red_hat_hybrid_cloud_console/index) 
+      - [Manage alerts from your preferred platform](https://docs.redhat.com/en/documentation/red_hat_hybrid_cloud_console/1-latest/extend-manage_alerts_preferred_platform)
+      - [Configure notifications for Hybrid Cloud Console services](https://docs.redhat.com/en/documentation/red_hat_hybrid_cloud_console/1-latest/observe-configure_notifications_hcc_services) 
     
     Learn more about Slack and incoming webhooks:
       - [Create more advanced workflows using webhooks](https://slack.com/help/articles/360041352714-Create-more-advanced-workflows-using-webhooks)
