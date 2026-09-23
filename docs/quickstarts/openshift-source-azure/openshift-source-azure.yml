@@ -8,9 +8,9 @@ spec:
   type:
     text: Documentation
     color: orange
-  displayName: "Adding an integration: Microsoft Azure"
+  displayName: "Integrate Microsoft Azure data with cost management"
   icon: 
-  description: Configure and add a Microsoft Azure integration to cost management.
+  description: Connect accounts from Microsoft Azure to see a unified financial picture.
   link:
-    href: https://docs.redhat.com/en/documentation/cost_management_service/1-latest/html/integrating_microsoft_azure_data_into_cost_management
+    href: https://docs.redhat.com/en/documentation/cost_management_service/1-latest/integrate-azure_integration
     text: View documentation
