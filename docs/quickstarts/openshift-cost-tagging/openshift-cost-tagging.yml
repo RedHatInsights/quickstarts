@@ -8,9 +8,9 @@ spec:
   type:
     text: Documentation
     color: orange
-  displayName: Managing costs with tagging
+  displayName: Allocate costs to business units
   icon: 
-  description: Manage your cost data with tags and labels.
+  description: Use tagging to organize resources, allowing the user to assign specific costs to the correct departments, projects, or teams.
   link:
-    href: https://docs.redhat.com/en/documentation/cost_management_service/1-latest/html/managing_cost_data_using_tagging
+    href: https://docs.redhat.com/en/documentation/cost_management_service/1-latest/configure-con_allocate_costs_to_business_units
     text: View documentation

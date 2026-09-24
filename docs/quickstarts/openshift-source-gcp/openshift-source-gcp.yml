@@ -8,9 +8,9 @@ spec:
   type:
     text: Documentation
     color: orange
-  displayName: "Adding an integration: Google Cloud Platform"
+  displayName: "Integrate Good Cloud data with cost management"
   icon: 
-  description: Configure and add a Google Cloud Platform (GCP) integration to cost management.
+  description: Connect accounts from Google Cloud to see a unified financial picture.
   link:
-    href: https://docs.redhat.com/en/documentation/cost_management_service/1-latest/html/integrating_google_cloud_data_into_cost_management
+    href: https://docs.redhat.com/en/documentation/cost_management_service/1-latest/integrate-integrate_google_cloud_data_with_cost_management
     text: View documentation

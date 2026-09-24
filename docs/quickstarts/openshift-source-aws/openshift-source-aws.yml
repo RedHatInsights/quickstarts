@@ -8,9 +8,9 @@ spec:
   type:
     text: Documentation
     color: orange
-  displayName: "Adding an integration: Amazon Web Services"
+  displayName: "Integrate Amazon Web Services data with cost management"
   icon: 
-  description: Configure and add an Amazon Web Services (AWS) integration to cost management.
+  description: Connect accounts from Amazon Web Services (AWS) to see a unified financial picture.
   link:
-    href: https://docs.redhat.com/en/documentation/cost_management_service/1-latest/html/integrating_amazon_web_services_aws_data_into_cost_management/index
+    href: https://docs.redhat.com/en/documentation/cost_management_service/1-latest/integrate-integrate_amazon_web_services_data_with_cost_management
     text: View documentation

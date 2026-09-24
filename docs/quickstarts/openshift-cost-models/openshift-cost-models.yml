@@ -8,9 +8,9 @@ spec:
   type:
     text: Documentation
     color: orange
-  displayName: Managing costs using cost models
+  displayName: Reflect real-world cloud costs
   icon: 
-  description: Use cost models to apply a price to usage in your hybrid cloud environment, then distribute the costs to resources.
+  description: Configure cost models so the software accurately mirrors the specific pricing and discount structures of their cloud providers.
   link:
-    href: https://docs.redhat.com/en/documentation/cost_management_service/1-latest/html/using_cost_models
+    href: https://docs.redhat.com/en/documentation/cost_management_service/1-latest/configure-cost_models
     text: View documentation

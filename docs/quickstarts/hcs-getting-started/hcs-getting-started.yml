@@ -8,9 +8,9 @@ spec:
   type:
     text: Documentation
     color: orange
-  displayName: Getting started with hybrid committed spend
+  displayName: Get started with Hybrid Committed Spend
   icon: ~
-  description: Learn to set up hybrid committed spend. A hyperscaler drawdown agreement with Red Hat is required.
+  description: Track your cloud spend across different hyperscalers
   link:
     href: https://docs.redhat.com/en/documentation/hybrid_committed_spend/1-latest/html/getting_started_with_hybrid_committed_spend
     text: View documentation

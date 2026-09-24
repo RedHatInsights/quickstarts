@@ -8,9 +8,9 @@ spec:
   type:
     text: Documentation
     color: orange
-  displayName: Analyzing your cost data
+  displayName: Analyze your cost data
   icon: 
-  description: Use cost management to track the cost of your clouds and containers.
+  description: Analyze cloud and container cost data to accurately track and manage IT infrastructure spending.
   link:
-    href: https://docs.redhat.com/en/documentation/cost_management_service/1-latest/html/analyzing_your_cost_data/index
+    href: https://docs.redhat.com/en/documentation/cost_management_service/1-latest/observe-con_analyze_your_cost_data
     text: View documentation
