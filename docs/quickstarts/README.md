@@ -106,6 +106,14 @@ You will need to complete these steps the first time you are contributing to the
      git config --global commit.gpgsign true
      ```
      Replace `EXAMPLE_KEY_ID` with your actual key ID from step 2.
+  6. Make sure your GPG key's email matches your Git email. Run both of these:
+     ```
+     git config user.email
+     ```
+     ```
+     gpg --list-secret-keys --keyid-format=long
+     ```
+     In the second command's output, find the `uid` line — it looks like `uid  Your Name <some-email@example.com>`. The email in that line must exactly match the email printed by the first command, and that same email must be verified on your GitHub account at https://github.com/settings/emails. If they don't match, see **Troubleshooting: "The email in this signature doesn't match the committer email"** below.
 
   **Verify your setup**
 
@@ -113,6 +121,49 @@ You will need to complete these steps the first time you are contributing to the
   ```
   git log --show-signature -1
   ```
+
+  **Troubleshooting: `error: gpg failed to sign the data`**
+
+  This means GPG can't find a terminal to ask for your passphrase. Run this to fix it for your current terminal session:
+  ```
+  export GPG_TTY=$(tty)
+  ```
+  Then retry your commit. To make the fix permanent, run:
+  ```
+  echo 'export GPG_TTY=$(tty)' >> ~/.$(basename "$SHELL")rc && source ~/.$(basename "$SHELL")rc
+  ```
+
+  **Troubleshooting: "The email in this signature doesn't match the committer email"**
+
+  GitHub shows this when your GPG key's email and your Git email don't match. Fix it one of two ways:
+
+  - **Option A — change your Git email to match your GPG key** (simplest):
+    ```
+    git config --global user.email "the-email-from-your-gpg-key@example.com"
+    ```
+    Use the exact email from the `uid` line in `gpg --list-secret-keys --keyid-format=long`.
+
+  - **Option B — add your Git email to your existing GPG key instead:**
+    1. Run (replace `EXAMPLE_KEY_ID` with your key ID from `gpg --list-secret-keys --keyid-format=long`):
+       ```
+       gpg --edit-key EXAMPLE_KEY_ID
+       ```
+    2. This opens a `gpg>` prompt. Type `adduid` and press Enter.
+    3. Follow the prompts to type your name, then your Git email address, then leave the comment blank by pressing Enter.
+    4. Type the letter `O` and press Enter to confirm, then enter your GPG passphrase if asked.
+    5. At the `gpg>` prompt, type `save` and press Enter.
+    6. Export the updated key and copy it to your clipboard:
+       - **macOS**:
+         ```
+         gpg --armor --export EXAMPLE_KEY_ID | pbcopy
+         ```
+       - **Linux** (requires `xclip`):
+         ```
+         gpg --armor --export EXAMPLE_KEY_ID | xclip -selection clipboard
+         ```
+    7. Paste the copied key at https://github.com/settings/gpg/new — GitHub will attach the new email to your existing key.
+
+  Either way, the email you end up using must also be verified on your GitHub account at https://github.com/settings/emails.
 
 1. Create a fork of the `Red Hat Lightspeed quick starts` repository:
 
