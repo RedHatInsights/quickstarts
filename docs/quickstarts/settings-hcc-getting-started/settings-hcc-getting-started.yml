@@ -8,7 +8,7 @@ spec:
   type:
     text: Documentation
     color: orange
-  displayName: Get started with the Red Hat Hybrid Cloud Console
+  displayName: Get started with the Red Hat Hybrid Cloud Console 
   icon: ~
   description: Overview and basic instructions for using the console.
   link:
