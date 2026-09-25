@@ -114,6 +114,17 @@ You will need to complete these steps the first time you are contributing to the
   git log --show-signature -1
   ```
 
+  **Troubleshooting: `error: gpg failed to sign the data`**
+
+  This means GPG can't find a terminal to ask for your passphrase. Run this to fix it for your current terminal session:
+  ```
+  export GPG_TTY=$(tty)
+  ```
+  Then retry your commit. To make the fix permanent, run:
+  ```
+  echo 'export GPG_TTY=$(tty)' >> ~/.$(basename "$SHELL")rc && source ~/.$(basename "$SHELL")rc
+  ```
+
 1. Create a fork of the `Red Hat Lightspeed quick starts` repository:
 
     a. Navigate to https://github.com/RedHatInsights/quickstarts.
