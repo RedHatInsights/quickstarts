@@ -8,9 +8,9 @@ spec:
   type:
     text: Documentation
     color: orange
-  displayName: Visualizing costs
+  displayName: Visualize spending trends
   icon: 
-  description: Use Cost Explorer to manage your costs.
+  description: Utilize the Cost Explorer to create visual representations of data, making it easier to identify spikes or trends in spending.
   link:
-    href: https://docs.redhat.com/en/documentation/cost_management_service/1-latest/html/visualizing_your_costs_using_cost_explorer
+    href: https://docs.redhat.com/en/documentation/cost_management_service/1-latest/observe-cost_explorer
     text: View documentation

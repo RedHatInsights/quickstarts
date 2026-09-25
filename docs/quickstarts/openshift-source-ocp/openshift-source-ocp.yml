@@ -8,9 +8,9 @@ spec:
   type:
     text: Documentation
     color: orange
-  displayName: "Adding an integration: OpenShift Container Platform"
+  displayName: "Integrate OpenShift Container Platform data with cost management"
   icon: 
-  description: Configure and add an OpenShift Container Platform (OCP) integration to cost management.
+  description: Consolidate container-specific costs into the broader cost management view.
   link:
-    href: https://docs.redhat.com/en/documentation/cost_management_service/1-latest/html/integrating_openshift_container_platform_data_into_cost_management
+    href: https://docs.redhat.com/en/documentation/cost_management_service/1-latest/integrate-integrating_os
     text: View documentation

@@ -8,9 +8,9 @@ spec:
   type:
     text: Documentation
     color: orange
-  displayName: Using two-factor authentication
+  displayName: Secure Red Hat user accounts with two-factor authentication (2FA)
   icon: ~
   description: Configure organization-wide two-factor authentication.
   link:
-    href: https://docs.redhat.com/en/documentation/red_hat_customer_portal/1/html-single/using_two-factor_authentication/index
+    href: https://docs.redhat.com/en/documentation/red_hat_hybrid_cloud_console/1-latest/secure-con_ciam_2fa_about
     text: View documentation
