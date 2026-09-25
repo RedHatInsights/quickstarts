@@ -1,0 +1,27 @@
+apiVersion: console.openshift.io/v1
+kind: QuickStarts
+metadata:
+  name: learn-about-openshift-dedicated
+  tags:
+    - kind: bundle
+      value: openshift
+    - kind: content
+      value: documentation
+    - kind: product-families
+      value: openshift
+    - kind: use-case
+      value: clusters
+    - kind: use-case
+      value: containers
+spec:
+  version: 0.1
+  displayName: Learn about OpenShift Dedicated
+  icon: ~
+  description: Work with your OpenShift Dedicated clusters.
+  type:
+    text: Quick start
+    color: green
+  durationMinutes: 0
+  tasks:
+    - title: ""
+      description: ""
