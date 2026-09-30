@@ -1,5 +1,5 @@
 kind: QuickStarts
-name: rename-this-on-pr-update
+name: retesting-this-realquick
 tags:
   - kind: bundle
     value: ansible
