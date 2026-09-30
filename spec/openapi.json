@@ -206,6 +206,56 @@
         },
         "type": "object"
       },
+      "CreatorPrContentResponse": {
+        "properties": {
+          "branchName": {
+            "type": "string"
+          },
+          "files": {
+            "items": {
+              "$ref": "#/components/schemas/SubmitPrFile"
+            },
+            "type": "array"
+          },
+          "htmlUrl": {
+            "type": "string"
+          },
+          "number": {
+            "type": "integer"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "CreatorPrEntry": {
+        "properties": {
+          "branchName": {
+            "type": "string"
+          },
+          "htmlUrl": {
+            "type": "string"
+          },
+          "number": {
+            "type": "integer"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
       "FavoriteQuickstart": {
         "properties": {
           "accountId": {
@@ -274,6 +324,17 @@
           "updatedAt": {
             "format": "date-time",
             "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "ListCreatorPrsResponse": {
+        "properties": {
+          "pullRequests": {
+            "items": {
+              "$ref": "#/components/schemas/CreatorPrEntry"
+            },
+            "type": "array"
           }
         },
         "type": "object"
@@ -441,6 +502,10 @@
           "prBody": {
             "type": "string"
           },
+          "prNumber": {
+            "description": "Existing PR number; used to return prUrl on force-push update.",
+            "type": "integer"
+          },
           "prTitle": {
             "type": "string"
           },
@@ -537,6 +602,111 @@
   },
   "openapi": "3.0.0",
   "paths": {
+    "/creator-prs": {
+      "get": {
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/ListCreatorPrsResponse"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Open PRs labeled quickstarts-creator"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequest"
+                }
+              }
+            },
+            "description": "Git-service is not available"
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequest"
+                }
+              }
+            },
+            "description": "Git service error"
+          }
+        },
+        "summary": "List open creator pull requests"
+      }
+    },
+    "/creator-prs/{number}": {
+      "get": {
+        "parameters": [
+          {
+            "description": "GitHub pull request number",
+            "in": "path",
+            "name": "number",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/CreatorPrContentResponse"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "PR metadata and files"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequest"
+                }
+              }
+            },
+            "description": "Bad request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequest"
+                }
+              }
+            },
+            "description": "PR not found or git-service is not available"
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequest"
+                }
+              }
+            },
+            "description": "Git service error"
+          }
+        },
+        "summary": "Get one creator pull request and its quickstart files"
+      }
+    },
     "/favorites": {
       "get": {
         "parameters": [

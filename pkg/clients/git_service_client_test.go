@@ -179,3 +179,38 @@ func TestGetQuickstartContent_NotFound(t *testing.T) {
 	require.Error(t, err)
 	assert.Contains(t, err.Error(), "quickstart not found")
 }
+
+func TestListCreatorPRs_Success(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, "/api/v1/creator-prs", r.URL.Path)
+		assert.Equal(t, "tok", r.Header.Get("X-PSK-Token"))
+		json.NewEncoder(w).Encode(GitServiceListCreatorPRsResponse{
+			PullRequests: []GitServiceCreatorPREntry{
+				{Number: 11, Title: "demo", HTMLURL: "https://github.com/o/r/pull/11", BranchName: "qs-create-demo-1", Slug: "demo"},
+			},
+		})
+	}))
+	defer server.Close()
+
+	client := NewGitService(server.URL, "tok")
+	resp, err := client.ListCreatorPRs(context.Background())
+	require.NoError(t, err)
+	require.Len(t, resp.PullRequests, 1)
+	assert.Equal(t, 11, resp.PullRequests[0].Number)
+}
+
+func TestGetCreatorPR_NotFound(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, "/api/v1/creator-prs/9", r.URL.Path)
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode(gitServiceError{Status: "error", Msg: "creator pull request not found"})
+	}))
+	defer server.Close()
+
+	client := NewGitService(server.URL, "")
+	_, err := client.GetCreatorPR(context.Background(), 9)
+	require.Error(t, err)
+	var statusErr *HTTPStatusError
+	require.ErrorAs(t, err, &statusErr)
+	assert.Equal(t, http.StatusNotFound, statusErr.StatusCode)
+}

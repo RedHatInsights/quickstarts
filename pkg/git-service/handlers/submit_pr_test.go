@@ -10,20 +10,21 @@ import (
 	"testing"
 
 	gitops "github.com/RedHatInsights/quickstarts/pkg/git-service/git"
+	ghclient "github.com/RedHatInsights/quickstarts/pkg/git-service/github"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 type mockRepoManager struct {
-	pullLatestErr          error
-	createBranchErr        error
-	checkoutExistingErr    error
-	writeFilesErr          error
-	commitSHA              string
-	commitErr              error
-	pushErr                error
-	cleanupErr             error
-	baseBranch             string
+	pullLatestErr       error
+	createBranchErr     error
+	checkoutExistingErr error
+	writeFilesErr       error
+	commitSHA           string
+	commitErr           error
+	pushErr             error
+	cleanupErr          error
+	baseBranch          string
 
 	writtenDir   string
 	writtenFiles []gitops.File
@@ -31,21 +32,29 @@ type mockRepoManager struct {
 	forcePushed  bool
 	cleanedUp    string
 
-	directories    []string
-	listDirsErr    error
-	files          []string
-	listFilesErr   error
-	fileContents   map[string]string
-	readFileErr    error
+	directories     []string
+	listDirsErr     error
+	files           []string
+	listFilesErr    error
+	fileContents    map[string]string
+	readFileErr     error
+	pullLatestCount int
 }
 
-func (m *mockRepoManager) PullLatest() error                            { return m.pullLatestErr }
-func (m *mockRepoManager) CreateBranch(name string) error               { return m.createBranchErr }
-func (m *mockRepoManager) CheckoutExistingBranch(name string) error     { return m.checkoutExistingErr }
-func (m *mockRepoManager) PushBranch(branch string) error               { m.pushedBranch = branch; return m.pushErr }
-func (m *mockRepoManager) PushBranchForce(branch string) error          { m.pushedBranch = branch; m.forcePushed = true; return m.pushErr }
-func (m *mockRepoManager) Cleanup(branch string) error                  { m.cleanedUp = branch; return m.cleanupErr }
-func (m *mockRepoManager) GetBaseBranch() string                        { return m.baseBranch }
+func (m *mockRepoManager) PullLatest() error {
+	m.pullLatestCount++
+	return m.pullLatestErr
+}
+func (m *mockRepoManager) CreateBranch(name string) error           { return m.createBranchErr }
+func (m *mockRepoManager) CheckoutExistingBranch(name string) error { return m.checkoutExistingErr }
+func (m *mockRepoManager) PushBranch(branch string) error           { m.pushedBranch = branch; return m.pushErr }
+func (m *mockRepoManager) PushBranchForce(branch string) error {
+	m.pushedBranch = branch
+	m.forcePushed = true
+	return m.pushErr
+}
+func (m *mockRepoManager) Cleanup(branch string) error { m.cleanedUp = branch; return m.cleanupErr }
+func (m *mockRepoManager) GetBaseBranch() string       { return m.baseBranch }
 func (m *mockRepoManager) WriteFiles(dir string, files []gitops.File) error {
 	m.writtenDir = dir
 	m.writtenFiles = files
@@ -77,12 +86,24 @@ type mockGitHubClient struct {
 	createPRNumber int
 	createPRErr    error
 	assignErr      error
+	addLabelsErr   error
+	listPRs        []ghclient.CreatorPR
+	listPRsErr     error
+	getPR          *ghclient.CreatorPR
+	getPRErr       error
+	prFiles        []ghclient.File
+	prFilesSlug    string
+	prFilesErr     error
+	findURL        string
+	findURLErr     error
 
 	createdTitle string
 	createdBody  string
 	createdHead  string
 	createdBase  string
 	assignedTeam string
+	addedLabels  []string
+	addedPR      int
 }
 
 func (m *mockGitHubClient) CreatePullRequest(ctx context.Context, title, body, head, base string) (string, int, error) {
@@ -95,6 +116,29 @@ func (m *mockGitHubClient) CreatePullRequest(ctx context.Context, title, body, h
 func (m *mockGitHubClient) AssignReviewers(ctx context.Context, prNumber int, team string) error {
 	m.assignedTeam = team
 	return m.assignErr
+}
+func (m *mockGitHubClient) AddLabels(ctx context.Context, prNumber int, labels []string) error {
+	m.addedPR = prNumber
+	m.addedLabels = labels
+	return m.addLabelsErr
+}
+func (m *mockGitHubClient) ListCreatorPRs(ctx context.Context) ([]ghclient.CreatorPR, error) {
+	return m.listPRs, m.listPRsErr
+}
+func (m *mockGitHubClient) GetCreatorPR(ctx context.Context, prNumber int) (*ghclient.CreatorPR, error) {
+	if m.getPRErr != nil {
+		return nil, m.getPRErr
+	}
+	if m.getPR != nil {
+		return m.getPR, nil
+	}
+	return &ghclient.CreatorPR{Number: prNumber, HTMLURL: m.createPRURL, BranchName: "branch"}, nil
+}
+func (m *mockGitHubClient) GetPRQuickstartFiles(ctx context.Context, pr *ghclient.CreatorPR) (string, []ghclient.File, error) {
+	return m.prFilesSlug, m.prFiles, m.prFilesErr
+}
+func (m *mockGitHubClient) FindPRURLByBranch(ctx context.Context, branchName string) (string, error) {
+	return m.findURL, m.findURLErr
 }
 
 func validRequestBody() string {
@@ -224,6 +268,8 @@ func TestSubmitPR_Success(t *testing.T) {
 	assert.Equal(t, "quickstart/test-123", gh.createdHead)
 	assert.Equal(t, "main", gh.createdBase)
 	assert.Equal(t, "team-reviewers", gh.assignedTeam)
+	assert.Equal(t, 42, gh.addedPR)
+	assert.Equal(t, []string{ghclient.CreatorPRLabel}, gh.addedLabels)
 }
 
 func TestSubmitPR_DirectoryName(t *testing.T) {
@@ -254,7 +300,12 @@ func TestSubmitPR_DirectoryName(t *testing.T) {
 
 func TestSubmitPR_UpdateMode(t *testing.T) {
 	repo := &mockRepoManager{commitSHA: "abc123def456abc123def456abc123def456abcd", baseBranch: "main"}
-	gh := &mockGitHubClient{createPRURL: "https://github.com/org/repo/pull/43", createPRNumber: 43}
+	gh := &mockGitHubClient{
+		getPR: &ghclient.CreatorPR{
+			Number:  43,
+			HTMLURL: "https://github.com/org/repo/pull/43",
+		},
+	}
 	handler := NewHandler(repo, gh, "", "/docs/quickstarts/")
 
 	body := `{
@@ -266,7 +317,8 @@ func TestSubmitPR_UpdateMode(t *testing.T) {
 			"prBody": "Updating existing",
 			"userEmail": "user@example.com",
 			"isUpdate": true,
-			"existingPath": "/docs/quickstarts/existing-qs/"
+			"existingPath": "/docs/quickstarts/existing-qs/",
+			"prNumber": 43
 		}
 	}`
 
@@ -280,9 +332,42 @@ func TestSubmitPR_UpdateMode(t *testing.T) {
 	var resp SubmitPRResponse
 	require.NoError(t, json.NewDecoder(rec.Body).Decode(&resp))
 	assert.Equal(t, "updated", resp.Status)
+	assert.Equal(t, "https://github.com/org/repo/pull/43", resp.PRURL)
 	assert.Equal(t, "/docs/quickstarts/existing-qs/", repo.writtenDir)
 	assert.True(t, repo.forcePushed, "update mode should force-push")
 	assert.Empty(t, gh.createdTitle, "update mode should not create a new PR")
+}
+
+func TestSubmitPR_UpdateMode_ContinueMissingBranch(t *testing.T) {
+	repo := &mockRepoManager{
+		commitSHA:           "abc123def456abc123def456abc123def456abcd",
+		baseBranch:          "main",
+		checkoutExistingErr: fmt.Errorf("remote branch not found"),
+	}
+	gh := &mockGitHubClient{}
+	handler := NewHandler(repo, gh, "", "/docs/quickstarts/")
+
+	body := `{
+		"files": [{"name": "metadata.yaml", "content": "updated"}],
+		"metadata": {
+			"branchName": "qs-create-demo-1",
+			"commitMessage": "Update quickstart",
+			"prTitle": "Update test quickstart",
+			"prBody": "Updating existing",
+			"userEmail": "user@example.com",
+			"isUpdate": true,
+			"existingPath": "docs/quickstarts/demo/",
+			"prNumber": 11
+		}
+	}`
+
+	req := httptest.NewRequest(http.MethodPost, "/api/v1/submit-pr", bytes.NewBufferString(body))
+	rec := httptest.NewRecorder()
+	handler.SubmitPR(rec, req)
+
+	assert.Equal(t, http.StatusInternalServerError, rec.Code)
+	assert.Contains(t, rec.Body.String(), "failed to checkout existing PR branch")
+	assert.Empty(t, gh.createdTitle)
 }
 
 func TestSubmitPR_UpdateMode_NewBranch(t *testing.T) {

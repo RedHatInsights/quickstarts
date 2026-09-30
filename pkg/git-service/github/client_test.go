@@ -2,7 +2,9 @@ package github
 
 import (
 	"context"
+	"encoding/base64"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -167,4 +169,186 @@ func TestParseRepoURL_RejectsHTTP(t *testing.T) {
 	_, _, err := ParseRepoURL("http://github.com/owner/repo")
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "unsupported scheme")
+}
+
+func TestAddLabels_Success(t *testing.T) {
+	mux := http.NewServeMux()
+	mux.HandleFunc("/repos/test-owner/test-repo/issues/42/labels", func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method)
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode([]map[string]string{{"name": CreatorPRLabel}})
+	})
+
+	client := newTestClient(t, mux)
+	err := client.AddLabels(context.Background(), 42, []string{CreatorPRLabel})
+	assert.NoError(t, err)
+}
+
+func TestAddLabels_CreatesMissingLabelThenRetries(t *testing.T) {
+	mux := http.NewServeMux()
+	addCalls := 0
+	mux.HandleFunc("/repos/test-owner/test-repo/issues/7/labels", func(w http.ResponseWriter, r *http.Request) {
+		addCalls++
+		if addCalls == 1 {
+			w.WriteHeader(http.StatusUnprocessableEntity)
+			json.NewEncoder(w).Encode(map[string]string{"message": "Label does not exist"})
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode([]map[string]string{{"name": CreatorPRLabel}})
+	})
+	mux.HandleFunc("/repos/test-owner/test-repo/labels", func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, http.MethodPost, r.Method)
+		w.WriteHeader(http.StatusCreated)
+		json.NewEncoder(w).Encode(map[string]string{"name": CreatorPRLabel})
+	})
+
+	client := newTestClient(t, mux)
+	err := client.AddLabels(context.Background(), 7, []string{CreatorPRLabel})
+	assert.NoError(t, err)
+	assert.Equal(t, 2, addCalls)
+}
+
+func TestListCreatorPRs_FiltersToLabeledOpenPRs(t *testing.T) {
+	mux := http.NewServeMux()
+	mux.HandleFunc("/repos/test-owner/test-repo/issues", func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, "open", r.URL.Query().Get("state"))
+		assert.Equal(t, CreatorPRLabel, r.URL.Query().Get("labels"))
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode([]map[string]interface{}{
+			{
+				"number": 11,
+				"title":  "feat(quickstarts): create demo",
+				"pull_request": map[string]string{
+					"url": "https://api.github.com/repos/test-owner/test-repo/pulls/11",
+				},
+			},
+		})
+	})
+	mux.HandleFunc("/repos/test-owner/test-repo/pulls/11", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(openCreatorPRJSON(11, "qs-create-demo-1", "demo"))
+	})
+
+	client := newTestClient(t, mux)
+	prs, err := client.ListCreatorPRs(context.Background())
+	require.NoError(t, err)
+	require.Len(t, prs, 1)
+	assert.Equal(t, 11, prs[0].Number)
+	assert.Equal(t, "qs-create-demo-1", prs[0].BranchName)
+	assert.Equal(t, "demo", prs[0].Slug)
+	assert.Equal(t, "fork-user", prs[0].HeadOwner)
+}
+
+func TestGetCreatorPR_UnlabeledIsNotFound(t *testing.T) {
+	mux := http.NewServeMux()
+	mux.HandleFunc("/repos/test-owner/test-repo/pulls/5", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"number":   5,
+			"state":    "open",
+			"title":    "docs: something",
+			"html_url": "https://github.com/test-owner/test-repo/pull/5",
+			"body":     "no label",
+			"labels":   []interface{}{},
+			"head": map[string]interface{}{
+				"ref": "branch",
+				"sha": "abc",
+				"repo": map[string]interface{}{
+					"name":  "test-repo",
+					"owner": map[string]string{"login": "test-owner"},
+				},
+			},
+		})
+	})
+
+	client := newTestClient(t, mux)
+	_, err := client.GetCreatorPR(context.Background(), 5)
+	assert.ErrorIs(t, err, ErrNotFound)
+}
+
+func TestGetPRQuickstartFiles_FromHeadRepo(t *testing.T) {
+	mux := http.NewServeMux()
+	mux.HandleFunc("/repos/test-owner/test-repo/pulls/11/files", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode([]map[string]string{
+			{"filename": "docs/quickstarts/demo/metadata.yml", "status": "added"},
+			{"filename": "docs/quickstarts/demo/demo.yml", "status": "added"},
+			{"filename": "README.md", "status": "modified"},
+		})
+	})
+	mux.HandleFunc("/repos/fork-user/test-repo/contents/docs/quickstarts/demo/metadata.yml", func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, "deadbeef", r.URL.Query().Get("ref"))
+		writeContent(w, "kind: QuickStarts\n")
+	})
+	mux.HandleFunc("/repos/fork-user/test-repo/contents/docs/quickstarts/demo/demo.yml", func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, "deadbeef", r.URL.Query().Get("ref"))
+		writeContent(w, "spec:\n  displayName: Demo\n")
+	})
+
+	client := newTestClient(t, mux)
+	pr := &CreatorPR{
+		Number:    11,
+		Slug:      "demo",
+		HeadSHA:   "deadbeef",
+		HeadOwner: "fork-user",
+		HeadRepo:  "test-repo",
+	}
+	slug, files, err := client.GetPRQuickstartFiles(context.Background(), pr)
+	require.NoError(t, err)
+	assert.Equal(t, "demo", slug)
+	require.Len(t, files, 2)
+	assert.Equal(t, "metadata.yml", files[0].Name)
+	assert.Contains(t, files[0].Content, "QuickStarts")
+	assert.Equal(t, "demo.yml", files[1].Name)
+}
+
+func TestFindPRURLByBranch_UsesForkOwner(t *testing.T) {
+	mux := http.NewServeMux()
+	mux.HandleFunc("/repos/test-owner/test-repo/pulls", func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, "nacho-bot:qs-create-demo-1", r.URL.Query().Get("head"))
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode([]map[string]interface{}{
+			{"html_url": "https://github.com/test-owner/test-repo/pull/11", "number": 11},
+		})
+	})
+
+	client := newTestClient(t, mux)
+	client.ForkOwner = "nacho-bot"
+	url, err := client.FindPRURLByBranch(context.Background(), "qs-create-demo-1")
+	require.NoError(t, err)
+	assert.Equal(t, "https://github.com/test-owner/test-repo/pull/11", url)
+}
+
+func openCreatorPRJSON(number int, branch, slug string) map[string]interface{} {
+	return map[string]interface{}{
+		"number":     number,
+		"state":      "open",
+		"title":      "feat(quickstarts): create " + slug,
+		"html_url":   fmt.Sprintf("https://github.com/test-owner/test-repo/pull/%d", number),
+		"body":       "Adding new quickstart via the Quickstarts Creator tool.\n\nDirectory: docs/quickstarts/" + slug + "/",
+		"updated_at": "2026-09-29T12:00:00Z",
+		"labels":     []map[string]string{{"name": CreatorPRLabel}},
+		"head": map[string]interface{}{
+			"ref": branch,
+			"sha": "deadbeef",
+			"repo": map[string]interface{}{
+				"name":  "test-repo",
+				"owner": map[string]string{"login": "fork-user"},
+			},
+		},
+	}
+}
+
+func writeContent(w http.ResponseWriter, content string) {
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"type":     "file",
+		"encoding": "base64",
+		"content":  stdb64(content),
+	})
+}
+
+func stdb64(s string) string {
+	return base64.StdEncoding.EncodeToString([]byte(s))
 }

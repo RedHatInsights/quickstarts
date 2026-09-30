@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -27,6 +28,7 @@ type PRMetadata struct {
 	IsUpdate      bool   `json:"isUpdate"`
 	ExistingPath  string `json:"existingPath"`
 	DirectoryName string `json:"directoryName"`
+	PRNumber      int    `json:"prNumber"`
 }
 
 type SubmitPRRequest struct {
@@ -91,6 +93,11 @@ func (h *Handler) SubmitPR(w http.ResponseWriter, r *http.Request) {
 	branchExisted := false
 	if req.Metadata.IsUpdate {
 		if err := h.repoMgr.CheckoutExistingBranch(req.Metadata.BranchName); err != nil {
+			if req.Metadata.PRNumber > 0 {
+				logrus.WithError(err).Error("Failed to checkout existing PR branch")
+				writeError(w, http.StatusInternalServerError, "failed to checkout existing PR branch")
+				return
+			}
 			logrus.WithError(err).Info("Existing branch not found, creating new branch for update")
 			if err := h.repoMgr.CreateBranch(req.Metadata.BranchName); err != nil {
 				logrus.WithError(err).Error("Failed to create branch")
@@ -147,6 +154,7 @@ func (h *Handler) SubmitPR(w http.ResponseWriter, r *http.Request) {
 
 		h.cleanup(req.Metadata.BranchName)
 		json.NewEncoder(w).Encode(SubmitPRResponse{
+			PRURL:      h.lookupPRURL(r.Context(), req.Metadata),
 			BranchName: req.Metadata.BranchName,
 			CommitSHA:  sha,
 			Status:     "updated",
@@ -179,6 +187,9 @@ func (h *Handler) SubmitPR(w http.ResponseWriter, r *http.Request) {
 		}
 
 		h.gitHubClient.AssignReviewers(r.Context(), prNumber, h.reviewersTeam)
+		if err := h.gitHubClient.AddLabels(r.Context(), prNumber, []string{ghclient.CreatorPRLabel}); err != nil {
+			logrus.WithError(err).WithField("pr", prNumber).Warn("Failed to label creator pull request, continuing")
+		}
 		h.cleanup(req.Metadata.BranchName)
 
 		json.NewEncoder(w).Encode(SubmitPRResponse{
@@ -188,6 +199,21 @@ func (h *Handler) SubmitPR(w http.ResponseWriter, r *http.Request) {
 			Status:     "created",
 		})
 	}
+}
+
+func (h *Handler) lookupPRURL(ctx context.Context, meta PRMetadata) string {
+	if meta.PRNumber > 0 {
+		pr, err := h.gitHubClient.GetCreatorPR(ctx, meta.PRNumber)
+		if err == nil && pr != nil && pr.HTMLURL != "" {
+			return pr.HTMLURL
+		}
+	}
+	url, err := h.gitHubClient.FindPRURLByBranch(ctx, meta.BranchName)
+	if err != nil {
+		logrus.WithError(err).Warn("Failed to look up existing PR URL")
+		return ""
+	}
+	return url
 }
 
 func (h *Handler) cleanup(branch string) {

@@ -84,6 +84,61 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /api/v1/creator-prs:
+    get:
+      summary: List open creator pull requests
+      operationId: listCreatorPRs
+      responses:
+        '200':
+          description: Open PRs labeled quickstarts-creator
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListCreatorPRsResponse'
+        '502':
+          description: GitHub API error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/creator-prs/{number}:
+    get:
+      summary: Get one creator pull request and its quickstart files
+      operationId: getCreatorPR
+      parameters:
+        - name: number
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: GitHub pull request number
+      responses:
+        '200':
+          description: PR metadata and files
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreatorPRContentResponse'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: PR not found or not a labeled creator PR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '502':
+          description: GitHub API error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
   /test:
     get:
       summary: Health check
@@ -156,6 +211,9 @@ components:
         directoryName:
           type: string
           description: Directory name for the quickstart (e.g. insights-integrate-satellite-iop). Defaults to branchName if not set.
+        prNumber:
+          type: integer
+          description: Existing PR number; used to return prUrl on force-push update and to refuse creating a second PR if the branch is missing.
 
     SubmitPrResponse:
       type: object
@@ -193,6 +251,49 @@ components:
       type: object
       properties:
         name:
+          type: string
+        files:
+          type: array
+          items:
+            $ref: '#/components/schemas/File'
+
+    CreatorPREntry:
+      type: object
+      properties:
+        number:
+          type: integer
+        title:
+          type: string
+        htmlUrl:
+          type: string
+        updatedAt:
+          type: string
+          format: date-time
+        branchName:
+          type: string
+        slug:
+          type: string
+
+    ListCreatorPRsResponse:
+      type: object
+      properties:
+        pullRequests:
+          type: array
+          items:
+            $ref: '#/components/schemas/CreatorPREntry'
+
+    CreatorPRContentResponse:
+      type: object
+      properties:
+        number:
+          type: integer
+        title:
+          type: string
+        htmlUrl:
+          type: string
+        branchName:
+          type: string
+        slug:
           type: string
         files:
           type: array
