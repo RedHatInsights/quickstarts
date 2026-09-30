@@ -14,7 +14,7 @@ metadata:
   externalDocumentation: true
 spec:
   version: 0.1
-  displayName: Getting started with automation hub
+  displayName: Getting started with automation hubs
   icon: ~
   description: Configure automation hub as your default server for Ansible
     collections content.
