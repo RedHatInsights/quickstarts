@@ -200,9 +200,6 @@ func (h *Handler) SubmitPR(w http.ResponseWriter, r *http.Request) {
 		}
 
 		h.gitHubClient.AssignReviewers(r.Context(), prNumber, h.reviewersTeam)
-		if err := h.gitHubClient.AddLabels(r.Context(), prNumber, []string{ghclient.CreatorPRLabel}); err != nil {
-			logrus.WithError(err).WithField("pr", prNumber).Warn("Failed to label creator pull request, continuing")
-		}
 		h.cleanup(req.Metadata.BranchName)
 
 		json.NewEncoder(w).Encode(SubmitPRResponse{

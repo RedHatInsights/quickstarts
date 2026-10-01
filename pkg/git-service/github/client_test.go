@@ -171,100 +171,187 @@ func TestParseRepoURL_RejectsHTTP(t *testing.T) {
 	assert.Contains(t, err.Error(), "unsupported scheme")
 }
 
-func TestAddLabels_Success(t *testing.T) {
+func TestListCreatorPRs_FiltersByBranchAcrossPages(t *testing.T) {
+	created := openCreatorPRJSON(11, "qs-create-demo-1", "demo")
+	created["title"] = "A title edited during review"
+	unrelated := openCreatorPRJSON(12, "feature-demo", "demo")
+	unrelated["labels"] = []map[string]string{{"name": "quickstarts-creator"}}
+	closed := openCreatorPRJSON(13, "qs-create-closed-1", "closed")
+	closed["state"] = "closed"
+	missingSHA := openCreatorPRJSON(14, "qs-create-missing-sha-1", "missing-sha")
+	missingSHA["head"].(map[string]interface{})["sha"] = ""
+	missingHead := openCreatorPRJSON(15, "", "missing-head")
+	missingHead["head"] = nil
+
 	mux := http.NewServeMux()
-	mux.HandleFunc("/repos/test-owner/test-repo/issues/42/labels", func(w http.ResponseWriter, r *http.Request) {
-		assert.Equal(t, http.MethodPost, r.Method)
-		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode([]map[string]string{{"name": CreatorPRLabel}})
-	})
-
-	client := newTestClient(t, mux)
-	err := client.AddLabels(context.Background(), 42, []string{CreatorPRLabel})
-	assert.NoError(t, err)
-}
-
-func TestAddLabels_CreatesMissingLabelThenRetries(t *testing.T) {
-	mux := http.NewServeMux()
-	addCalls := 0
-	mux.HandleFunc("/repos/test-owner/test-repo/issues/7/labels", func(w http.ResponseWriter, r *http.Request) {
-		addCalls++
-		if addCalls == 1 {
-			w.WriteHeader(http.StatusUnprocessableEntity)
-			json.NewEncoder(w).Encode(map[string]string{"message": "Label does not exist"})
-			return
-		}
-		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode([]map[string]string{{"name": CreatorPRLabel}})
-	})
-	mux.HandleFunc("/repos/test-owner/test-repo/labels", func(w http.ResponseWriter, r *http.Request) {
-		assert.Equal(t, http.MethodPost, r.Method)
-		w.WriteHeader(http.StatusCreated)
-		json.NewEncoder(w).Encode(map[string]string{"name": CreatorPRLabel})
-	})
-
-	client := newTestClient(t, mux)
-	err := client.AddLabels(context.Background(), 7, []string{CreatorPRLabel})
-	assert.NoError(t, err)
-	assert.Equal(t, 2, addCalls)
-}
-
-func TestListCreatorPRs_FiltersToLabeledOpenPRs(t *testing.T) {
-	mux := http.NewServeMux()
-	mux.HandleFunc("/repos/test-owner/test-repo/issues", func(w http.ResponseWriter, r *http.Request) {
+	requests := 0
+	mux.HandleFunc("/repos/test-owner/test-repo/pulls", func(w http.ResponseWriter, r *http.Request) {
+		requests++
+		assert.Equal(t, http.MethodGet, r.Method)
 		assert.Equal(t, "open", r.URL.Query().Get("state"))
-		assert.Equal(t, CreatorPRLabel, r.URL.Query().Get("labels"))
-		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode([]map[string]interface{}{
-			{
-				"number": 11,
-				"title":  "feat(quickstarts): create demo",
-				"pull_request": map[string]string{
-					"url": "https://api.github.com/repos/test-owner/test-repo/pulls/11",
-				},
-			},
-		})
-	})
-	mux.HandleFunc("/repos/test-owner/test-repo/pulls/11", func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(openCreatorPRJSON(11, "qs-create-demo-1", "demo"))
+		assert.Equal(t, "100", r.URL.Query().Get("per_page"))
+		assert.Empty(t, r.URL.Query().Get("labels"))
+		switch r.URL.Query().Get("page") {
+		case "":
+			w.Header().Set("Link", fmt.Sprintf(`<http://%s/repos/test-owner/test-repo/pulls?page=2>; rel="next"`, r.Host))
+			json.NewEncoder(w).Encode([]map[string]interface{}{unrelated, closed, missingSHA, missingHead, created})
+		case "2":
+			json.NewEncoder(w).Encode([]map[string]interface{}{openCreatorPRJSON(16, "qs-update-existing-2", "existing")})
+		default:
+			t.Errorf("unexpected page: %s", r.URL.Query().Get("page"))
+			w.WriteHeader(http.StatusBadRequest)
+		}
 	})
 
 	client := newTestClient(t, mux)
 	prs, err := client.ListCreatorPRs(context.Background())
 	require.NoError(t, err)
-	require.Len(t, prs, 1)
+	require.Len(t, prs, 2)
+	assert.Equal(t, 2, requests, "listing should not fetch each PR separately or call the Issues API")
 	assert.Equal(t, 11, prs[0].Number)
+	assert.Equal(t, "A title edited during review", prs[0].Title)
+	assert.Equal(t, "https://github.com/test-owner/test-repo/pull/11", prs[0].HTMLURL)
+	assert.Equal(t, "2026-09-29T12:00:00Z", prs[0].UpdatedAt.Format("2006-01-02T15:04:05Z"))
 	assert.Equal(t, "qs-create-demo-1", prs[0].BranchName)
 	assert.Equal(t, "demo", prs[0].Slug)
+	assert.Equal(t, "deadbeef", prs[0].HeadSHA)
 	assert.Equal(t, "fork-user", prs[0].HeadOwner)
+	assert.Equal(t, "test-repo", prs[0].HeadRepo)
+	assert.Equal(t, 16, prs[1].Number)
+	assert.Equal(t, "qs-update-existing-2", prs[1].BranchName)
+	assert.Equal(t, "existing", prs[1].Slug)
 }
 
-func TestGetCreatorPR_UnlabeledIsNotFound(t *testing.T) {
+func TestListCreatorPRs_NoMatchesReturnsEmptySlice(t *testing.T) {
 	mux := http.NewServeMux()
-	mux.HandleFunc("/repos/test-owner/test-repo/pulls/5", func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(map[string]interface{}{
-			"number":   5,
-			"state":    "open",
-			"title":    "docs: something",
-			"html_url": "https://github.com/test-owner/test-repo/pull/5",
-			"body":     "no label",
-			"labels":   []interface{}{},
-			"head": map[string]interface{}{
-				"ref": "branch",
-				"sha": "abc",
-				"repo": map[string]interface{}{
-					"name":  "test-repo",
-					"owner": map[string]string{"login": "test-owner"},
-				},
-			},
-		})
+	mux.HandleFunc("/repos/test-owner/test-repo/pulls", func(w http.ResponseWriter, r *http.Request) {
+		json.NewEncoder(w).Encode([]map[string]interface{}{openCreatorPRJSON(11, "feature-demo", "demo")})
 	})
 
 	client := newTestClient(t, mux)
-	_, err := client.GetCreatorPR(context.Background(), 5)
-	assert.ErrorIs(t, err, ErrNotFound)
+	prs, err := client.ListCreatorPRs(context.Background())
+	require.NoError(t, err)
+	assert.NotNil(t, prs)
+	assert.Empty(t, prs)
+}
+
+func TestListCreatorPRs_PageError(t *testing.T) {
+	mux := http.NewServeMux()
+	mux.HandleFunc("/repos/test-owner/test-repo/pulls", func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Query().Get("page") == "2" {
+			w.WriteHeader(http.StatusForbidden)
+			json.NewEncoder(w).Encode(map[string]string{"message": "Resource not accessible by personal access token"})
+			return
+		}
+		w.Header().Set("Link", fmt.Sprintf(`<http://%s/repos/test-owner/test-repo/pulls?page=2>; rel="next"`, r.Host))
+		json.NewEncoder(w).Encode([]map[string]interface{}{openCreatorPRJSON(11, "qs-create-demo-1", "demo")})
+	})
+
+	client := newTestClient(t, mux)
+	prs, err := client.ListCreatorPRs(context.Background())
+	require.ErrorContains(t, err, "failed to list pull requests")
+	assert.True(t, isStatus(err, http.StatusForbidden))
+	assert.Nil(t, prs, "a failed page must not return a partial list")
+}
+
+func TestGetCreatorPR_UnlabeledCreatorBranches(t *testing.T) {
+	tests := []struct {
+		ref    string
+		branch string
+	}{
+		{ref: "qs-create-demo-1", branch: "qs-create-demo-1"},
+		{ref: "qs-update-demo-1", branch: "qs-update-demo-1"},
+		{ref: "refs/heads/qs-create-demo-1", branch: "qs-create-demo-1"},
+		{ref: "fork-user:qs-update-demo-1", branch: "qs-update-demo-1"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.ref, func(t *testing.T) {
+			mux := http.NewServeMux()
+			mux.HandleFunc("/repos/test-owner/test-repo/pulls/11", func(w http.ResponseWriter, r *http.Request) {
+				pr := openCreatorPRJSON(11, tt.ref, "demo")
+				pr["title"] = "Renamed by a reviewer"
+				json.NewEncoder(w).Encode(pr)
+			})
+
+			client := newTestClient(t, mux)
+			pr, err := client.GetCreatorPR(context.Background(), 11)
+			require.NoError(t, err)
+			assert.Equal(t, tt.branch, pr.BranchName)
+			assert.Equal(t, "Renamed by a reviewer", pr.Title)
+			assert.Equal(t, "demo", pr.Slug)
+			assert.Equal(t, "deadbeef", pr.HeadSHA)
+			assert.Equal(t, "fork-user", pr.HeadOwner)
+			assert.Equal(t, "test-repo", pr.HeadRepo)
+		})
+	}
+}
+
+func TestGetCreatorPR_NonCreatorOrClosedIsNotFound(t *testing.T) {
+	tests := []struct {
+		name   string
+		branch string
+		state  string
+	}{
+		{name: "unrelated labeled PR", branch: "feature-demo", state: "open"},
+		{name: "prefix in middle", branch: "feature/qs-create-demo-1", state: "open"},
+		{name: "lookalike prefix", branch: "qs-creates-demo-1", state: "open"},
+		{name: "closed creator PR", branch: "qs-create-demo-1", state: "closed"},
+		{name: "closed update PR", branch: "qs-update-demo-1", state: "closed"},
+		{name: "missing head", state: "open"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			mux := http.NewServeMux()
+			mux.HandleFunc("/repos/test-owner/test-repo/pulls/11", func(w http.ResponseWriter, r *http.Request) {
+				pr := openCreatorPRJSON(11, tt.branch, "demo")
+				pr["state"] = tt.state
+				pr["labels"] = []map[string]string{{"name": "quickstarts-creator"}}
+				if tt.branch == "" {
+					pr["head"] = nil
+				}
+				json.NewEncoder(w).Encode(pr)
+			})
+
+			client := newTestClient(t, mux)
+			pr, err := client.GetCreatorPR(context.Background(), 11)
+			assert.ErrorIs(t, err, ErrNotFound)
+			assert.Nil(t, pr)
+		})
+	}
+}
+
+func TestGetCreatorPR_MissingSHA(t *testing.T) {
+	mux := http.NewServeMux()
+	mux.HandleFunc("/repos/test-owner/test-repo/pulls/11", func(w http.ResponseWriter, r *http.Request) {
+		pr := openCreatorPRJSON(11, "qs-create-demo-1", "demo")
+		pr["head"].(map[string]interface{})["sha"] = ""
+		json.NewEncoder(w).Encode(pr)
+	})
+
+	client := newTestClient(t, mux)
+	_, err := client.GetCreatorPR(context.Background(), 11)
+	assert.EqualError(t, err, "pull request 11 is missing head SHA")
+}
+
+func TestGetCreatorPR_APIError(t *testing.T) {
+	for _, status := range []int{http.StatusNotFound, http.StatusForbidden} {
+		t.Run(http.StatusText(status), func(t *testing.T) {
+			mux := http.NewServeMux()
+			mux.HandleFunc("/repos/test-owner/test-repo/pulls/11", func(w http.ResponseWriter, r *http.Request) {
+				w.WriteHeader(status)
+				json.NewEncoder(w).Encode(map[string]string{"message": http.StatusText(status)})
+			})
+
+			client := newTestClient(t, mux)
+			_, err := client.GetCreatorPR(context.Background(), 11)
+			if status == http.StatusNotFound {
+				assert.ErrorIs(t, err, ErrNotFound)
+			} else {
+				require.ErrorContains(t, err, "failed to get pull request 11")
+				assert.True(t, isStatus(err, status))
+			}
+		})
+	}
 }
 
 func TestGetPRQuickstartFiles_FromHeadRepo(t *testing.T) {
@@ -379,7 +466,7 @@ func openCreatorPRJSON(number int, branch, slug string) map[string]interface{} {
 		"html_url":   fmt.Sprintf("https://github.com/test-owner/test-repo/pull/%d", number),
 		"body":       "Adding new quickstart via the Quickstarts Creator tool.\n\nDirectory: docs/quickstarts/" + slug + "/",
 		"updated_at": "2026-09-29T12:00:00Z",
-		"labels":     []map[string]string{{"name": CreatorPRLabel}},
+		"labels":     []map[string]string{},
 		"head": map[string]interface{}{
 			"ref": branch,
 			"sha": "deadbeef",

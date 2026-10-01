@@ -16,8 +16,6 @@ import (
 	"golang.org/x/oauth2"
 )
 
-const CreatorPRLabel = "quickstarts-creator"
-
 var (
 	ErrNotFound    = errors.New("creator pull request not found")
 	directoryRe    = regexp.MustCompile(`Directory:\s*docs/quickstarts/([^/\s]+)`)
@@ -45,7 +43,6 @@ type CreatorPR struct {
 type GitHubOperations interface {
 	CreatePullRequest(ctx context.Context, title, body, head, base string) (string, int, error)
 	AssignReviewers(ctx context.Context, prNumber int, team string) error
-	AddLabels(ctx context.Context, prNumber int, labels []string) error
 	ListCreatorPRs(ctx context.Context) ([]CreatorPR, error)
 	GetCreatorPR(ctx context.Context, prNumber int) (*CreatorPR, error)
 	GetPRQuickstartFiles(ctx context.Context, pr *CreatorPR) (string, []File, error)
@@ -125,59 +122,9 @@ func (c *Client) AssignReviewers(ctx context.Context, prNumber int, team string)
 	return nil
 }
 
-func (c *Client) AddLabels(ctx context.Context, prNumber int, labels []string) error {
-	if len(labels) == 0 {
-		return nil
-	}
-
-	_, _, err := c.gh.Issues.AddLabelsToIssue(ctx, c.Owner, c.Repo, prNumber, labels)
-	if err == nil {
-		logrus.WithFields(logrus.Fields{
-			"pr":     prNumber,
-			"labels": labels,
-		}).Info("Labels added to pull request")
-		return nil
-	}
-
-	if !isStatus(err, http.StatusUnprocessableEntity) {
-		return fmt.Errorf("failed to add labels: %w", err)
-	}
-
-	for _, name := range labels {
-		if ensureErr := c.ensureLabel(ctx, name); ensureErr != nil {
-			logrus.WithError(ensureErr).WithField("label", name).Warn("Failed to ensure label exists")
-			return fmt.Errorf("failed to add labels: %w", err)
-		}
-	}
-
-	_, _, retryErr := c.gh.Issues.AddLabelsToIssue(ctx, c.Owner, c.Repo, prNumber, labels)
-	if retryErr != nil {
-		return fmt.Errorf("failed to add labels: %w", retryErr)
-	}
-
-	logrus.WithFields(logrus.Fields{
-		"pr":     prNumber,
-		"labels": labels,
-	}).Info("Labels added to pull request after creating missing label")
-	return nil
-}
-
-func (c *Client) ensureLabel(ctx context.Context, name string) error {
-	_, _, err := c.gh.Issues.CreateLabel(ctx, c.Owner, c.Repo, &github.Label{
-		Name:        github.String(name),
-		Color:       github.String("0E8A16"),
-		Description: github.String("Opened by the Hybrid Cloud Console learning resources creator"),
-	})
-	if err == nil || isStatus(err, http.StatusUnprocessableEntity) {
-		return nil
-	}
-	return err
-}
-
 func (c *Client) ListCreatorPRs(ctx context.Context) ([]CreatorPR, error) {
-	opt := &github.IssueListByRepoOptions{
-		State:  "open",
-		Labels: []string{CreatorPRLabel},
+	opt := &github.PullRequestListOptions{
+		State: "open",
 		ListOptions: github.ListOptions{
 			PerPage: 100,
 		},
@@ -185,24 +132,21 @@ func (c *Client) ListCreatorPRs(ctx context.Context) ([]CreatorPR, error) {
 
 	var result []CreatorPR
 	for {
-		issues, resp, err := c.gh.Issues.ListByRepo(ctx, c.Owner, c.Repo, opt)
+		prs, resp, err := c.gh.PullRequests.List(ctx, c.Owner, c.Repo, opt)
 		if err != nil {
-			return nil, fmt.Errorf("failed to list labeled issues: %w", err)
+			return nil, fmt.Errorf("failed to list pull requests: %w", err)
 		}
 
-		for _, issue := range issues {
-			if issue.PullRequestLinks == nil {
-				continue
-			}
-			pr, err := c.fetchCreatorPR(ctx, issue.GetNumber())
+		for _, pr := range prs {
+			entry, err := c.creatorPRFromPullRequest(pr)
 			if err != nil {
 				if errors.Is(err, ErrNotFound) {
 					continue
 				}
-				logrus.WithError(err).WithField("pr", issue.GetNumber()).Warn("Skipping creator PR")
+				logrus.WithError(err).WithField("pr", pr.GetNumber()).Warn("Skipping creator PR")
 				continue
 			}
-			result = append(result, *pr)
+			result = append(result, *entry)
 		}
 
 		if resp == nil || resp.NextPage == 0 {
@@ -218,10 +162,6 @@ func (c *Client) ListCreatorPRs(ctx context.Context) ([]CreatorPR, error) {
 }
 
 func (c *Client) GetCreatorPR(ctx context.Context, prNumber int) (*CreatorPR, error) {
-	return c.fetchCreatorPR(ctx, prNumber)
-}
-
-func (c *Client) fetchCreatorPR(ctx context.Context, prNumber int) (*CreatorPR, error) {
 	pr, _, err := c.gh.PullRequests.Get(ctx, c.Owner, c.Repo, prNumber)
 	if err != nil {
 		if isStatus(err, http.StatusNotFound) {
@@ -230,16 +170,20 @@ func (c *Client) fetchCreatorPR(ctx context.Context, prNumber int) (*CreatorPR, 
 		return nil, fmt.Errorf("failed to get pull request %d: %w", prNumber, err)
 	}
 
+	return c.creatorPRFromPullRequest(pr)
+}
+
+func (c *Client) creatorPRFromPullRequest(pr *github.PullRequest) (*CreatorPR, error) {
 	if pr.GetState() != "open" {
 		return nil, ErrNotFound
 	}
-	if !hasCreatorLabel(pr.Labels) {
+	head := pr.GetHead()
+	if !isCreatorBranch(head.GetRef()) {
 		return nil, ErrNotFound
 	}
 
-	head := pr.GetHead()
-	if head == nil || head.GetSHA() == "" {
-		return nil, fmt.Errorf("pull request %d is missing head SHA", prNumber)
+	if head.GetSHA() == "" {
+		return nil, fmt.Errorf("pull request %d is missing head SHA", pr.GetNumber())
 	}
 
 	headOwner := c.ForkOwner
@@ -457,13 +401,11 @@ func branchRef(ref string) string {
 	return ref
 }
 
-func hasCreatorLabel(labels []*github.Label) bool {
-	for _, l := range labels {
-		if l.GetName() == CreatorPRLabel {
-			return true
-		}
-	}
-	return false
+// Creator branches remain stable when reviewers edit a PR title or the
+// quickstart is renamed. Detecting them needs no Issues API permissions.
+func isCreatorBranch(ref string) bool {
+	ref = branchRef(ref)
+	return strings.HasPrefix(ref, "qs-create-") || strings.HasPrefix(ref, "qs-update-")
 }
 
 func containsDotDot(p string) bool {

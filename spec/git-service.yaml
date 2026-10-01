@@ -90,7 +90,7 @@ paths:
       operationId: listCreatorPRs
       responses:
         '200':
-          description: Open PRs labeled quickstarts-creator
+          description: Open PRs with head branches starting with qs-create- or qs-update-
           content:
             application/json:
               schema:
@@ -127,7 +127,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
-          description: PR not found or not a labeled creator PR
+          description: PR not found, closed, or without a qs-create- or qs-update- head branch
           content:
             application/json:
               schema:

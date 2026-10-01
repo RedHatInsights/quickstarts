@@ -94,7 +94,6 @@ type mockGitHubClient struct {
 	createPRNumber int
 	createPRErr    error
 	assignErr      error
-	addLabelsErr   error
 	listPRs        []ghclient.CreatorPR
 	listPRsErr     error
 	getPR          *ghclient.CreatorPR
@@ -110,8 +109,6 @@ type mockGitHubClient struct {
 	createdHead  string
 	createdBase  string
 	assignedTeam string
-	addedLabels  []string
-	addedPR      int
 }
 
 func (m *mockGitHubClient) CreatePullRequest(ctx context.Context, title, body, head, base string) (string, int, error) {
@@ -124,11 +121,6 @@ func (m *mockGitHubClient) CreatePullRequest(ctx context.Context, title, body, h
 func (m *mockGitHubClient) AssignReviewers(ctx context.Context, prNumber int, team string) error {
 	m.assignedTeam = team
 	return m.assignErr
-}
-func (m *mockGitHubClient) AddLabels(ctx context.Context, prNumber int, labels []string) error {
-	m.addedPR = prNumber
-	m.addedLabels = labels
-	return m.addLabelsErr
 }
 func (m *mockGitHubClient) ListCreatorPRs(ctx context.Context) ([]ghclient.CreatorPR, error) {
 	return m.listPRs, m.listPRsErr
@@ -276,8 +268,6 @@ func TestSubmitPR_Success(t *testing.T) {
 	assert.Equal(t, "quickstart/test-123", gh.createdHead)
 	assert.Equal(t, "main", gh.createdBase)
 	assert.Equal(t, "team-reviewers", gh.assignedTeam)
-	assert.Equal(t, 42, gh.addedPR)
-	assert.Equal(t, []string{ghclient.CreatorPRLabel}, gh.addedLabels)
 }
 
 func TestSubmitPR_DirectoryName(t *testing.T) {

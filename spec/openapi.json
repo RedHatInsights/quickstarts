@@ -618,7 +618,7 @@
                 }
               }
             },
-            "description": "Open PRs labeled quickstarts-creator"
+            "description": "Open PRs with head branches starting with qs-create- or qs-update-"
           },
           "404": {
             "content": {

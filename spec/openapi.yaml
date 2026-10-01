@@ -745,7 +745,7 @@ paths:
       summary: List open creator pull requests
       responses:
         '200':
-          description: Open PRs labeled quickstarts-creator
+          description: Open PRs with head branches starting with qs-create- or qs-update-
           content:
             application/json:
               schema:
@@ -803,4 +803,3 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/BadRequest'
-
