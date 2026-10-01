@@ -307,17 +307,27 @@ func (c *Client) GetPRQuickstartFiles(ctx context.Context, pr *CreatorPR) (strin
 		return "", nil, fmt.Errorf("could not determine quickstart slug for PR %d", pr.Number)
 	}
 
-	prefix := quickstartsDir + slug + "/"
-	var out []File
-	for _, p := range paths {
-		if !strings.HasPrefix(p, prefix) {
-			continue
+	matched := quickstartFilesUnder(paths, slug)
+	// The slug comes from the PR body, which is not rewritten when a quickstart
+	// is renamed and its directory moves with it. Trust the directory the files
+	// are actually in rather than reporting the pull request as empty, which
+	// would leave it listed but permanently unresumable.
+	if len(matched) == 0 {
+		if actual := slugFromPaths(paths); actual != "" && actual != slug {
+			logrus.WithFields(logrus.Fields{
+				"pr":     pr.Number,
+				"body":   slug,
+				"actual": actual,
+			}).Info("Pull request body names a stale directory, using the one on the branch")
+			slug, matched = actual, quickstartFilesUnder(paths, actual)
 		}
-		rel := strings.TrimPrefix(p, prefix)
-		if rel == "" || strings.Contains(rel, "/") || containsDotDot(rel) {
-			continue
-		}
+	}
+	if len(matched) == 0 {
+		return "", nil, fmt.Errorf("no quickstart files found in PR %d", pr.Number)
+	}
 
+	out := make([]File, 0, len(matched))
+	for _, p := range matched {
 		content, err := c.getFileContent(ctx, pr.HeadOwner, pr.HeadRepo, p, pr.HeadSHA)
 		if err != nil {
 			return "", nil, err
@@ -325,10 +335,22 @@ func (c *Client) GetPRQuickstartFiles(ctx context.Context, pr *CreatorPR) (strin
 		out = append(out, File{Name: path.Base(p), Content: content})
 	}
 
-	if len(out) == 0 {
-		return "", nil, fmt.Errorf("no quickstart files found in PR %d", pr.Number)
-	}
 	return slug, out, nil
+}
+
+// quickstartFilesUnder returns the paths sitting directly inside slug's
+// quickstart directory.
+func quickstartFilesUnder(paths []string, slug string) []string {
+	prefix := quickstartsDir + slug + "/"
+	var out []string
+	for _, p := range paths {
+		rel, ok := strings.CutPrefix(p, prefix)
+		if !ok || rel == "" || strings.Contains(rel, "/") || containsDotDot(rel) {
+			continue
+		}
+		out = append(out, p)
+	}
+	return out
 }
 
 func (c *Client) getFileContent(ctx context.Context, owner, repo, filePath, ref string) (string, error) {

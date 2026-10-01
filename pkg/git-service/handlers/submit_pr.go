@@ -6,12 +6,14 @@ import (
 	"fmt"
 	"net/http"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"sync"
 
 	gitops "github.com/RedHatInsights/quickstarts/pkg/git-service/git"
 	ghclient "github.com/RedHatInsights/quickstarts/pkg/git-service/github"
 	"github.com/sirupsen/logrus"
+	"gopkg.in/yaml.v3"
 )
 
 type File struct {
@@ -122,11 +124,22 @@ func (h *Handler) SubmitPR(w http.ResponseWriter, r *http.Request) {
 			dirName = req.Metadata.BranchName
 		}
 		dir = h.quickstartsDirPath + dirName + "/"
+	} else if name := submittedQuickstartName(req.Files); name != "" {
+		// A quickstart lives in docs/quickstarts/<name>/, so renaming one has to
+		// move its directory. existingPath is the directory the branch already
+		// has and cannot say where the quickstart belongs now, so the target
+		// comes from the submitted metadata — the same name the content file is
+		// named after. reconcileDirectory retires the old directory.
+		dir = h.quickstartsDirPath + name + "/"
 	}
 
 	gitFiles := make([]gitops.File, len(req.Files))
 	for i, f := range req.Files {
 		gitFiles[i] = gitops.File{Name: f.Name, Content: f.Content}
+	}
+
+	if req.Metadata.IsUpdate {
+		h.reconcileDirectory(req.Metadata.ExistingPath, dir, req.Files)
 	}
 
 	if err := h.repoMgr.WriteFiles(dir, gitFiles); err != nil {
@@ -201,6 +214,110 @@ func (h *Handler) SubmitPR(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+var (
+	unsafeDirChars = regexp.MustCompile(`[^a-z0-9._-]`)
+	repeatedDashes = regexp.MustCompile(`-{2,}`)
+)
+
+// submittedQuickstartName returns the directory name the submitted metadata
+// asks for, or "" when the request does not carry a usable one.
+//
+// The creator derives the directory and the content file name from
+// metadata.name, so that field is what the quickstart is actually called. It
+// is read here rather than taken from the request metadata so a rename moves
+// the directory for clients that still pin directoryName to the directory
+// already on the branch.
+func submittedQuickstartName(files []File) string {
+	for _, f := range files {
+		if f.Name != "metadata.yaml" && f.Name != "metadata.yml" {
+			continue
+		}
+		var doc struct {
+			Name string `yaml:"name"`
+		}
+		if err := yaml.Unmarshal([]byte(f.Content), &doc); err != nil {
+			logrus.WithError(err).Info("Could not parse submitted metadata, keeping the existing directory")
+			return ""
+		}
+		return sanitizeDirName(doc.Name)
+	}
+	return ""
+}
+
+// sanitizeDirName reduces a quickstart name to a single safe path segment,
+// mirroring what the creator does before it sends one. Everything outside the
+// allowed set collapses to a dash, which also means the result can never
+// contain a separator or resolve to "." or "..".
+func sanitizeDirName(name string) string {
+	s := unsafeDirChars.ReplaceAllString(strings.ToLower(name), "-")
+	s = repeatedDashes.ReplaceAllString(s, "-")
+	return strings.Trim(s, "-.")
+}
+
+// reconcileDirectory retires whatever the update leaves behind in oldDir.
+//
+// Writing is purely additive, so without this a rename stacks the new state on
+// top of the old: a renamed YAML file lands next to its predecessor, and a
+// renamed quickstart leaves a whole abandoned directory. When newDir differs
+// from oldDir the quickstart has moved and everything in oldDir is stale;
+// otherwise only the files this update no longer sends are.
+//
+// Best effort: the submission carries the user's work, so a failure here is
+// logged and the update proceeds. The worst case is the leftovers this exists
+// to remove.
+func (h *Handler) reconcileDirectory(oldDir, newDir string, files []File) {
+	// existingPath comes from the request body and is otherwise only checked for
+	// traversal segments, which "/docs/" satisfies. Deleting is destructive, so
+	// confine it to a single quickstart directory.
+	if !isQuickstartDir(oldDir, h.quickstartsDirPath) {
+		logrus.WithField("dir", oldDir).Warn("Refusing to prune outside a quickstart directory")
+		return
+	}
+
+	existing, err := h.repoMgr.ListFiles(oldDir)
+	if err != nil {
+		// Expected when an update targets a branch that does not have the
+		// directory yet, so this is not treated as a failure.
+		logrus.WithError(err).WithField("dir", oldDir).Info("Could not list existing files, skipping prune")
+		return
+	}
+
+	stale := existing
+	moved := !samePath(oldDir, newDir)
+	if !moved {
+		incoming := make(map[string]struct{}, len(files))
+		for _, f := range files {
+			incoming[f.Name] = struct{}{}
+		}
+
+		stale = nil
+		for _, name := range existing {
+			if _, ok := incoming[name]; !ok {
+				stale = append(stale, name)
+			}
+		}
+	}
+
+	if len(stale) == 0 {
+		return
+	}
+
+	if err := h.repoMgr.RemoveFiles(oldDir, stale); err != nil {
+		logrus.WithError(err).WithFields(logrus.Fields{
+			"dir":   oldDir,
+			"files": stale,
+		}).Warn("Failed to remove stale files, continuing")
+		return
+	}
+
+	logrus.WithFields(logrus.Fields{
+		"dir":    oldDir,
+		"newDir": newDir,
+		"files":  stale,
+		"moved":  moved,
+	}).Info("Pruned stale files from quickstart directory")
+}
+
 func (h *Handler) lookupPRURL(ctx context.Context, meta PRMetadata) string {
 	if meta.PRNumber > 0 {
 		pr, err := h.gitHubClient.GetCreatorPR(ctx, meta.PRNumber)
@@ -251,12 +368,39 @@ func validateRequest(req *SubmitPRRequest) error {
 	if m.DirectoryName != "" && containsTraversal(m.DirectoryName) {
 		return fmt.Errorf("directoryName contains invalid path segment")
 	}
+	// directoryName is concatenated onto the quickstarts directory to build the
+	// write target, so it has to name exactly one directory beneath it.
+	if m.DirectoryName != "" && (strings.ContainsAny(m.DirectoryName, `/\`) || m.DirectoryName == ".") {
+		return fmt.Errorf("directoryName must be a single path segment")
+	}
 	for _, f := range req.Files {
 		if containsTraversal(f.Name) {
 			return fmt.Errorf("file name contains invalid path segment: %s", f.Name)
 		}
 	}
 	return nil
+}
+
+// isQuickstartDir reports whether dir addresses one quickstart directory
+// directly beneath base, tolerating leading and trailing slashes on either.
+func isQuickstartDir(dir, base string) bool {
+	b, d := trimSlashes(base), trimSlashes(dir)
+	if b == "" || d == "" {
+		return false
+	}
+	rest, ok := strings.CutPrefix(d, b+"/")
+	return ok && rest != "" && !strings.Contains(rest, "/")
+}
+
+// samePath compares two repository paths that may differ only in their leading
+// or trailing slashes, as existingPath and a path built from the configured
+// quickstarts directory do.
+func samePath(a, b string) bool {
+	return trimSlashes(a) == trimSlashes(b)
+}
+
+func trimSlashes(s string) string {
+	return strings.Trim(filepath.ToSlash(s), "/")
 }
 
 func containsTraversal(path string) bool {

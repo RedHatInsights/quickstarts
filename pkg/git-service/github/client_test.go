@@ -303,6 +303,57 @@ func TestGetPRQuickstartFiles_FromHeadRepo(t *testing.T) {
 	assert.Equal(t, "demo.yml", files[1].Name)
 }
 
+func TestGetPRQuickstartFiles_StaleSlugFallsBackToBranchDirectory(t *testing.T) {
+	mux := http.NewServeMux()
+	mux.HandleFunc("/repos/test-owner/test-repo/pulls/12/files", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		// A rename moved the quickstart, so the directory named in the PR body
+		// only survives as removed entries.
+		json.NewEncoder(w).Encode([]map[string]string{
+			{"filename": "docs/quickstarts/old-name/old-name.yaml", "status": "removed"},
+			{"filename": "docs/quickstarts/old-name/metadata.yaml", "status": "removed"},
+			{"filename": "docs/quickstarts/new-name/metadata.yaml", "status": "added"},
+			{"filename": "docs/quickstarts/new-name/new-name.yaml", "status": "added"},
+		})
+	})
+	mux.HandleFunc("/repos/fork-user/test-repo/contents/docs/quickstarts/new-name/metadata.yaml", func(w http.ResponseWriter, r *http.Request) {
+		writeContent(w, "kind: QuickStarts\nname: new-name\n")
+	})
+	mux.HandleFunc("/repos/fork-user/test-repo/contents/docs/quickstarts/new-name/new-name.yaml", func(w http.ResponseWriter, r *http.Request) {
+		writeContent(w, "spec:\n  displayName: New\n")
+	})
+
+	client := newTestClient(t, mux)
+	pr := &CreatorPR{
+		Number:    12,
+		Slug:      "old-name", // what the un-rewritten PR body still says
+		HeadSHA:   "deadbeef",
+		HeadOwner: "fork-user",
+		HeadRepo:  "test-repo",
+	}
+	slug, files, err := client.GetPRQuickstartFiles(context.Background(), pr)
+	require.NoError(t, err, "a renamed directory must not make the PR unresumable")
+	assert.Equal(t, "new-name", slug, "the slug should follow the directory on the branch")
+	require.Len(t, files, 2)
+	assert.Equal(t, "metadata.yaml", files[0].Name)
+	assert.Equal(t, "new-name.yaml", files[1].Name)
+}
+
+func TestGetPRQuickstartFiles_NoQuickstartFilesStillErrors(t *testing.T) {
+	mux := http.NewServeMux()
+	mux.HandleFunc("/repos/test-owner/test-repo/pulls/13/files", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode([]map[string]string{
+			{"filename": "README.md", "status": "modified"},
+		})
+	})
+
+	client := newTestClient(t, mux)
+	pr := &CreatorPR{Number: 13, Slug: "demo", HeadSHA: "deadbeef", HeadOwner: "fork-user", HeadRepo: "test-repo"}
+	_, _, err := client.GetPRQuickstartFiles(context.Background(), pr)
+	assert.Error(t, err, "the fallback must not mask a PR that touches no quickstart")
+}
+
 func TestFindPRURLByBranch_UsesForkOwner(t *testing.T) {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/repos/test-owner/test-repo/pulls", func(w http.ResponseWriter, r *http.Request) {

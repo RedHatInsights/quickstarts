@@ -28,6 +28,9 @@ type mockRepoManager struct {
 
 	writtenDir   string
 	writtenFiles []gitops.File
+	removedDir   string
+	removedFiles []string
+	removeErr    error
 	pushedBranch string
 	forcePushed  bool
 	cleanedUp    string
@@ -59,6 +62,11 @@ func (m *mockRepoManager) WriteFiles(dir string, files []gitops.File) error {
 	m.writtenDir = dir
 	m.writtenFiles = files
 	return m.writeFilesErr
+}
+func (m *mockRepoManager) RemoveFiles(dir string, names []string) error {
+	m.removedDir = dir
+	m.removedFiles = names
+	return m.removeErr
 }
 func (m *mockRepoManager) CommitChanges(message, authorName, authorEmail, dir string, files []gitops.File) (string, error) {
 	return m.commitSHA, m.commitErr
@@ -406,6 +414,349 @@ func TestSubmitPR_UpdateMode_NewBranch(t *testing.T) {
 	assert.Equal(t, "/docs/quickstarts/existing-qs/", repo.writtenDir)
 	assert.False(t, repo.forcePushed, "first-time update should not force-push")
 	assert.Equal(t, "Update test quickstart", gh.createdTitle, "first-time update should create a PR")
+}
+
+func updateBodyWithFiles(files string) string {
+	return updateBodyWithPath("/docs/quickstarts/existing-qs/", files)
+}
+
+func updateBodyWithPath(existingPath, files string) string {
+	return `{
+		"files": ` + files + `,
+		"metadata": {
+			"branchName": "quickstart/update-123",
+			"commitMessage": "Update quickstart",
+			"prTitle": "Update test quickstart",
+			"prBody": "Updating existing",
+			"isUpdate": true,
+			"existingPath": "` + existingPath + `",
+			"prNumber": 43
+		}
+	}`
+}
+
+// The deployed creator pins directoryName to the directory already on the PR
+// head, so a rename has to be recognised from the submitted metadata alone.
+func TestSubmitPR_UpdateMode_RenameInMetadataMovesDirectory(t *testing.T) {
+	repo := &mockRepoManager{
+		commitSHA:  "abc123def456abc123def456abc123def456abcd",
+		baseBranch: "main",
+		files:      []string{"metadata.yaml", "old-name.yaml"},
+	}
+	handler := NewHandler(repo, &mockGitHubClient{}, "", "/docs/quickstarts/")
+
+	body := updateBodyWithPath("/docs/quickstarts/old-name/", `[
+		{"name": "metadata.yaml", "content": "kind: QuickStarts\nname: new-name"},
+		{"name": "new-name.yaml", "content": "renamed"}
+	]`)
+
+	req := httptest.NewRequest(http.MethodPost, "/api/v1/submit-pr", bytes.NewBufferString(body))
+	rec := httptest.NewRecorder()
+	handler.SubmitPR(rec, req)
+
+	require.Equal(t, http.StatusOK, rec.Code)
+	assert.Equal(t, "/docs/quickstarts/new-name/", repo.writtenDir, "files belong in the renamed directory")
+	assert.Equal(t, "/docs/quickstarts/old-name/", repo.removedDir)
+	assert.ElementsMatch(t, []string{"metadata.yaml", "old-name.yaml"}, repo.removedFiles,
+		"the whole pre-rename directory should be retired, including files whose names did not change")
+}
+
+func TestSubmitPR_UpdateMode_SanitizesTheNameItReadsFromMetadata(t *testing.T) {
+	for _, tc := range []struct {
+		name string
+		want string
+	}{
+		{"My Doc", "/docs/quickstarts/my-doc/"},
+		{"Test-Open-PR-Editing", "/docs/quickstarts/test-open-pr-editing/"},
+		{"../../etc", "/docs/quickstarts/etc/"},
+		{"a//b", "/docs/quickstarts/a-b/"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			repo := &mockRepoManager{commitSHA: "abc123def456abc123def456abc123def456abcd", baseBranch: "main"}
+			handler := NewHandler(repo, &mockGitHubClient{}, "", "/docs/quickstarts/")
+
+			body := updateBodyWithPath("/docs/quickstarts/existing-qs/", `[
+				{"name": "metadata.yaml", "content": "name: `+tc.name+`"}
+			]`)
+
+			req := httptest.NewRequest(http.MethodPost, "/api/v1/submit-pr", bytes.NewBufferString(body))
+			rec := httptest.NewRecorder()
+			handler.SubmitPR(rec, req)
+
+			require.Equal(t, http.StatusOK, rec.Code)
+			assert.Equal(t, tc.want, repo.writtenDir, "a name read from file content must stay one safe segment")
+		})
+	}
+}
+
+func TestSubmitPR_UpdateMode_UnusableMetadataKeepsExistingPath(t *testing.T) {
+	for _, content := range []string{
+		"kind: QuickStarts",   // no name at all
+		"name: \"...\"",       // sanitizes away to nothing
+		"- not: a mapping",    // parses, but not into the expected shape
+		"a: b\n  c: ::broken", // does not parse
+	} {
+		t.Run(content, func(t *testing.T) {
+			repo := &mockRepoManager{
+				commitSHA:  "abc123def456abc123def456abc123def456abcd",
+				baseBranch: "main",
+				files:      []string{"metadata.yaml"},
+			}
+			handler := NewHandler(repo, &mockGitHubClient{}, "", "/docs/quickstarts/")
+
+			payload, err := json.Marshal(content)
+			require.NoError(t, err)
+			body := updateBodyWithPath("/docs/quickstarts/existing-qs/", `[
+				{"name": "metadata.yaml", "content": `+string(payload)+`}
+			]`)
+
+			req := httptest.NewRequest(http.MethodPost, "/api/v1/submit-pr", bytes.NewBufferString(body))
+			rec := httptest.NewRecorder()
+			handler.SubmitPR(rec, req)
+
+			require.Equal(t, http.StatusOK, rec.Code)
+			assert.Equal(t, "/docs/quickstarts/existing-qs/", repo.writtenDir,
+				"an unusable name must leave the quickstart where it is, not move it somewhere odd")
+			assert.Empty(t, repo.removedFiles, "and it must not retire the directory it is still writing to")
+		})
+	}
+}
+
+func TestSubmitPR_UpdateMode_KeepsFilesStillPresent(t *testing.T) {
+	repo := &mockRepoManager{
+		commitSHA:  "abc123def456abc123def456abc123def456abcd",
+		baseBranch: "main",
+		files:      []string{"metadata.yaml", "same-name.yaml"},
+	}
+	handler := NewHandler(repo, &mockGitHubClient{}, "", "/docs/quickstarts/")
+
+	body := updateBodyWithPath("/docs/quickstarts/same-name/", `[
+		{"name": "metadata.yaml", "content": "kind: QuickStarts\nname: same-name"},
+		{"name": "same-name.yaml", "content": "edited"}
+	]`)
+
+	req := httptest.NewRequest(http.MethodPost, "/api/v1/submit-pr", bytes.NewBufferString(body))
+	rec := httptest.NewRecorder()
+	handler.SubmitPR(rec, req)
+
+	require.Equal(t, http.StatusOK, rec.Code)
+	assert.Equal(t, "/docs/quickstarts/same-name/", repo.writtenDir)
+	assert.Empty(t, repo.removedFiles, "an edit without a rename should delete nothing")
+}
+
+// updateBodyWithRename is an update that also carries a directoryName, which
+// older creator builds pin to the directory already on the PR head.
+func updateBodyWithRename(existingPath, dirName, files string) string {
+	return `{
+		"files": ` + files + `,
+		"metadata": {
+			"branchName": "quickstart/update-123",
+			"commitMessage": "Update quickstart",
+			"prTitle": "Update test quickstart",
+			"prBody": "Updating existing",
+			"isUpdate": true,
+			"existingPath": "` + existingPath + `",
+			"directoryName": "` + dirName + `",
+			"prNumber": 43
+		}
+	}`
+}
+
+func TestSubmitPR_UpdateMode_MetadataNameBeatsPinnedDirectoryName(t *testing.T) {
+	repo := &mockRepoManager{
+		commitSHA:  "abc123def456abc123def456abc123def456abcd",
+		baseBranch: "main",
+		files:      []string{"metadata.yaml", "old-name.yaml"},
+	}
+	handler := NewHandler(repo, &mockGitHubClient{}, "", "/docs/quickstarts/")
+
+	// directoryName still names the pre-rename directory, as the deployed
+	// creator sends it. The metadata is what the user just renamed.
+	body := updateBodyWithRename("/docs/quickstarts/old-name/", "old-name", `[
+		{"name": "metadata.yaml", "content": "kind: QuickStarts\nname: new-name"},
+		{"name": "new-name.yaml", "content": "renamed"}
+	]`)
+
+	req := httptest.NewRequest(http.MethodPost, "/api/v1/submit-pr", bytes.NewBufferString(body))
+	rec := httptest.NewRecorder()
+	handler.SubmitPR(rec, req)
+
+	require.Equal(t, http.StatusOK, rec.Code)
+	assert.Equal(t, "/docs/quickstarts/new-name/", repo.writtenDir, "a stale directoryName must not pin the quickstart in place")
+	assert.Equal(t, "/docs/quickstarts/old-name/", repo.removedDir)
+	assert.ElementsMatch(t, []string{"metadata.yaml", "old-name.yaml"}, repo.removedFiles,
+		"the whole pre-rename directory should be retired, including files whose names did not change")
+}
+
+func TestSubmitPR_UpdateMode_SameDirectoryOnlyPrunes(t *testing.T) {
+	repo := &mockRepoManager{
+		commitSHA:  "abc123def456abc123def456abc123def456abcd",
+		baseBranch: "main",
+		files:      []string{"metadata.yaml", "existing-qs.yaml", "leftover.yaml"},
+	}
+	handler := NewHandler(repo, &mockGitHubClient{}, "", "/docs/quickstarts/")
+
+	// existingPath has no leading slash but quickstartsDirPath does, so this
+	// also covers the two spellings resolving to the same directory.
+	body := updateBodyWithRename("docs/quickstarts/existing-qs/", "existing-qs", `[
+		{"name": "metadata.yaml", "content": "kind: QuickStarts\nname: existing-qs"},
+		{"name": "existing-qs.yaml", "content": "edited"}
+	]`)
+
+	req := httptest.NewRequest(http.MethodPost, "/api/v1/submit-pr", bytes.NewBufferString(body))
+	rec := httptest.NewRecorder()
+	handler.SubmitPR(rec, req)
+
+	require.Equal(t, http.StatusOK, rec.Code)
+	assert.Equal(t, "/docs/quickstarts/existing-qs/", repo.writtenDir)
+	assert.Equal(t, []string{"leftover.yaml"}, repo.removedFiles,
+		"staying put should drop only what the update no longer sends, never metadata.yaml")
+}
+
+func TestSubmitPR_UpdateMode_RenameOutOfBoundsDirIsNotPruned(t *testing.T) {
+	repo := &mockRepoManager{
+		commitSHA:  "abc123def456abc123def456abc123def456abcd",
+		baseBranch: "main",
+		files:      []string{"keep-me.yaml"},
+	}
+	handler := NewHandler(repo, &mockGitHubClient{}, "", "/docs/quickstarts/")
+
+	body := updateBodyWithRename("/docs/", "new-name", `[
+		{"name": "metadata.yaml", "content": "kind: QuickStarts\nname: new-name"}
+	]`)
+
+	req := httptest.NewRequest(http.MethodPost, "/api/v1/submit-pr", bytes.NewBufferString(body))
+	rec := httptest.NewRecorder()
+	handler.SubmitPR(rec, req)
+
+	require.Equal(t, http.StatusOK, rec.Code)
+	assert.Empty(t, repo.removedFiles, "a move must not empty a directory outside docs/quickstarts/<name>/")
+}
+
+func TestValidateRequest_DirectoryNameMustBeOneSegment(t *testing.T) {
+	for _, name := range []string{"nested/dir", `back\slash`, "."} {
+		t.Run(name, func(t *testing.T) {
+			err := validateRequest(&SubmitPRRequest{
+				Files: []File{{Name: "metadata.yaml", Content: "x"}},
+				Metadata: PRMetadata{
+					BranchName:    "qs-create-1",
+					CommitMessage: "Add",
+					PRTitle:       "Add",
+					PRBody:        "Add",
+					DirectoryName: name,
+				},
+			})
+			assert.Error(t, err)
+		})
+	}
+}
+
+func TestSubmitPR_CreateMode_NeverRemoves(t *testing.T) {
+	repo := &mockRepoManager{
+		commitSHA:  "abc123def456abc123def456abc123def456abcd",
+		baseBranch: "main",
+		files:      []string{"metadata.yaml", "unrelated.yaml"},
+	}
+	handler := NewHandler(repo, &mockGitHubClient{createPRURL: "https://github.com/org/repo/pull/1"}, "", "/docs/quickstarts/")
+
+	body := `{
+		"files": [{"name": "metadata.yaml", "content": "new"}],
+		"metadata": {
+			"branchName": "qs-create-demo-1",
+			"commitMessage": "Add quickstart",
+			"prTitle": "Add test quickstart",
+			"prBody": "Adding new",
+			"directoryName": "demo"
+		}
+	}`
+
+	req := httptest.NewRequest(http.MethodPost, "/api/v1/submit-pr", bytes.NewBufferString(body))
+	rec := httptest.NewRecorder()
+	handler.SubmitPR(rec, req)
+
+	require.Equal(t, http.StatusOK, rec.Code)
+	assert.Empty(t, repo.removedFiles, "create mode must not delete anything")
+}
+
+func TestSubmitPR_UpdateMode_ListFilesErrorDoesNotBlock(t *testing.T) {
+	repo := &mockRepoManager{
+		commitSHA:    "abc123def456abc123def456abc123def456abcd",
+		baseBranch:   "main",
+		listFilesErr: fmt.Errorf("directory does not exist"),
+	}
+	handler := NewHandler(repo, &mockGitHubClient{}, "", "/docs/quickstarts/")
+
+	body := updateBodyWithFiles(`[{"name": "metadata.yaml", "content": "updated"}]`)
+
+	req := httptest.NewRequest(http.MethodPost, "/api/v1/submit-pr", bytes.NewBufferString(body))
+	rec := httptest.NewRecorder()
+	handler.SubmitPR(rec, req)
+
+	assert.Equal(t, http.StatusOK, rec.Code, "prune is best effort and must not fail the update")
+	assert.Empty(t, repo.removedFiles)
+}
+
+func TestSubmitPR_UpdateMode_RemoveErrorDoesNotBlock(t *testing.T) {
+	repo := &mockRepoManager{
+		commitSHA:  "abc123def456abc123def456abc123def456abcd",
+		baseBranch: "main",
+		files:      []string{"metadata.yaml", "old-name.yaml"},
+		removeErr:  fmt.Errorf("staging failed"),
+	}
+	handler := NewHandler(repo, &mockGitHubClient{}, "", "/docs/quickstarts/")
+
+	body := updateBodyWithFiles(`[{"name": "metadata.yaml", "content": "updated"}]`)
+
+	req := httptest.NewRequest(http.MethodPost, "/api/v1/submit-pr", bytes.NewBufferString(body))
+	rec := httptest.NewRecorder()
+	handler.SubmitPR(rec, req)
+
+	assert.Equal(t, http.StatusOK, rec.Code, "a failed delete must not lose the user's edit")
+	assert.True(t, repo.forcePushed)
+}
+
+func TestSubmitPR_UpdateMode_RefusesToPruneOutsideQuickstarts(t *testing.T) {
+	for _, existingPath := range []string{"/docs/", "/", "/docs/quickstarts/", "/docs/quickstarts/a/b/", "/other/place/"} {
+		t.Run(existingPath, func(t *testing.T) {
+			repo := &mockRepoManager{
+				commitSHA:  "abc123def456abc123def456abc123def456abcd",
+				baseBranch: "main",
+				files:      []string{"README.md", "CONTRIBUTING.md"},
+			}
+			handler := NewHandler(repo, &mockGitHubClient{}, "", "/docs/quickstarts/")
+
+			body := `{
+				"files": [{"name": "metadata.yaml", "content": "updated"}],
+				"metadata": {
+					"branchName": "quickstart/update-123",
+					"commitMessage": "Update quickstart",
+					"prTitle": "Update test quickstart",
+					"prBody": "Updating existing",
+					"isUpdate": true,
+					"existingPath": "` + existingPath + `",
+					"prNumber": 43
+				}
+			}`
+
+			req := httptest.NewRequest(http.MethodPost, "/api/v1/submit-pr", bytes.NewBufferString(body))
+			rec := httptest.NewRecorder()
+			handler.SubmitPR(rec, req)
+
+			assert.Empty(t, repo.removedFiles, "prune must be confined to a single quickstart directory")
+		})
+	}
+}
+
+func TestIsQuickstartDir(t *testing.T) {
+	base := "/docs/quickstarts/"
+	assert.True(t, isQuickstartDir("/docs/quickstarts/demo/", base))
+	assert.True(t, isQuickstartDir("docs/quickstarts/demo", base))
+	assert.False(t, isQuickstartDir("/docs/quickstarts/", base), "the parent directory is not a quickstart")
+	assert.False(t, isQuickstartDir("/docs/", base))
+	assert.False(t, isQuickstartDir("/docs/quickstarts/a/b", base), "quickstarts are exactly one level deep")
+	assert.False(t, isQuickstartDir("/other/demo/", base))
+	assert.False(t, isQuickstartDir("", base))
+	assert.False(t, isQuickstartDir("/docs/quickstarts/demo/", ""))
 }
 
 func TestSubmitPR_PullLatestError(t *testing.T) {

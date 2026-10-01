@@ -227,6 +227,120 @@ func TestCommitChanges_NewDirectory(t *testing.T) {
 	assert.NoError(t, err, "content yaml should be committed")
 }
 
+func TestRemoveFiles_RenameLeavesOnlyNewFile(t *testing.T) {
+	bare := createBareRepo(t)
+	cloneDest := filepath.Join(t.TempDir(), "repo")
+
+	mgr, err := InitRepo(bare, cloneDest, "", "master", "", "", "")
+	require.NoError(t, err)
+
+	dir := "docs/quickstarts/demo"
+	original := []File{
+		{Name: "metadata.yaml", Content: "name: old-name"},
+		{Name: "old-name.yaml", Content: "spec:\n  displayName: Old\n"},
+	}
+	require.NoError(t, mgr.WriteFiles(dir, original))
+	_, err = mgr.CommitChanges("add quickstart", "Test User", "test@test.com", dir, original)
+	require.NoError(t, err)
+
+	renamed := []File{
+		{Name: "metadata.yaml", Content: "name: new-name"},
+		{Name: "new-name.yaml", Content: "spec:\n  displayName: New\n"},
+	}
+	require.NoError(t, mgr.RemoveFiles(dir, []string{"old-name.yaml"}))
+	require.NoError(t, mgr.WriteFiles(dir, renamed))
+	_, err = mgr.CommitChanges("rename quickstart", "Test User", "test@test.com", dir, renamed)
+	require.NoError(t, err)
+
+	head, err := mgr.Repo.Head()
+	require.NoError(t, err)
+	commit, err := mgr.Repo.CommitObject(head.Hash())
+	require.NoError(t, err)
+	tree, err := commit.Tree()
+	require.NoError(t, err)
+
+	_, err = tree.File(dir + "/new-name.yaml")
+	assert.NoError(t, err, "renamed file should be committed")
+	_, err = tree.File(dir + "/metadata.yaml")
+	assert.NoError(t, err, "metadata.yaml should survive the rename")
+	_, err = tree.File(dir + "/old-name.yaml")
+	assert.Error(t, err, "pre-rename file should no longer be in the tree")
+
+	assert.NoFileExists(t, filepath.Join(cloneDest, dir, "old-name.yaml"))
+}
+
+func TestRemoveFiles_RenameMovesWholeDirectory(t *testing.T) {
+	bare := createBareRepo(t)
+	cloneDest := filepath.Join(t.TempDir(), "repo")
+
+	mgr, err := InitRepo(bare, cloneDest, "", "master", "", "", "")
+	require.NoError(t, err)
+
+	oldDir := "docs/quickstarts/old-name"
+	original := []File{
+		{Name: "metadata.yaml", Content: "name: old-name"},
+		{Name: "old-name.yaml", Content: "spec:\n  displayName: Old\n"},
+	}
+	require.NoError(t, mgr.WriteFiles(oldDir, original))
+	_, err = mgr.CommitChanges("add quickstart", "Test User", "test@test.com", oldDir, original)
+	require.NoError(t, err)
+
+	// Renaming the quickstart retires the whole old directory, including
+	// metadata.yaml, whose name did not change.
+	newDir := "docs/quickstarts/new-name"
+	renamed := []File{
+		{Name: "metadata.yaml", Content: "name: new-name"},
+		{Name: "new-name.yaml", Content: "spec:\n  displayName: New\n"},
+	}
+	require.NoError(t, mgr.RemoveFiles(oldDir, []string{"metadata.yaml", "old-name.yaml"}))
+	require.NoError(t, mgr.WriteFiles(newDir, renamed))
+	_, err = mgr.CommitChanges("rename quickstart", "Test User", "test@test.com", newDir, renamed)
+	require.NoError(t, err)
+
+	head, err := mgr.Repo.Head()
+	require.NoError(t, err)
+	commit, err := mgr.Repo.CommitObject(head.Hash())
+	require.NoError(t, err)
+	tree, err := commit.Tree()
+	require.NoError(t, err)
+
+	_, err = tree.File(newDir + "/metadata.yaml")
+	assert.NoError(t, err, "metadata.yaml should exist in the renamed directory")
+	_, err = tree.File(newDir + "/new-name.yaml")
+	assert.NoError(t, err, "renamed content file should be committed")
+	_, err = tree.File(oldDir + "/metadata.yaml")
+	assert.Error(t, err, "old directory should be gone from the tree")
+	_, err = tree.File(oldDir + "/old-name.yaml")
+	assert.Error(t, err, "old directory should be gone from the tree")
+
+	// Git does not track directories, so emptying it removes it.
+	assert.NoDirExists(t, filepath.Join(cloneDest, oldDir))
+}
+
+func TestRemoveFiles_EmptyListIsNoop(t *testing.T) {
+	bare := createBareRepo(t)
+	cloneDest := filepath.Join(t.TempDir(), "repo")
+
+	mgr, err := InitRepo(bare, cloneDest, "", "master", "", "", "")
+	require.NoError(t, err)
+
+	assert.NoError(t, mgr.RemoveFiles("docs/quickstarts/demo", nil))
+}
+
+func TestRemoveFiles_PathTraversal(t *testing.T) {
+	bare := createBareRepo(t)
+	cloneDest := filepath.Join(t.TempDir(), "repo")
+
+	mgr, err := InitRepo(bare, cloneDest, "", "master", "", "", "")
+	require.NoError(t, err)
+
+	err = mgr.RemoveFiles("../../etc", []string{"passwd"})
+	assert.Error(t, err, "directory escaping the repo root should be rejected")
+
+	err = mgr.RemoveFiles("docs/quickstarts/demo", []string{"../../../etc/passwd"})
+	assert.Error(t, err, "file name escaping the repo root should be rejected")
+}
+
 func TestCommitChanges_LeadingSlashDir(t *testing.T) {
 	bare := createBareRepo(t)
 	cloneDest := filepath.Join(t.TempDir(), "repo")

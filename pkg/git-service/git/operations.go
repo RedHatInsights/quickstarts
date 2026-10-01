@@ -27,6 +27,7 @@ type RepoOperations interface {
 	CreateBranch(name string) error
 	CheckoutExistingBranch(name string) error
 	WriteFiles(dir string, files []File) error
+	RemoveFiles(dir string, names []string) error
 	CommitChanges(message, authorName, authorEmail, dir string, files []File) (string, error)
 	PushBranch(branch string) error
 	PushBranchForce(branch string) error
@@ -273,6 +274,51 @@ func (m *RepoManager) WriteFiles(dir string, files []File) error {
 		"dir":   dir,
 		"count": len(files),
 	}).Info("Files written")
+	return nil
+}
+
+// RemoveFiles deletes files from dir and stages the deletions so the next
+// commit records them. Used to drop files an update no longer includes, such
+// as the old YAML after a quickstart is renamed.
+func (m *RepoManager) RemoveFiles(dir string, names []string) error {
+	if len(names) == 0 {
+		return nil
+	}
+
+	w, err := m.Repo.Worktree()
+	if err != nil {
+		return fmt.Errorf("failed to get worktree: %w", err)
+	}
+
+	repoRoot := filepath.Clean(m.RepoPath) + string(os.PathSeparator)
+	absDir := filepath.Clean(filepath.Join(m.RepoPath, dir))
+	if !strings.HasPrefix(absDir+string(os.PathSeparator), repoRoot) {
+		return fmt.Errorf("directory path escapes repository root: %s", dir)
+	}
+
+	relDir := strings.TrimPrefix(dir, "/")
+	for _, name := range names {
+		if !strings.HasPrefix(filepath.Clean(filepath.Join(absDir, name)), repoRoot) {
+			return fmt.Errorf("file path escapes repository root: %s", name)
+		}
+		if _, err := w.Remove(filepath.Join(relDir, name)); err != nil {
+			return fmt.Errorf("failed to remove %s: %w", name, err)
+		}
+	}
+
+	// Git does not track directories, so emptying one leaves it behind on disk
+	// even though it is gone from the tree. ListDirectories reads the working
+	// copy, so a renamed quickstart would keep showing up until the next clean.
+	if entries, err := os.ReadDir(absDir); err == nil && len(entries) == 0 {
+		if err := os.Remove(absDir); err != nil {
+			logrus.WithError(err).WithField("dir", dir).Warn("Could not remove emptied directory")
+		}
+	}
+
+	logrus.WithFields(logrus.Fields{
+		"dir":   dir,
+		"count": len(names),
+	}).Info("Files removed")
 	return nil
 }
 
