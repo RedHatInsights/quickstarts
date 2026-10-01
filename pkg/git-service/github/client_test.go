@@ -364,6 +364,10 @@ func TestGetPRQuickstartFiles_FromHeadRepo(t *testing.T) {
 			{"filename": "README.md", "status": "modified"},
 		})
 	})
+	mux.HandleFunc("/repos/fork-user/test-repo/contents/docs/quickstarts/demo", func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, "deadbeef", r.URL.Query().Get("ref"))
+		writeDirectory(w, "docs/quickstarts/demo", "metadata.yml", "demo.yml")
+	})
 	mux.HandleFunc("/repos/fork-user/test-repo/contents/docs/quickstarts/demo/metadata.yml", func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, "deadbeef", r.URL.Query().Get("ref"))
 		writeContent(w, "kind: QuickStarts\n")
@@ -390,6 +394,93 @@ func TestGetPRQuickstartFiles_FromHeadRepo(t *testing.T) {
 	assert.Equal(t, "demo.yml", files[1].Name)
 }
 
+func TestGetPRQuickstartFiles_IncludesUnchangedHeadFiles(t *testing.T) {
+	tests := []struct {
+		name    string
+		changed string
+		slug    string
+	}{
+		{name: "metadata-only update", changed: "metadata.yaml", slug: "demo"},
+		{name: "content-only update", changed: "demo.yaml", slug: "demo"},
+		{name: "slug inferred from diff", changed: "demo.yaml"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			mux := http.NewServeMux()
+			mux.HandleFunc("/repos/test-owner/test-repo/pulls/11/files", func(w http.ResponseWriter, r *http.Request) {
+				json.NewEncoder(w).Encode([]map[string]string{
+					{"filename": "docs/quickstarts/demo/" + tt.changed, "status": "modified"},
+					{"filename": "docs/quickstarts/demo/old-name.yaml", "status": "removed"},
+				})
+			})
+			mux.HandleFunc("/repos/fork-user/test-repo/contents/docs/quickstarts/demo", func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, "deadbeef", r.URL.Query().Get("ref"))
+				json.NewEncoder(w).Encode([]map[string]string{
+					{"type": "file", "path": "docs/quickstarts/demo/metadata.yaml"},
+					{"type": "file", "path": "docs/quickstarts/demo/demo.yaml"},
+					{"type": "dir", "path": "docs/quickstarts/demo/assets"},
+					{"type": "symlink", "path": "docs/quickstarts/demo/link.yaml"},
+					{"type": "file", "path": "docs/quickstarts/other/other.yaml"},
+					{"type": "file", "path": "docs/quickstarts/demo/assets/nested.yaml"},
+					{"type": "file", "path": "docs/quickstarts/demo/../other.yaml"},
+				})
+			})
+			mux.HandleFunc("/repos/fork-user/test-repo/contents/docs/quickstarts/demo/metadata.yaml", func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, "deadbeef", r.URL.Query().Get("ref"))
+				writeContent(w, "kind: QuickStarts\nname: demo\ntags: []\n")
+			})
+			mux.HandleFunc("/repos/fork-user/test-repo/contents/docs/quickstarts/demo/demo.yaml", func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, "deadbeef", r.URL.Query().Get("ref"))
+				writeContent(w, "spec:\n  displayName: Demo\n")
+			})
+
+			client := newTestClient(t, mux)
+			pr := &CreatorPR{Number: 11, Slug: tt.slug, HeadSHA: "deadbeef", HeadOwner: "fork-user", HeadRepo: "test-repo"}
+			slug, files, err := client.GetPRQuickstartFiles(context.Background(), pr)
+			require.NoError(t, err)
+			assert.Equal(t, "demo", slug)
+			assert.ElementsMatch(t, []File{
+				{Name: "metadata.yaml", Content: "kind: QuickStarts\nname: demo\ntags: []\n"},
+				{Name: "demo.yaml", Content: "spec:\n  displayName: Demo\n"},
+			}, files, "resume needs both head files even when only one differs from main")
+		})
+	}
+}
+
+func TestGetPRQuickstartFiles_DirectoryErrors(t *testing.T) {
+	tests := []struct {
+		name   string
+		status int
+		body   interface{}
+		want   string
+	}{
+		{name: "missing directory", status: http.StatusNotFound, body: map[string]string{"message": "Not Found"}, want: "failed to list contents of docs/quickstarts/demo"},
+		{name: "permission denied", status: http.StatusForbidden, body: map[string]string{"message": "Forbidden"}, want: "failed to list contents of docs/quickstarts/demo"},
+		{name: "not a directory", status: http.StatusOK, body: map[string]string{"type": "file"}, want: "not a directory"},
+		{name: "empty directory", status: http.StatusOK, body: []map[string]string{}, want: "no quickstart files found in directory docs/quickstarts/demo"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			mux := http.NewServeMux()
+			mux.HandleFunc("/repos/test-owner/test-repo/pulls/11/files", func(w http.ResponseWriter, r *http.Request) {
+				json.NewEncoder(w).Encode([]map[string]string{
+					{"filename": "docs/quickstarts/demo/demo.yaml", "status": "modified"},
+				})
+			})
+			mux.HandleFunc("/repos/fork-user/test-repo/contents/docs/quickstarts/demo", func(w http.ResponseWriter, r *http.Request) {
+				w.WriteHeader(tt.status)
+				json.NewEncoder(w).Encode(tt.body)
+			})
+
+			client := newTestClient(t, mux)
+			pr := &CreatorPR{Number: 11, Slug: "demo", HeadSHA: "deadbeef", HeadOwner: "fork-user", HeadRepo: "test-repo"}
+			_, files, err := client.GetPRQuickstartFiles(context.Background(), pr)
+			require.ErrorContains(t, err, tt.want)
+			assert.Nil(t, files)
+		})
+	}
+}
+
 func TestGetPRQuickstartFiles_StaleSlugFallsBackToBranchDirectory(t *testing.T) {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/repos/test-owner/test-repo/pulls/12/files", func(w http.ResponseWriter, r *http.Request) {
@@ -403,10 +494,16 @@ func TestGetPRQuickstartFiles_StaleSlugFallsBackToBranchDirectory(t *testing.T) 
 			{"filename": "docs/quickstarts/new-name/new-name.yaml", "status": "added"},
 		})
 	})
+	mux.HandleFunc("/repos/fork-user/test-repo/contents/docs/quickstarts/new-name", func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, "deadbeef", r.URL.Query().Get("ref"))
+		writeDirectory(w, "docs/quickstarts/new-name", "metadata.yaml", "new-name.yaml")
+	})
 	mux.HandleFunc("/repos/fork-user/test-repo/contents/docs/quickstarts/new-name/metadata.yaml", func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, "deadbeef", r.URL.Query().Get("ref"))
 		writeContent(w, "kind: QuickStarts\nname: new-name\n")
 	})
 	mux.HandleFunc("/repos/fork-user/test-repo/contents/docs/quickstarts/new-name/new-name.yaml", func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, "deadbeef", r.URL.Query().Get("ref"))
 		writeContent(w, "spec:\n  displayName: New\n")
 	})
 
@@ -476,6 +573,18 @@ func openCreatorPRJSON(number int, branch, slug string) map[string]interface{} {
 			},
 		},
 	}
+}
+
+func writeDirectory(w http.ResponseWriter, dir string, names ...string) {
+	entries := make([]map[string]string, 0, len(names))
+	for _, name := range names {
+		entries = append(entries, map[string]string{
+			"type": "file",
+			"name": name,
+			"path": dir + "/" + name,
+		})
+	}
+	json.NewEncoder(w).Encode(entries)
 }
 
 func writeContent(w http.ResponseWriter, content string) {

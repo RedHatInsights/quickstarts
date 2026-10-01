@@ -270,6 +270,31 @@ func (c *Client) GetPRQuickstartFiles(ctx context.Context, pr *CreatorPR) (strin
 		return "", nil, fmt.Errorf("no quickstart files found in PR %d", pr.Number)
 	}
 
+	// The diff identifies the quickstart directory, but omits unchanged files.
+	// Resume needs the complete document, including metadata or content that
+	// did not change in this PR. List the directory at the same head SHA used
+	// for all file reads so the response is a consistent snapshot of the fork.
+	dir := quickstartsDir + slug
+	file, entries, _, err := c.gh.Repositories.GetContents(ctx, pr.HeadOwner, pr.HeadRepo, dir, &github.RepositoryContentGetOptions{
+		Ref: pr.HeadSHA,
+	})
+	if err != nil {
+		return "", nil, fmt.Errorf("failed to list contents of %s: %w", dir, err)
+	}
+	if file != nil {
+		return "", nil, fmt.Errorf("failed to list contents of %s: not a directory", dir)
+	}
+	paths = nil
+	for _, entry := range entries {
+		if entry.GetType() == "file" {
+			paths = append(paths, entry.GetPath())
+		}
+	}
+	matched = quickstartFilesUnder(paths, slug)
+	if len(matched) == 0 {
+		return "", nil, fmt.Errorf("no quickstart files found in directory %s", dir)
+	}
+
 	out := make([]File, 0, len(matched))
 	for _, p := range matched {
 		content, err := c.getFileContent(ctx, pr.HeadOwner, pr.HeadRepo, p, pr.HeadSHA)
