@@ -1,7 +1,7 @@
 apiVersion: console.openshift.io/v1
 kind: QuickStarts
 metadata:
-  name: secondary-testing-new
+  name: secondary-testing-new-new
   tags:
     - kind: bundle
       value: insights
@@ -26,5 +26,5 @@ spec:
     text: Documentation
     color: orange
   link:
-    href: https://docs.redhat.com/en/documentation/cost_management_service/1-latest/configure-cost_models
     text: View documentation
+    href: https://docs.redhat.com/en/documentation/cost_management_service/1-latest/configure-cost_models
