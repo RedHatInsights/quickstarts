@@ -53,6 +53,8 @@ objects:
           successThreshold: 1
           timeoutSeconds: 120
         env:
+        - name: LOG_LEVEL
+          value: ${LOG_LEVEL}
         - name: CLOWDER_ENABLED
           value: ${CLOWDER_ENABLED}
         - name: GIT_SERVICE_ENABLED
