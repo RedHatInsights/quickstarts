@@ -169,6 +169,9 @@ components:
         directoryName:
           type: string
           description: Directory name for the quickstart (e.g. insights-integrate-satellite-iop). Defaults to branchName if not set.
+        prNumber:
+          type: integer
+          description: Existing PR number; used to return prUrl on force-push update.
     SubmitPrRequest:
       type: object
       required:
@@ -211,6 +214,46 @@ components:
       type: object
       properties:
         name:
+          type: string
+        files:
+          type: array
+          items:
+            $ref: '#/components/schemas/SubmitPrFile'
+    CreatorPrEntry:
+      type: object
+      properties:
+        number:
+          type: integer
+        title:
+          type: string
+        htmlUrl:
+          type: string
+        updatedAt:
+          type: string
+          format: date-time
+        branchName:
+          type: string
+        slug:
+          type: string
+    ListCreatorPrsResponse:
+      type: object
+      properties:
+        pullRequests:
+          type: array
+          items:
+            $ref: '#/components/schemas/CreatorPrEntry'
+    CreatorPrContentResponse:
+      type: object
+      properties:
+        number:
+          type: integer
+        title:
+          type: string
+        htmlUrl:
+          type: string
+        branchName:
+          type: string
+        slug:
           type: string
         files:
           type: array
@@ -697,4 +740,66 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/BadRequest'
-
+  /creator-prs:
+    get:
+      summary: List open creator pull requests
+      responses:
+        '200':
+          description: Open PRs with head branches starting with qs-create- or qs-update-
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ListCreatorPrsResponse'
+        '404':
+          description: Git-service is not available
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '502':
+          description: Git service error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+  /creator-prs/{number}:
+    get:
+      summary: Get one creator pull request and its quickstart files
+      parameters:
+        - name: number
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: GitHub pull request number
+      responses:
+        '200':
+          description: PR metadata and files
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CreatorPrContentResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: PR not found or git-service is not available
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '502':
+          description: Git service error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
