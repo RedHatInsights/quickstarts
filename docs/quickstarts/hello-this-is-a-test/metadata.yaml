@@ -1,0 +1,11 @@
+kind: QuickStarts
+name: hello-this-is-a-test
+tags:
+  - kind: bundle
+    value: ansible
+  - kind: bundle
+    value: insights
+  - kind: product-families
+    value: ansible
+  - kind: product-families
+    value: openshift

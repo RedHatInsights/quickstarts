@@ -1,0 +1,28 @@
+apiVersion: console.openshift.io/v1
+kind: QuickStarts
+metadata:
+  name: hello-this-is-a-test
+  tags:
+    - kind: bundle
+      value: ansible
+    - kind: bundle
+      value: insights
+    - kind: product-families
+      value: ansible
+    - kind: product-families
+      value: openshift
+spec:
+  version: 0.1
+  displayName: Hello this is a test
+  icon: ~
+  description: The description
+  type:
+    text: Quick start
+    color: green
+  durationMinutes: 3
+  prerequisites:
+    - The prereq
+  introduction: Markdown
+  tasks:
+    - title: First Task
+      description: Put it here
