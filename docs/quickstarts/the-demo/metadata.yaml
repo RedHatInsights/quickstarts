@@ -1,0 +1,11 @@
+kind: QuickStarts
+name: the-demo
+tags:
+  - kind: bundle
+    value: ansible
+  - kind: bundle
+    value: application-services
+  - kind: product-families
+    value: ansible
+  - kind: product-families
+    value: openshift
