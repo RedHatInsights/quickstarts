@@ -1,0 +1,28 @@
+apiVersion: console.openshift.io/v1
+kind: QuickStarts
+metadata:
+  name: demo
+  tags:
+    - kind: bundle
+      value: insights
+    - kind: bundle
+      value: openshift
+    - kind: product-families
+      value: ansible
+    - kind: product-families
+      value: openshift
+spec:
+  version: 0.1
+  displayName: Demo
+  icon: ~
+  description: The description
+  type:
+    text: Quick start
+    color: green
+  durationMinutes: 6
+  prerequisites:
+    - The prereq
+  introduction: "Hey there "
+  tasks:
+    - title: The task
+      description: The content
