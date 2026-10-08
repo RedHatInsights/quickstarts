@@ -42,13 +42,24 @@ type mockRepoManager struct {
 	fileContents    map[string]string
 	readFileErr     error
 	pullLatestCount int
+
+	createBranchAtErr error
+	branchBase        string
+	headSHA           string
+	headSHAErr        error
+	committedPaths    []string
+	commitMessage     string
 }
 
 func (m *mockRepoManager) PullLatest() error {
 	m.pullLatestCount++
 	return m.pullLatestErr
 }
-func (m *mockRepoManager) CreateBranch(name string) error           { return m.createBranchErr }
+func (m *mockRepoManager) CreateBranch(name string) error { return m.createBranchErr }
+func (m *mockRepoManager) CreateBranchAt(name, sha string) error {
+	m.branchBase = sha
+	return m.createBranchAtErr
+}
 func (m *mockRepoManager) CheckoutExistingBranch(name string) error { return m.checkoutExistingErr }
 func (m *mockRepoManager) PushBranch(branch string) error           { m.pushedBranch = branch; return m.pushErr }
 func (m *mockRepoManager) PushBranchForce(branch string) error {
@@ -71,6 +82,12 @@ func (m *mockRepoManager) RemoveFiles(dir string, names []string) error {
 func (m *mockRepoManager) CommitChanges(message, authorName, authorEmail, dir string, files []gitops.File) (string, error) {
 	return m.commitSHA, m.commitErr
 }
+func (m *mockRepoManager) CommitPaths(message, authorName, authorEmail string, paths []string) (string, error) {
+	m.committedPaths = paths
+	m.commitMessage = message
+	return m.commitSHA, m.commitErr
+}
+func (m *mockRepoManager) HeadSHA() (string, error) { return m.headSHA, m.headSHAErr }
 func (m *mockRepoManager) ListDirectories(basePath string) ([]string, error) {
 	return m.directories, m.listDirsErr
 }

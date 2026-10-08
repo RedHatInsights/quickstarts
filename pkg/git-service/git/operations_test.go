@@ -7,6 +7,7 @@ import (
 	"time"
 
 	gogit "github.com/go-git/go-git/v5"
+	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/go-git/go-git/v5/plumbing/object"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -604,4 +605,116 @@ func TestPushBranch_ToForkRemote(t *testing.T) {
 
 	_, err = os.Stat(filepath.Join(verify, "fork-pushed.txt"))
 	assert.NoError(t, err)
+}
+
+func TestCommitPaths_SpansDirectoriesInOneCommit(t *testing.T) {
+	bare := createBareRepo(t)
+	cloneDest := filepath.Join(t.TempDir(), "repo")
+
+	mgr, err := InitRepo(bare, cloneDest, "", "master", "", "", "")
+	require.NoError(t, err)
+
+	before, err := mgr.HeadSHA()
+	require.NoError(t, err)
+
+	require.NoError(t, mgr.WriteFiles("docs/quickstarts/a", []File{{Name: "a.yml", Content: "a: 1"}}))
+	require.NoError(t, mgr.WriteFiles("docs/quickstarts/b", []File{{Name: "metadata.yaml", Content: "b: 1"}}))
+
+	sha, err := mgr.CommitPaths("batch", "Test", "test@test.com", []string{
+		"docs/quickstarts/a/a.yml",
+		"/docs/quickstarts/b/metadata.yaml",
+	})
+	require.NoError(t, err)
+
+	after, err := mgr.HeadSHA()
+	require.NoError(t, err)
+	assert.Equal(t, sha, after)
+
+	commit, err := mgr.Repo.CommitObject(plumbing.NewHash(sha))
+	require.NoError(t, err)
+	require.Equal(t, 1, commit.NumParents())
+	assert.Equal(t, before, commit.ParentHashes[0].String(), "both directories land in a single commit")
+
+	stats, err := commit.Stats()
+	require.NoError(t, err)
+	var names []string
+	for _, s := range stats {
+		names = append(names, s.Name)
+	}
+	assert.ElementsMatch(t, []string{"docs/quickstarts/a/a.yml", "docs/quickstarts/b/metadata.yaml"}, names)
+}
+
+func TestCreateBranchAt_UsesRequestedBase(t *testing.T) {
+	bare := createBareRepo(t)
+	cloneDest := filepath.Join(t.TempDir(), "repo")
+
+	mgr, err := InitRepo(bare, cloneDest, "", "master", "", "", "")
+	require.NoError(t, err)
+
+	base, err := mgr.HeadSHA()
+	require.NoError(t, err)
+
+	files := []File{{Name: "later.txt", Content: "later"}}
+	require.NoError(t, mgr.WriteFiles(".", files))
+	_, err = mgr.CommitChanges("base moved", "Test", "test@test.com", ".", files)
+	require.NoError(t, err)
+
+	require.NoError(t, mgr.CreateBranchAt("qs-update-batch-1", base))
+
+	head, err := mgr.Repo.Head()
+	require.NoError(t, err)
+	assert.Equal(t, "refs/heads/qs-update-batch-1", head.Name().String())
+	assert.Equal(t, base, head.Hash().String())
+	_, err = os.Stat(filepath.Join(cloneDest, "later.txt"))
+	assert.True(t, os.IsNotExist(err), "files committed after the base must not be checked out")
+}
+
+func TestCreateBranchAt_UnknownRevision(t *testing.T) {
+	bare := createBareRepo(t)
+	cloneDest := filepath.Join(t.TempDir(), "repo")
+
+	mgr, err := InitRepo(bare, cloneDest, "", "master", "", "", "")
+	require.NoError(t, err)
+
+	for _, sha := range []string{"not-a-sha", "0123456789abcdef0123456789abcdef01234567"} {
+		err = mgr.CreateBranchAt("qs-update-batch-1", sha)
+		assert.ErrorIs(t, err, ErrUnknownRevision, sha)
+	}
+}
+
+func TestPushBranch_RejectsStaleBranch(t *testing.T) {
+	bare := createBareRepo(t)
+
+	first, err := InitRepo(bare, filepath.Join(t.TempDir(), "first"), "", "master", "", "", "")
+	require.NoError(t, err)
+	second, err := InitRepo(bare, filepath.Join(t.TempDir(), "second"), "", "master", "", "", "")
+	require.NoError(t, err)
+
+	require.NoError(t, first.CreateBranch("qs-update-batch-1"))
+	files := []File{{Name: "one.txt", Content: "one"}}
+	require.NoError(t, first.WriteFiles(".", files))
+	_, err = first.CommitChanges("first", "Test", "test@test.com", ".", files)
+	require.NoError(t, err)
+	require.NoError(t, first.PushBranch("qs-update-batch-1"))
+
+	require.NoError(t, second.CreateBranch("qs-update-batch-1"))
+	files = []File{{Name: "two.txt", Content: "two"}}
+	require.NoError(t, second.WriteFiles(".", files))
+	_, err = second.CommitChanges("second", "Test", "test@test.com", ".", files)
+	require.NoError(t, err)
+
+	err = second.PushBranch("qs-update-batch-1")
+	assert.ErrorIs(t, err, ErrPushRejected, "a normal push must not overwrite commits it has not seen")
+}
+
+func TestCommitPaths_NoChanges(t *testing.T) {
+	bare := createBareRepo(t)
+	cloneDest := filepath.Join(t.TempDir(), "repo")
+
+	mgr, err := InitRepo(bare, cloneDest, "", "master", "", "", "")
+	require.NoError(t, err)
+
+	require.NoError(t, mgr.WriteFiles(".", []File{{Name: "README.md", Content: "init"}}))
+	_, err = mgr.CommitPaths("nothing", "Test", "test@test.com", []string{"README.md"})
+	assert.ErrorIs(t, err, ErrNoChanges)
 }
