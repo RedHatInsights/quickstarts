@@ -15,6 +15,7 @@ import (
 
 func TestListQuickstarts_Success(t *testing.T) {
 	repo := &mockRepoManager{
+		headSHA:     "abc123",
 		directories: []string{"getting-started", "cost-management"},
 		fileContents: map[string]string{
 			"/docs/quickstarts/getting-started/getting-started.yml": "spec:\n  displayName: Getting Started\n",
@@ -37,6 +38,7 @@ func TestListQuickstarts_Success(t *testing.T) {
 	assert.Equal(t, "Getting Started", resp.Quickstarts[0].DisplayName)
 	assert.Equal(t, "cost-management", resp.Quickstarts[1].Name)
 	assert.Equal(t, "Cost Management", resp.Quickstarts[1].DisplayName)
+	assert.Equal(t, "abc123", resp.HeadSHA, "the listing names the snapshot it was read from")
 }
 
 func TestListQuickstarts_FallsBackToYamlExtension(t *testing.T) {
@@ -126,7 +128,7 @@ func TestGetQuickstartContent_Success(t *testing.T) {
 	repo := &mockRepoManager{
 		files: []string{"metadata.yaml", "getting-started.yml"},
 		fileContents: map[string]string{
-			"/docs/quickstarts/getting-started/metadata.yaml":      "kind: QuickStarts\n",
+			"/docs/quickstarts/getting-started/metadata.yaml":       "kind: QuickStarts\n",
 			"/docs/quickstarts/getting-started/getting-started.yml": "spec:\n  displayName: Getting Started\n",
 		},
 	}

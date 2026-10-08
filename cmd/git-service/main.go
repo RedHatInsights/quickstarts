@@ -68,10 +68,13 @@ func main() {
 		r.Route("/api/v1", func(r chi.Router) {
 			r.Use(pskmw.PSKAuth(cfg.PSKToken))
 			r.Post("/submit-pr", handler.SubmitPR)
+			r.Post("/submit-batch-pr", handler.SubmitBatchPR)
 			r.Get("/list-quickstarts", handler.ListQuickstarts)
 			r.Get("/quickstart-content/{name}", handler.GetQuickstartContent)
 			r.Get("/creator-prs", handler.ListCreatorPRs)
 			r.Get("/creator-prs/{number}", handler.GetCreatorPR)
+			r.Get("/creator-prs/{number}/workspace", handler.GetCreatorPRWorkspace)
+			r.Get("/creator-prs/{number}/resources/{name}", handler.GetCreatorPRResource)
 		})
 	}
 

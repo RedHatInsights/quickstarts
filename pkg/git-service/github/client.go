@@ -14,12 +14,16 @@ import (
 	"github.com/google/go-github/v66/github"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/oauth2"
+	"golang.org/x/sync/errgroup"
 )
 
 var (
-	ErrNotFound    = errors.New("creator pull request not found")
-	directoryRe    = regexp.MustCompile(`Directory:\s*docs/quickstarts/([^/\s]+)`)
-	quickstartsDir = "docs/quickstarts/"
+	ErrNotFound       = errors.New("creator pull request not found")
+	ErrResource       = errors.New("quickstart not found at pull request head")
+	ErrMultiResource  = errors.New("pull request changes more than one quickstart")
+	ErrIncompleteDiff = errors.New("pull request changes too many files to list completely")
+	directoryRe       = regexp.MustCompile(`Directory:\s*docs/quickstarts/([^/\s]+)`)
+	quickstartsDir    = "docs/quickstarts/"
 )
 
 type File struct {
@@ -40,13 +44,38 @@ type CreatorPR struct {
 	Body       string
 }
 
+// Resource is one quickstart directory read at a fixed commit.
+type Resource struct {
+	Name  string
+	Dir   string
+	Files []File
+}
+
+// Workspace is every quickstart a pull request touches, read at its head.
+// Missing lists directories the diff touches that no longer exist there, such
+// as the old side of a rename.
+type Workspace struct {
+	Resources []Resource
+	Missing   []string
+}
+
+// GitHub stops listing a pull request's files at this many, without saying
+// whether more exist.
+const maxPRFiles = 3000
+
+// readConcurrency bounds how many directories are read from GitHub at once.
+const readConcurrency = 4
+
 type GitHubOperations interface {
 	CreatePullRequest(ctx context.Context, title, body, head, base string) (string, int, error)
 	AssignReviewers(ctx context.Context, prNumber int, team string) error
 	ListCreatorPRs(ctx context.Context) ([]CreatorPR, error)
 	GetCreatorPR(ctx context.Context, prNumber int) (*CreatorPR, error)
 	GetPRQuickstartFiles(ctx context.Context, pr *CreatorPR) (string, []File, error)
+	GetPRWorkspace(ctx context.Context, pr *CreatorPR) (*Workspace, error)
+	GetPRResource(ctx context.Context, pr *CreatorPR, name string) (*Resource, error)
 	FindPRURLByBranch(ctx context.Context, branchName string) (string, error)
+	FindPRByBranch(ctx context.Context, branchName string) (string, int, error)
 }
 
 // PRCreator is kept as an alias so existing handler construction still compiles
@@ -243,6 +272,12 @@ func (c *Client) GetPRQuickstartFiles(ctx context.Context, pr *CreatorPR) (strin
 		opt.Page = resp.NextPage
 	}
 
+	// This endpoint returns one quickstart. Picking the first of several would
+	// let a single-resource save silently drop the others from the workspace.
+	if len(quickstartDirs(paths)) > 1 {
+		return "", nil, ErrMultiResource
+	}
+
 	slug := pr.Slug
 	if slug == "" {
 		slug = slugFromPaths(paths)
@@ -307,6 +342,160 @@ func (c *Client) GetPRQuickstartFiles(ctx context.Context, pr *CreatorPR) (strin
 	return slug, out, nil
 }
 
+// GetPRWorkspace reads every quickstart directory the pull request touches,
+// complete and at its head SHA, so a multi-resource session can be resumed
+// from the branch alone.
+func (c *Client) GetPRWorkspace(ctx context.Context, pr *CreatorPR) (*Workspace, error) {
+	if pr == nil {
+		return nil, fmt.Errorf("pull request is required")
+	}
+
+	paths, err := c.listPRPaths(ctx, pr.Number)
+	if err != nil {
+		return nil, err
+	}
+	dirs := quickstartDirs(paths)
+	if len(dirs) == 0 {
+		return nil, fmt.Errorf("no quickstart files found in PR %d", pr.Number)
+	}
+
+	resources := make([]*Resource, len(dirs))
+	g, gctx := errgroup.WithContext(ctx)
+	g.SetLimit(readConcurrency)
+	for i, name := range dirs {
+		g.Go(func() error {
+			res, err := c.readResource(gctx, pr, name)
+			if errors.Is(err, ErrResource) {
+				return nil
+			}
+			resources[i] = res
+			return err
+		})
+	}
+	if err := g.Wait(); err != nil {
+		return nil, err
+	}
+
+	ws := &Workspace{Resources: []Resource{}, Missing: []string{}}
+	for i, res := range resources {
+		if res == nil {
+			ws.Missing = append(ws.Missing, dirs[i])
+			continue
+		}
+		ws.Resources = append(ws.Resources, *res)
+	}
+	if len(ws.Resources) == 0 {
+		return nil, fmt.Errorf("no quickstart directories exist at the head of PR %d", pr.Number)
+	}
+	return ws, nil
+}
+
+// GetPRResource reads one quickstart at the pull request's head SHA, so a
+// resource added to a resumed session matches the branch it will be saved to
+// rather than the base branch.
+func (c *Client) GetPRResource(ctx context.Context, pr *CreatorPR, name string) (*Resource, error) {
+	if pr == nil {
+		return nil, fmt.Errorf("pull request is required")
+	}
+	if name == "" || strings.Contains(name, "/") || containsDotDot(name) {
+		return nil, fmt.Errorf("invalid quickstart name %q", name)
+	}
+	return c.readResource(ctx, pr, name)
+}
+
+// listPRPaths returns every path the pull request diff touches, including
+// removed files and the old side of renames.
+func (c *Client) listPRPaths(ctx context.Context, number int) ([]string, error) {
+	opt := &github.ListOptions{PerPage: 100}
+	var paths []string
+	count := 0
+	for {
+		files, resp, err := c.gh.PullRequests.ListFiles(ctx, c.Owner, c.Repo, number, opt)
+		if err != nil {
+			return nil, fmt.Errorf("failed to list pull request files: %w", err)
+		}
+		for _, f := range files {
+			count++
+			for _, name := range []string{f.GetFilename(), f.GetPreviousFilename()} {
+				name = strings.TrimPrefix(name, "/")
+				if name != "" && !containsDotDot(name) {
+					paths = append(paths, name)
+				}
+			}
+		}
+		if resp == nil || resp.NextPage == 0 {
+			break
+		}
+		opt.Page = resp.NextPage
+	}
+	if count >= maxPRFiles {
+		return nil, ErrIncompleteDiff
+	}
+	return paths, nil
+}
+
+// readResource lists one quickstart directory at the PR head and reads each
+// file in it. ErrResource means the directory is not there.
+func (c *Client) readResource(ctx context.Context, pr *CreatorPR, name string) (*Resource, error) {
+	dir := quickstartsDir + name
+	file, entries, _, err := c.gh.Repositories.GetContents(ctx, pr.HeadOwner, pr.HeadRepo, dir, &github.RepositoryContentGetOptions{
+		Ref: pr.HeadSHA,
+	})
+	if err != nil {
+		if isStatus(err, http.StatusNotFound) {
+			return nil, fmt.Errorf("%w: %s", ErrResource, name)
+		}
+		return nil, fmt.Errorf("failed to list contents of %s: %w", dir, err)
+	}
+	if file != nil {
+		return nil, fmt.Errorf("%w: %s is not a directory", ErrResource, dir)
+	}
+
+	var paths []string
+	for _, entry := range entries {
+		if entry.GetType() == "file" {
+			paths = append(paths, entry.GetPath())
+		}
+	}
+	matched := quickstartFilesUnder(paths, name)
+	if len(matched) == 0 {
+		return nil, fmt.Errorf("%w: %s has no files", ErrResource, dir)
+	}
+
+	res := &Resource{Name: name, Dir: dir, Files: make([]File, 0, len(matched))}
+	for _, p := range matched {
+		content, err := c.getFileContent(ctx, pr.HeadOwner, pr.HeadRepo, p, pr.HeadSHA)
+		if err != nil {
+			return nil, err
+		}
+		res.Files = append(res.Files, File{Name: path.Base(p), Content: content})
+	}
+	return res, nil
+}
+
+// quickstartDirs returns the distinct quickstart directories under
+// docs/quickstarts/ that paths fall in, in first-seen order.
+func quickstartDirs(paths []string) []string {
+	seen := map[string]struct{}{}
+	var dirs []string
+	for _, p := range paths {
+		rest, ok := strings.CutPrefix(strings.TrimPrefix(p, "/"), quickstartsDir)
+		if !ok {
+			continue
+		}
+		dir, file, found := strings.Cut(rest, "/")
+		if !found || dir == "" || file == "" || containsDotDot(dir) {
+			continue
+		}
+		if _, ok := seen[dir]; ok {
+			continue
+		}
+		seen[dir] = struct{}{}
+		dirs = append(dirs, dir)
+	}
+	return dirs
+}
+
 // quickstartFilesUnder returns the paths sitting directly inside slug's
 // quickstart directory.
 func quickstartFilesUnder(paths []string, slug string) []string {
@@ -340,8 +529,15 @@ func (c *Client) getFileContent(ctx context.Context, owner, repo, filePath, ref 
 }
 
 func (c *Client) FindPRURLByBranch(ctx context.Context, branchName string) (string, error) {
+	url, _, err := c.FindPRByBranch(ctx, branchName)
+	return url, err
+}
+
+// FindPRByBranch returns the URL and number of the open pull request whose
+// head is branchName on the fork.
+func (c *Client) FindPRByBranch(ctx context.Context, branchName string) (string, int, error) {
 	if branchName == "" {
-		return "", fmt.Errorf("branch name is required")
+		return "", 0, fmt.Errorf("branch name is required")
 	}
 	head := branchName
 	if c.ForkOwner != "" {
@@ -356,12 +552,12 @@ func (c *Client) FindPRURLByBranch(ctx context.Context, branchName string) (stri
 		},
 	})
 	if err != nil {
-		return "", fmt.Errorf("failed to find PR for branch %s: %w", branchName, err)
+		return "", 0, fmt.Errorf("failed to find PR for branch %s: %w", branchName, err)
 	}
 	if len(prs) == 0 {
-		return "", ErrNotFound
+		return "", 0, ErrNotFound
 	}
-	return prs[0].GetHTMLURL(), nil
+	return prs[0].GetHTMLURL(), prs[0].GetNumber(), nil
 }
 
 func ParseRepoURL(repoURL string) (owner, repo string, err error) {

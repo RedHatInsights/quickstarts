@@ -121,6 +121,14 @@ type mockGitHubClient struct {
 	findURL        string
 	findURLErr     error
 
+	workspace    *ghclient.Workspace
+	workspaceErr error
+	resource     *ghclient.Resource
+	resourceErr  error
+	resourceName string
+	findPRNumber int
+	findPRErr    error
+
 	createdTitle string
 	createdBody  string
 	createdHead  string
@@ -153,6 +161,19 @@ func (m *mockGitHubClient) GetCreatorPR(ctx context.Context, prNumber int) (*ghc
 }
 func (m *mockGitHubClient) GetPRQuickstartFiles(ctx context.Context, pr *ghclient.CreatorPR) (string, []ghclient.File, error) {
 	return m.prFilesSlug, m.prFiles, m.prFilesErr
+}
+func (m *mockGitHubClient) GetPRWorkspace(ctx context.Context, pr *ghclient.CreatorPR) (*ghclient.Workspace, error) {
+	return m.workspace, m.workspaceErr
+}
+func (m *mockGitHubClient) GetPRResource(ctx context.Context, pr *ghclient.CreatorPR, name string) (*ghclient.Resource, error) {
+	m.resourceName = name
+	return m.resource, m.resourceErr
+}
+func (m *mockGitHubClient) FindPRByBranch(ctx context.Context, branchName string) (string, int, error) {
+	if m.findPRErr == nil && m.findPRNumber == 0 {
+		return "", 0, ghclient.ErrNotFound
+	}
+	return m.findURL, m.findPRNumber, m.findPRErr
 }
 func (m *mockGitHubClient) FindPRURLByBranch(ctx context.Context, branchName string) (string, error) {
 	return m.findURL, m.findURLErr
