@@ -284,6 +284,43 @@ func TestValidateBatchRequest(t *testing.T) {
 	assert.NoError(t, validateBatchRequest(&req))
 }
 
+func TestValidateBatchRequest_NewResource(t *testing.T) {
+	complete := func() BatchResource {
+		return BatchResource{Name: "fresh", Create: true, Files: []File{
+			{Name: "metadata.yml", Content: "kind: QuickStarts\nname: fresh\n"},
+			{Name: "fresh.yml", Content: "metadata:\n  name: fresh\nspec:\n  displayName: Fresh\n"},
+		}}
+	}
+	tests := []struct {
+		name   string
+		mutate func(*BatchResource)
+		want   string
+	}{
+		{"missing content file", func(r *BatchResource) { r.Files = r.Files[:1] }, "needs both"},
+		{"extra file", func(r *BatchResource) {
+			r.Files = append(r.Files, File{Name: "notes.yml", Content: "a: 1\n"})
+		}, "may only contain"},
+		{"content named for another resource", func(r *BatchResource) { r.Files[1].Name = "other.yml" }, "may only contain"},
+		{"metadata names another resource", func(r *BatchResource) { r.Files[0].Content = "name: other\n" }, `name must be "fresh"`},
+		{"content names another resource", func(r *BatchResource) {
+			r.Files[1].Content = "metadata:\n  name: other\n"
+		}, `metadata.name must be "fresh"`},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			res := complete()
+			tt.mutate(&res)
+			req := BatchPRRequest{Metadata: BatchPRMetadata{PRNumber: 1, ExpectedHeadSHA: headSHA, CommitMessage: "c"}, Resources: []BatchResource{res}}
+			err := validateBatchRequest(&req)
+			require.Error(t, err)
+			assert.Contains(t, err.Error(), tt.want)
+		})
+	}
+
+	req := BatchPRRequest{Metadata: BatchPRMetadata{PRNumber: 1, ExpectedHeadSHA: headSHA, CommitMessage: "c"}, Resources: []BatchResource{complete()}}
+	assert.NoError(t, validateBatchRequest(&req))
+}
+
 func TestSubmitBatchPR_InvalidBody(t *testing.T) {
 	h := NewHandler(batchRepo(), &mockGitHubClient{}, "", "/docs/quickstarts/")
 	rr := postBatch(h, "{")

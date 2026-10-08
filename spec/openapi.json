@@ -290,8 +290,12 @@
       },
       "BatchResource": {
         "properties": {
+          "create": {
+            "description": "The quickstart is new. Its directory must not exist on the branch, and files must be exactly its metadata file and content file, both declaring this name.",
+            "type": "boolean"
+          },
           "files": {
-            "description": "Changed files only; omitted files are left untouched",
+            "description": "Changed files only; omitted files are left untouched. A new quickstart sends all of its files.",
             "items": {
               "$ref": "#/components/schemas/SubmitPrFile"
             },
@@ -299,7 +303,7 @@
             "type": "array"
           },
           "name": {
-            "description": "Existing quickstart directory name",
+            "description": "Quickstart directory name",
             "type": "string"
           }
         },

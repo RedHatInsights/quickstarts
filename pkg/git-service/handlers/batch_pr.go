@@ -15,11 +15,17 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// BatchResource is the set of changed files for one existing quickstart.
-// Files that are not sent are left exactly as they are on the branch.
+// BatchResource is the set of changed files for one quickstart. Files that are
+// not sent are left exactly as they are on the branch.
+//
+// Create marks a quickstart that does not exist yet. Its directory must be
+// absent from the branch and it must be sent complete: a metadata file and a
+// content file, both naming it. Creation is explicit so that a typo in an
+// existing name is reported instead of quietly becoming a new directory.
 type BatchResource struct {
-	Name  string `json:"name"`
-	Files []File `json:"files"`
+	Name   string `json:"name"`
+	Create bool   `json:"create,omitempty"`
+	Files  []File `json:"files"`
 }
 
 type BatchPRMetadata struct {
@@ -70,7 +76,8 @@ func batchFail(status int, format string, args ...interface{}) *batchError {
 // commit, either opening a new PR or appending to an existing one.
 //
 // Unlike SubmitPR this never prunes or moves directories: a batch is a set of
-// edits to files that already exist, and anything not sent stays untouched.
+// edits to files that already exist, plus explicitly marked new quickstarts,
+// and anything not sent stays untouched.
 func (h *Handler) SubmitBatchPR(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
@@ -244,20 +251,24 @@ func (h *Handler) submitBatch(r *http.Request, req *BatchPRRequest) (*BatchPRRes
 }
 
 // writeBatch writes every resource's files into the checked-out branch and
-// returns their repository paths. Only files the quickstart already has may be
-// written, so a batch can neither add stray files nor be mistaken for a rename.
+// returns their repository paths. An edit may only write files the quickstart
+// already has, so it can neither add stray files nor be mistaken for a rename;
+// a creation may only write into a directory that does not exist yet.
 func (h *Handler) writeBatch(resources []BatchResource) ([]string, error) {
 	var paths []string
 	for _, res := range resources {
 		dir := h.quickstartsDirPath + res.Name + "/"
 		existing, err := h.repoMgr.ListFiles(dir)
-		if err != nil {
+		if res.Create && err == nil {
+			return nil, batchFail(http.StatusConflict, "quickstart %s already exists on the branch; choose another name", res.Name)
+		}
+		if !res.Create && err != nil {
 			return nil, batchFail(http.StatusBadRequest, "quickstart %s does not exist on the branch", res.Name)
 		}
 
 		files := make([]gitops.File, len(res.Files))
 		for i, f := range res.Files {
-			if !slices.Contains(existing, f.Name) {
+			if !res.Create && !slices.Contains(existing, f.Name) {
 				return nil, batchFail(http.StatusBadRequest, "%s%s does not exist on the branch; adding or renaming files is not supported", dir, f.Name)
 			}
 			files[i] = gitops.File{Name: f.Name, Content: f.Content}
@@ -276,7 +287,11 @@ func batchPRBody(resources []BatchResource, quickstartsDir string) string {
 	var b strings.Builder
 	fmt.Fprintf(&b, "Updating %d quickstarts via the Quickstarts Creator tool.\n\nDirectories:\n", len(resources))
 	for _, res := range resources {
-		fmt.Fprintf(&b, "- %s%s/\n", strings.TrimPrefix(quickstartsDir, "/"), res.Name)
+		suffix := ""
+		if res.Create {
+			suffix = " (new)"
+		}
+		fmt.Fprintf(&b, "- %s%s/%s\n", strings.TrimPrefix(quickstartsDir, "/"), res.Name, suffix)
 	}
 	return strings.TrimSuffix(b.String(), "\n")
 }
@@ -344,9 +359,50 @@ func validateBatchRequest(req *BatchPRRequest) error {
 				problems = append(problems, fmt.Sprintf("%s/%s: %v", res.Name, f.Name, err))
 			}
 		}
+		if res.Create {
+			if err := validateNewResource(res); err != nil {
+				problems = append(problems, err.Error())
+			}
+		}
 	}
 	if len(problems) > 0 {
 		return fmt.Errorf("invalid YAML: %s", strings.Join(problems, "; "))
+	}
+	return nil
+}
+
+// validateNewResource checks a quickstart being created is complete: exactly a
+// metadata file and a content file named after it, both declaring that name,
+// which is what the seeder needs to load it.
+func validateNewResource(res BatchResource) error {
+	var metadata, content *File
+	for i, f := range res.Files {
+		switch f.Name {
+		case "metadata.yml", "metadata.yaml":
+			metadata = &res.Files[i]
+		case res.Name + ".yml", res.Name + ".yaml":
+			content = &res.Files[i]
+		default:
+			return fmt.Errorf("%s/%s: a new quickstart may only contain metadata.yml and %s.yml", res.Name, f.Name, res.Name)
+		}
+	}
+	if metadata == nil || content == nil {
+		return fmt.Errorf("%s: a new quickstart needs both metadata.yml and %s.yml", res.Name, res.Name)
+	}
+
+	var meta struct {
+		Name string `yaml:"name"`
+	}
+	if err := yaml.Unmarshal([]byte(metadata.Content), &meta); err != nil || meta.Name != res.Name {
+		return fmt.Errorf("%s/%s: name must be %q", res.Name, metadata.Name, res.Name)
+	}
+	var doc struct {
+		Metadata struct {
+			Name string `yaml:"name"`
+		} `yaml:"metadata"`
+	}
+	if err := yaml.Unmarshal([]byte(content.Content), &doc); err != nil || doc.Metadata.Name != res.Name {
+		return fmt.Errorf("%s/%s: metadata.name must be %q", res.Name, content.Name, res.Name)
 	}
 	return nil
 }

@@ -206,3 +206,26 @@ func TestGetRepoQuickstarts_IncludesHeadSha(t *testing.T) {
 	require.NotNil(t, resp.Data.HeadSha)
 	assert.Equal(t, "abc", *resp.Data.HeadSha)
 }
+
+func TestPostPullRequestBatch_ForwardsCreate(t *testing.T) {
+	adapter := gitServiceAdapter(t, func(w http.ResponseWriter, r *http.Request) {
+		var got clients.GitServiceBatchRequest
+		require.NoError(t, json.NewDecoder(r.Body).Decode(&got))
+		require.Len(t, got.Resources, 2)
+		assert.False(t, got.Resources[0].Create, "an edit stays an edit")
+		assert.True(t, got.Resources[1].Create)
+
+		json.NewEncoder(w).Encode(map[string]interface{}{"prNumber": 42, "status": "updated"})
+	})
+	body := `{
+		"metadata": {"prNumber": 42, "expectedHeadSha": "abc", "commitMessage": "docs: add new"},
+		"resources": [
+			{"name": "alpha", "files": [{"name": "alpha.yml", "content": "a: 1\n"}]},
+			{"name": "fresh", "create": true, "files": [{"name": "metadata.yml", "content": "name: fresh\n"}]}
+		]
+	}`
+
+	w := httptest.NewRecorder()
+	adapter.PostPullRequestBatch(w, httptest.NewRequest(http.MethodPost, "/pull-request/batch", bytes.NewBufferString(body)))
+	assert.Equal(t, http.StatusOK, w.Code, w.Body.String())
+}

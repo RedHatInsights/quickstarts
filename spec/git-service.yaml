@@ -517,10 +517,13 @@ components:
       properties:
         name:
           type: string
-          description: Existing quickstart directory name
+          description: Quickstart directory name
+        create:
+          type: boolean
+          description: The quickstart is new. Its directory must not exist on the branch, and files must be exactly its metadata file and content file, both declaring this name.
         files:
           type: array
-          description: Changed files only; omitted files are left untouched
+          description: Changed files only; omitted files are left untouched. A new quickstart sends all of its files.
           items:
             $ref: '#/components/schemas/File'
 

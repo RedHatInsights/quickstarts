@@ -44,7 +44,11 @@ func (s *ServerAdapter) PostPullRequestBatch(w http.ResponseWriter, r *http.Requ
 		for j, f := range res.Files {
 			files[j] = clients.GitServiceFile{Name: f.Name, Content: f.Content}
 		}
-		resources[i] = clients.GitServiceBatchResource{Name: res.Name, Files: files}
+		resources[i] = clients.GitServiceBatchResource{
+			Name:   res.Name,
+			Create: res.Create != nil && *res.Create,
+			Files:  files,
+		}
 	}
 
 	m := reqBody.Metadata
