@@ -68,11 +68,13 @@ type GitServiceQuickstartEntry struct {
 
 type GitServiceListQuickstartsResponse struct {
 	Quickstarts []GitServiceQuickstartEntry `json:"quickstarts"`
+	HeadSHA     string                      `json:"headSha"`
 }
 
 type GitServiceQuickstartContentResponse struct {
-	Name  string           `json:"name"`
-	Files []GitServiceFile `json:"files"`
+	Name    string           `json:"name"`
+	Files   []GitServiceFile `json:"files"`
+	HeadSHA string           `json:"headSha"`
 }
 
 type GitServiceCreatorPREntry struct {
@@ -95,6 +97,63 @@ type GitServiceCreatorPRContentResponse struct {
 	BranchName string           `json:"branchName"`
 	Slug       string           `json:"slug"`
 	Files      []GitServiceFile `json:"files"`
+}
+
+type GitServiceBatchMetadata struct {
+	PRNumber        int    `json:"prNumber,omitempty"`
+	ExpectedHeadSHA string `json:"expectedHeadSha,omitempty"`
+	BranchName      string `json:"branchName,omitempty"`
+	BaseSHA         string `json:"baseSha,omitempty"`
+	CommitMessage   string `json:"commitMessage"`
+	PRTitle         string `json:"prTitle,omitempty"`
+	PRBody          string `json:"prBody,omitempty"`
+	UserEmail       string `json:"userEmail,omitempty"`
+}
+
+type GitServiceBatchResource struct {
+	Name  string           `json:"name"`
+	Files []GitServiceFile `json:"files"`
+}
+
+type GitServiceBatchRequest struct {
+	Metadata  GitServiceBatchMetadata   `json:"metadata"`
+	Resources []GitServiceBatchResource `json:"resources"`
+}
+
+type GitServiceBatchResponse struct {
+	PRURL      string   `json:"prUrl"`
+	PRNumber   int      `json:"prNumber"`
+	BranchName string   `json:"branchName"`
+	HeadSHA    string   `json:"headSha"`
+	Status     string   `json:"status"`
+	Paths      []string `json:"paths"`
+}
+
+type GitServiceResourceFile struct {
+	Name    string `json:"name"`
+	Path    string `json:"path"`
+	Content string `json:"content"`
+}
+
+type GitServiceWorkspaceResource struct {
+	Name  string                   `json:"name"`
+	Path  string                   `json:"path"`
+	Files []GitServiceResourceFile `json:"files"`
+}
+
+type GitServiceCreatorPRWorkspaceResponse struct {
+	Number     int                           `json:"number"`
+	Title      string                        `json:"title"`
+	HTMLURL    string                        `json:"htmlUrl"`
+	BranchName string                        `json:"branchName"`
+	HeadSHA    string                        `json:"headSha"`
+	Resources  []GitServiceWorkspaceResource `json:"resources"`
+	Missing    []string                      `json:"missing"`
+}
+
+type GitServiceCreatorPRResourceResponse struct {
+	HeadSHA  string                      `json:"headSha"`
+	Resource GitServiceWorkspaceResource `json:"resource"`
 }
 
 type HTTPStatusError struct {
@@ -257,10 +316,51 @@ func (c *GitService) GetCreatorPR(ctx context.Context, number int) (*GitServiceC
 	return &result, nil
 }
 
+func (c *GitService) GetCreatorPRWorkspace(ctx context.Context, number int) (*GitServiceCreatorPRWorkspaceResponse, error) {
+	var result GitServiceCreatorPRWorkspaceResponse
+	if err := c.getJSON(ctx, fmt.Sprintf("/api/v1/creator-prs/%d/workspace", number), &result); err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+func (c *GitService) GetCreatorPRResource(ctx context.Context, number int, name, headSHA string) (*GitServiceCreatorPRResourceResponse, error) {
+	path := fmt.Sprintf("/api/v1/creator-prs/%d/resources/%s", number, url.PathEscape(name))
+	if headSHA != "" {
+		path += "?headSha=" + url.QueryEscape(headSHA)
+	}
+	var result GitServiceCreatorPRResourceResponse
+	if err := c.getJSON(ctx, path, &result); err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+// SubmitBatchPR returns an *HTTPStatusError for git-service rejections so the
+// caller can pass conflicts and validation errors through to the browser.
+func (c *GitService) SubmitBatchPR(ctx context.Context, batch GitServiceBatchRequest) (*GitServiceBatchResponse, error) {
+	jsonBody, err := json.Marshal(batch)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal request: %w", err)
+	}
+	var result GitServiceBatchResponse
+	if err := c.doJSON(ctx, http.MethodPost, "/api/v1/submit-batch-pr", bytes.NewReader(jsonBody), &result); err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
 func (c *GitService) getJSON(ctx context.Context, path string, dest interface{}) error {
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, c.baseURL+path, nil)
+	return c.doJSON(ctx, http.MethodGet, path, nil, dest)
+}
+
+func (c *GitService) doJSON(ctx context.Context, method, path string, reqBody io.Reader, dest interface{}) error {
+	req, err := http.NewRequestWithContext(ctx, method, c.baseURL+path, reqBody)
 	if err != nil {
 		return fmt.Errorf("failed to create request: %w", err)
+	}
+	if reqBody != nil {
+		req.Header.Set("Content-Type", "application/json")
 	}
 	if c.pskToken != "" {
 		req.Header.Set("X-PSK-Token", c.pskToken)

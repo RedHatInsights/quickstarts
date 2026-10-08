@@ -210,6 +210,9 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/RepoQuickstartEntry'
+        headSha:
+          type: string
+          description: Base-branch commit the listing was read from
     QuickstartContentResponse:
       type: object
       properties:
@@ -219,6 +222,9 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/SubmitPrFile'
+        headSha:
+          type: string
+          description: Base-branch commit the files were read from
     CreatorPrEntry:
       type: object
       properties:
@@ -259,6 +265,125 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/SubmitPrFile'
+    BatchPrMetadata:
+      type: object
+      required:
+        - commitMessage
+      properties:
+        prNumber:
+          type: integer
+          description: Existing creator PR to append to; omit to open a new PR
+        expectedHeadSha:
+          type: string
+          description: PR head the edits were made against; required with prNumber
+        branchName:
+          type: string
+          description: New branch for a first save; must start with qs-update- or qs-create-
+        baseSha:
+          type: string
+          description: Base-branch commit the files were read from
+        commitMessage:
+          type: string
+        prTitle:
+          type: string
+          description: Required when opening a new PR
+        prBody:
+          type: string
+        userEmail:
+          type: string
+    BatchResource:
+      type: object
+      required:
+        - name
+        - files
+      properties:
+        name:
+          type: string
+          description: Existing quickstart directory name
+        files:
+          type: array
+          description: Changed files only; omitted files are left untouched
+          items:
+            $ref: '#/components/schemas/SubmitPrFile'
+          minItems: 1
+    BatchPrRequest:
+      type: object
+      required:
+        - metadata
+        - resources
+      properties:
+        metadata:
+          $ref: '#/components/schemas/BatchPrMetadata'
+        resources:
+          type: array
+          items:
+            $ref: '#/components/schemas/BatchResource'
+          minItems: 1
+    BatchPrResponse:
+      type: object
+      properties:
+        prUrl:
+          type: string
+        prNumber:
+          type: integer
+        branchName:
+          type: string
+        headSha:
+          type: string
+        status:
+          type: string
+        paths:
+          type: array
+          items:
+            type: string
+    ResourceFile:
+      type: object
+      properties:
+        name:
+          type: string
+        path:
+          type: string
+        content:
+          type: string
+    WorkspaceResource:
+      type: object
+      properties:
+        name:
+          type: string
+        path:
+          type: string
+        files:
+          type: array
+          items:
+            $ref: '#/components/schemas/ResourceFile'
+    CreatorPrWorkspaceResponse:
+      type: object
+      properties:
+        number:
+          type: integer
+        title:
+          type: string
+        htmlUrl:
+          type: string
+        branchName:
+          type: string
+        headSha:
+          type: string
+        resources:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkspaceResource'
+        missing:
+          type: array
+          items:
+            type: string
+    CreatorPrResourceResponse:
+      type: object
+      properties:
+        headSha:
+          type: string
+        resource:
+          $ref: '#/components/schemas/WorkspaceResource'
   parameters:
       ProductFamilies:
         name: product-families
@@ -689,6 +814,58 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/BadRequest'
+  /pull-request/batch:
+    post:
+      summary: Commit edits across several existing quickstarts to one pull request
+      description: >
+        Opens a new creator PR when metadata.prNumber is omitted, otherwise appends
+        one commit to that PR. Only the files sent are written.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatchPrRequest'
+      responses:
+        '200':
+          description: Changes committed and pushed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/BatchPrResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: PR not found or git-service is not available
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '409':
+          description: PR has new commits, a PR already exists for the branch, or the base commit is unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '413':
+          description: Request body too large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '502':
+          description: Git service error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
   /repo-quickstarts:
     get:
       summary: List quickstarts from the GitHub repository
@@ -793,6 +970,112 @@ paths:
                 $ref: '#/components/schemas/BadRequest'
         '404':
           description: PR not found or git-service is not available
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '409':
+          description: PR changes more than one quickstart; load its workspace instead
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '502':
+          description: Git service error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+  /creator-prs/{number}/workspace:
+    get:
+      summary: Get every quickstart a creator pull request touches, read at its head
+      parameters:
+        - name: number
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: GitHub pull request number
+      responses:
+        '200':
+          description: PR identity and complete quickstart snapshots
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CreatorPrWorkspaceResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: PR not found or git-service is not available
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '422':
+          description: PR changes too many files to load
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '502':
+          description: Git service error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+  /creator-prs/{number}/resources/{name}:
+    get:
+      summary: Get one quickstart read at a creator pull request's head
+      parameters:
+        - name: number
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: GitHub pull request number
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Quickstart directory name
+        - name: headSha
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Head the caller loaded; returns 409 if the PR has moved since
+      responses:
+        '200':
+          description: Quickstart files at the PR head
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CreatorPrResourceResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: PR or quickstart not found, or git-service is not available
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '409':
+          description: PR head does not match headSha
           content:
             application/json:
               schema:

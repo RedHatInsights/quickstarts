@@ -33,6 +33,7 @@ func (s *ServerAdapter) GetRepoQuickstarts(w http.ResponseWriter, r *http.Reques
 
 	utils.DataResponse(w, http.StatusOK, generated.ListRepoQuickstartsResponse{
 		Quickstarts: &quickstarts,
+		HeadSha:     optionalString(result.HeadSHA),
 	})
 }
 
@@ -59,7 +60,8 @@ func (s *ServerAdapter) GetRepoQuickstartsName(w http.ResponseWriter, r *http.Re
 
 	qsName := result.Name
 	utils.DataResponse(w, http.StatusOK, generated.QuickstartContentResponse{
-		Name:  &qsName,
-		Files: &files,
+		Name:    &qsName,
+		Files:   &files,
+		HeadSha: optionalString(result.HeadSHA),
 	})
 }
