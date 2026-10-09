@@ -2,7 +2,7 @@
 metadata:
   name: rbac-admin-vuln-permissions
 spec:
-  displayName: Restricting access to a service to a team
+  displayName: Restricting access to a service to a teams
   durationMinutes: 10
   type:
     text: Quick start
