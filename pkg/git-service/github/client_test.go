@@ -607,6 +607,7 @@ func TestGetPRWorkspace_ReadsEveryTouchedDirectoryAtHead(t *testing.T) {
 			{"filename": "docs/quickstarts/alpha/alpha.yml", "status": "modified"},
 			{"filename": "docs/quickstarts/beta/metadata.yaml", "status": "modified"},
 			{"filename": "docs/quickstarts/gamma-new/gamma-new.yaml", "status": "renamed", "previous_filename": "docs/quickstarts/gamma/gamma.yaml"},
+			{"filename": "docs/quickstarts/delta/delta.yaml", "status": "removed"},
 			{"filename": "README.md", "status": "modified"},
 		})
 	})
@@ -620,10 +621,12 @@ func TestGetPRWorkspace_ReadsEveryTouchedDirectoryAtHead(t *testing.T) {
 	mux.HandleFunc("/repos/fork-user/test-repo/contents/docs/quickstarts/gamma-new", func(w http.ResponseWriter, r *http.Request) {
 		writeDirectory(w, "docs/quickstarts/gamma-new", "metadata.yaml", "gamma-new.yaml")
 	})
-	mux.HandleFunc("/repos/fork-user/test-repo/contents/docs/quickstarts/gamma", func(w http.ResponseWriter, r *http.Request) {
+	notFound := func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
 		json.NewEncoder(w).Encode(map[string]string{"message": "Not Found"})
-	})
+	}
+	mux.HandleFunc("/repos/fork-user/test-repo/contents/docs/quickstarts/gamma", notFound)
+	mux.HandleFunc("/repos/fork-user/test-repo/contents/docs/quickstarts/delta", notFound)
 	mux.HandleFunc("/repos/fork-user/test-repo/contents/docs/quickstarts/", func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, "deadbeef", r.URL.Query().Get("ref"))
 		writeContent(w, "content of "+r.URL.Path)
@@ -642,8 +645,41 @@ func TestGetPRWorkspace_ReadsEveryTouchedDirectoryAtHead(t *testing.T) {
 		{Name: "alpha.yml", Content: "content of /repos/fork-user/test-repo/contents/docs/quickstarts/alpha/alpha.yml"},
 	}, ws.Resources[0].Files, "unchanged companion files are part of the snapshot")
 	assert.Equal(t, "beta", ws.Resources[1].Name)
+	assert.Empty(t, ws.Resources[0].RenamedFrom)
 	assert.Equal(t, "gamma-new", ws.Resources[2].Name)
-	assert.Equal(t, []string{"gamma"}, ws.Missing, "the old side of a rename is reported, not hidden")
+	assert.Equal(t, "gamma", ws.Resources[2].RenamedFrom, "the old side of a rename is paired with its resource")
+	assert.Equal(t, []string{"delta"}, ws.Missing, "a deleted directory is still reported")
+}
+
+func TestGetPRWorkspace_LeavesAmbiguousRenamesMissing(t *testing.T) {
+	mux := http.NewServeMux()
+	mux.HandleFunc("/repos/test-owner/test-repo/pulls/12/files", func(w http.ResponseWriter, r *http.Request) {
+		json.NewEncoder(w).Encode([]map[string]string{
+			{"filename": "docs/quickstarts/merged/metadata.yml", "status": "renamed", "previous_filename": "docs/quickstarts/one/metadata.yml"},
+			{"filename": "docs/quickstarts/merged/merged.yml", "status": "renamed", "previous_filename": "docs/quickstarts/two/two.yml"},
+		})
+	})
+	mux.HandleFunc("/repos/fork-user/test-repo/contents/docs/quickstarts/merged", func(w http.ResponseWriter, r *http.Request) {
+		writeDirectory(w, "docs/quickstarts/merged", "metadata.yml", "merged.yml")
+	})
+	notFound := func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode(map[string]string{"message": "Not Found"})
+	}
+	mux.HandleFunc("/repos/fork-user/test-repo/contents/docs/quickstarts/one", notFound)
+	mux.HandleFunc("/repos/fork-user/test-repo/contents/docs/quickstarts/two", notFound)
+	mux.HandleFunc("/repos/fork-user/test-repo/contents/docs/quickstarts/", func(w http.ResponseWriter, r *http.Request) {
+		writeContent(w, "content of "+r.URL.Path)
+	})
+
+	client := newTestClient(t, mux)
+	pr := &CreatorPR{Number: 12, HeadSHA: "deadbeef", HeadOwner: "fork-user", HeadRepo: "test-repo"}
+	ws, err := client.GetPRWorkspace(context.Background(), pr)
+	require.NoError(t, err)
+
+	require.Len(t, ws.Resources, 1)
+	assert.Empty(t, ws.Resources[0].RenamedFrom, "files from two directories name no single old directory")
+	assert.Equal(t, []string{"one", "two"}, ws.Missing)
 }
 
 func TestGetPRWorkspace_RejectsIncompleteDiff(t *testing.T) {

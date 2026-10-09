@@ -139,9 +139,10 @@ type GitServiceResourceFile struct {
 }
 
 type GitServiceWorkspaceResource struct {
-	Name  string                   `json:"name"`
-	Path  string                   `json:"path"`
-	Files []GitServiceResourceFile `json:"files"`
+	Name        string                   `json:"name"`
+	Path        string                   `json:"path"`
+	Files       []GitServiceResourceFile `json:"files"`
+	RenamedFrom string                   `json:"renamedFrom,omitempty"`
 }
 
 type GitServiceCreatorPRWorkspaceResponse struct {

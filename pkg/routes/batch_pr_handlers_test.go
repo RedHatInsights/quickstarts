@@ -131,7 +131,7 @@ func TestGetCreatorPrsNumberWorkspace(t *testing.T) {
 		json.NewEncoder(w).Encode(map[string]interface{}{
 			"number": 42, "title": "Update docs", "htmlUrl": "u", "branchName": "qs-update-batch-1", "headSha": "abc",
 			"resources": []map[string]interface{}{{
-				"name": "alpha", "path": "docs/quickstarts/alpha",
+				"name": "alpha", "path": "docs/quickstarts/alpha", "renamedFrom": "alpha-old",
 				"files": []map[string]string{{"name": "metadata.yml", "path": "docs/quickstarts/alpha/metadata.yml", "content": "name: alpha\n"}},
 			}},
 			"missing": []string{"gamma"},
@@ -150,6 +150,7 @@ func TestGetCreatorPrsNumberWorkspace(t *testing.T) {
 	require.Len(t, *resp.Data.Resources, 1)
 	res := (*resp.Data.Resources)[0]
 	assert.Equal(t, "docs/quickstarts/alpha/metadata.yml", *(*res.Files)[0].Path)
+	assert.Equal(t, "alpha-old", *res.RenamedFrom)
 	assert.Equal(t, []string{"gamma"}, *resp.Data.Missing)
 }
 

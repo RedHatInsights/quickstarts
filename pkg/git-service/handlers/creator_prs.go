@@ -43,9 +43,10 @@ type ResourceFile struct {
 }
 
 type WorkspaceResource struct {
-	Name  string         `json:"name"`
-	Path  string         `json:"path"`
-	Files []ResourceFile `json:"files"`
+	Name        string         `json:"name"`
+	Path        string         `json:"path"`
+	Files       []ResourceFile `json:"files"`
+	RenamedFrom string         `json:"renamedFrom,omitempty"`
 }
 
 type CreatorPRWorkspaceResponse struct {
@@ -219,7 +220,7 @@ func toWorkspaceResource(res ghclient.Resource) WorkspaceResource {
 	for i, f := range res.Files {
 		files[i] = ResourceFile{Name: f.Name, Path: res.Dir + "/" + f.Name, Content: f.Content}
 	}
-	return WorkspaceResource{Name: res.Name, Path: res.Dir, Files: files}
+	return WorkspaceResource{Name: res.Name, Path: res.Dir, Files: files, RenamedFrom: res.RenamedFrom}
 }
 
 func toEntry(pr ghclient.CreatorPR) CreatorPREntry {

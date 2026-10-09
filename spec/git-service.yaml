@@ -577,6 +577,9 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ResourceFile'
+        renamedFrom:
+          type: string
+          description: Directory the quickstart was moved from in the PR, if any
 
     CreatorPRWorkspaceResponse:
       type: object
@@ -597,7 +600,7 @@ components:
             $ref: '#/components/schemas/WorkspaceResource'
         missing:
           type: array
-          description: Directories the PR touches that no longer exist at its head
+          description: Directories the PR touches that no longer exist at its head and that are not the old name of a renamed resource
           items:
             type: string
 

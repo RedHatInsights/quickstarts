@@ -365,6 +365,9 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ResourceFile'
+        renamedFrom:
+          type: string
+          description: Directory the quickstart was moved from in the PR, if any
     CreatorPrWorkspaceResponse:
       type: object
       properties:

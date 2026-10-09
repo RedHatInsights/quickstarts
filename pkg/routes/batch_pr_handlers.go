@@ -146,7 +146,7 @@ func toGeneratedResource(res clients.GitServiceWorkspaceResource) generated.Work
 		files[i] = generated.ResourceFile{Name: &name, Path: &path, Content: &content}
 	}
 	name, path := res.Name, res.Path
-	return generated.WorkspaceResource{Name: &name, Path: &path, Files: &files}
+	return generated.WorkspaceResource{Name: &name, Path: &path, Files: &files, RenamedFrom: optionalString(res.RenamedFrom)}
 }
 
 // optionalString omits an empty value from a response rather than sending "".

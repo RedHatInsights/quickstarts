@@ -44,16 +44,18 @@ type CreatorPR struct {
 	Body       string
 }
 
-// Resource is one quickstart directory read at a fixed commit.
+// Resource is one quickstart directory read at a fixed commit. RenamedFrom is
+// the directory it was moved from in the pull request, when there is one.
 type Resource struct {
-	Name  string
-	Dir   string
-	Files []File
+	Name        string
+	Dir         string
+	Files       []File
+	RenamedFrom string
 }
 
 // Workspace is every quickstart a pull request touches, read at its head.
-// Missing lists directories the diff touches that no longer exist there, such
-// as the old side of a rename.
+// Missing lists directories the diff touches that no longer exist there and
+// that are not the old side of a resource's rename, such as a deleted one.
 type Workspace struct {
 	Resources []Resource
 	Missing   []string
@@ -350,7 +352,7 @@ func (c *Client) GetPRWorkspace(ctx context.Context, pr *CreatorPR) (*Workspace,
 		return nil, fmt.Errorf("pull request is required")
 	}
 
-	paths, err := c.listPRPaths(ctx, pr.Number)
+	paths, moves, err := c.listPRPaths(ctx, pr.Number)
 	if err != nil {
 		return nil, err
 	}
@@ -376,13 +378,31 @@ func (c *Client) GetPRWorkspace(ctx context.Context, pr *CreatorPR) (*Workspace,
 		return nil, err
 	}
 
-	ws := &Workspace{Resources: []Resource{}, Missing: []string{}}
+	missing := map[string]bool{}
 	for i, res := range resources {
 		if res == nil {
-			ws.Missing = append(ws.Missing, dirs[i])
+			missing[dirs[i]] = true
+		}
+	}
+	// A directory gone from the head that a resource's files were renamed
+	// out of is that resource's old name, not a loss.
+	for _, res := range resources {
+		if res == nil {
 			continue
 		}
-		ws.Resources = append(ws.Resources, *res)
+		if from := moves[res.Name]; from != "" && missing[from] {
+			res.RenamedFrom = from
+			delete(missing, from)
+		}
+	}
+
+	ws := &Workspace{Resources: []Resource{}, Missing: []string{}}
+	for i, res := range resources {
+		if res != nil {
+			ws.Resources = append(ws.Resources, *res)
+		} else if missing[dirs[i]] {
+			ws.Missing = append(ws.Missing, dirs[i])
+		}
 	}
 	if len(ws.Resources) == 0 {
 		return nil, fmt.Errorf("no quickstart directories exist at the head of PR %d", pr.Number)
@@ -404,15 +424,18 @@ func (c *Client) GetPRResource(ctx context.Context, pr *CreatorPR, name string) 
 }
 
 // listPRPaths returns every path the pull request diff touches, including
-// removed files and the old side of renames.
-func (c *Client) listPRPaths(ctx context.Context, number int) ([]string, error) {
+// removed files and the old side of renames, and maps each quickstart
+// directory that files were renamed into to the one they came from. A
+// directory fed by more than one old directory maps to "".
+func (c *Client) listPRPaths(ctx context.Context, number int) ([]string, map[string]string, error) {
 	opt := &github.ListOptions{PerPage: 100}
 	var paths []string
+	moves := map[string]string{}
 	count := 0
 	for {
 		files, resp, err := c.gh.PullRequests.ListFiles(ctx, c.Owner, c.Repo, number, opt)
 		if err != nil {
-			return nil, fmt.Errorf("failed to list pull request files: %w", err)
+			return nil, nil, fmt.Errorf("failed to list pull request files: %w", err)
 		}
 		for _, f := range files {
 			count++
@@ -422,6 +445,14 @@ func (c *Client) listPRPaths(ctx context.Context, number int) ([]string, error) 
 					paths = append(paths, name)
 				}
 			}
+			to, from := quickstartDirs([]string{f.GetFilename()}), quickstartDirs([]string{f.GetPreviousFilename()})
+			if len(to) == 1 && len(from) == 1 && to[0] != from[0] {
+				if prev, seen := moves[to[0]]; seen && prev != from[0] {
+					moves[to[0]] = ""
+				} else {
+					moves[to[0]] = from[0]
+				}
+			}
 		}
 		if resp == nil || resp.NextPage == 0 {
 			break
@@ -429,9 +460,9 @@ func (c *Client) listPRPaths(ctx context.Context, number int) ([]string, error) 
 		opt.Page = resp.NextPage
 	}
 	if count >= maxPRFiles {
-		return nil, ErrIncompleteDiff
+		return nil, nil, ErrIncompleteDiff
 	}
-	return paths, nil
+	return paths, moves, nil
 }
 
 // readResource lists one quickstart directory at the PR head and reads each

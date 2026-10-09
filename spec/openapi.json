@@ -784,6 +784,10 @@
           },
           "path": {
             "type": "string"
+          },
+          "renamedFrom": {
+            "description": "Directory the quickstart was moved from in the PR, if any",
+            "type": "string"
           }
         },
         "type": "object"

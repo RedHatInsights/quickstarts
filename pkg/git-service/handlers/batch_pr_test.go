@@ -392,7 +392,7 @@ func TestGetCreatorPRWorkspace(t *testing.T) {
 		workspace: &ghclient.Workspace{
 			Resources: []ghclient.Resource{
 				{Name: "alpha", Dir: "docs/quickstarts/alpha", Files: []ghclient.File{{Name: "metadata.yml", Content: "name: alpha\n"}}},
-				{Name: "beta", Dir: "docs/quickstarts/beta", Files: []ghclient.File{{Name: "metadata.yml", Content: "name: beta\n"}}},
+				{Name: "beta", Dir: "docs/quickstarts/beta", Files: []ghclient.File{{Name: "metadata.yml", Content: "name: beta\n"}}, RenamedFrom: "beta-old"},
 			},
 			Missing: []string{"gamma"},
 		},
@@ -409,6 +409,8 @@ func TestGetCreatorPRWorkspace(t *testing.T) {
 	require.Len(t, resp.Resources, 2)
 	assert.Equal(t, "docs/quickstarts/alpha", resp.Resources[0].Path)
 	assert.Equal(t, "docs/quickstarts/beta/metadata.yml", resp.Resources[1].Files[0].Path, "same basename in two resources stays distinct")
+	assert.Empty(t, resp.Resources[0].RenamedFrom)
+	assert.Equal(t, "beta-old", resp.Resources[1].RenamedFrom)
 	assert.Equal(t, []string{"gamma"}, resp.Missing)
 }
 
