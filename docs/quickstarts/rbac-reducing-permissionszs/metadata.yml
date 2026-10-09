@@ -1,5 +1,5 @@
 kind: QuickStarts
-name: rbac-reducing-permissionsz
+name: rbac-reducing-permissionszs
 tags:
 - kind: bundle
   value: iams
