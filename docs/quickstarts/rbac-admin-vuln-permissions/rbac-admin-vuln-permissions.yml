@@ -62,7 +62,7 @@ spec:
         
         User access in the console is additive, meaning that each user has the default access permissions, plus permissions from any other groups they are assigned.
 
-        After completing this quick start, the Organization Administrator now has all of the roles in these groups:
+        After completing this quickstart, the Organization Administrator now has all of the roles in these groups:
         - **Default admin access**
         - **Default access**
         - *Vulnerability admins*

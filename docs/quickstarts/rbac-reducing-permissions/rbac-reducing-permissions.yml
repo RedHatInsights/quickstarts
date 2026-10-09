@@ -3,7 +3,7 @@
 metadata:
   name: rbac-reducing-permissions
 spec:
-  displayName: Reducing permissions across my organization
+  displayName: Reducing permissions across my organizations
   durationMinutes: 10
   type:
     text: Quick start

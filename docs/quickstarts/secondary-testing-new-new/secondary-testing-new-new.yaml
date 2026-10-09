@@ -18,7 +18,7 @@ metadata:
   externalDocumentation: true
 spec:
   version: 0.1
-  displayName: Testing new quickstarts
+  displayName: Testing new quickstartszz
   icon: ~
   description: Configure cost models so the software accurately mirrors the
     specific pricing and discount structures of their cloud providers.

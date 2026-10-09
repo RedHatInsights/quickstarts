@@ -16,6 +16,6 @@ tags:
 - kind: use-case
   value: infrastructure
 - kind: use-case
-  value: system-configuration
+  value: system-configurations
 - kind: use-case
   value: security
