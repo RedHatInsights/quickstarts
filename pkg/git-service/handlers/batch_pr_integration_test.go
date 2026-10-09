@@ -119,13 +119,15 @@ func commitOnOrigin(t *testing.T, bare, sha string) (string, []string) {
 	changes, err := from.Diff(to)
 	require.NoError(t, err)
 
+	// Rename detection pairs a deletion with an addition; list both paths.
 	var paths []string
 	for _, c := range changes {
-		name := c.To.Name
-		if name == "" {
-			name = c.From.Name
+		if c.From.Name != "" {
+			paths = append(paths, c.From.Name)
 		}
-		paths = append(paths, name)
+		if c.To.Name != "" && c.To.Name != c.From.Name {
+			paths = append(paths, c.To.Name)
+		}
 	}
 	sort.Strings(paths)
 	return parent.Hash.String(), paths
@@ -503,5 +505,106 @@ func TestBatchIntegration_RevertUnchangedResourceIsNothingToSave(t *testing.T) {
 
 	head, _ := originBranchHead(t, bare, integrationBranch)
 	assert.Equal(t, first, head)
+	assertRolledBack(t, mgr)
+}
+
+func TestBatchIntegration_RenameMovesTheDirectory(t *testing.T) {
+	h, mgr, gh, bare, _ := newIntegrationHandler(t)
+	// Anything that is not YAML (an image, a README) moves with the quickstart.
+	extra := pushToOrigin(t, bare, "master", map[string]string{"docs/quickstarts/alpha/diagram.svg": "<svg/>"})
+
+	omega := BatchResource{Name: "omega", RenameFrom: "alpha", Files: []File{
+		{Name: "metadata.yml", Content: "kind: QuickStarts\nname: omega\n"},
+		{Name: "omega.yml", Content: "# keep this comment\nmetadata:\n  name: omega\nspec:\n  displayName: Alpha\n"},
+	}}
+	rr := postBatch(h, batchBody(t, createMeta(extra), omega, betaEdit))
+	require.Equal(t, http.StatusOK, rr.Code, rr.Body.String())
+	first := decodeBatch(t, rr.Body.Bytes()).HeadSHA
+	assert.Contains(t, gh.createdBody, "docs/quickstarts/omega/ (renamed from alpha)")
+
+	_, changed := commitOnOrigin(t, bare, first)
+	assert.Equal(t, []string{
+		"docs/quickstarts/alpha/alpha.yml",
+		"docs/quickstarts/alpha/diagram.svg",
+		"docs/quickstarts/alpha/metadata.yml",
+		"docs/quickstarts/beta/beta.yml",
+		"docs/quickstarts/omega/diagram.svg",
+		"docs/quickstarts/omega/metadata.yml",
+		"docs/quickstarts/omega/omega.yml",
+	}, changed, "the old directory is deleted and the new one written in the same commit")
+	assert.Equal(t, "<svg/>", fileOnOrigin(t, bare, first, "docs/quickstarts/omega/diagram.svg"))
+	assert.Equal(t, omega.Files[1].Content, fileOnOrigin(t, bare, first, "docs/quickstarts/omega/omega.yml"))
+
+	repo, err := gogit.PlainOpen(bare)
+	require.NoError(t, err)
+	commit, err := repo.CommitObject(plumbing.NewHash(first))
+	require.NoError(t, err)
+	_, err = commit.File("docs/quickstarts/alpha/metadata.yml")
+	assert.ErrorIs(t, err, object.ErrFileNotFound, "nothing is left behind in the old directory")
+	assertRolledBack(t, mgr)
+
+	// Renaming back and reverting both directories undo it entirely.
+	gh.getPR = &ghclient.CreatorPR{Number: 7, BranchName: integrationBranch, HeadSHA: first}
+	update := BatchPRMetadata{PRNumber: 7, ExpectedHeadSHA: first, CommitMessage: "docs: drop the rename"}
+	rr = postBatch(h, batchBody(t, update,
+		BatchResource{Name: "omega", Revert: true},
+		BatchResource{Name: "alpha", Revert: true},
+	))
+	require.Equal(t, http.StatusOK, rr.Code, rr.Body.String())
+	second := decodeBatch(t, rr.Body.Bytes()).HeadSHA
+	assert.Equal(t, seedFiles["docs/quickstarts/alpha/alpha.yml"], fileOnOrigin(t, bare, second, "docs/quickstarts/alpha/alpha.yml"))
+	assert.Equal(t, "<svg/>", fileOnOrigin(t, bare, second, "docs/quickstarts/alpha/diagram.svg"))
+	commit, err = repo.CommitObject(plumbing.NewHash(second))
+	require.NoError(t, err)
+	_, err = commit.File("docs/quickstarts/omega/omega.yml")
+	assert.ErrorIs(t, err, object.ErrFileNotFound)
+	assertRolledBack(t, mgr)
+}
+
+func TestBatchIntegration_RenameOntoExistingDirectoryRollsBack(t *testing.T) {
+	h, mgr, _, bare, base := newIntegrationHandler(t)
+
+	clash := BatchResource{Name: "beta", RenameFrom: "alpha", Files: []File{
+		{Name: "metadata.yml", Content: "name: beta\n"},
+		{Name: "beta.yml", Content: "metadata:\n  name: beta\n"},
+	}}
+	rr := postBatch(h, batchBody(t, createMeta(base), clash))
+	assert.Equal(t, http.StatusConflict, rr.Code, rr.Body.String())
+	assert.Contains(t, rr.Body.String(), "already exists")
+
+	_, pushed := originBranchHead(t, bare, integrationBranch)
+	assert.False(t, pushed, "nothing reaches the remote")
+	assertRolledBack(t, mgr)
+	content, err := os.ReadFile(filepath.Join(mgr.RepoPath, "docs/quickstarts/alpha/alpha.yml"))
+	require.NoError(t, err)
+	assert.Equal(t, seedFiles["docs/quickstarts/alpha/alpha.yml"], string(content), "the renamed quickstart is untouched")
+}
+
+func TestBatchIntegration_RevertRenamedNewResource(t *testing.T) {
+	h, mgr, gh, bare, base := newIntegrationHandler(t)
+
+	rr := postBatch(h, batchBody(t, createMeta(base), deltaNew))
+	require.Equal(t, http.StatusOK, rr.Code, rr.Body.String())
+	first := decodeBatch(t, rr.Body.Bytes()).HeadSHA
+
+	gh.getPR = &ghclient.CreatorPR{Number: 7, BranchName: integrationBranch, HeadSHA: first}
+	epsilon := BatchResource{Name: "epsilon", RenameFrom: "delta", Files: []File{
+		{Name: "metadata.yml", Content: "kind: QuickStarts\nname: epsilon\ntags: []\n"},
+		{Name: "epsilon.yml", Content: "metadata:\n  name: epsilon\nspec:\n  displayName: Delta\n"},
+	}}
+	rr = postBatch(h, batchBody(t, BatchPRMetadata{PRNumber: 7, ExpectedHeadSHA: first, CommitMessage: "docs: rename delta"}, epsilon))
+	require.Equal(t, http.StatusOK, rr.Code, rr.Body.String())
+	second := decodeBatch(t, rr.Body.Bytes()).HeadSHA
+
+	// delta was added by this PR and is already gone from the branch, so its
+	// revert has nothing to do; epsilon is deleted.
+	gh.getPR = &ghclient.CreatorPR{Number: 7, BranchName: integrationBranch, HeadSHA: second}
+	rr = postBatch(h, batchBody(t, BatchPRMetadata{PRNumber: 7, ExpectedHeadSHA: second, CommitMessage: "docs: drop delta"},
+		BatchResource{Name: "epsilon", Revert: true},
+		BatchResource{Name: "delta", Revert: true},
+	))
+	require.Equal(t, http.StatusOK, rr.Code, rr.Body.String())
+	_, changed := commitOnOrigin(t, bare, decodeBatch(t, rr.Body.Bytes()).HeadSHA)
+	assert.Equal(t, []string{"docs/quickstarts/epsilon/epsilon.yml", "docs/quickstarts/epsilon/metadata.yml"}, changed)
 	assertRolledBack(t, mgr)
 }

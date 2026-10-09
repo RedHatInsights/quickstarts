@@ -111,10 +111,11 @@ type GitServiceBatchMetadata struct {
 }
 
 type GitServiceBatchResource struct {
-	Name   string           `json:"name"`
-	Create bool             `json:"create,omitempty"`
-	Revert bool             `json:"revert,omitempty"`
-	Files  []GitServiceFile `json:"files"`
+	Name       string           `json:"name"`
+	Create     bool             `json:"create,omitempty"`
+	Revert     bool             `json:"revert,omitempty"`
+	RenameFrom string           `json:"renameFrom,omitempty"`
+	Files      []GitServiceFile `json:"files"`
 }
 
 type GitServiceBatchRequest struct {

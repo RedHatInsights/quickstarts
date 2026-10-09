@@ -333,6 +333,45 @@ func TestValidateBatchRequest_NewResource(t *testing.T) {
 	assert.NoError(t, validateBatchRequest(&req))
 }
 
+func TestValidateBatchRequest_Rename(t *testing.T) {
+	renamed := func() BatchResource {
+		return BatchResource{Name: "fresh", RenameFrom: "stale", Files: []File{
+			{Name: "metadata.yml", Content: "kind: QuickStarts\nname: fresh\n"},
+			{Name: "fresh.yml", Content: "metadata:\n  name: fresh\nspec:\n  displayName: Fresh\n"},
+		}}
+	}
+	request := func(resources ...BatchResource) *BatchPRRequest {
+		return &BatchPRRequest{Metadata: BatchPRMetadata{PRNumber: 1, ExpectedHeadSHA: headSHA, CommitMessage: "c"}, Resources: resources}
+	}
+	tests := []struct {
+		name   string
+		mutate func(*BatchResource)
+		others []BatchResource
+		want   string
+	}{
+		{"to itself", func(r *BatchResource) { r.RenameFrom = "fresh" }, nil, "to itself"},
+		{"nested old name", func(r *BatchResource) { r.RenameFrom = "a/b" }, nil, "invalid quickstart name"},
+		{"also created", func(r *BatchResource) { r.Create = true }, nil, "cannot also create or revert"},
+		{"content file keeps the old name", func(r *BatchResource) { r.Files[1].Name = "stale.yml" }, nil, "may only contain"},
+		{"metadata keeps the old name", func(r *BatchResource) { r.Files[0].Content = "name: stale\n" }, nil, `name must be "fresh"`},
+		{"only the changed file sent", func(r *BatchResource) { r.Files = r.Files[1:] }, nil, "needs both"},
+		{"old directory edited too", func(r *BatchResource) {}, []BatchResource{
+			{Name: "stale", Files: []File{{Name: "stale.yml", Content: "a: 1\n"}}},
+		}, "stale is listed more than once"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			res := renamed()
+			tt.mutate(&res)
+			err := validateBatchRequest(request(append([]BatchResource{res}, tt.others...)...))
+			require.Error(t, err)
+			assert.Contains(t, err.Error(), tt.want)
+		})
+	}
+
+	assert.NoError(t, validateBatchRequest(request(renamed())))
+}
+
 func TestSubmitBatchPR_InvalidBody(t *testing.T) {
 	h := NewHandler(batchRepo(), &mockGitHubClient{}, "", "/docs/quickstarts/")
 	rr := postBatch(h, "{")

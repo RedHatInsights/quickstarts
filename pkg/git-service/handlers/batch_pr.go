@@ -26,11 +26,18 @@ import (
 // Revert takes a quickstart back out of an existing pull request: its
 // directory is restored to how it was where the branch started, or deleted if
 // the pull request added it. A revert sends no files.
+//
+// RenameFrom moves an existing quickstart to the directory Name. A quickstart
+// lives in a directory named after its metadata.name, so changing that name
+// moves it: like a creation it is sent complete (metadata file and content
+// file, both naming Name), its old YAML files are deleted, and anything else
+// in the old directory moves along unchanged.
 type BatchResource struct {
-	Name   string `json:"name"`
-	Create bool   `json:"create,omitempty"`
-	Revert bool   `json:"revert,omitempty"`
-	Files  []File `json:"files"`
+	Name       string `json:"name"`
+	Create     bool   `json:"create,omitempty"`
+	Revert     bool   `json:"revert,omitempty"`
+	RenameFrom string `json:"renameFrom,omitempty"`
+	Files      []File `json:"files"`
 }
 
 type BatchPRMetadata struct {
@@ -80,9 +87,9 @@ func batchFail(status int, format string, args ...interface{}) *batchError {
 // SubmitBatchPR writes changed files across several quickstarts as one signed
 // commit, either opening a new PR or appending to an existing one.
 //
-// Unlike SubmitPR this never prunes or moves directories: a batch is a set of
-// edits to files that already exist, plus explicitly marked new quickstarts,
-// and anything not sent stays untouched.
+// Unlike SubmitPR nothing is pruned or moved implicitly: a batch is a set of
+// edits to files that already exist, plus explicitly marked new, renamed and
+// reverted quickstarts, and anything not sent stays untouched.
 func (h *Handler) SubmitBatchPR(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
@@ -258,7 +265,7 @@ func (h *Handler) submitBatch(r *http.Request, req *BatchPRRequest) (*BatchPRRes
 // writeBatch writes every resource's files into the checked-out branch and
 // returns their repository paths. An edit may only write files the quickstart
 // already has, so it can neither add stray files nor be mistaken for a rename;
-// a creation may only write into a directory that does not exist yet.
+// a creation or rename may only write into a directory that does not exist yet.
 func (h *Handler) writeBatch(resources []BatchResource) ([]string, error) {
 	var paths []string
 	for _, res := range resources {
@@ -269,6 +276,14 @@ func (h *Handler) writeBatch(resources []BatchResource) ([]string, error) {
 				return nil, err
 			}
 			paths = append(paths, reverted...)
+			continue
+		}
+		if res.RenameFrom != "" {
+			moved, err := h.renameResource(res, dir)
+			if err != nil {
+				return nil, err
+			}
+			paths = append(paths, moved...)
 			continue
 		}
 		existing, err := h.repoMgr.ListFiles(dir)
@@ -296,6 +311,57 @@ func (h *Handler) writeBatch(resources []BatchResource) ([]string, error) {
 	return paths, nil
 }
 
+// renameResource moves the quickstart in res.RenameFrom to dir: the sent files
+// replace its YAML files, and every other file moves across byte for byte.
+func (h *Handler) renameResource(res BatchResource, dir string) ([]string, error) {
+	oldDir := h.quickstartsDirPath + res.RenameFrom + "/"
+	existing, err := h.repoMgr.ListFiles(oldDir)
+	if err != nil {
+		return nil, batchFail(http.StatusBadRequest, "quickstart %s does not exist on the branch", res.RenameFrom)
+	}
+	if _, err := h.repoMgr.ListFiles(dir); err == nil {
+		return nil, batchFail(http.StatusConflict, "quickstart %s already exists on the branch; choose another name", res.Name)
+	}
+
+	var carried []gitops.File
+	for _, name := range existing {
+		if ext := path.Ext(name); ext == ".yml" || ext == ".yaml" {
+			continue
+		}
+		content, err := h.repoMgr.ReadFile(oldDir + name)
+		if err != nil {
+			logrus.WithError(err).WithField("dir", oldDir).Error("Failed to read file to move")
+			return nil, batchFail(http.StatusInternalServerError, "failed to read %s%s", oldDir, name)
+		}
+		carried = append(carried, gitops.File{Name: name, Content: content})
+	}
+	// A quickstart is one metadata file and one content file. Any further YAML
+	// would be dropped by the move, so leave such a directory to a human.
+	if yamlCount := len(existing) - len(carried); yamlCount > 2 {
+		return nil, batchFail(http.StatusBadRequest, "%s has %d YAML files; it cannot be renamed here", res.RenameFrom, yamlCount)
+	}
+
+	if err := h.repoMgr.RemoveFiles(oldDir, existing); err != nil {
+		logrus.WithError(err).WithField("dir", oldDir).Error("Failed to remove files for rename")
+		return nil, batchFail(http.StatusInternalServerError, "failed to remove files")
+	}
+
+	files := carried
+	for _, f := range res.Files {
+		files = append(files, gitops.File{Name: f.Name, Content: f.Content})
+	}
+	if err := h.repoMgr.WriteFiles(dir, files); err != nil {
+		logrus.WithError(err).WithField("dir", dir).Error("Failed to write files for rename")
+		return nil, batchFail(http.StatusInternalServerError, "failed to write files")
+	}
+
+	paths := make([]string, len(files))
+	for i, f := range files {
+		paths[i] = strings.TrimPrefix(dir, "/") + f.Name
+	}
+	return paths, nil
+}
+
 // revertResource restores dir to its merge-base contents, staging removals of
 // files the branch added, and returns the paths it wrote for committing.
 func (h *Handler) revertResource(name, dir string) ([]string, error) {
@@ -307,8 +373,10 @@ func (h *Handler) revertResource(name, dir string) ([]string, error) {
 		logrus.WithError(err).WithField("dir", dir).Error("Failed to read base files")
 		return nil, batchFail(http.StatusInternalServerError, "failed to read %s from the base branch", name)
 	}
+	// Absent from both: already out of the PR. This happens when the old
+	// directory of a renamed quickstart was itself added by the PR.
 	if listErr != nil && base == nil {
-		return nil, batchFail(http.StatusBadRequest, "quickstart %s does not exist on the branch", name)
+		return nil, nil
 	}
 
 	var stale []string
@@ -350,6 +418,8 @@ func batchPRBody(resources []BatchResource, quickstartsDir string) string {
 		suffix := ""
 		if res.Create {
 			suffix = " (new)"
+		} else if res.RenameFrom != "" {
+			suffix = fmt.Sprintf(" (renamed from %s)", res.RenameFrom)
 		} else if res.Revert {
 			suffix = " (removed from this PR)"
 		}
@@ -400,6 +470,24 @@ func validateBatchRequest(req *BatchPRRequest) error {
 		}
 		seen[res.Name] = struct{}{}
 
+		if res.RenameFrom != "" {
+			if !isSingleSegment(res.RenameFrom) {
+				return fmt.Errorf("invalid quickstart name %q", res.RenameFrom)
+			}
+			if res.RenameFrom == res.Name {
+				return fmt.Errorf("quickstart %s cannot be renamed to itself", res.Name)
+			}
+			if res.Create || res.Revert {
+				return fmt.Errorf("quickstart %s: a rename cannot also create or revert", res.Name)
+			}
+			// The old directory is part of this change too, so nothing else in
+			// the batch may touch it.
+			if _, dup := seen[res.RenameFrom]; dup {
+				return fmt.Errorf("quickstart %s is listed more than once", res.RenameFrom)
+			}
+			seen[res.RenameFrom] = struct{}{}
+		}
+
 		if res.Revert {
 			if res.Create || len(res.Files) > 0 {
 				return fmt.Errorf("quickstart %s: a revert cannot also create or send files", res.Name)
@@ -430,7 +518,7 @@ func validateBatchRequest(req *BatchPRRequest) error {
 				problems = append(problems, fmt.Sprintf("%s/%s: %v", res.Name, f.Name, err))
 			}
 		}
-		if res.Create {
+		if res.Create || res.RenameFrom != "" {
 			if err := validateNewResource(res); err != nil {
 				problems = append(problems, err.Error())
 			}
@@ -442,9 +530,9 @@ func validateBatchRequest(req *BatchPRRequest) error {
 	return nil
 }
 
-// validateNewResource checks a quickstart being created is complete: exactly a
-// metadata file and a content file named after it, both declaring that name,
-// which is what the seeder needs to load it.
+// validateNewResource checks a quickstart being created or renamed is
+// complete: exactly a metadata file and a content file named after it, both
+// declaring that name, which is what the seeder needs to load it.
 func validateNewResource(res BatchResource) error {
 	var metadata, content *File
 	for i, f := range res.Files {
@@ -454,11 +542,11 @@ func validateNewResource(res BatchResource) error {
 		case res.Name + ".yml", res.Name + ".yaml":
 			content = &res.Files[i]
 		default:
-			return fmt.Errorf("%s/%s: a new quickstart may only contain metadata.yml and %s.yml", res.Name, f.Name, res.Name)
+			return fmt.Errorf("%s/%s: a new or renamed quickstart may only contain metadata.yml and %s.yml", res.Name, f.Name, res.Name)
 		}
 	}
 	if metadata == nil || content == nil {
-		return fmt.Errorf("%s: a new quickstart needs both metadata.yml and %s.yml", res.Name, res.Name)
+		return fmt.Errorf("%s: a new or renamed quickstart needs both metadata.yml and %s.yml", res.Name, res.Name)
 	}
 
 	var meta struct {

@@ -524,9 +524,12 @@ components:
         revert:
           type: boolean
           description: "Take the quickstart back out of an existing pull request: its directory is restored to how it was where the branch started, or deleted if the pull request added it. Send an empty files list."
+        renameFrom:
+          type: string
+          description: Existing quickstart directory to move to name. Files must be exactly the metadata file and content file, both declaring the new name; the old YAML files are deleted and any other files move along unchanged.
         files:
           type: array
-          description: Changed files only; omitted files are left untouched. A new quickstart sends all of its files.
+          description: Changed files only; omitted files are left untouched. A new or renamed quickstart sends all of its files.
           items:
             $ref: '#/components/schemas/File'
 

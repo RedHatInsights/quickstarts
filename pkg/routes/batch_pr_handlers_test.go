@@ -220,15 +220,17 @@ func TestGetRepoQuickstarts_IncludesHeadSha(t *testing.T) {
 	assert.Equal(t, "abc", *resp.Data.HeadSha)
 }
 
-func TestPostPullRequestBatch_ForwardsCreateAndRevert(t *testing.T) {
+func TestPostPullRequestBatch_ForwardsCreateRevertAndRename(t *testing.T) {
 	adapter := gitServiceAdapter(t, func(w http.ResponseWriter, r *http.Request) {
 		var got clients.GitServiceBatchRequest
 		require.NoError(t, json.NewDecoder(r.Body).Decode(&got))
-		require.Len(t, got.Resources, 3)
+		require.Len(t, got.Resources, 4)
 		assert.False(t, got.Resources[0].Create || got.Resources[0].Revert, "an edit stays an edit")
 		assert.True(t, got.Resources[1].Create)
 		assert.True(t, got.Resources[2].Revert)
 		assert.Empty(t, got.Resources[2].Files)
+		assert.Equal(t, "old-name", got.Resources[3].RenameFrom)
+		assert.Empty(t, got.Resources[0].RenameFrom)
 
 		json.NewEncoder(w).Encode(map[string]interface{}{"prNumber": 42, "status": "updated"})
 	})
@@ -237,7 +239,8 @@ func TestPostPullRequestBatch_ForwardsCreateAndRevert(t *testing.T) {
 		"resources": [
 			{"name": "alpha", "files": [{"name": "alpha.yml", "content": "a: 1\n"}]},
 			{"name": "fresh", "create": true, "files": [{"name": "metadata.yml", "content": "name: fresh\n"}]},
-			{"name": "dropped", "revert": true, "files": []}
+			{"name": "dropped", "revert": true, "files": []},
+			{"name": "new-name", "renameFrom": "old-name", "files": [{"name": "metadata.yml", "content": "name: new-name\n"}]}
 		]
 	}`
 
