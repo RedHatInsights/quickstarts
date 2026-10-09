@@ -1,5 +1,5 @@
 kind: QuickStarts
-name: secondary-testing-new-new
+name: secondary-testing-new-newx
 tags:
   - kind: bundle
     value: insights
@@ -8,7 +8,7 @@ tags:
   - kind: product-families
     value: openshift
   - kind: product-families
-    value: subscriptions-services
+    value: subscriptions-servicess
   - kind: use-case
     value: spend-management
   - kind: use-case

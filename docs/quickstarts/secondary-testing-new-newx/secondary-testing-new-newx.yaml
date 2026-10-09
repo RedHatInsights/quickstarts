@@ -1,7 +1,7 @@
 apiVersion: console.openshift.io/v1
 kind: QuickStarts
 metadata:
-  name: secondary-testing-new-new
+  name: secondary-testing-new-newx
   tags:
     - kind: bundle
       value: insights
@@ -10,7 +10,7 @@ metadata:
     - kind: product-families
       value: openshift
     - kind: product-families
-      value: subscriptions-services
+      value: subscriptions-servicess
     - kind: use-case
       value: spend-management
     - kind: use-case
@@ -21,10 +21,10 @@ spec:
   displayName: Testing new quickstartszz
   icon: ~
   description: Configure cost models so the software accurately mirrors the
-    specific pricing and discount structures of their cloud providers.
+    specific pricing and discount structures ofs their cloud providers.
   type:
     text: Documentation
     color: orange
   link:
-    text: View documentation
+    text: View documentations
     href: https://docs.redhat.com/en/documentation/cost_management_service/1-latest/configure-cost_models
