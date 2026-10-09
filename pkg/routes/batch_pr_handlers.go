@@ -47,6 +47,7 @@ func (s *ServerAdapter) PostPullRequestBatch(w http.ResponseWriter, r *http.Requ
 		resources[i] = clients.GitServiceBatchResource{
 			Name:   res.Name,
 			Create: res.Create != nil && *res.Create,
+			Revert: res.Revert != nil && *res.Revert,
 			Files:  files,
 		}
 	}

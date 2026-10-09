@@ -22,9 +22,14 @@ import (
 // absent from the branch and it must be sent complete: a metadata file and a
 // content file, both naming it. Creation is explicit so that a typo in an
 // existing name is reported instead of quietly becoming a new directory.
+//
+// Revert takes a quickstart back out of an existing pull request: its
+// directory is restored to how it was where the branch started, or deleted if
+// the pull request added it. A revert sends no files.
 type BatchResource struct {
 	Name   string `json:"name"`
 	Create bool   `json:"create,omitempty"`
+	Revert bool   `json:"revert,omitempty"`
 	Files  []File `json:"files"`
 }
 
@@ -258,6 +263,14 @@ func (h *Handler) writeBatch(resources []BatchResource) ([]string, error) {
 	var paths []string
 	for _, res := range resources {
 		dir := h.quickstartsDirPath + res.Name + "/"
+		if res.Revert {
+			reverted, err := h.revertResource(res.Name, dir)
+			if err != nil {
+				return nil, err
+			}
+			paths = append(paths, reverted...)
+			continue
+		}
 		existing, err := h.repoMgr.ListFiles(dir)
 		if res.Create && err == nil {
 			return nil, batchFail(http.StatusConflict, "quickstart %s already exists on the branch; choose another name", res.Name)
@@ -283,6 +296,53 @@ func (h *Handler) writeBatch(resources []BatchResource) ([]string, error) {
 	return paths, nil
 }
 
+// revertResource restores dir to its merge-base contents, staging removals of
+// files the branch added, and returns the paths it wrote for committing.
+func (h *Handler) revertResource(name, dir string) ([]string, error) {
+	existing, listErr := h.repoMgr.ListFiles(dir)
+	base, err := h.repoMgr.BaseFiles(dir)
+	if errors.Is(err, gitops.ErrPathNotFound) {
+		base = nil
+	} else if err != nil {
+		logrus.WithError(err).WithField("dir", dir).Error("Failed to read base files")
+		return nil, batchFail(http.StatusInternalServerError, "failed to read %s from the base branch", name)
+	}
+	if listErr != nil && base == nil {
+		return nil, batchFail(http.StatusBadRequest, "quickstart %s does not exist on the branch", name)
+	}
+
+	var stale []string
+	for _, f := range existing {
+		if _, kept := base[f]; !kept {
+			stale = append(stale, f)
+		}
+	}
+	if err := h.repoMgr.RemoveFiles(dir, stale); err != nil {
+		logrus.WithError(err).WithField("dir", dir).Error("Failed to remove files for revert")
+		return nil, batchFail(http.StatusInternalServerError, "failed to remove files")
+	}
+	if len(base) == 0 {
+		return nil, nil
+	}
+
+	names := make([]string, 0, len(base))
+	for f := range base {
+		names = append(names, f)
+	}
+	slices.Sort(names)
+	files := make([]gitops.File, len(names))
+	paths := make([]string, len(names))
+	for i, f := range names {
+		files[i] = gitops.File{Name: f, Content: base[f]}
+		paths[i] = strings.TrimPrefix(dir, "/") + f
+	}
+	if err := h.repoMgr.WriteFiles(dir, files); err != nil {
+		logrus.WithError(err).WithField("dir", dir).Error("Failed to write files for revert")
+		return nil, batchFail(http.StatusInternalServerError, "failed to write files")
+	}
+	return paths, nil
+}
+
 func batchPRBody(resources []BatchResource, quickstartsDir string) string {
 	var b strings.Builder
 	fmt.Fprintf(&b, "Updating %d quickstarts via the Quickstarts Creator tool.\n\nDirectories:\n", len(resources))
@@ -290,6 +350,8 @@ func batchPRBody(resources []BatchResource, quickstartsDir string) string {
 		suffix := ""
 		if res.Create {
 			suffix = " (new)"
+		} else if res.Revert {
+			suffix = " (removed from this PR)"
 		}
 		fmt.Fprintf(&b, "- %s%s/%s\n", strings.TrimPrefix(quickstartsDir, "/"), res.Name, suffix)
 	}
@@ -338,6 +400,15 @@ func validateBatchRequest(req *BatchPRRequest) error {
 		}
 		seen[res.Name] = struct{}{}
 
+		if res.Revert {
+			if res.Create || len(res.Files) > 0 {
+				return fmt.Errorf("quickstart %s: a revert cannot also create or send files", res.Name)
+			}
+			if m.PRNumber == 0 {
+				return fmt.Errorf("quickstart %s: only a quickstart in an existing pull request can be reverted", res.Name)
+			}
+			continue
+		}
 		if len(res.Files) == 0 {
 			return fmt.Errorf("quickstart %s has no files", res.Name)
 		}

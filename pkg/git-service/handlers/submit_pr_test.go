@@ -49,6 +49,9 @@ type mockRepoManager struct {
 	headSHAErr        error
 	committedPaths    []string
 	commitMessage     string
+
+	baseFiles    map[string]string
+	baseFilesErr error
 }
 
 func (m *mockRepoManager) PullLatest() error {
@@ -88,6 +91,9 @@ func (m *mockRepoManager) CommitPaths(message, authorName, authorEmail string, p
 	return m.commitSHA, m.commitErr
 }
 func (m *mockRepoManager) HeadSHA() (string, error) { return m.headSHA, m.headSHAErr }
+func (m *mockRepoManager) BaseFiles(dir string) (map[string]string, error) {
+	return m.baseFiles, m.baseFilesErr
+}
 func (m *mockRepoManager) ListDirectories(basePath string) ([]string, error) {
 	return m.directories, m.listDirsErr
 }

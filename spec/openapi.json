@@ -305,6 +305,10 @@
           "name": {
             "description": "Quickstart directory name",
             "type": "string"
+          },
+          "revert": {
+            "description": "Take the quickstart back out of an existing pull request: its directory is restored to how it was where the branch started, or deleted if the pull request added it. Send an empty files list.",
+            "type": "boolean"
           }
         },
         "required": [

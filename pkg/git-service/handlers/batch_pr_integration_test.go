@@ -447,3 +447,61 @@ func TestBatchIntegration_CreateExistingDirectoryRollsBack(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, seedFiles["docs/quickstarts/beta/beta.yml"], string(content), "the existing quickstart is untouched")
 }
+
+func TestBatchIntegration_RevertTakesResourcesOutOfThePR(t *testing.T) {
+	h, mgr, gh, bare, base := newIntegrationHandler(t)
+
+	rr := postBatch(h, batchBody(t, createMeta(base), alphaEdit, betaEdit, deltaNew))
+	require.Equal(t, http.StatusOK, rr.Code, rr.Body.String())
+	first := decodeBatch(t, rr.Body.Bytes()).HeadSHA
+
+	// Main moves on after the branch was cut. Reverting must restore alpha to
+	// where the branch started, not pull main's newer content into the PR.
+	pushToOrigin(t, bare, "master", map[string]string{"docs/quickstarts/alpha/alpha.yml": "spec:\n  displayName: Alpha on main\n"})
+
+	gh.getPR = &ghclient.CreatorPR{Number: 7, BranchName: integrationBranch, HeadSHA: first}
+	update := BatchPRMetadata{PRNumber: 7, ExpectedHeadSHA: first, CommitMessage: "docs: drop alpha and delta"}
+	rr = postBatch(h, batchBody(t, update,
+		BatchResource{Name: "alpha", Revert: true},
+		BatchResource{Name: "delta", Revert: true},
+	))
+	require.Equal(t, http.StatusOK, rr.Code, rr.Body.String())
+	second := decodeBatch(t, rr.Body.Bytes()).HeadSHA
+
+	parent, changed := commitOnOrigin(t, bare, second)
+	assert.Equal(t, first, parent)
+	assert.Equal(t, []string{
+		"docs/quickstarts/alpha/alpha.yml",
+		"docs/quickstarts/delta/delta.yml",
+		"docs/quickstarts/delta/metadata.yml",
+	}, changed)
+	assert.Equal(t, seedFiles["docs/quickstarts/alpha/alpha.yml"], fileOnOrigin(t, bare, second, "docs/quickstarts/alpha/alpha.yml"),
+		"alpha is back to its merge-base content")
+	assert.Equal(t, betaEdit.Files[0].Content, fileOnOrigin(t, bare, second, "docs/quickstarts/beta/beta.yml"),
+		"resources not reverted keep their PR content")
+
+	repo, err := gogit.PlainOpen(bare)
+	require.NoError(t, err)
+	commit, err := repo.CommitObject(plumbing.NewHash(second))
+	require.NoError(t, err)
+	_, err = commit.File("docs/quickstarts/delta/metadata.yml")
+	assert.ErrorIs(t, err, object.ErrFileNotFound, "a quickstart the PR created is deleted")
+	assertRolledBack(t, mgr)
+}
+
+func TestBatchIntegration_RevertUnchangedResourceIsNothingToSave(t *testing.T) {
+	h, mgr, gh, bare, base := newIntegrationHandler(t)
+
+	rr := postBatch(h, batchBody(t, createMeta(base), alphaEdit))
+	require.Equal(t, http.StatusOK, rr.Code, rr.Body.String())
+	first := decodeBatch(t, rr.Body.Bytes()).HeadSHA
+
+	gh.getPR = &ghclient.CreatorPR{Number: 7, BranchName: integrationBranch, HeadSHA: first}
+	update := BatchPRMetadata{PRNumber: 7, ExpectedHeadSHA: first, CommitMessage: "docs: drop beta"}
+	rr = postBatch(h, batchBody(t, update, BatchResource{Name: "beta", Revert: true}))
+	assert.Equal(t, http.StatusBadRequest, rr.Code, rr.Body.String())
+
+	head, _ := originBranchHead(t, bare, integrationBranch)
+	assert.Equal(t, first, head)
+	assertRolledBack(t, mgr)
+}

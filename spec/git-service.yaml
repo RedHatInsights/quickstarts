@@ -521,6 +521,9 @@ components:
         create:
           type: boolean
           description: The quickstart is new. Its directory must not exist on the branch, and files must be exactly its metadata file and content file, both declaring this name.
+        revert:
+          type: boolean
+          description: "Take the quickstart back out of an existing pull request: its directory is restored to how it was where the branch started, or deleted if the pull request added it. Send an empty files list."
         files:
           type: array
           description: Changed files only; omitted files are left untouched. A new quickstart sends all of its files.

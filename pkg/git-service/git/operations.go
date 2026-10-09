@@ -32,6 +32,8 @@ var (
 	// ErrNoChanges means the staged files are identical to the commit they
 	// would be recorded on top of.
 	ErrNoChanges = errors.New("no changes to commit")
+	// ErrPathNotFound means a directory does not exist in the commit read.
+	ErrPathNotFound = errors.New("path not found")
 )
 
 type RepoOperations interface {
@@ -44,6 +46,7 @@ type RepoOperations interface {
 	CommitChanges(message, authorName, authorEmail, dir string, files []File) (string, error)
 	CommitPaths(message, authorName, authorEmail string, paths []string) (string, error)
 	HeadSHA() (string, error)
+	BaseFiles(dir string) (map[string]string, error)
 	PushBranch(branch string) error
 	PushBranchForce(branch string) error
 	Cleanup(branch string) error
@@ -496,6 +499,66 @@ func (m *RepoManager) HeadSHA() (string, error) {
 		return "", fmt.Errorf("failed to resolve HEAD: %w", err)
 	}
 	return head.Hash().String(), nil
+}
+
+// BaseFiles returns the files directly inside dir as they are where HEAD
+// branched off the base branch. Restoring them takes a directory out of a pull
+// request's diff without reverting anything merged to the base branch since.
+// ErrPathNotFound means the directory did not exist there, so the branch
+// added it.
+func (m *RepoManager) BaseFiles(dir string) (map[string]string, error) {
+	head, err := m.Repo.Head()
+	if err != nil {
+		return nil, fmt.Errorf("failed to resolve HEAD: %w", err)
+	}
+	headCommit, err := m.Repo.CommitObject(head.Hash())
+	if err != nil {
+		return nil, fmt.Errorf("failed to read HEAD commit: %w", err)
+	}
+	baseRef, err := m.Repo.Reference(plumbing.NewBranchReferenceName(m.BaseBranch), true)
+	if err != nil {
+		return nil, fmt.Errorf("failed to resolve %s: %w", m.BaseBranch, err)
+	}
+	baseCommit, err := m.Repo.CommitObject(baseRef.Hash())
+	if err != nil {
+		return nil, fmt.Errorf("failed to read %s commit: %w", m.BaseBranch, err)
+	}
+	bases, err := headCommit.MergeBase(baseCommit)
+	if err != nil {
+		return nil, fmt.Errorf("failed to find merge base: %w", err)
+	}
+	if len(bases) == 0 {
+		return nil, fmt.Errorf("HEAD shares no history with %s", m.BaseBranch)
+	}
+
+	tree, err := bases[0].Tree()
+	if err != nil {
+		return nil, fmt.Errorf("failed to read merge base tree: %w", err)
+	}
+	sub, err := tree.Tree(strings.Trim(filepath.ToSlash(dir), "/"))
+	if errors.Is(err, object.ErrDirectoryNotFound) {
+		return nil, fmt.Errorf("%w: %s", ErrPathNotFound, dir)
+	}
+	if err != nil {
+		return nil, fmt.Errorf("failed to read %s at merge base: %w", dir, err)
+	}
+
+	files := map[string]string{}
+	for _, entry := range sub.Entries {
+		if !entry.Mode.IsFile() {
+			continue
+		}
+		f, err := sub.TreeEntryFile(&entry)
+		if err != nil {
+			return nil, fmt.Errorf("failed to read %s: %w", entry.Name, err)
+		}
+		content, err := f.Contents()
+		if err != nil {
+			return nil, fmt.Errorf("failed to read %s: %w", entry.Name, err)
+		}
+		files[entry.Name] = content
+	}
+	return files, nil
 }
 
 func (m *RepoManager) GetBaseBranch() string {

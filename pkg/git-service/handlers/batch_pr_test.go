@@ -258,6 +258,13 @@ func TestValidateBatchRequest(t *testing.T) {
 		{"duplicate file", func(r *BatchPRRequest) {
 			r.Resources[0].Files = append(r.Resources[0].Files, r.Resources[0].Files[0])
 		}, "more than once"},
+		{"revert with files", func(r *BatchPRRequest) {
+			r.Metadata.PRNumber, r.Metadata.ExpectedHeadSHA = 4, "abc"
+			r.Resources[0].Revert = true
+		}, "cannot also create or send files"},
+		{"revert without a PR", func(r *BatchPRRequest) {
+			r.Resources[0].Revert, r.Resources[0].Files = true, nil
+		}, "existing pull request"},
 		{"invalid yaml reported per file", func(r *BatchPRRequest) {
 			r.Resources[0].Files[0].Content = "a: [b"
 			r.Resources[1].Files[0].Content = "c: : d"
@@ -282,6 +289,11 @@ func TestValidateBatchRequest(t *testing.T) {
 
 	req = valid()
 	assert.NoError(t, validateBatchRequest(&req))
+
+	req = valid()
+	req.Metadata.PRNumber, req.Metadata.ExpectedHeadSHA = 4, "abc"
+	req.Resources[0] = BatchResource{Name: "alpha", Revert: true}
+	assert.NoError(t, validateBatchRequest(&req), "a revert sends no files")
 }
 
 func TestValidateBatchRequest_NewResource(t *testing.T) {
