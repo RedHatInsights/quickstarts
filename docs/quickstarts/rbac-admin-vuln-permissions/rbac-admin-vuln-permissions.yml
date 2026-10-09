@@ -14,7 +14,7 @@ spec:
   description: |-
     Grant administrative permissions for the vulnerability service to a select group of users. 
   introduction: |-
-    This quick start shows you how to configure granular administrative access for the Red Hat Lightspeed for Red Hat Enterprise Linux (RHEL) vulnerability service. 
+    This quickstart shows you how to configure granular administrative access for the Red Hat Lightspeed for Red Hat Enterprise Linux (RHEL) vulnerability service. 
     
     This will allow only your team to perform administrative tasks with the vulnerability service, like viewing and remediating security CVEs on your RHEL systems, and generating vulnerability reports.
     
