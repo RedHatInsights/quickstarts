@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/RedHatInsights/quickstarts/pkg/clients"
@@ -103,6 +104,18 @@ func TestPostPullRequestBatch_Validation(t *testing.T) {
 		adapter.PostPullRequestBatch(w, httptest.NewRequest(http.MethodPost, "/pull-request/batch", bytes.NewBufferString(body)))
 		assert.Equal(t, http.StatusBadRequest, w.Code, body)
 	}
+}
+
+func TestPostPullRequestBatch_BodyTooLarge(t *testing.T) {
+	adapter := gitServiceAdapter(t, func(w http.ResponseWriter, r *http.Request) {
+		t.Fatal("git-service must not be called for an oversized request")
+	})
+	big := `{"metadata": {"commitMessage": "x"}, "resources": [{"name": "a", "files": [{"name": "a.yml", "content": "` +
+		strings.Repeat("a", 5*1024*1024) + `"}]}]}`
+
+	w := httptest.NewRecorder()
+	adapter.PostPullRequestBatch(w, httptest.NewRequest(http.MethodPost, "/pull-request/batch", strings.NewReader(big)))
+	assert.Equal(t, http.StatusRequestEntityTooLarge, w.Code)
 }
 
 func TestPostPullRequestBatch_Disabled(t *testing.T) {
