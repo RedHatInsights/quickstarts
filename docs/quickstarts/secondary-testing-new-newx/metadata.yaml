@@ -1,0 +1,15 @@
+kind: QuickStarts
+name: secondary-testing-new-newx
+tags:
+  - kind: bundle
+    value: insights
+  - kind: content
+    value: documentation
+  - kind: product-families
+    value: openshift
+  - kind: product-families
+    value: subscriptions-servicess
+  - kind: use-case
+    value: spend-management
+  - kind: use-case
+    value: system-configuration

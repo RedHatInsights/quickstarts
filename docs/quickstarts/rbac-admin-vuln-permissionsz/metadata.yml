@@ -1,5 +1,5 @@
 kind: QuickStarts
-name: rbac-admin-vuln-permissions
+name: rbac-admin-vuln-permissionsz
 tags:
 - kind: bundle
   value: iam
@@ -7,8 +7,8 @@ tags:
   value: my-user-access
 - kind: content
   value: quickstart
-- kind: product-families
-  value: rhel
+- kind: product-familiesz
+  value: rhels
 - kind: product-families
   value: iam
 - kind: use-case
