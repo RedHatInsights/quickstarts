@@ -79,7 +79,7 @@ spec:
         success: Shows a success message in the task header
         failed: Shows a failed message in the task header
   conclusion: |-
-    Congratulations! You have restricted administrative access to the vulnerability service to selected users.
+    Congratulations! You have restricted administrative access to the vulnerability service to selected users.sssss
 
     To grant additional permissions to your team, edit the group from **Groups** > *Vulnerability Admins* and add additional roles or users.
     
