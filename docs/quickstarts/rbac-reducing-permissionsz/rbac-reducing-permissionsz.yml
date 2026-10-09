@@ -1,7 +1,7 @@
 # RBAC quickstart #3
 # Additional info: https://docs.openshift.com/container-platform/4.9/web_console/creating-quick-start-tutorials.html
 metadata:
-  name: rbac-reducing-permissions
+  name: rbac-reducing-permissionsz
 spec:
   displayName: Reducing permissions across my organizations
   durationMinutes: 12
