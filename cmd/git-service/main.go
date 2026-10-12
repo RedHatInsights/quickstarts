@@ -70,6 +70,8 @@ func main() {
 			r.Post("/submit-pr", handler.SubmitPR)
 			r.Get("/list-quickstarts", handler.ListQuickstarts)
 			r.Get("/quickstart-content/{name}", handler.GetQuickstartContent)
+			r.Get("/creator-prs", handler.ListCreatorPRs)
+			r.Get("/creator-prs/{number}", handler.GetCreatorPR)
 		})
 	}
 

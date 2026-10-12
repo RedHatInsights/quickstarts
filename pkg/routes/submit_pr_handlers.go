@@ -56,6 +56,7 @@ func (s *ServerAdapter) PostPullRequest(w http.ResponseWriter, r *http.Request) 
 		IsUpdate:      derefBool(reqBody.Metadata.IsUpdate),
 		ExistingPath:  derefString(reqBody.Metadata.ExistingPath),
 		DirectoryName: derefString(reqBody.Metadata.DirectoryName),
+		PRNumber:      derefInt(reqBody.Metadata.PrNumber),
 	}
 
 	result, err := s.gitServiceClient.SubmitPR(r.Context(), files, metadata)
@@ -75,7 +76,6 @@ func (s *ServerAdapter) PostPullRequest(w http.ResponseWriter, r *http.Request) 
 	utils.DataResponse(w, http.StatusOK, resp)
 }
 
-
 func derefString(s *string) string {
 	if s == nil {
 		return ""
@@ -88,4 +88,11 @@ func derefBool(b *bool) bool {
 		return false
 	}
 	return *b
+}
+
+func derefInt(n *int) int {
+	if n == nil {
+		return 0
+	}
+	return *n
 }
