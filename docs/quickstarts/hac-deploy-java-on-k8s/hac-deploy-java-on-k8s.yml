@@ -11,7 +11,7 @@ spec:
   displayName: Deploy a Java application on Kubernetes in minutess
   icon: ~
   description: |
-    Try out the Source-to-Image (s2i) feature in the free Developer Sandbox for Red Hat OpenShift by following along with the Spring Petclinic application learning experience.
+    Try out the Source-to-Image (s2i) feature in the free Developer Sandbox for Red Hat OpenShift by following along with the Spring Petclinic application learning experience.sss
   link:
     href: https://developers.redhat.com/developer-sandbox/activities/how-to-deploy-java-application-in-kubernetes
     text: View documentation

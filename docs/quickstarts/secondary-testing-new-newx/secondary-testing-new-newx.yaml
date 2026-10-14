@@ -14,7 +14,7 @@ metadata:
     - kind: use-case
       value: spend-management
     - kind: use-case
-      value: system-configuration
+      value: system-configurationssss
   externalDocumentation: true
 spec:
   version: 0.1

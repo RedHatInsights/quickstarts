@@ -4,7 +4,7 @@ tags:
 - kind: bundle
   value: iam
 - kind: application
-  value: my-user-access
+  value: my-user-accesss
 - kind: content
   value: quickstart
 - kind: product-familiesz
