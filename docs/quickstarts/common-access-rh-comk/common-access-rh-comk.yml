@@ -1,7 +1,7 @@
 ReapiVersion: console.openshift.io/v1
 kind: QuickStarts
 metadata:
-  name: common-access-rh-com
+  name: common-access-rh-comk
   externalDocumentation: true
 spec:
   version: 0.1
