@@ -265,6 +265,19 @@ func TestValidateBatchRequest(t *testing.T) {
 		{"revert without a PR", func(r *BatchPRRequest) {
 			r.Resources[0].Revert, r.Resources[0].Files = true, nil
 		}, "existing pull request"},
+		{"delete with files", func(r *BatchPRRequest) {
+			r.Resources[0].Delete = true
+		}, "a deletion cannot also create, revert or send files"},
+		{"delete and revert", func(r *BatchPRRequest) {
+			r.Metadata.PRNumber, r.Metadata.ExpectedHeadSHA = 4, "abc"
+			r.Resources[0] = BatchResource{Name: "alpha", Delete: true, Revert: true}
+		}, "a deletion cannot also create, revert or send files"},
+		{"delete and create", func(r *BatchPRRequest) {
+			r.Resources[0] = BatchResource{Name: "alpha", Delete: true, Create: true}
+		}, "a deletion cannot also create, revert or send files"},
+		{"delete a directory another resource edits", func(r *BatchPRRequest) {
+			r.Resources = append(r.Resources, BatchResource{Name: "alpha", Delete: true})
+		}, "more than once"},
 		{"invalid yaml reported per file", func(r *BatchPRRequest) {
 			r.Resources[0].Files[0].Content = "a: [b"
 			r.Resources[1].Files[0].Content = "c: : d"
@@ -294,6 +307,10 @@ func TestValidateBatchRequest(t *testing.T) {
 	req.Metadata.PRNumber, req.Metadata.ExpectedHeadSHA = 4, "abc"
 	req.Resources[0] = BatchResource{Name: "alpha", Revert: true}
 	assert.NoError(t, validateBatchRequest(&req), "a revert sends no files")
+
+	req = valid()
+	req.Resources[0] = BatchResource{Name: "alpha", Delete: true}
+	assert.NoError(t, validateBatchRequest(&req), "a deletion sends no files, and works on a new PR")
 }
 
 func TestValidateBatchRequest_NewResource(t *testing.T) {
@@ -351,7 +368,11 @@ func TestValidateBatchRequest_Rename(t *testing.T) {
 	}{
 		{"to itself", func(r *BatchResource) { r.RenameFrom = "fresh" }, nil, "to itself"},
 		{"nested old name", func(r *BatchResource) { r.RenameFrom = "a/b" }, nil, "invalid quickstart name"},
-		{"also created", func(r *BatchResource) { r.Create = true }, nil, "cannot also create or revert"},
+		{"also created", func(r *BatchResource) { r.Create = true }, nil, "cannot also create, revert or delete"},
+		{"also deleted", func(r *BatchResource) { r.Delete = true }, nil, "cannot also create, revert or delete"},
+		{"old directory deleted too", func(r *BatchResource) {}, []BatchResource{
+			{Name: "stale", Delete: true},
+		}, "stale is listed more than once"},
 		{"content file keeps the old name", func(r *BatchResource) { r.Files[1].Name = "stale.yml" }, nil, "may only contain"},
 		{"metadata keeps the old name", func(r *BatchResource) { r.Files[0].Content = "name: stale\n" }, nil, `name must be "fresh"`},
 		{"only the changed file sent", func(r *BatchResource) { r.Files = r.Files[1:] }, nil, "needs both"},
@@ -394,6 +415,9 @@ func TestGetCreatorPRWorkspace(t *testing.T) {
 				{Name: "alpha", Dir: "docs/quickstarts/alpha", Files: []ghclient.File{{Name: "metadata.yml", Content: "name: alpha\n"}}},
 				{Name: "beta", Dir: "docs/quickstarts/beta", Files: []ghclient.File{{Name: "metadata.yml", Content: "name: beta\n"}}, RenamedFrom: "beta-old"},
 			},
+			Deleted: []ghclient.Resource{
+				{Name: "delta", Dir: "docs/quickstarts/delta", Files: []ghclient.File{{Name: "delta.yml", Content: "spec: {}\n"}}},
+			},
 			Missing: []string{"gamma"},
 		},
 	}
@@ -411,6 +435,8 @@ func TestGetCreatorPRWorkspace(t *testing.T) {
 	assert.Equal(t, "docs/quickstarts/beta/metadata.yml", resp.Resources[1].Files[0].Path, "same basename in two resources stays distinct")
 	assert.Empty(t, resp.Resources[0].RenamedFrom)
 	assert.Equal(t, "beta-old", resp.Resources[1].RenamedFrom)
+	require.Len(t, resp.Deleted, 1)
+	assert.Equal(t, "docs/quickstarts/delta/delta.yml", resp.Deleted[0].Files[0].Path, "deleted resources keep their files for review")
 	assert.Equal(t, []string{"gamma"}, resp.Missing)
 }
 

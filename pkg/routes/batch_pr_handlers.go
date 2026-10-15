@@ -48,6 +48,7 @@ func (s *ServerAdapter) PostPullRequestBatch(w http.ResponseWriter, r *http.Requ
 			Name:       res.Name,
 			Create:     res.Create != nil && *res.Create,
 			Revert:     res.Revert != nil && *res.Revert,
+			Delete:     res.Delete != nil && *res.Delete,
 			RenameFrom: derefString(res.RenameFrom),
 			Files:      files,
 		}
@@ -103,6 +104,10 @@ func (s *ServerAdapter) GetCreatorPrsNumberWorkspace(w http.ResponseWriter, r *h
 	for i, res := range result.Resources {
 		resources[i] = toGeneratedResource(res)
 	}
+	deleted := make([]generated.WorkspaceResource, len(result.Deleted))
+	for i, res := range result.Deleted {
+		deleted[i] = toGeneratedResource(res)
+	}
 	missing := result.Missing
 	if missing == nil {
 		missing = []string{}
@@ -115,6 +120,7 @@ func (s *ServerAdapter) GetCreatorPrsNumberWorkspace(w http.ResponseWriter, r *h
 		BranchName: &result.BranchName,
 		HeadSha:    &result.HeadSHA,
 		Resources:  &resources,
+		Deleted:    &deleted,
 		Missing:    &missing,
 	})
 }

@@ -114,6 +114,7 @@ type GitServiceBatchResource struct {
 	Name       string           `json:"name"`
 	Create     bool             `json:"create,omitempty"`
 	Revert     bool             `json:"revert,omitempty"`
+	Delete     bool             `json:"delete,omitempty"`
 	RenameFrom string           `json:"renameFrom,omitempty"`
 	Files      []GitServiceFile `json:"files"`
 }
@@ -152,6 +153,7 @@ type GitServiceCreatorPRWorkspaceResponse struct {
 	BranchName string                        `json:"branchName"`
 	HeadSHA    string                        `json:"headSha"`
 	Resources  []GitServiceWorkspaceResource `json:"resources"`
+	Deleted    []GitServiceWorkspaceResource `json:"deleted"`
 	Missing    []string                      `json:"missing"`
 }
 

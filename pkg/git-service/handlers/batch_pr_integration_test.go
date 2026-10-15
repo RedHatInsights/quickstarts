@@ -608,3 +608,97 @@ func TestBatchIntegration_RevertRenamedNewResource(t *testing.T) {
 	assert.Equal(t, []string{"docs/quickstarts/epsilon/epsilon.yml", "docs/quickstarts/epsilon/metadata.yml"}, changed)
 	assertRolledBack(t, mgr)
 }
+
+func TestBatchIntegration_DeleteInANewPR(t *testing.T) {
+	h, mgr, _, bare, _ := newIntegrationHandler(t)
+	// Companion files go with the quickstart, not just its YAML.
+	base := pushToOrigin(t, bare, "master", map[string]string{"docs/quickstarts/beta/diagram.svg": "<svg/>"})
+
+	meta := createMeta(base)
+	meta.CommitMessage = "docs: delete beta"
+	rr := postBatch(h, batchBody(t, meta, BatchResource{Name: "beta", Delete: true}))
+	require.Equal(t, http.StatusOK, rr.Code, rr.Body.String())
+	head := decodeBatch(t, rr.Body.Bytes()).HeadSHA
+
+	parent, changed := commitOnOrigin(t, bare, head)
+	assert.Equal(t, base, parent)
+	assert.Equal(t, []string{
+		"docs/quickstarts/beta/beta.yml",
+		"docs/quickstarts/beta/diagram.svg",
+		"docs/quickstarts/beta/metadata.yml",
+	}, changed, "only the deleted quickstart changes")
+	assert.Equal(t, seedFiles["docs/quickstarts/alpha/alpha.yml"], fileOnOrigin(t, bare, head, "docs/quickstarts/alpha/alpha.yml"))
+
+	repo, err := gogit.PlainOpen(bare)
+	require.NoError(t, err)
+	commit, err := repo.CommitObject(plumbing.NewHash(head))
+	require.NoError(t, err)
+	_, err = commit.File("docs/quickstarts/beta/metadata.yml")
+	assert.ErrorIs(t, err, object.ErrFileNotFound)
+	assertRolledBack(t, mgr)
+	_, err = os.Stat(filepath.Join(mgr.RepoPath, "docs/quickstarts/beta"))
+	assert.NoError(t, err, "the base branch clone still has the quickstart")
+}
+
+func TestBatchIntegration_DeleteInAnExistingPRThenRestore(t *testing.T) {
+	h, mgr, gh, bare, base := newIntegrationHandler(t)
+
+	rr := postBatch(h, batchBody(t, createMeta(base), alphaEdit))
+	require.Equal(t, http.StatusOK, rr.Code, rr.Body.String())
+	first := decodeBatch(t, rr.Body.Bytes()).HeadSHA
+
+	// gamma is outside the PR's diff so far; delete it alongside another edit.
+	gh.getPR = &ghclient.CreatorPR{Number: 7, BranchName: integrationBranch, HeadSHA: first}
+	update := BatchPRMetadata{PRNumber: 7, ExpectedHeadSHA: first, CommitMessage: "docs: delete gamma"}
+	rr = postBatch(h, batchBody(t, update, betaEdit, BatchResource{Name: "gamma", Delete: true}))
+	require.Equal(t, http.StatusOK, rr.Code, rr.Body.String())
+	second := decodeBatch(t, rr.Body.Bytes()).HeadSHA
+
+	parent, changed := commitOnOrigin(t, bare, second)
+	assert.Equal(t, first, parent, "one more commit on the same PR")
+	assert.Equal(t, []string{"docs/quickstarts/beta/beta.yml", "docs/quickstarts/gamma/gamma.yml"}, changed)
+	assert.Equal(t, alphaEdit.Files[0].Content, fileOnOrigin(t, bare, second, "docs/quickstarts/alpha/alpha.yml"),
+		"earlier PR changes are kept")
+	assertRolledBack(t, mgr)
+
+	// Restoring a saved deletion is a revert of its directory.
+	gh.getPR = &ghclient.CreatorPR{Number: 7, BranchName: integrationBranch, HeadSHA: second}
+	update = BatchPRMetadata{PRNumber: 7, ExpectedHeadSHA: second, CommitMessage: "docs: restore gamma"}
+	rr = postBatch(h, batchBody(t, update, BatchResource{Name: "gamma", Revert: true}))
+	require.Equal(t, http.StatusOK, rr.Code, rr.Body.String())
+	third := decodeBatch(t, rr.Body.Bytes()).HeadSHA
+	assert.Equal(t, seedFiles["docs/quickstarts/gamma/gamma.yml"], fileOnOrigin(t, bare, third, "docs/quickstarts/gamma/gamma.yml"))
+	assertRolledBack(t, mgr)
+}
+
+func TestBatchIntegration_DeleteRollsBackWithTheBatch(t *testing.T) {
+	h, mgr, _, bare, base := newIntegrationHandler(t)
+
+	missing := BatchResource{Name: "nope", Files: []File{{Name: "nope.yml", Content: "a: 1\n"}}}
+	rr := postBatch(h, batchBody(t, createMeta(base), BatchResource{Name: "beta", Delete: true}, missing))
+	assert.Equal(t, http.StatusBadRequest, rr.Code, rr.Body.String())
+
+	_, pushed := originBranchHead(t, bare, integrationBranch)
+	assert.False(t, pushed, "a later invalid resource keeps the deletion off the remote")
+	assertRolledBack(t, mgr)
+	content, err := os.ReadFile(filepath.Join(mgr.RepoPath, "docs/quickstarts/beta/beta.yml"))
+	require.NoError(t, err)
+	assert.Equal(t, seedFiles["docs/quickstarts/beta/beta.yml"], string(content))
+}
+
+func TestBatchIntegration_DeleteRefusals(t *testing.T) {
+	h, mgr, _, bare, _ := newIntegrationHandler(t)
+	base := pushToOrigin(t, bare, "master", map[string]string{"docs/quickstarts/beta/images/one.png": "png"})
+
+	rr := postBatch(h, batchBody(t, createMeta(base), BatchResource{Name: "ghost", Delete: true}))
+	assert.Equal(t, http.StatusBadRequest, rr.Code)
+	assert.Contains(t, rr.Body.String(), "does not exist on the branch")
+	assertRolledBack(t, mgr)
+
+	rr = postBatch(h, batchBody(t, createMeta(base), BatchResource{Name: "beta", Delete: true}))
+	assert.Equal(t, http.StatusBadRequest, rr.Code)
+	assert.Contains(t, rr.Body.String(), "subdirectories")
+	assertRolledBack(t, mgr)
+	_, pushed := originBranchHead(t, bare, integrationBranch)
+	assert.False(t, pushed)
+}

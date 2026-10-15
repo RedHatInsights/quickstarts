@@ -56,7 +56,10 @@ type CreatorPRWorkspaceResponse struct {
 	BranchName string              `json:"branchName"`
 	HeadSHA    string              `json:"headSha"`
 	Resources  []WorkspaceResource `json:"resources"`
-	Missing    []string            `json:"missing"`
+	// Deleted are the quickstarts the PR deletes, as they were where its
+	// branch started.
+	Deleted []WorkspaceResource `json:"deleted"`
+	Missing []string            `json:"missing"`
 }
 
 type CreatorPRResourceResponse struct {
@@ -141,6 +144,10 @@ func (h *Handler) GetCreatorPRWorkspace(w http.ResponseWriter, r *http.Request) 
 	for i, res := range ws.Resources {
 		resources[i] = toWorkspaceResource(res)
 	}
+	deleted := make([]WorkspaceResource, len(ws.Deleted))
+	for i, res := range ws.Deleted {
+		deleted[i] = toWorkspaceResource(res)
+	}
 
 	json.NewEncoder(w).Encode(CreatorPRWorkspaceResponse{
 		Number:     pr.Number,
@@ -149,6 +156,7 @@ func (h *Handler) GetCreatorPRWorkspace(w http.ResponseWriter, r *http.Request) 
 		BranchName: pr.BranchName,
 		HeadSHA:    pr.HeadSHA,
 		Resources:  resources,
+		Deleted:    deleted,
 		Missing:    ws.Missing,
 	})
 }

@@ -41,7 +41,9 @@ type CreatorPR struct {
 	HeadSHA    string
 	HeadOwner  string
 	HeadRepo   string
-	Body       string
+	// BaseSHA is the base branch commit GitHub last compared the PR with.
+	BaseSHA string
+	Body    string
 }
 
 // Resource is one quickstart directory read at a fixed commit. RenamedFrom is
@@ -54,10 +56,13 @@ type Resource struct {
 }
 
 // Workspace is every quickstart a pull request touches, read at its head.
-// Missing lists directories the diff touches that no longer exist there and
-// that are not the old side of a resource's rename, such as a deleted one.
+// Deleted holds the quickstarts the pull request deletes, read where the
+// branch started so they can be reviewed and restored. Missing lists any other
+// directory the diff touches that no longer exists at the head and that is not
+// the old side of a resource's rename, such as one that could not be read.
 type Workspace struct {
 	Resources []Resource
+	Deleted   []Resource
 	Missing   []string
 }
 
@@ -241,6 +246,7 @@ func (c *Client) creatorPRFromPullRequest(pr *github.PullRequest) (*CreatorPR, e
 		HeadSHA:    head.GetSHA(),
 		HeadOwner:  headOwner,
 		HeadRepo:   headRepo,
+		BaseSHA:    pr.GetBase().GetSHA(),
 		Body:       pr.GetBody(),
 	}
 	return entry, nil
@@ -396,18 +402,76 @@ func (c *Client) GetPRWorkspace(ctx context.Context, pr *CreatorPR) (*Workspace,
 		}
 	}
 
-	ws := &Workspace{Resources: []Resource{}, Missing: []string{}}
+	ws := &Workspace{Resources: []Resource{}, Deleted: []Resource{}, Missing: []string{}}
+	var gone []string
 	for i, res := range resources {
 		if res != nil {
 			ws.Resources = append(ws.Resources, *res)
 		} else if missing[dirs[i]] {
-			ws.Missing = append(ws.Missing, dirs[i])
+			gone = append(gone, dirs[i])
 		}
 	}
-	if len(ws.Resources) == 0 {
+
+	// A directory gone from the head that holds a quickstart where the branch
+	// started is one the pull request deletes. Anything else stays missing,
+	// as does everything when the starting point is unknown.
+	var base string
+	if len(gone) > 0 {
+		base = c.mergeBase(ctx, pr)
+	}
+	if base == "" {
+		ws.Missing = append(ws.Missing, gone...)
+	} else {
+		deleted := make([]*Resource, len(gone))
+		g, gctx := errgroup.WithContext(ctx)
+		g.SetLimit(readConcurrency)
+		for i, name := range gone {
+			g.Go(func() error {
+				res, err := c.readResourceAt(gctx, c.Owner, c.Repo, base, name)
+				if errors.Is(err, ErrResource) {
+					return nil
+				}
+				deleted[i] = res
+				return err
+			})
+		}
+		if err := g.Wait(); err != nil {
+			return nil, err
+		}
+		for i, res := range deleted {
+			if res != nil {
+				ws.Deleted = append(ws.Deleted, *res)
+			} else {
+				ws.Missing = append(ws.Missing, gone[i])
+			}
+		}
+	}
+
+	// A pull request that only deletes quickstarts is still a workspace.
+	if len(ws.Resources) == 0 && len(ws.Deleted) == 0 {
 		return nil, fmt.Errorf("no quickstart directories exist at the head of PR %d", pr.Number)
 	}
 	return ws, nil
+}
+
+// mergeBase returns the commit the pull request branched from on the base
+// branch. Deleted quickstarts are read there, which is also what a revert
+// restores them to. When the comparison is unavailable it falls back to the
+// base commit GitHub reports for the pull request, and "" when neither is
+// known.
+func (c *Client) mergeBase(ctx context.Context, pr *CreatorPR) string {
+	if pr.BaseSHA == "" {
+		return ""
+	}
+	cmp, _, err := c.gh.Repositories.CompareCommits(ctx, c.Owner, c.Repo, pr.BaseSHA, pr.HeadSHA, &github.ListOptions{PerPage: 1})
+	if err != nil {
+		logrus.WithError(err).WithField("pr", pr.Number).Warn("Failed to compare pull request with its base, using the base commit")
+		return pr.BaseSHA
+	}
+	if sha := cmp.GetMergeBaseCommit().GetSHA(); sha != "" {
+		return sha
+	}
+	return pr.BaseSHA
 }
 
 // GetPRResource reads one quickstart at the pull request's head SHA, so a
@@ -468,9 +532,15 @@ func (c *Client) listPRPaths(ctx context.Context, number int) ([]string, map[str
 // readResource lists one quickstart directory at the PR head and reads each
 // file in it. ErrResource means the directory is not there.
 func (c *Client) readResource(ctx context.Context, pr *CreatorPR, name string) (*Resource, error) {
+	return c.readResourceAt(ctx, pr.HeadOwner, pr.HeadRepo, pr.HeadSHA, name)
+}
+
+// readResourceAt lists one quickstart directory in owner/repo at ref and reads
+// each file in it. ErrResource means the directory is not there.
+func (c *Client) readResourceAt(ctx context.Context, owner, repo, ref, name string) (*Resource, error) {
 	dir := quickstartsDir + name
-	file, entries, _, err := c.gh.Repositories.GetContents(ctx, pr.HeadOwner, pr.HeadRepo, dir, &github.RepositoryContentGetOptions{
-		Ref: pr.HeadSHA,
+	file, entries, _, err := c.gh.Repositories.GetContents(ctx, owner, repo, dir, &github.RepositoryContentGetOptions{
+		Ref: ref,
 	})
 	if err != nil {
 		if isStatus(err, http.StatusNotFound) {
@@ -495,7 +565,7 @@ func (c *Client) readResource(ctx context.Context, pr *CreatorPR, name string) (
 
 	res := &Resource{Name: name, Dir: dir, Files: make([]File, 0, len(matched))}
 	for _, p := range matched {
-		content, err := c.getFileContent(ctx, pr.HeadOwner, pr.HeadRepo, p, pr.HeadSHA)
+		content, err := c.getFileContent(ctx, owner, repo, p, ref)
 		if err != nil {
 			return nil, err
 		}

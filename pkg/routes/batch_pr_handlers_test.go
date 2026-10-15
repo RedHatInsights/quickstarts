@@ -134,6 +134,10 @@ func TestGetCreatorPrsNumberWorkspace(t *testing.T) {
 				"name": "alpha", "path": "docs/quickstarts/alpha", "renamedFrom": "alpha-old",
 				"files": []map[string]string{{"name": "metadata.yml", "path": "docs/quickstarts/alpha/metadata.yml", "content": "name: alpha\n"}},
 			}},
+			"deleted": []map[string]interface{}{{
+				"name": "delta", "path": "docs/quickstarts/delta",
+				"files": []map[string]string{{"name": "delta.yml", "path": "docs/quickstarts/delta/delta.yml", "content": "spec: {}\n"}},
+			}},
 			"missing": []string{"gamma"},
 		})
 	})
@@ -151,6 +155,8 @@ func TestGetCreatorPrsNumberWorkspace(t *testing.T) {
 	res := (*resp.Data.Resources)[0]
 	assert.Equal(t, "docs/quickstarts/alpha/metadata.yml", *(*res.Files)[0].Path)
 	assert.Equal(t, "alpha-old", *res.RenamedFrom)
+	require.Len(t, *resp.Data.Deleted, 1)
+	assert.Equal(t, "docs/quickstarts/delta/delta.yml", *(*(*resp.Data.Deleted)[0].Files)[0].Path)
 	assert.Equal(t, []string{"gamma"}, *resp.Data.Missing)
 }
 
@@ -221,17 +227,20 @@ func TestGetRepoQuickstarts_IncludesHeadSha(t *testing.T) {
 	assert.Equal(t, "abc", *resp.Data.HeadSha)
 }
 
-func TestPostPullRequestBatch_ForwardsCreateRevertAndRename(t *testing.T) {
+func TestPostPullRequestBatch_ForwardsCreateRevertRenameAndDelete(t *testing.T) {
 	adapter := gitServiceAdapter(t, func(w http.ResponseWriter, r *http.Request) {
 		var got clients.GitServiceBatchRequest
 		require.NoError(t, json.NewDecoder(r.Body).Decode(&got))
-		require.Len(t, got.Resources, 4)
-		assert.False(t, got.Resources[0].Create || got.Resources[0].Revert, "an edit stays an edit")
+		require.Len(t, got.Resources, 5)
+		assert.False(t, got.Resources[0].Create || got.Resources[0].Revert || got.Resources[0].Delete, "an edit stays an edit")
 		assert.True(t, got.Resources[1].Create)
 		assert.True(t, got.Resources[2].Revert)
 		assert.Empty(t, got.Resources[2].Files)
 		assert.Equal(t, "old-name", got.Resources[3].RenameFrom)
 		assert.Empty(t, got.Resources[0].RenameFrom)
+		assert.True(t, got.Resources[4].Delete)
+		assert.False(t, got.Resources[4].Revert, "a deletion is not a revert")
+		assert.Empty(t, got.Resources[4].Files)
 
 		json.NewEncoder(w).Encode(map[string]interface{}{"prNumber": 42, "status": "updated"})
 	})
@@ -241,7 +250,8 @@ func TestPostPullRequestBatch_ForwardsCreateRevertAndRename(t *testing.T) {
 			{"name": "alpha", "files": [{"name": "alpha.yml", "content": "a: 1\n"}]},
 			{"name": "fresh", "create": true, "files": [{"name": "metadata.yml", "content": "name: fresh\n"}]},
 			{"name": "dropped", "revert": true, "files": []},
-			{"name": "new-name", "renameFrom": "old-name", "files": [{"name": "metadata.yml", "content": "name: new-name\n"}]}
+			{"name": "new-name", "renameFrom": "old-name", "files": [{"name": "metadata.yml", "content": "name: new-name\n"}]},
+			{"name": "gone", "delete": true, "files": []}
 		]
 	}`
 

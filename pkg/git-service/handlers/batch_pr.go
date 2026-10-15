@@ -27,6 +27,11 @@ import (
 // directory is restored to how it was where the branch started, or deleted if
 // the pull request added it. A revert sends no files.
 //
+// Delete removes an existing quickstart from the repository: every file in its
+// directory is deleted by the commit. Unlike a revert it works on the first
+// save of a new pull request too, and on quickstarts the pull request has not
+// otherwise changed. A deletion sends no files.
+//
 // RenameFrom moves an existing quickstart to the directory Name. A quickstart
 // lives in a directory named after its metadata.name, so changing that name
 // moves it: like a creation it is sent complete (metadata file and content
@@ -36,6 +41,7 @@ type BatchResource struct {
 	Name       string `json:"name"`
 	Create     bool   `json:"create,omitempty"`
 	Revert     bool   `json:"revert,omitempty"`
+	Delete     bool   `json:"delete,omitempty"`
 	RenameFrom string `json:"renameFrom,omitempty"`
 	Files      []File `json:"files"`
 }
@@ -88,8 +94,8 @@ func batchFail(status int, format string, args ...interface{}) *batchError {
 // commit, either opening a new PR or appending to an existing one.
 //
 // Unlike SubmitPR nothing is pruned or moved implicitly: a batch is a set of
-// edits to files that already exist, plus explicitly marked new, renamed and
-// reverted quickstarts, and anything not sent stays untouched.
+// edits to files that already exist, plus explicitly marked new, renamed,
+// reverted and deleted quickstarts, and anything not sent stays untouched.
 func (h *Handler) SubmitBatchPR(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
@@ -278,6 +284,12 @@ func (h *Handler) writeBatch(resources []BatchResource) ([]string, error) {
 			paths = append(paths, reverted...)
 			continue
 		}
+		if res.Delete {
+			if err := h.deleteResource(res.Name, dir); err != nil {
+				return nil, err
+			}
+			continue
+		}
 		if res.RenameFrom != "" {
 			moved, err := h.renameResource(res, dir)
 			if err != nil {
@@ -362,6 +374,25 @@ func (h *Handler) renameResource(res BatchResource, dir string) ([]string, error
 	return paths, nil
 }
 
+// deleteResource stages the removal of every file in dir. Removals are staged
+// directly rather than returned as paths, so the commit picks them up from the
+// index. A quickstart is a flat directory; one with subdirectories is left to a
+// human rather than half deleted.
+func (h *Handler) deleteResource(name, dir string) error {
+	existing, err := h.repoMgr.ListFiles(dir)
+	if err != nil {
+		return batchFail(http.StatusBadRequest, "quickstart %s does not exist on the branch", name)
+	}
+	if subdirs, err := h.repoMgr.ListDirectories(dir); err == nil && len(subdirs) > 0 {
+		return batchFail(http.StatusBadRequest, "%s has subdirectories; it cannot be deleted here", name)
+	}
+	if err := h.repoMgr.RemoveFiles(dir, existing); err != nil {
+		logrus.WithError(err).WithField("dir", dir).Error("Failed to remove files for delete")
+		return batchFail(http.StatusInternalServerError, "failed to remove files")
+	}
+	return nil
+}
+
 // revertResource restores dir to its merge-base contents, staging removals of
 // files the branch added, and returns the paths it wrote for committing.
 func (h *Handler) revertResource(name, dir string) ([]string, error) {
@@ -422,6 +453,8 @@ func batchPRBody(resources []BatchResource, quickstartsDir string) string {
 			suffix = fmt.Sprintf(" (renamed from %s)", res.RenameFrom)
 		} else if res.Revert {
 			suffix = " (removed from this PR)"
+		} else if res.Delete {
+			suffix = " (deleted)"
 		}
 		fmt.Fprintf(&b, "- %s%s/%s\n", strings.TrimPrefix(quickstartsDir, "/"), res.Name, suffix)
 	}
@@ -477,8 +510,8 @@ func validateBatchRequest(req *BatchPRRequest) error {
 			if res.RenameFrom == res.Name {
 				return fmt.Errorf("quickstart %s cannot be renamed to itself", res.Name)
 			}
-			if res.Create || res.Revert {
-				return fmt.Errorf("quickstart %s: a rename cannot also create or revert", res.Name)
+			if res.Create || res.Revert || res.Delete {
+				return fmt.Errorf("quickstart %s: a rename cannot also create, revert or delete", res.Name)
 			}
 			// The old directory is part of this change too, so nothing else in
 			// the batch may touch it.
@@ -488,6 +521,12 @@ func validateBatchRequest(req *BatchPRRequest) error {
 			seen[res.RenameFrom] = struct{}{}
 		}
 
+		if res.Delete {
+			if res.Create || res.Revert || len(res.Files) > 0 {
+				return fmt.Errorf("quickstart %s: a deletion cannot also create, revert or send files", res.Name)
+			}
+			continue
+		}
 		if res.Revert {
 			if res.Create || len(res.Files) > 0 {
 				return fmt.Errorf("quickstart %s: a revert cannot also create or send files", res.Name)

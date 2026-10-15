@@ -524,6 +524,9 @@ components:
         revert:
           type: boolean
           description: "Take the quickstart back out of an existing pull request: its directory is restored to how it was where the branch started, or deleted if the pull request added it. Send an empty files list."
+        delete:
+          type: boolean
+          description: "Delete an existing quickstart: every file in its directory is removed by the commit. Works on a new or existing pull request. Send an empty files list."
         renameFrom:
           type: string
           description: Existing quickstart directory to move to name. Files must be exactly the metadata file and content file, both declaring the new name; the old YAML files are deleted and any other files move along unchanged.
@@ -598,9 +601,14 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/WorkspaceResource'
+        deleted:
+          type: array
+          description: Quickstarts the PR deletes, read where its branch started so they can be reviewed and restored
+          items:
+            $ref: '#/components/schemas/WorkspaceResource'
         missing:
           type: array
-          description: Directories the PR touches that no longer exist at its head and that are not the old name of a renamed resource
+          description: Directories the PR touches that no longer exist at its head, are not the old name of a renamed resource, and could not be read as a deleted quickstart
           items:
             type: string
 
