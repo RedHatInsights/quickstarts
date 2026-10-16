@@ -24,6 +24,10 @@ spec:
     value: quay.io/redhat-user-workloads/hcc-platex-services-tenant/hcc-platex-services/quickstarts:{{revision}}
   - name: dockerfile
     value: Dockerfile
+  - name: hermetic
+    value: "true"
+  - name: prefetch-input
+    value: '[{"type":"gomod","path":"."}]'
   pipelineRef:
     params:
     - name: url
