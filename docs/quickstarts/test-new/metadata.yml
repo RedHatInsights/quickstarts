@@ -1,0 +1,13 @@
+kind: QuickStarts
+name: test-new
+tags:
+  - kind: bundle
+    value: ansible
+  - kind: bundle
+    value: application-services
+  - kind: bundle
+    value: landing
+  - kind: product-families
+    value: ansible
+  - kind: product-families
+    value: rhel

@@ -1,0 +1,16 @@
+apiVersion: console.openshift.io/v1
+kind: QuickStarts
+metadata:
+  name: test-new
+  externalDocumentation: true
+spec:
+  version: 0.1
+  type:
+    text: Documentation
+    color: orange
+  displayName: thetitle
+  icon: ~
+  description: the resource
+  link:
+    href: https://stage.foo.redhat.com:1337/learning-resources/creator
+    text: View documentation

@@ -8,7 +8,7 @@ spec:
   type:
     text: Documentation
     color: orange
-  displayName: Create your first Ansible Playbook
+  displayName: Create your first Ansible Playbooks
   icon: ~
   description: Automate simple infrastructure tasks by writing a Red Hat Ansible Automation Platform playbook.
   link:
