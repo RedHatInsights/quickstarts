@@ -1,10 +1,10 @@
 kind: QuickStarts
-name: common-access-rh-com
+name: common-access-rh-comk
 tags:
 - kind: bundle
   value: iam
 - kind: bundle
-  value: settings
+  value: settingss
 - kind: content
   value: documentation
 - kind: product-families
