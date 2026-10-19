@@ -4,7 +4,7 @@ tags:
 - kind: bundle
   value: iam
 - kind: bundle
-  value: settings
+  value: settingss
 - kind: content
   value: documentation
 - kind: product-families
