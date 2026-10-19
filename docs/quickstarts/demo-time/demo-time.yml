@@ -10,7 +10,7 @@ spec:
     color: orange
   displayName: Demo time
   icon: ~
-  description: the-fun-demo
+  description: the-fun-demos
   link:
     href: https://stage.foo.redhat.com:1337/learning-resources/creator
     text: View documentation
