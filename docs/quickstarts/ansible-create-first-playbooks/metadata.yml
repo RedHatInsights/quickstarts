@@ -1,5 +1,5 @@
 kind: QuickStarts
-name: ansible-create-first-playbook
+name: ansible-create-first-playbooks
 tags:
 - kind: bundle
   value: ansible
