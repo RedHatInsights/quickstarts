@@ -1,0 +1,23 @@
+kind: QuickStarts
+name: s
+tags:
+  - kind: bundle
+    value: insights
+  - kind: bundle
+    value: landing
+  - kind: bundle
+    value: openshift
+  - kind: bundle
+    value: subscriptions
+  - kind: product-families
+    value: ansible
+  - kind: product-families
+    value: openshift
+  - kind: product-families
+    value: rhel
+  - kind: product-families
+    value: iam
+  - kind: product-families
+    value: settings
+  - kind: product-families
+    value: subscriptions-services
