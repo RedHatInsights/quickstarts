@@ -132,6 +132,168 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: PR changes more than one quickstart; use the workspace endpoint
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '502':
+          description: GitHub API error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/submit-batch-pr:
+    post:
+      summary: Commit edits across several existing quickstarts to one pull request
+      description: >
+        Opens a new creator PR when prNumber is omitted, or appends one commit to
+        an existing creator PR. Only the files sent are written; nothing is
+        pruned, moved, or created.
+      operationId: submitBatchPR
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatchPrRequest'
+      responses:
+        '200':
+          description: Changes committed and pushed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BatchPrResponse'
+        '400':
+          description: Invalid request, invalid YAML, unknown quickstart or file, or no changes
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: prNumber is not an open creator pull request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: The PR branch has new commits, a PR already exists for branchName, or baseSha is unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '413':
+          description: Request body too large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '502':
+          description: GitHub API or push error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/creator-prs/{number}/workspace:
+    get:
+      summary: Get every quickstart a creator pull request touches, read at its head
+      operationId: getCreatorPRWorkspace
+      parameters:
+        - name: number
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: GitHub pull request number
+      responses:
+        '200':
+          description: PR identity and complete quickstart snapshots
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreatorPRWorkspaceResponse'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: PR not found, closed, or not a creator pull request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: PR changes too many files to list completely
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '502':
+          description: GitHub API error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/creator-prs/{number}/resources/{name}:
+    get:
+      summary: Get one quickstart read at a creator pull request's head
+      operationId: getCreatorPRResource
+      parameters:
+        - name: number
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: GitHub pull request number
+        - name: name
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Quickstart directory name
+        - name: headSha
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Head the caller loaded; 409 if the PR has moved since
+      responses:
+        '200':
+          description: Quickstart files at the PR head
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreatorPRResourceResponse'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: PR or quickstart not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: PR head does not match headSha
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '502':
           description: GitHub API error
           content:
@@ -246,6 +408,9 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/QuickstartEntry'
+        headSha:
+          type: string
+          description: Base-branch commit the listing was read from
 
     QuickstartContentResponse:
       type: object
@@ -256,6 +421,9 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/File'
+        headSha:
+          type: string
+          description: Base-branch commit the files were read from
 
     CreatorPREntry:
       type: object
@@ -299,6 +467,158 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/File'
+
+    BatchPrRequest:
+      type: object
+      required:
+        - metadata
+        - resources
+      properties:
+        metadata:
+          $ref: '#/components/schemas/BatchPrMetadata'
+        resources:
+          type: array
+          items:
+            $ref: '#/components/schemas/BatchResource'
+
+    BatchPrMetadata:
+      type: object
+      required:
+        - commitMessage
+      properties:
+        prNumber:
+          type: integer
+          description: Existing creator PR to append to; omit to open a new PR
+        expectedHeadSha:
+          type: string
+          description: PR head the edits were made against (required with prNumber)
+        branchName:
+          type: string
+          description: New branch for a first save; must start with qs-update- or qs-create-. Reusing it retries a save whose PR was not opened.
+        baseSha:
+          type: string
+          description: Base-branch commit the files were read from; the new branch starts there
+        commitMessage:
+          type: string
+        prTitle:
+          type: string
+          description: Required when opening a new PR
+        prBody:
+          type: string
+          description: Defaults to a list of the affected directories
+        userEmail:
+          type: string
+
+    BatchResource:
+      type: object
+      required:
+        - name
+        - files
+      properties:
+        name:
+          type: string
+          description: Quickstart directory name
+        create:
+          type: boolean
+          description: The quickstart is new. Its directory must not exist on the branch, and files must be exactly its metadata file and content file, both declaring this name.
+        revert:
+          type: boolean
+          description: "Take the quickstart back out of an existing pull request: its directory is restored to how it was where the branch started, or deleted if the pull request added it. Send an empty files list."
+        delete:
+          type: boolean
+          description: "Delete an existing quickstart: every file in its directory is removed by the commit. Works on a new or existing pull request. Send an empty files list."
+        renameFrom:
+          type: string
+          description: Existing quickstart directory to move to name. Files must be exactly the metadata file and content file, both declaring the new name; the old YAML files are deleted and any other files move along unchanged.
+        files:
+          type: array
+          description: Changed files only; omitted files are left untouched. A new or renamed quickstart sends all of its files.
+          items:
+            $ref: '#/components/schemas/File'
+
+    BatchPrResponse:
+      type: object
+      properties:
+        prUrl:
+          type: string
+        prNumber:
+          type: integer
+        branchName:
+          type: string
+        headSha:
+          type: string
+          description: The new commit, to send as expectedHeadSha on the next save
+        status:
+          type: string
+          enum: [created, updated]
+        paths:
+          type: array
+          items:
+            type: string
+
+    ResourceFile:
+      type: object
+      properties:
+        name:
+          type: string
+        path:
+          type: string
+          description: Repository-relative path
+        content:
+          type: string
+
+    WorkspaceResource:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Quickstart directory name
+        path:
+          type: string
+          description: Repository-relative directory path
+        files:
+          type: array
+          items:
+            $ref: '#/components/schemas/ResourceFile'
+        renamedFrom:
+          type: string
+          description: Directory the quickstart was moved from in the PR, if any
+
+    CreatorPRWorkspaceResponse:
+      type: object
+      properties:
+        number:
+          type: integer
+        title:
+          type: string
+        htmlUrl:
+          type: string
+        branchName:
+          type: string
+        headSha:
+          type: string
+        resources:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkspaceResource'
+        deleted:
+          type: array
+          description: Quickstarts the PR deletes, read where its branch started so they can be reviewed and restored
+          items:
+            $ref: '#/components/schemas/WorkspaceResource'
+        missing:
+          type: array
+          description: Directories the PR touches that no longer exist at its head, are not the old name of a renamed resource, and could not be read as a deleted quickstart
+          items:
+            type: string
+
+    CreatorPRResourceResponse:
+      type: object
+      properties:
+        headSha:
+          type: string
+        resource:
+          $ref: '#/components/schemas/WorkspaceResource'
 
     ErrorResponse:
       type: object

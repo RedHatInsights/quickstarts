@@ -85,14 +85,24 @@ func (s *ServerAdapter) GetCreatorPrsNumber(w http.ResponseWriter, r *http.Reque
 	})
 }
 
+// passthroughStatuses are git-service responses the browser can act on, so
+// they keep their status and message instead of collapsing into a 502.
+var passthroughStatuses = map[int]bool{
+	http.StatusBadRequest:            true,
+	http.StatusNotFound:              true,
+	http.StatusConflict:              true,
+	http.StatusRequestEntityTooLarge: true,
+	http.StatusUnprocessableEntity:   true,
+}
+
 func writeGitServiceError(w http.ResponseWriter, err error) {
 	var statusErr *clients.HTTPStatusError
-	if errors.As(err, &statusErr) && statusErr.StatusCode == http.StatusNotFound {
+	if errors.As(err, &statusErr) && passthroughStatuses[statusErr.StatusCode] {
 		msg := statusErr.Msg
 		if msg == "" {
-			msg = "not found"
+			msg = http.StatusText(statusErr.StatusCode)
 		}
-		utils.ErrorResponse(w, http.StatusNotFound, msg)
+		utils.ErrorResponse(w, statusErr.StatusCode, msg)
 		return
 	}
 	logrus.WithError(err).Error("git-service request failed")

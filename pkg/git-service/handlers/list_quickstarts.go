@@ -15,13 +15,17 @@ type QuickstartEntry struct {
 	DisplayName string `json:"displayName"`
 }
 
+// HeadSHA is the base-branch commit the response was read from. A batch PR
+// branches from it so its edits are not applied on top of newer content.
 type ListQuickstartsResponse struct {
 	Quickstarts []QuickstartEntry `json:"quickstarts"`
+	HeadSHA     string            `json:"headSha,omitempty"`
 }
 
 type QuickstartContentResponse struct {
-	Name  string `json:"name"`
-	Files []File `json:"files"`
+	Name    string `json:"name"`
+	Files   []File `json:"files"`
+	HeadSHA string `json:"headSha,omitempty"`
 }
 
 func (h *Handler) ListQuickstarts(w http.ResponseWriter, r *http.Request) {
@@ -64,7 +68,7 @@ func (h *Handler) ListQuickstarts(w http.ResponseWriter, r *http.Request) {
 		quickstarts = append(quickstarts, entry)
 	}
 
-	json.NewEncoder(w).Encode(ListQuickstartsResponse{Quickstarts: quickstarts})
+	json.NewEncoder(w).Encode(ListQuickstartsResponse{Quickstarts: quickstarts, HeadSHA: h.headSHA()})
 }
 
 func (h *Handler) GetQuickstartContent(w http.ResponseWriter, r *http.Request) {
@@ -112,7 +116,18 @@ func (h *Handler) GetQuickstartContent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	json.NewEncoder(w).Encode(QuickstartContentResponse{Name: name, Files: files})
+	json.NewEncoder(w).Encode(QuickstartContentResponse{Name: name, Files: files, HeadSHA: h.headSHA()})
+}
+
+// headSHA reports the checked-out commit, or "" when it cannot be resolved so
+// a listing still works without a snapshot to pin to.
+func (h *Handler) headSHA() string {
+	sha, err := h.repoMgr.HeadSHA()
+	if err != nil {
+		logrus.WithError(err).Warn("Failed to resolve base branch head")
+		return ""
+	}
+	return sha
 }
 
 func extractDisplayName(yamlContent string) string {

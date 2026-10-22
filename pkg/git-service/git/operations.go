@@ -1,6 +1,7 @@
 package git
 
 import (
+	"errors"
 	"fmt"
 	"net/url"
 	"os"
@@ -22,13 +23,30 @@ type File struct {
 	Content string
 }
 
+var (
+	// ErrPushRejected means the remote branch moved since it was fetched, so a
+	// normal push would have had to overwrite someone else's commits.
+	ErrPushRejected = errors.New("push rejected: remote branch has new commits")
+	// ErrUnknownRevision means a requested base commit is not in the local clone.
+	ErrUnknownRevision = errors.New("unknown revision")
+	// ErrNoChanges means the staged files are identical to the commit they
+	// would be recorded on top of.
+	ErrNoChanges = errors.New("no changes to commit")
+	// ErrPathNotFound means a directory does not exist in the commit read.
+	ErrPathNotFound = errors.New("path not found")
+)
+
 type RepoOperations interface {
 	PullLatest() error
 	CreateBranch(name string) error
+	CreateBranchAt(name, sha string) error
 	CheckoutExistingBranch(name string) error
 	WriteFiles(dir string, files []File) error
 	RemoveFiles(dir string, names []string) error
 	CommitChanges(message, authorName, authorEmail, dir string, files []File) (string, error)
+	CommitPaths(message, authorName, authorEmail string, paths []string) (string, error)
+	HeadSHA() (string, error)
+	BaseFiles(dir string) (map[string]string, error)
 	PushBranch(branch string) error
 	PushBranchForce(branch string) error
 	Cleanup(branch string) error
@@ -209,6 +227,39 @@ func (m *RepoManager) CreateBranch(name string) error {
 	return nil
 }
 
+// CreateBranchAt creates and checks out a branch at sha rather than at the
+// current HEAD, so a batch is committed on top of the snapshot its files were
+// read from even when the base branch has moved since.
+func (m *RepoManager) CreateBranchAt(name, sha string) error {
+	hash := plumbing.NewHash(sha)
+	if hash.IsZero() || hash.String() != strings.ToLower(sha) {
+		return fmt.Errorf("%w: %s", ErrUnknownRevision, sha)
+	}
+	if _, err := m.Repo.CommitObject(hash); err != nil {
+		return fmt.Errorf("%w: %s", ErrUnknownRevision, sha)
+	}
+
+	w, err := m.Repo.Worktree()
+	if err != nil {
+		return fmt.Errorf("failed to get worktree: %w", err)
+	}
+
+	err = w.Checkout(&git.CheckoutOptions{
+		Hash:   hash,
+		Branch: plumbing.NewBranchReferenceName(name),
+		Create: true,
+	})
+	if err != nil {
+		return fmt.Errorf("failed to create branch %s at %s: %w", name, sha, err)
+	}
+
+	logrus.WithFields(logrus.Fields{
+		"branch": name,
+		"sha":    sha[:8],
+	}).Info("Branch created at base commit")
+	return nil
+}
+
 func (m *RepoManager) CheckoutExistingBranch(name string) error {
 	remoteName := "origin"
 	auth := m.auth()
@@ -323,14 +374,24 @@ func (m *RepoManager) RemoveFiles(dir string, names []string) error {
 }
 
 func (m *RepoManager) CommitChanges(message, authorName, authorEmail, dir string, files []File) (string, error) {
+	dir = strings.TrimPrefix(dir, "/")
+	paths := make([]string, len(files))
+	for i, f := range files {
+		paths[i] = filepath.Join(dir, f.Name)
+	}
+	return m.CommitPaths(message, authorName, authorEmail, paths)
+}
+
+// CommitPaths stages the given repository-relative paths, which may span any
+// number of directories, and records them in a single signed commit.
+func (m *RepoManager) CommitPaths(message, authorName, authorEmail string, paths []string) (string, error) {
 	w, err := m.Repo.Worktree()
 	if err != nil {
 		return "", fmt.Errorf("failed to get worktree: %w", err)
 	}
 
-	dir = strings.TrimPrefix(dir, "/")
-	for _, f := range files {
-		relPath := filepath.Join(dir, f.Name)
+	for _, p := range paths {
+		relPath := strings.TrimPrefix(filepath.ToSlash(p), "/")
 		if _, err := w.Add(relPath); err != nil {
 			return "", fmt.Errorf("failed to stage %s: %w", relPath, err)
 		}
@@ -344,6 +405,9 @@ func (m *RepoManager) CommitChanges(message, authorName, authorEmail, dir string
 		},
 		SignKey: m.SignKey,
 	})
+	if errors.Is(err, git.ErrEmptyCommit) {
+		return "", ErrNoChanges
+	}
 	if err != nil {
 		return "", fmt.Errorf("failed to commit: %w", err)
 	}
@@ -377,6 +441,9 @@ func (m *RepoManager) pushBranch(branch string, force bool) error {
 		Force:      force,
 	})
 	if err != nil {
+		if !force && isPushRejection(err) {
+			return fmt.Errorf("failed to push branch %s: %w", branch, ErrPushRejected)
+		}
 		return fmt.Errorf("failed to push branch %s: %w", branch, err)
 	}
 
@@ -412,6 +479,86 @@ func (m *RepoManager) Cleanup(branch string) error {
 
 	logrus.WithField("branch", branch).Info("Branch cleaned up")
 	return nil
+}
+
+// isPushRejection reports whether a push failed because the remote branch is
+// not an ancestor of the local one, whether go-git caught that from the ref
+// advertisement or the server refused the update itself.
+func isPushRejection(err error) bool {
+	if errors.Is(err, git.ErrForceNeeded) || errors.Is(err, git.ErrNonFastForwardUpdate) {
+		return true
+	}
+	msg := err.Error()
+	return strings.Contains(msg, "non-fast-forward") || strings.Contains(msg, "fetch first")
+}
+
+// HeadSHA returns the commit the worktree currently has checked out.
+func (m *RepoManager) HeadSHA() (string, error) {
+	head, err := m.Repo.Head()
+	if err != nil {
+		return "", fmt.Errorf("failed to resolve HEAD: %w", err)
+	}
+	return head.Hash().String(), nil
+}
+
+// BaseFiles returns the files directly inside dir as they are where HEAD
+// branched off the base branch. Restoring them takes a directory out of a pull
+// request's diff without reverting anything merged to the base branch since.
+// ErrPathNotFound means the directory did not exist there, so the branch
+// added it.
+func (m *RepoManager) BaseFiles(dir string) (map[string]string, error) {
+	head, err := m.Repo.Head()
+	if err != nil {
+		return nil, fmt.Errorf("failed to resolve HEAD: %w", err)
+	}
+	headCommit, err := m.Repo.CommitObject(head.Hash())
+	if err != nil {
+		return nil, fmt.Errorf("failed to read HEAD commit: %w", err)
+	}
+	baseRef, err := m.Repo.Reference(plumbing.NewBranchReferenceName(m.BaseBranch), true)
+	if err != nil {
+		return nil, fmt.Errorf("failed to resolve %s: %w", m.BaseBranch, err)
+	}
+	baseCommit, err := m.Repo.CommitObject(baseRef.Hash())
+	if err != nil {
+		return nil, fmt.Errorf("failed to read %s commit: %w", m.BaseBranch, err)
+	}
+	bases, err := headCommit.MergeBase(baseCommit)
+	if err != nil {
+		return nil, fmt.Errorf("failed to find merge base: %w", err)
+	}
+	if len(bases) == 0 {
+		return nil, fmt.Errorf("HEAD shares no history with %s", m.BaseBranch)
+	}
+
+	tree, err := bases[0].Tree()
+	if err != nil {
+		return nil, fmt.Errorf("failed to read merge base tree: %w", err)
+	}
+	sub, err := tree.Tree(strings.Trim(filepath.ToSlash(dir), "/"))
+	if errors.Is(err, object.ErrDirectoryNotFound) {
+		return nil, fmt.Errorf("%w: %s", ErrPathNotFound, dir)
+	}
+	if err != nil {
+		return nil, fmt.Errorf("failed to read %s at merge base: %w", dir, err)
+	}
+
+	files := map[string]string{}
+	for _, entry := range sub.Entries {
+		if !entry.Mode.IsFile() {
+			continue
+		}
+		f, err := sub.TreeEntryFile(&entry)
+		if err != nil {
+			return nil, fmt.Errorf("failed to read %s: %w", entry.Name, err)
+		}
+		content, err := f.Contents()
+		if err != nil {
+			return nil, fmt.Errorf("failed to read %s: %w", entry.Name, err)
+		}
+		files[entry.Name] = content
+	}
+	return files, nil
 }
 
 func (m *RepoManager) GetBaseBranch() string {

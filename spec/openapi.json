@@ -206,6 +206,125 @@
         },
         "type": "object"
       },
+      "BatchPrMetadata": {
+        "properties": {
+          "baseSha": {
+            "description": "Base-branch commit the files were read from",
+            "type": "string"
+          },
+          "branchName": {
+            "description": "New branch for a first save; must start with qs-update- or qs-create-",
+            "type": "string"
+          },
+          "commitMessage": {
+            "type": "string"
+          },
+          "expectedHeadSha": {
+            "description": "PR head the edits were made against; required with prNumber",
+            "type": "string"
+          },
+          "prBody": {
+            "type": "string"
+          },
+          "prNumber": {
+            "description": "Existing creator PR to append to; omit to open a new PR",
+            "type": "integer"
+          },
+          "prTitle": {
+            "description": "Required when opening a new PR",
+            "type": "string"
+          },
+          "userEmail": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "commitMessage"
+        ],
+        "type": "object"
+      },
+      "BatchPrRequest": {
+        "properties": {
+          "metadata": {
+            "$ref": "#/components/schemas/BatchPrMetadata"
+          },
+          "resources": {
+            "items": {
+              "$ref": "#/components/schemas/BatchResource"
+            },
+            "minItems": 1,
+            "type": "array"
+          }
+        },
+        "required": [
+          "metadata",
+          "resources"
+        ],
+        "type": "object"
+      },
+      "BatchPrResponse": {
+        "properties": {
+          "branchName": {
+            "type": "string"
+          },
+          "headSha": {
+            "type": "string"
+          },
+          "paths": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "prNumber": {
+            "type": "integer"
+          },
+          "prUrl": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "BatchResource": {
+        "properties": {
+          "create": {
+            "description": "The quickstart is new. Its directory must not exist on the branch, and files must be exactly its metadata file and content file, both declaring this name.",
+            "type": "boolean"
+          },
+          "delete": {
+            "description": "Delete an existing quickstart: every file in its directory is removed by the commit. Works on a new or existing pull request. Send an empty files list.",
+            "type": "boolean"
+          },
+          "files": {
+            "description": "Changed files only; omitted files are left untouched. A new or renamed quickstart sends all of its files.",
+            "items": {
+              "$ref": "#/components/schemas/SubmitPrFile"
+            },
+            "minItems": 1,
+            "type": "array"
+          },
+          "name": {
+            "description": "Quickstart directory name",
+            "type": "string"
+          },
+          "renameFrom": {
+            "description": "Existing quickstart directory to move to name. Files must be exactly the metadata file and content file, both declaring the new name; the old YAML files are deleted and any other files move along unchanged.",
+            "type": "string"
+          },
+          "revert": {
+            "description": "Take the quickstart back out of an existing pull request: its directory is restored to how it was where the branch started, or deleted if the pull request added it. Send an empty files list.",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "name",
+          "files"
+        ],
+        "type": "object"
+      },
       "CreatorPrContentResponse": {
         "properties": {
           "branchName": {
@@ -251,6 +370,56 @@
           },
           "updatedAt": {
             "format": "date-time",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "CreatorPrResourceResponse": {
+        "properties": {
+          "headSha": {
+            "type": "string"
+          },
+          "resource": {
+            "$ref": "#/components/schemas/WorkspaceResource"
+          }
+        },
+        "type": "object"
+      },
+      "CreatorPrWorkspaceResponse": {
+        "properties": {
+          "branchName": {
+            "type": "string"
+          },
+          "deleted": {
+            "description": "Quickstarts the PR deletes, read where its branch started so they can be reviewed and restored",
+            "items": {
+              "$ref": "#/components/schemas/WorkspaceResource"
+            },
+            "type": "array"
+          },
+          "headSha": {
+            "type": "string"
+          },
+          "htmlUrl": {
+            "type": "string"
+          },
+          "missing": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "number": {
+            "type": "integer"
+          },
+          "resources": {
+            "items": {
+              "$ref": "#/components/schemas/WorkspaceResource"
+            },
+            "type": "array"
+          },
+          "title": {
             "type": "string"
           }
         },
@@ -341,6 +510,10 @@
       },
       "ListRepoQuickstartsResponse": {
         "properties": {
+          "headSha": {
+            "description": "Base-branch commit the listing was read from",
+            "type": "string"
+          },
           "quickstarts": {
             "items": {
               "$ref": "#/components/schemas/RepoQuickstartEntry"
@@ -414,6 +587,10 @@
             },
             "type": "array"
           },
+          "headSha": {
+            "description": "Base-branch commit the files were read from",
+            "type": "string"
+          },
           "name": {
             "type": "string"
           }
@@ -460,6 +637,20 @@
             "type": "string"
           },
           "name": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "ResourceFile": {
+        "properties": {
+          "content": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "path": {
             "type": "string"
           }
         },
@@ -590,6 +781,27 @@
           }
         },
         "type": "object"
+      },
+      "WorkspaceResource": {
+        "properties": {
+          "files": {
+            "items": {
+              "$ref": "#/components/schemas/ResourceFile"
+            },
+            "type": "array"
+          },
+          "name": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          },
+          "renamedFrom": {
+            "description": "Directory the quickstart was moved from in the PR, if any",
+            "type": "string"
+          }
+        },
+        "type": "object"
       }
     }
   },
@@ -693,6 +905,16 @@
             },
             "description": "PR not found or git-service is not available"
           },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequest"
+                }
+              }
+            },
+            "description": "PR changes more than one quickstart; load its workspace instead"
+          },
           "502": {
             "content": {
               "application/json": {
@@ -705,6 +927,170 @@
           }
         },
         "summary": "Get one creator pull request and its quickstart files"
+      }
+    },
+    "/creator-prs/{number}/resources/{name}": {
+      "get": {
+        "parameters": [
+          {
+            "description": "GitHub pull request number",
+            "in": "path",
+            "name": "number",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "description": "Quickstart directory name",
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Head the caller loaded; returns 409 if the PR has moved since",
+            "in": "query",
+            "name": "headSha",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/CreatorPrResourceResponse"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Quickstart files at the PR head"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequest"
+                }
+              }
+            },
+            "description": "Bad request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequest"
+                }
+              }
+            },
+            "description": "PR or quickstart not found, or git-service is not available"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequest"
+                }
+              }
+            },
+            "description": "PR head does not match headSha"
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequest"
+                }
+              }
+            },
+            "description": "Git service error"
+          }
+        },
+        "summary": "Get one quickstart read at a creator pull request's head"
+      }
+    },
+    "/creator-prs/{number}/workspace": {
+      "get": {
+        "parameters": [
+          {
+            "description": "GitHub pull request number",
+            "in": "path",
+            "name": "number",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/CreatorPrWorkspaceResponse"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "PR identity and complete quickstart snapshots"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequest"
+                }
+              }
+            },
+            "description": "Bad request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequest"
+                }
+              }
+            },
+            "description": "PR not found or git-service is not available"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequest"
+                }
+              }
+            },
+            "description": "PR changes too many files to load"
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequest"
+                }
+              }
+            },
+            "description": "Git service error"
+          }
+        },
+        "summary": "Get every quickstart a creator pull request touches, read at its head"
       }
     },
     "/favorites": {
@@ -1049,6 +1435,89 @@
           }
         },
         "summary": "Create a pull request via git-service"
+      }
+    },
+    "/pull-request/batch": {
+      "post": {
+        "description": "Opens a new creator PR when metadata.prNumber is omitted, otherwise appends one commit to that PR. Only the files sent are written.\n",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BatchPrRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/BatchPrResponse"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Changes committed and pushed"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequest"
+                }
+              }
+            },
+            "description": "Bad request"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequest"
+                }
+              }
+            },
+            "description": "PR not found or git-service is not available"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequest"
+                }
+              }
+            },
+            "description": "PR has new commits, a PR already exists for the branch, or the base commit is unavailable"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequest"
+                }
+              }
+            },
+            "description": "Request body too large"
+          },
+          "502": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequest"
+                }
+              }
+            },
+            "description": "Git service error"
+          }
+        },
+        "summary": "Commit edits across several existing quickstarts to one pull request"
       }
     },
     "/quickstarts": {

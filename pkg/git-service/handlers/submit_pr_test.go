@@ -42,13 +42,27 @@ type mockRepoManager struct {
 	fileContents    map[string]string
 	readFileErr     error
 	pullLatestCount int
+
+	createBranchAtErr error
+	branchBase        string
+	headSHA           string
+	headSHAErr        error
+	committedPaths    []string
+	commitMessage     string
+
+	baseFiles    map[string]string
+	baseFilesErr error
 }
 
 func (m *mockRepoManager) PullLatest() error {
 	m.pullLatestCount++
 	return m.pullLatestErr
 }
-func (m *mockRepoManager) CreateBranch(name string) error           { return m.createBranchErr }
+func (m *mockRepoManager) CreateBranch(name string) error { return m.createBranchErr }
+func (m *mockRepoManager) CreateBranchAt(name, sha string) error {
+	m.branchBase = sha
+	return m.createBranchAtErr
+}
 func (m *mockRepoManager) CheckoutExistingBranch(name string) error { return m.checkoutExistingErr }
 func (m *mockRepoManager) PushBranch(branch string) error           { m.pushedBranch = branch; return m.pushErr }
 func (m *mockRepoManager) PushBranchForce(branch string) error {
@@ -70,6 +84,15 @@ func (m *mockRepoManager) RemoveFiles(dir string, names []string) error {
 }
 func (m *mockRepoManager) CommitChanges(message, authorName, authorEmail, dir string, files []gitops.File) (string, error) {
 	return m.commitSHA, m.commitErr
+}
+func (m *mockRepoManager) CommitPaths(message, authorName, authorEmail string, paths []string) (string, error) {
+	m.committedPaths = paths
+	m.commitMessage = message
+	return m.commitSHA, m.commitErr
+}
+func (m *mockRepoManager) HeadSHA() (string, error) { return m.headSHA, m.headSHAErr }
+func (m *mockRepoManager) BaseFiles(dir string) (map[string]string, error) {
+	return m.baseFiles, m.baseFilesErr
 }
 func (m *mockRepoManager) ListDirectories(basePath string) ([]string, error) {
 	return m.directories, m.listDirsErr
@@ -104,6 +127,14 @@ type mockGitHubClient struct {
 	findURL        string
 	findURLErr     error
 
+	workspace    *ghclient.Workspace
+	workspaceErr error
+	resource     *ghclient.Resource
+	resourceErr  error
+	resourceName string
+	findPRNumber int
+	findPRErr    error
+
 	createdTitle string
 	createdBody  string
 	createdHead  string
@@ -136,6 +167,19 @@ func (m *mockGitHubClient) GetCreatorPR(ctx context.Context, prNumber int) (*ghc
 }
 func (m *mockGitHubClient) GetPRQuickstartFiles(ctx context.Context, pr *ghclient.CreatorPR) (string, []ghclient.File, error) {
 	return m.prFilesSlug, m.prFiles, m.prFilesErr
+}
+func (m *mockGitHubClient) GetPRWorkspace(ctx context.Context, pr *ghclient.CreatorPR) (*ghclient.Workspace, error) {
+	return m.workspace, m.workspaceErr
+}
+func (m *mockGitHubClient) GetPRResource(ctx context.Context, pr *ghclient.CreatorPR, name string) (*ghclient.Resource, error) {
+	m.resourceName = name
+	return m.resource, m.resourceErr
+}
+func (m *mockGitHubClient) FindPRByBranch(ctx context.Context, branchName string) (string, int, error) {
+	if m.findPRErr == nil && m.findPRNumber == 0 {
+		return "", 0, ghclient.ErrNotFound
+	}
+	return m.findURL, m.findPRNumber, m.findPRErr
 }
 func (m *mockGitHubClient) FindPRURLByBranch(ctx context.Context, branchName string) (string, error) {
 	return m.findURL, m.findURLErr

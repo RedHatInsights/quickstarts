@@ -599,3 +599,256 @@ func writeContent(w http.ResponseWriter, content string) {
 func stdb64(s string) string {
 	return base64.StdEncoding.EncodeToString([]byte(s))
 }
+
+func TestGetPRWorkspace_ReadsEveryTouchedDirectoryAtHead(t *testing.T) {
+	mux := http.NewServeMux()
+	mux.HandleFunc("/repos/test-owner/test-repo/pulls/11/files", func(w http.ResponseWriter, r *http.Request) {
+		json.NewEncoder(w).Encode([]map[string]string{
+			{"filename": "docs/quickstarts/alpha/alpha.yml", "status": "modified"},
+			{"filename": "docs/quickstarts/beta/metadata.yaml", "status": "modified"},
+			{"filename": "docs/quickstarts/gamma-new/gamma-new.yaml", "status": "renamed", "previous_filename": "docs/quickstarts/gamma/gamma.yaml"},
+			{"filename": "docs/quickstarts/delta/delta.yaml", "status": "removed"},
+			{"filename": "README.md", "status": "modified"},
+		})
+	})
+	mux.HandleFunc("/repos/fork-user/test-repo/contents/docs/quickstarts/alpha", func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, "deadbeef", r.URL.Query().Get("ref"))
+		writeDirectory(w, "docs/quickstarts/alpha", "metadata.yml", "alpha.yml")
+	})
+	mux.HandleFunc("/repos/fork-user/test-repo/contents/docs/quickstarts/beta", func(w http.ResponseWriter, r *http.Request) {
+		writeDirectory(w, "docs/quickstarts/beta", "metadata.yaml", "beta.yaml")
+	})
+	mux.HandleFunc("/repos/fork-user/test-repo/contents/docs/quickstarts/gamma-new", func(w http.ResponseWriter, r *http.Request) {
+		writeDirectory(w, "docs/quickstarts/gamma-new", "metadata.yaml", "gamma-new.yaml")
+	})
+	notFound := func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode(map[string]string{"message": "Not Found"})
+	}
+	mux.HandleFunc("/repos/fork-user/test-repo/contents/docs/quickstarts/gamma", notFound)
+	mux.HandleFunc("/repos/fork-user/test-repo/contents/docs/quickstarts/delta", notFound)
+	mux.HandleFunc("/repos/fork-user/test-repo/contents/docs/quickstarts/", func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, "deadbeef", r.URL.Query().Get("ref"))
+		writeContent(w, "content of "+r.URL.Path)
+	})
+
+	client := newTestClient(t, mux)
+	pr := &CreatorPR{Number: 11, HeadSHA: "deadbeef", HeadOwner: "fork-user", HeadRepo: "test-repo"}
+	ws, err := client.GetPRWorkspace(context.Background(), pr)
+	require.NoError(t, err)
+
+	require.Len(t, ws.Resources, 3)
+	assert.Equal(t, "alpha", ws.Resources[0].Name)
+	assert.Equal(t, "docs/quickstarts/alpha", ws.Resources[0].Dir)
+	assert.ElementsMatch(t, []File{
+		{Name: "metadata.yml", Content: "content of /repos/fork-user/test-repo/contents/docs/quickstarts/alpha/metadata.yml"},
+		{Name: "alpha.yml", Content: "content of /repos/fork-user/test-repo/contents/docs/quickstarts/alpha/alpha.yml"},
+	}, ws.Resources[0].Files, "unchanged companion files are part of the snapshot")
+	assert.Equal(t, "beta", ws.Resources[1].Name)
+	assert.Empty(t, ws.Resources[0].RenamedFrom)
+	assert.Equal(t, "gamma-new", ws.Resources[2].Name)
+	assert.Equal(t, "gamma", ws.Resources[2].RenamedFrom, "the old side of a rename is paired with its resource")
+	assert.Equal(t, []string{"delta"}, ws.Missing, "a deleted directory is still reported")
+}
+
+func TestGetPRWorkspace_LeavesAmbiguousRenamesMissing(t *testing.T) {
+	mux := http.NewServeMux()
+	mux.HandleFunc("/repos/test-owner/test-repo/pulls/12/files", func(w http.ResponseWriter, r *http.Request) {
+		json.NewEncoder(w).Encode([]map[string]string{
+			{"filename": "docs/quickstarts/merged/metadata.yml", "status": "renamed", "previous_filename": "docs/quickstarts/one/metadata.yml"},
+			{"filename": "docs/quickstarts/merged/merged.yml", "status": "renamed", "previous_filename": "docs/quickstarts/two/two.yml"},
+		})
+	})
+	mux.HandleFunc("/repos/fork-user/test-repo/contents/docs/quickstarts/merged", func(w http.ResponseWriter, r *http.Request) {
+		writeDirectory(w, "docs/quickstarts/merged", "metadata.yml", "merged.yml")
+	})
+	notFound := func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode(map[string]string{"message": "Not Found"})
+	}
+	mux.HandleFunc("/repos/fork-user/test-repo/contents/docs/quickstarts/one", notFound)
+	mux.HandleFunc("/repos/fork-user/test-repo/contents/docs/quickstarts/two", notFound)
+	mux.HandleFunc("/repos/fork-user/test-repo/contents/docs/quickstarts/", func(w http.ResponseWriter, r *http.Request) {
+		writeContent(w, "content of "+r.URL.Path)
+	})
+
+	client := newTestClient(t, mux)
+	pr := &CreatorPR{Number: 12, HeadSHA: "deadbeef", HeadOwner: "fork-user", HeadRepo: "test-repo"}
+	ws, err := client.GetPRWorkspace(context.Background(), pr)
+	require.NoError(t, err)
+
+	require.Len(t, ws.Resources, 1)
+	assert.Empty(t, ws.Resources[0].RenamedFrom, "files from two directories name no single old directory")
+	assert.Equal(t, []string{"one", "two"}, ws.Missing)
+}
+
+func TestGetPRWorkspace_RejectsIncompleteDiff(t *testing.T) {
+	mux := http.NewServeMux()
+	mux.HandleFunc("/repos/test-owner/test-repo/pulls/11/files", func(w http.ResponseWriter, r *http.Request) {
+		page := r.URL.Query().Get("page")
+		if page == "" {
+			page = "1"
+		}
+		n := 0
+		fmt.Sscanf(page, "%d", &n)
+		if n < 30 {
+			w.Header().Set("Link", fmt.Sprintf(`<%s?page=%d>; rel="next"`, "http://"+r.Host+r.URL.Path, n+1))
+		}
+		files := make([]map[string]string, 100)
+		for i := range files {
+			files[i] = map[string]string{"filename": fmt.Sprintf("docs/quickstarts/q%d-%d/q.yml", n, i), "status": "modified"}
+		}
+		json.NewEncoder(w).Encode(files)
+	})
+
+	client := newTestClient(t, mux)
+	pr := &CreatorPR{Number: 11, HeadSHA: "deadbeef", HeadOwner: "fork-user", HeadRepo: "test-repo"}
+	_, err := client.GetPRWorkspace(context.Background(), pr)
+	assert.ErrorIs(t, err, ErrIncompleteDiff)
+}
+
+func TestGetPRResource_ReadsFromHeadAndReportsMissing(t *testing.T) {
+	mux := http.NewServeMux()
+	mux.HandleFunc("/repos/fork-user/test-repo/contents/docs/quickstarts/alpha", func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, "deadbeef", r.URL.Query().Get("ref"))
+		writeDirectory(w, "docs/quickstarts/alpha", "metadata.yml")
+	})
+	mux.HandleFunc("/repos/fork-user/test-repo/contents/docs/quickstarts/alpha/metadata.yml", func(w http.ResponseWriter, r *http.Request) {
+		writeContent(w, "name: alpha\n")
+	})
+	mux.HandleFunc("/repos/fork-user/test-repo/contents/docs/quickstarts/missing", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode(map[string]string{"message": "Not Found"})
+	})
+
+	client := newTestClient(t, mux)
+	pr := &CreatorPR{Number: 11, HeadSHA: "deadbeef", HeadOwner: "fork-user", HeadRepo: "test-repo"}
+
+	res, err := client.GetPRResource(context.Background(), pr, "alpha")
+	require.NoError(t, err)
+	assert.Equal(t, []File{{Name: "metadata.yml", Content: "name: alpha\n"}}, res.Files)
+
+	_, err = client.GetPRResource(context.Background(), pr, "missing")
+	assert.ErrorIs(t, err, ErrResource)
+
+	for _, bad := range []string{"", "../etc", "a/b"} {
+		_, err = client.GetPRResource(context.Background(), pr, bad)
+		assert.Error(t, err, bad)
+	}
+}
+
+func TestGetPRQuickstartFiles_RejectsMultiResourcePR(t *testing.T) {
+	mux := http.NewServeMux()
+	mux.HandleFunc("/repos/test-owner/test-repo/pulls/11/files", func(w http.ResponseWriter, r *http.Request) {
+		json.NewEncoder(w).Encode([]map[string]string{
+			{"filename": "docs/quickstarts/alpha/alpha.yml", "status": "modified"},
+			{"filename": "docs/quickstarts/beta/beta.yml", "status": "modified"},
+		})
+	})
+
+	client := newTestClient(t, mux)
+	pr := &CreatorPR{Number: 11, Slug: "alpha", HeadSHA: "deadbeef", HeadOwner: "fork-user", HeadRepo: "test-repo"}
+	_, _, err := client.GetPRQuickstartFiles(context.Background(), pr)
+	assert.ErrorIs(t, err, ErrMultiResource)
+}
+
+func TestFindPRByBranch_ReturnsNumber(t *testing.T) {
+	mux := http.NewServeMux()
+	mux.HandleFunc("/repos/test-owner/test-repo/pulls", func(w http.ResponseWriter, r *http.Request) {
+		json.NewEncoder(w).Encode([]map[string]interface{}{
+			{"html_url": "https://github.com/test-owner/test-repo/pull/12", "number": 12},
+		})
+	})
+
+	client := newTestClient(t, mux)
+	url, number, err := client.FindPRByBranch(context.Background(), "qs-update-batch-1")
+	require.NoError(t, err)
+	assert.Equal(t, "https://github.com/test-owner/test-repo/pull/12", url)
+	assert.Equal(t, 12, number)
+}
+
+func TestGetPRWorkspace_ReadsDeletedQuickstartsAtTheMergeBase(t *testing.T) {
+	mux := http.NewServeMux()
+	mux.HandleFunc("/repos/test-owner/test-repo/pulls/13/files", func(w http.ResponseWriter, r *http.Request) {
+		json.NewEncoder(w).Encode([]map[string]string{
+			{"filename": "docs/quickstarts/alpha/alpha.yml", "status": "modified"},
+			{"filename": "docs/quickstarts/delta/delta.yml", "status": "removed"},
+			{"filename": "docs/quickstarts/delta/metadata.yml", "status": "removed"},
+			{"filename": "docs/quickstarts/odd/notes/readme.md", "status": "removed"},
+		})
+	})
+	mux.HandleFunc("/repos/test-owner/test-repo/compare/basesha...deadbeef", func(w http.ResponseWriter, r *http.Request) {
+		json.NewEncoder(w).Encode(map[string]interface{}{"merge_base_commit": map[string]string{"sha": "mergebase"}})
+	})
+	notFound := func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode(map[string]string{"message": "Not Found"})
+	}
+	mux.HandleFunc("/repos/fork-user/test-repo/contents/docs/quickstarts/alpha", func(w http.ResponseWriter, r *http.Request) {
+		writeDirectory(w, "docs/quickstarts/alpha", "metadata.yml", "alpha.yml")
+	})
+	mux.HandleFunc("/repos/fork-user/test-repo/contents/docs/quickstarts/delta", notFound)
+	mux.HandleFunc("/repos/fork-user/test-repo/contents/docs/quickstarts/odd", notFound)
+	mux.HandleFunc("/repos/fork-user/test-repo/contents/docs/quickstarts/", func(w http.ResponseWriter, r *http.Request) {
+		writeContent(w, "head "+r.URL.Path)
+	})
+	mux.HandleFunc("/repos/test-owner/test-repo/contents/docs/quickstarts/delta", func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, "mergebase", r.URL.Query().Get("ref"), "deleted quickstarts are read where the branch started")
+		writeDirectory(w, "docs/quickstarts/delta", "metadata.yml", "delta.yml")
+	})
+	// Only a nested file was removed, so there is no quickstart to restore.
+	mux.HandleFunc("/repos/test-owner/test-repo/contents/docs/quickstarts/odd", func(w http.ResponseWriter, r *http.Request) {
+		json.NewEncoder(w).Encode([]map[string]string{{"type": "dir", "name": "notes", "path": "docs/quickstarts/odd/notes"}})
+	})
+	mux.HandleFunc("/repos/test-owner/test-repo/contents/docs/quickstarts/", func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, "mergebase", r.URL.Query().Get("ref"))
+		writeContent(w, "base "+r.URL.Path)
+	})
+
+	client := newTestClient(t, mux)
+	pr := &CreatorPR{Number: 13, HeadSHA: "deadbeef", HeadOwner: "fork-user", HeadRepo: "test-repo", BaseSHA: "basesha"}
+	ws, err := client.GetPRWorkspace(context.Background(), pr)
+	require.NoError(t, err)
+
+	require.Len(t, ws.Resources, 1)
+	require.Len(t, ws.Deleted, 1)
+	assert.Equal(t, "delta", ws.Deleted[0].Name)
+	assert.ElementsMatch(t, []File{
+		{Name: "metadata.yml", Content: "base /repos/test-owner/test-repo/contents/docs/quickstarts/delta/metadata.yml"},
+		{Name: "delta.yml", Content: "base /repos/test-owner/test-repo/contents/docs/quickstarts/delta/delta.yml"},
+	}, ws.Deleted[0].Files)
+	assert.Equal(t, []string{"odd"}, ws.Missing, "a directory that is no deleted quickstart stays missing")
+}
+
+func TestGetPRWorkspace_DeletionOnlyPRLoads(t *testing.T) {
+	mux := http.NewServeMux()
+	mux.HandleFunc("/repos/test-owner/test-repo/pulls/14/files", func(w http.ResponseWriter, r *http.Request) {
+		json.NewEncoder(w).Encode([]map[string]string{
+			{"filename": "docs/quickstarts/delta/delta.yml", "status": "removed"},
+		})
+	})
+	// Without a comparison the base commit GitHub reports is used instead.
+	mux.HandleFunc("/repos/test-owner/test-repo/compare/basesha...deadbeef", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusInternalServerError)
+	})
+	mux.HandleFunc("/repos/fork-user/test-repo/contents/docs/quickstarts/delta", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode(map[string]string{"message": "Not Found"})
+	})
+	mux.HandleFunc("/repos/test-owner/test-repo/contents/docs/quickstarts/delta", func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, "basesha", r.URL.Query().Get("ref"))
+		writeDirectory(w, "docs/quickstarts/delta", "delta.yml")
+	})
+	mux.HandleFunc("/repos/test-owner/test-repo/contents/docs/quickstarts/delta/delta.yml", func(w http.ResponseWriter, r *http.Request) {
+		writeContent(w, "spec: {}\n")
+	})
+
+	client := newTestClient(t, mux)
+	pr := &CreatorPR{Number: 14, HeadSHA: "deadbeef", HeadOwner: "fork-user", HeadRepo: "test-repo", BaseSHA: "basesha"}
+	ws, err := client.GetPRWorkspace(context.Background(), pr)
+	require.NoError(t, err, "a PR that only deletes quickstarts can be reopened")
+	assert.Empty(t, ws.Resources)
+	require.Len(t, ws.Deleted, 1)
+	assert.Equal(t, "delta", ws.Deleted[0].Name)
+	assert.Empty(t, ws.Missing)
+}
