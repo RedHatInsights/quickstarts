@@ -7,7 +7,7 @@ tags:
   value: my-user-accesss
 - kind: content
   value: quickstart
-- kind: product-familiesz
+- kind: product-families
   value: rhels
 - kind: product-families
   value: iam
