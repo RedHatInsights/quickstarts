@@ -81,7 +81,7 @@ spec:
         
         See the [Red Hat Lightspeed documentation](https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest) to learn more about using the vulnerability service in the console:
         - [User Access for vulnerability service users](https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/observe-ref_roles_for_vulnerability)
-        - [Assessing and Monitoring Security Vulnerabilities on RHEL Systems](https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/observe-assess_and_monitor_security_vulnerabilities)
+        - [Assess and monitor security vulnerabilities](https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/observe-assess_and_monitor_security_vulnerabilities)
         - [Overview of Red Hat Lightspeed vulnerability service reporting](https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/observe-assembly_vuln_report_overview)
 
 
