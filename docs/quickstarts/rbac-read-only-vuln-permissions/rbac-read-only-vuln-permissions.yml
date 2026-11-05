@@ -5,7 +5,7 @@ metadata:
   # you can add additional metadata here
   # instructional: true
 spec:
-  displayName: Configuring read-only permissions for a team
+  displayName: Configure read-only permissions for a team
   durationMinutes: 10
   type:
     text: Quick start
