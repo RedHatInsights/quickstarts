@@ -8,7 +8,7 @@ metadata:
 spec:
   version: 0.1
 
-  displayName: 'Creating and executing remediation plans'
+  displayName: 'Create and execute remediation plans'
   durationMinutes: 10
   icon: ''
   # Display the quickstart tag on the tile.
