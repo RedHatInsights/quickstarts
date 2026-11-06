@@ -12,5 +12,5 @@ spec:
   icon: ~
   description: Configure Red Hat Lightspeed to pull system data into automation workflows.
   link:
-    href: https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.7/integrate-assembly_ug_controller_setting_up_insights 
+    href: https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/latest/integrate-assembly_ug_controller_setting_up_insights 
     text: View documentation
