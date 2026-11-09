@@ -80,7 +80,7 @@ spec:
 
         The systems you added are listed on the workspace details page. Click a system to view more details about it, including the workspace it belongs to.
 
-        For more information about configuring inventory and workspaces, see [Viewing and managing system inventory](https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/html/viewing_and_managing_system_inventory/index). 
+        For more information about configuring inventory and workspaces, see [Viewing and managing system inventory](https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/administer-assembly_workspaces). 
 
 
       # optional - the task's Check your work module
