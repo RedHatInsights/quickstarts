@@ -4,7 +4,7 @@ go 1.26.3
 
 require (
 	github.com/ProtonMail/go-crypto v1.1.6
-	github.com/getkin/kin-openapi v0.133.0
+	github.com/getkin/kin-openapi v0.149.0
 	github.com/ghodss/yaml v1.0.0
 	github.com/go-chi/chi/v5 v5.2.5
 	github.com/go-git/go-git/v5 v5.19.1
