@@ -1,0 +1,21 @@
+kind: QuickStarts
+name: insights-remediate-plan-create
+tags:
+  - kind: bundle
+    value: iam
+  - kind: bundle
+    value: insights
+  - kind: application
+    value: my-user-access
+  - kind: content
+    value: quickstart
+  - kind: product-families
+    value: rhel
+  - kind: use-case
+    value: containers
+  - kind: use-case
+    value: infrastructure
+  - kind: use-case
+    value: automation
+  - kind: use-case
+    value: observability
