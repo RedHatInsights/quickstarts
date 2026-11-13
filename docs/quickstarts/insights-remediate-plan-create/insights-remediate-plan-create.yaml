@@ -2,25 +2,7 @@ apiVersion: console.openshift.io/v1
 kind: QuickStarts
 metadata:
   name: insights-remediate-plan-create
-  tags:
-    - kind: bundle
-      value: iam
-    - kind: bundle
-      value: insights
-    - kind: application
-      value: my-user-access
-    - kind: content
-      value: quickstart
-    - kind: product-families
-      value: rhel
-    - kind: use-case
-      value: containers
-    - kind: use-case
-      value: infrastructure
-    - kind: use-case
-      value: automation
-    - kind: use-case
-      value: observability
+  tags: []
 spec:
   version: 0.1
   displayName: Create and execute remediation plans
@@ -30,15 +12,13 @@ spec:
   type:
     text: Quick start
     color: green
-  durationMinutes: 15
+  durationMinutes: 10
   introduction: >-
     In this quick start, you will create and execute a remediation plan on one
     or more systems to resolve an issue that the Red Hat Lightspeed advisor
     service recommends remediating.
 
-    <br>
-
-    <br>
+    <br>  
 
     The advisor service assesses and monitors the health of your Red Hat
     Enterprise Linux (RHEL) infrastructure and provides recommendations to
@@ -47,9 +27,7 @@ spec:
     Remediation plans use Ansible playbooks to remediate issues on systems in
     your Red Hat Enterprise Linux (RHEL) infrastructure. 
 
-    <br>
-
-    <br>
+    <br>    
 
     Once you've created a plan, you can execute it from within Red Hat
     Lightspeed on directly connected RHEL systems without additional
@@ -60,11 +38,9 @@ spec:
 
     <br>
 
-    For more information see the:
+    For more information see:
       * [About remediations](https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/get_started-assembly_remediations_overview#about-remediations)
       * [Address and resolve critical system risks](https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/administer-assembly_managing_remediation_plans_in_lightspeed)
-    <br>
-
     <br>
   tasks:
     - title: Create a remediation plan
