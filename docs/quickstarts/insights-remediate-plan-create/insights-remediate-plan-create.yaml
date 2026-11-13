@@ -1,0 +1,271 @@
+apiVersion: console.openshift.io/v1
+kind: QuickStarts
+metadata:
+  name: insights-remediate-plan-create
+  tags: []
+spec:
+  version: 0.1
+  displayName: Create and execute remediation plans
+  icon: ""
+  description: Create and execute a remediation plan to resolve an issue detected
+    by the Red Hat Lightspeed advisor service.
+  type:
+    text: Quick start
+    color: green
+  durationMinutes: 10
+  introduction: >-
+    In this quick start, you will create and execute a remediation plan on one
+    or more systems to resolve an issue that the Red Hat Lightspeed advisor
+    service recommends remediating.
+
+    <br>  
+
+    The advisor service assesses and monitors the health of your Red Hat
+    Enterprise Linux (RHEL) infrastructure and provides recommendations to
+    address availability, stability, performance, and security issues. 
+
+    Remediation plans use Ansible playbooks to remediate issues on systems in
+    your Red Hat Enterprise Linux (RHEL) infrastructure. 
+
+    <br>    
+
+    Once you've created a plan, you can execute it from within Red Hat
+    Lightspeed on directly connected RHEL systems without additional
+    subscriptions or tools. You can also download a remediation plan's playbook
+    and run it in your Ansible workflow.
+
+    <br>
+
+    <br>
+
+    For more information see:
+      * [About remediations](https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/get_started-assembly_remediations_overview#about-remediations)
+      * [Address and resolve critical system risks](https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/administer-assembly_managing_remediation_plans_in_lightspeed)
+    <br>
+  tasks:
+    - title: Create a remediation plan
+      description: >-
+        Select an issue that the advisor service has recommended remediating on
+        a system in your RHEL infrastructure, and then create a remediation plan
+        to execute.
+
+
+        1. On the left navigation bar, go to **Operations** > **Advisor** >
+        **Recommendations**. 
+
+        2. Scroll through the list of recommendations and select one whose
+        **Remediation type** is set to **Playbook**. 
+
+        3. Click the **Name** hyperlink to open the details of that
+        recommendation.
+
+        4. In the systems table at the bottom of the recommendation details
+        page, select at least one system to remediate.
+
+        5. Click **Plan remediation**. This opens the **Plan a remediation**
+        dialog.
+
+            <details>
+            <summary><span style="color:#0066CC">&nbsp;Is the **Plan remediation** button disabled?</span></summary>
+
+            [You must select at least one system to remediate before you can create a remediation plan.]{{admonition note}}
+            </details>
+
+        6. In the **Plan name** field, type `My-Plan-1` and press **Enter** to
+        create a new plan.
+
+            [The **Plan name** field is a combined text box and list. Typing a new name creates a new plan; selecting an existing plan from the list adds your selected systems and actions to that plan instead.]{{admonition note}}
+
+        7. Review the **Plan summary**, which shows the number of actions,
+        systems, and issues that the plan will contain.
+            * **Auto-reboot**: If you prefer to reboot the systems manually after the remediation plan is executed, set the **Auto-reboot is on** switch to off.
+            * Optionally, click **Download preview** to inspect the generated Ansible playbook before you create the plan.
+
+            [If the dialog shows an alert that your selection exceeds the execution limits, remove systems or actions before continuing. See the next task for details.]{{admonition note}}
+
+        8. Click **Create plan**.
+
+        9. When the plan is created, click **View plan** to open it. The plan
+        opens on the **General** tab, which contains the **Overview**,
+        **Activity**, and **Execution readiness summary** cards.
+
+            <details>
+            <summary><span style="color:#0066CC">&nbsp;Prefer to navigate to the plan yourself?</span></summary>
+
+            Click **Close**, and then go to **Automation Toolkit** > **Remediation plans** and click **My-Plan-1** in the table.
+            </details>
+      review:
+        instructions: "- When you navigate to **Automation Toolkit** > **Remediation
+          plans**, do you see **_My-Plan-1_** in the table? When you open the
+          plan, can you see the **Overview**, **Activity**, and **Execution
+          readiness summary** cards on the **General** tab?"
+        failedTaskHelp: Review your remediation plan setup and adjust the configuration
+          as needed. [Learn
+          more...](https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/administer-assembly_viewing_managing_remediation_plans#about-remediation-plan-table-view)<i
+          class="pf-icon [fa-external-link-alt]"></i>
+    - title: Confirm execution readiness
+      description: >-
+        Check that your remediation plan is ready to execute.
+
+
+        [If the **Execute** button is enabled and the **Execution readiness
+        summary** card shows a green **Ready** label, your plan has passed the
+        readiness check. Skip these steps and proceed to the next
+        task.]{{admonition note}}
+
+        <br>
+
+        <br>
+
+        On the **General** tab of your plan, the **Execution readiness summary**
+        card runs three checks and shows a **Not ready** label with an error
+        count when any of them fails. Expand the card to see which check failed.
+
+
+        1. **Planned remediations**: Confirm that your plan is within the
+        execution limits of **100 systems** and **1000 action points**.
+
+            <details>
+            <summary><span style="color:#0066CC">&nbsp;What are action points?</span></summary>
+
+            Each issue in a plan is worth a number of action points depending on its type: Advisor 20 points, Vulnerability 20 points, Patch 2 points, and Compliance 5 points.
+
+            If the card reports that your plan exceeds the limits, it tells you how many systems or action points to remove. Remove them on the **Planned remediations** tab, or download the playbook and run it through Ansible Automation Platform or Satellite instead.
+            </details>
+
+        2. **User access permissions**: Check that you have the **Remediations
+        administrator** RBAC role.
+
+            [If you do not have the required user access permissions, contact your Organization administrator.]{{admonition important}}
+
+            <details>
+            <summary><span style="color:#0066CC">&nbsp;Need help applying the required user access permissions?</span></summary>
+
+            - In the console, go to **Settings** (⚙) > **User Access** > **Groups**.
+            - Create a new group.
+            - Add the **Remediations administrator** role to the new group.
+            - Under **Add members**, add the user accounts that will use Red Hat Lightspeed to create and execute remediation plans.
+
+            For more information, see the [Red Hat Lightspeed Remediations guide](https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/html-single/red_hat_lightspeed_remediations_guide/index).
+            </details>
+
+        3. **Systems connected to Red Hat Lightspeed**: Confirm that at least
+        one system in your plan is connected. The card shows how many of your
+        systems are connected, for example `3 (of 5) connected systems`.
+
+            <details>
+            <summary><span style="color:#0066CC">&nbsp;Need help connecting a RHEL system directly with rhc?</span></summary>
+
+            Log on as a user with root access to the RHEL system, and execute the following commands:
+            <ol type="a">
+              <li> `dnf install rhc rhc-worker-playbook`{{copy}}</li>
+              <li> `dnf upgrade rhc rhc-worker-playbook`{{copy}}</li>
+              <li> `grep mqtt-reconnect-delay /etc/rhc/config.toml || echo 'mqtt-reconnect-delay = "10s"' >> /etc/rhc/config.toml`{{copy}}</li>
+              <li> `rhc connect`{{copy}}</li>
+            </ol>
+
+            After executing the commands, refresh the plan details page and then check the **Connection status** column on the **Planned remediations** > **Systems** tab of your plan.
+            </details>
+
+            <details>
+            <summary><span style="color:#0066CC">&nbsp;Using Red Hat Satellite instead?</span></summary>
+
+            Systems managed by Red Hat Satellite connect to Red Hat Lightspeed through Cloud Connector rather than `rhc connect`. Configure Cloud Connector on your Satellite server, and ensure the `enable_cloud_remediations` Satellite setting is enabled for the hosts you want to remediate.
+
+            For more information, see [Remote Host Configuration and Management](https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/html/remote_host_configuration_and_management/index).
+            </details>
+
+            [To troubleshoot an individual system, go to the **Planned remediations** > **Systems** tab and click the entry in the **Connection status** column.]{{admonition note}}
+      review:
+        instructions: "- Does the **Execution readiness summary** card show a green
+          **Ready** label, and is the **Execute** button now enabled?"
+        failedTaskHelp: Review the remediation plan settings again and adjust the
+          configuration as needed. [Learn more
+          ...](https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/administer-assembly_viewing_managing_remediation_plans)<i
+          class="pf-icon [fa-external-link-alt]"></i>
+    - title: Execute a remediation plan
+      description: >-
+        In this task, you will execute the remediation plan on the connected
+        RHEL systems included in your plan.
+
+        <br>
+
+
+        1. Open **_My-Plan-1_**.
+
+            <details>
+            <summary><span style="color:#0066CC">&nbsp;Need help finding your remediation plan?</span></summary>
+
+            - On the console, go to **Automation Toolkit** > **Remediation plans**.
+            - Scroll through the list of remediation plans in the table and locate the remediation plan named **_My-Plan-1_** that you created earlier.
+            - Click the hyperlinked name of the plan to open it.
+            </details>
+
+        2. Click **Execute**.
+
+        3. Read the confirmation dialog, which warns that **plan execution
+        cannot be stopped or rolled back**, and then confirm that you want to
+        execute the plan.
+
+        4. To view the progress of the remediation plan execution, go to the
+        **Execution history** tab for **_My-Plan-1_**. The **Execution history**
+        tab displays the status of the remediation playbook execution for each
+        system and a link to the logs.
+
+            [A remediation plan with many actions to execute on many systems might take a while to complete.]{{admonition important}}
+
+        5. When the remediation plan has finished executing, return to
+        **Operations** > **Advisor** > **Recommendations**, find and open the
+        issue details, and then check to see if the systems you remediated are
+        no longer listed as having the issue.
+      review:
+        instructions: "- Was your remediation plan successfully executed? Under
+          **Operations** > **Advisor** > **Recommendations**, are the systems
+          you just remediated no longer listed as having the issue?"
+        failedTaskHelp: Review the remediation plan settings and adjust the
+          configuration as needed. You might also need to ensure your plan does
+          not exceed the execution limits of 100 systems and 1000 action points.
+          [Learn more
+          ...](https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/administer-assembly_viewing_managing_remediation_plans)
+    - title: Check when your plan expires
+      description: >-
+        Red Hat Lightspeed automatically deletes inactive remediation plans to
+        reduce storage and improve performance. In this task, you will find your
+        plan's expiration date.
+
+
+        [By default, a remediation plan is deleted after **4 months (120 days)**
+        of inactivity. The timer resets each time you modify or execute the
+        plan. By default, an expiration warning appears **30 days** before
+        deletion.]{{admonition important}}
+
+
+        1. Open **_My-Plan-1_** and stay on the **General** tab.
+
+        2. In the **Activity** card, find the **Expiration** field. It shows the
+        time remaining before the plan is deleted, for example `Expires in 118
+        days`. Hover over the value to see the exact date, and click the help
+        icon beside **Expiration** for an explanation of the policy.
+
+        3. If you are an Organization Administrator, you can change the
+        retention period for your whole organization.
+
+            <details>
+            <summary><span style="color:#0066CC">&nbsp;Need help changing the retention policy?</span></summary>
+
+            - Go to **Automation Toolkit** > **Remediation plans**.
+            - Click the options icon (**⋮**) beside the **Launch Quick Start** button, and then click **Edit retention policy**.
+            - Set the **Retention period**. Valid values are 14 days, 30 days, 2 months, 3 months, 4 months, 5 months, and 6 months.
+            - Set the **Expiration warning**, which controls how long before deletion the warning appears. Valid values are 3 days, 7 days, 14 days, 30 days, 2 months, 3 months, 4 months, and 5 months. The warning period must be shorter than the retention period.
+            - Click **Save**.
+
+            [This option requires Organization Administrator privileges and applies to every remediation plan in your organization.]{{admonition note}}
+            </details>
+      review:
+        instructions: "- On the **General** tab of **_My-Plan-1_**, can you see the
+          **Expiration** field in the **Activity** card, and does it show when
+          the plan will be deleted?"
+        failedTaskHelp: Review the remediation plan retention policy documentation.
+          [Learn more
+          ...](https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/administer-understanding_remediation_plan_retention_policy#about-the-remediation-plan-retention-policy)<i
+          class="pf-icon [fa-external-link-alt]"></i>
