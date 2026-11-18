@@ -16,6 +16,11 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+const (
+	commitAuthorName  = "nacho-bot"
+	commitAuthorEmail = "26633764+nacho-bot@users.noreply.github.com"
+)
+
 type File struct {
 	Name    string `json:"name"`
 	Content string `json:"content"`
@@ -149,7 +154,7 @@ func (h *Handler) SubmitPR(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	sha, err := h.repoMgr.CommitChanges(req.Metadata.CommitMessage, "nacho-bot", "crc-nachobot@redhat.com", dir, gitFiles)
+	sha, err := h.repoMgr.CommitChanges(req.Metadata.CommitMessage, commitAuthorName, commitAuthorEmail, dir, gitFiles)
 	if err != nil {
 		logrus.WithError(err).Error("Failed to commit")
 		h.cleanup(req.Metadata.BranchName)

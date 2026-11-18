@@ -211,7 +211,7 @@ func (h *Handler) submitBatch(r *http.Request, req *BatchPRRequest) (*BatchPRRes
 		return nil, err
 	}
 
-	sha, err := h.repoMgr.CommitPaths(meta.CommitMessage, "nacho-bot", "crc-nachobot@redhat.com", paths)
+	sha, err := h.repoMgr.CommitPaths(meta.CommitMessage, commitAuthorName, commitAuthorEmail, paths)
 	if errors.Is(err, gitops.ErrNoChanges) {
 		return nil, batchFail(http.StatusBadRequest, "the submitted files match the branch; there is nothing to save")
 	}
