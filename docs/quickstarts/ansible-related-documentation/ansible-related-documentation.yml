@@ -10,7 +10,7 @@ spec:
     color: orange
   displayName: Related documentation for Ansible
   icon: ~
-  description: A complete list of documentation related to Ansible Automation Platform services.
+  description: A complete list of documentation related to Ansible Automation Platform servicesz.
   link:
-    href: https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/
+    href: https://docs.redhat.com/en/documentations/red_hat_ansible_automation_platform/
     text: View Documentation
