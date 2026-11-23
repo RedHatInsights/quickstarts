@@ -47,7 +47,7 @@ spec:
       description: >-
         Select an issue that the advisor service has recommended remediating on
         a system in your RHEL infrastructure, and then create a remediation plan
-        to execute test.
+        to execute.
 
 
         1. On the left navigation bar, go to **Operations** > **Advisor** >
