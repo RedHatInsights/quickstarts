@@ -1,8 +1,8 @@
 kind: QuickStarts
-name: rbac-reducing-permissions
+name: rbac-reducing-permissionszs
 tags:
 - kind: bundle
-  value: iam
+  value: iams
 - kind: application
   value: my-user-access
 - kind: content
@@ -16,6 +16,6 @@ tags:
 - kind: use-case
   value: infrastructure
 - kind: use-case
-  value: system-configuration
+  value: system-configurations
 - kind: use-case
   value: security

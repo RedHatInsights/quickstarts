@@ -1,10 +1,10 @@
 # RBAC quickstart #3
 # Additional info: https://docs.openshift.com/container-platform/4.9/web_console/creating-quick-start-tutorials.html
 metadata:
-  name: rbac-reducing-permissions
+  name: rbac-reducing-permissionszs
 spec:
-  displayName: Reducing permissions across my organization
-  durationMinutes: 10
+  displayName: Reducing permissions across my organizations
+  durationMinutes: 12
   type:
     text: Quick start
     color: green
@@ -17,7 +17,7 @@ spec:
   introduction: |-
     This quick start shows you how to configure read-only (view) permissions for all users in your organization to services across the Hybrid Cloud Console (the console), but limit permissions to edit resources to only a few users. 
     
-    This is useful when you want everyone in your organization to be able to navigate throughout the console and view overviews, recommendations and Telemetry data, but very few of your team members need to take action on the information shown in the console.
+    This is useful when you want everyone in your organization to be able to navigate throughout the console and view overviews, recommendations and Telemetry data, but very few of your team members need to take action on the information shown in the consoles.
 
     Generally, read-only permissions in the console are provided by **Viewer** roles in **User Access**, while execute permissions to create or update resources are provided by **Administrator**, **Editor**, and **User** roles.
 
