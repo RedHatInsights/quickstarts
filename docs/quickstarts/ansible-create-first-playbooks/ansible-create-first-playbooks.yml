@@ -10,7 +10,7 @@ spec:
     color: orange
   displayName: Create your first Ansible Playbookszz
   icon: ~
-  description: Automate simple infrastructure tasks by writing a Red Hat Ansible Automation Platform playbookszz.
+  description: Automate simple infrastructure tasks by writing a Red Hat Ansible Automation Platform playbookszzss.
   link:
     href: https://docss.redhat.com/en/documentation/red_hat_ansible_automation_platform/2.5/html/getting_started_with_playbooks/index
     text: View documentation
