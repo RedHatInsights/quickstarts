@@ -59,10 +59,9 @@ spec:
         3. Click the **Name** hyperlink to open the details of that
         recommendation.
 
-        4. In the systems table at the bottom of the recommendation details
-        page, select at least one system to remediate.
+        4. Select at least one system to remediate in the systems table.
 
-        5. Click **Plan remediation**. This opens the **Plan a remediation**
+        5. Click **Plan remediation** which opens the **Plan a remediation**
         dialog.
 
             <details>
@@ -71,8 +70,7 @@ spec:
             [You must select at least one system to remediate before you can create a remediation plan.]{{admonition note}}
             </details>
 
-        6. In the **Plan name** field, type `My-Plan-1` and press **Enter** to
-        create a new plan.
+        6. In the **Plan name** field, type `My-Plan-1` and select **Create new plan "My-Plan-1"**.
 
             [The **Plan name** field is a combined text box and list. Typing a new name creates a new plan; selecting an existing plan from the list adds your selected systems and actions to that plan instead.]{{admonition note}}
 
@@ -85,14 +83,12 @@ spec:
 
         8. Click **Create plan**.
 
-        9. When the plan is created, click **View plan** to open it. The plan
-        opens on the **General** tab, which contains the **Overview**,
-        **Activity**, and **Execution readiness summary** cards.
+        9. When the plan is created, it opens on the **General** tab, which contains the **Overview**, **Activity**, and **Execution readiness summary** cards.
 
             <details>
             <summary><span style="color:#0066CC">&nbsp;Prefer to navigate to the plan yourself?</span></summary>
 
-            Click **Close**, and then go to **Automation Toolkit** > **Remediation plans** and click **My-Plan-1** in the table.
+            Go to **Automation Toolkit** > **Remediation plans** and click **My-Plan-1** in the **Remediations plan** table.
             </details>
       review:
         instructions: "- When you navigate to **Automation Toolkit** > **Remediation
