@@ -11,7 +11,7 @@ require (
 	github.com/go-ozzo/ozzo-validation v3.6.0+incompatible
 	github.com/google/go-github/v66 v66.0.0
 	github.com/joho/godotenv v1.5.1
-	github.com/oapi-codegen/oapi-codegen/v2 v2.6.0
+	github.com/oapi-codegen/oapi-codegen/v2 v2.7.1
 	github.com/oapi-codegen/runtime v1.4.0
 	github.com/prometheus/client_golang v1.23.2
 	github.com/redhatinsights/app-common-go v1.6.9
