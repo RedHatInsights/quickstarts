@@ -1,0 +1,7 @@
+kind: QuickStarts
+name: dfhghfxd
+tags:
+  - kind: bundle
+    value: application-services
+  - kind: product-families
+    value: openshift
