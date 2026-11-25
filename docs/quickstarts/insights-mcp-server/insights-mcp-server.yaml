@@ -1,0 +1,30 @@
+apiVersion: console.openshift.io/v1
+kind: QuickStarts
+metadata:
+  name: insights-mcp-server
+  tags:
+    - kind: bundle
+      value: insights
+    - kind: product-families
+      value: rhel
+    - kind: content
+      value: documentation
+    - kind: use-case
+      value: automation
+    - kind: use-case
+      value: infrastructure
+  externalDocumentation: true
+spec:
+  version: 0.1
+  displayName: MCP server for Red Hat Lightspeed
+  icon: ~
+  description: By connecting an LLM-based agent to the MCP server, you can use
+    simple language prompts to get information about your Red Hat Lightspeed
+    environment.
+  type:
+    text: Documentation
+    color: orange
+  link:
+    text: View documentation
+    href: https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/install-assembly_mcp_about_red_hat_lightspeed_mcp_server
+  prerequisites: []
