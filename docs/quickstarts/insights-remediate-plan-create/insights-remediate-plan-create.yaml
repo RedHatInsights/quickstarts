@@ -137,10 +137,13 @@ spec:
             <details>
             <summary><span style="color:#0066CC">&nbsp;Need help applying the required user access permissions?</span></summary>
 
-            - In the console, go to **Settings** (⚙) > **User Access** > **Groups**.
-            - Create a new group.
-            - Add the **Remediations administrator** role to the new group.
-            - Under **Add members**, add the user accounts that will use Red Hat Lightspeed to create and execute remediation plans.
+            - In the console, go to **Settings** (⚙) > under **Identity and Access Management** > **User Access** > **Groups**.
+            - Click **Create group**.
+            - Under **Name and description**, add the **Name** and **Description**, and click **Next**
+            - Under **Add roles**, add the **Remediations administrator** role to the new group, and click **Next**.
+            - Under **Add members**, add the user accounts **Username** or **Email** that will use Red Hat Lightspeed to create and execute remediation plans, and click **Next**.
+            - Under **Add service accounts**, add the service accounts associated with your Red Hat organization account, and click **Next**.
+            - Review the details and click **Submit**.
 
             For more information, see the [About remediations](https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/get_started-assembly_remediations_overview#about-remediations).
             </details>
