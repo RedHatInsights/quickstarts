@@ -1,0 +1,13 @@
+kind: QuickStarts
+name: inventory-views-quick-start
+tags:
+- kind: bundle
+  value: insights
+- kind: application
+  value: inventory
+- kind: content
+  value: quickstart
+- kind: product-families
+  value: rhel
+- kind: use-case
+  value: system-configuration

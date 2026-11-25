@@ -1,0 +1,110 @@
+metadata:
+  name: inventory-views-quick-start
+spec:
+  version: 0.1
+  displayName: Customize Your Inventory with Views
+  durationMinutes: 5
+  type:
+    text: Quick start
+    color: green
+  icon: data:image/svg+xml;base64,PCEtLSBHZW5lcmF0ZWQgYnkgSWNvTW9vbi5pbyAtLT4KPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KPHRpdGxlPjwvdGl0bGU+CjxnIGlkPSJpY29tb29uLWlnbm9yZSI+CjwvZz4KPHBhdGggZD0iTTQ0OCA2NHY0MTZoLTMzNmMtMjYuNTEzIDAtNDgtMjEuNDktNDgtNDhzMjEuNDg3LTQ4IDQ4LTQ4aDMwNHYtMzg0aC0zMjBjLTM1LjE5OSAwLTY0IDI4LjgtNjQgNjR2Mzg0YzAgMzUuMiAyOC44MDEgNjQgNjQgNjRoMzg0di00NDhoLTMyeiI+PC9wYXRoPgo8cGF0aCBkPSJNMTEyLjAyOCA0MTZ2MGMtMC4wMDkgMC4wMDEtMC4wMTkgMC0wLjAyOCAwLTguODM2IDAtMTYgNy4xNjMtMTYgMTZzNy4xNjQgMTYgMTYgMTZjMC4wMDkgMCAwLjAxOS0wLjAwMSAwLjAyOC0wLjAwMXYwLjAwMWgzMDMuOTQ1di0zMmgtMzAzLjk0NXoiPjwvcGF0aD4KPC9zdmc+Cg==
+  description: >-
+    Learn how to create custom views for the Systems inventory table.
+    Choose which columns to display, apply filters, save your
+    configuration as a named view, and set a default landing view.
+  introduction: |
+    ## Customize Your Systems Table with Inventory Views
+
+    Inventory Views lets you tailor the **Systems** table to show
+    exactly the information you need. You can:
+
+    - Add or remove columns from services like **Advisor**,
+      **Vulnerability**, **Patch**, and **Compliance**
+    - Reorder columns with drag and drop
+    - Save your layout as a named view you can switch to anytime
+    - Set a default view so it loads automatically
+
+    This guide walks you through creating your first custom view.
+  prerequisites:
+    - You must have access to **Inventory** on console.redhat.com.
+    - Column data from services like Advisor or Vulnerability requires
+      the appropriate access to those services.
+  tasks:
+    - title: Customize Your Columns
+      description: |
+        ### Choose which columns to display
+
+        1. Navigate to **Inventory** > **Systems**.
+        2. Click the **Manage columns** button above the table.
+        3. In the modal, you'll see column groups organized by service:
+           **Advisor**, **Vulnerability**, **Patch**, **Compliance**,
+           **Malware**, and **Inventory**.
+        4. Check or uncheck columns to add or remove them. For example,
+           enable **Critical CVEs** under Vulnerability, or
+           **Recommendations** under Advisor.
+        5. Drag and drop columns to reorder them as you prefer.
+        6. Click **Save** to apply your changes.
+      review:
+        instructions: |
+          #### Verify
+
+          Do you see your newly selected columns in the Systems table?
+        failedTaskHelp: |
+          If you don't see the columns:
+          - Ensure you clicked **Save** after making changes.
+          - Columns from services you don't have access to may show
+            placeholder values.
+          - Try refreshing the page.
+    - title: Save a Custom View
+      description: |
+        ### Save your current layout as a named view
+
+        1. After customizing your columns (and optionally applying
+           filters or sorting), click **Save as** in the toolbar.
+        2. Enter a name for your view (e.g., "Security Overview" or
+           "Patch Status").
+        3. Click **Save**.
+        4. Your new view now appears in the **view switcher** dropdown.
+           You can switch between it and the default
+           **All systems** view at any time.
+      review:
+        instructions: |
+          #### Verify
+
+          Can you see your named view in the view switcher dropdown?
+        failedTaskHelp: |
+          If your view doesn't appear:
+          - Ensure you clicked **Save** after entering the name.
+          - Try refreshing the page and check the view switcher again.
+    - title: Set a Default View
+      description: |
+        ### Make a view your default landing page
+
+        1. Select your custom view from the **view switcher** dropdown.
+        2. Open the view actions menu and select **Set as my default**.
+        3. The next time you visit **Inventory** > **Systems**, this
+           view will load automatically with your saved columns,
+           filters, and sort order.
+      review:
+        instructions: |
+          #### Verify
+
+          Navigate away from the Systems page and come back.
+          Does your custom view load automatically?
+        failedTaskHelp: |
+          If the default isn't applied:
+          - Try setting the default again from the view actions menu.
+          - Clear your browser cache and try again.
+  conclusion: |
+    ## Congratulations!
+
+    You've created a custom inventory view tailored to your workflow.
+
+    **What else you can do with views:**
+    - **Rename** or **delete** views from the view actions menu
+    - **Apply filters** (by OS, status, tags, CVE severity, and more)
+      and save them as part of a view
+    - **Sort** by any column and save the sort order
+    - Switch between views instantly using the view switcher
+
+    Your views are saved per-user, so they won't affect anyone else.
