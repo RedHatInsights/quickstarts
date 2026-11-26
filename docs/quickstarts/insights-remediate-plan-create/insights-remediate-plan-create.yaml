@@ -171,7 +171,7 @@ spec:
 
             Systems managed by Red Hat Satellite connect to Red Hat Lightspeed through Cloud Connector rather than `rhc connect`. Configure Cloud Connector on your Satellite server, and ensure the `enable_cloud_remediations` Satellite setting is enabled for the hosts you want to remediate.
 
-            For more information, see [Remote Host Configuration and Management](https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/html/remote_host_configuration_and_management/index).
+            For more information, see [Configure remote system communication to enable remediations](https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/configure-assembly_enabling_host_communication_with_lightspeed).
             </details>
 
             [To troubleshoot an individual system, go to the **Planned remediations** > **Systems** tab and click the entry in the **Connection status** column.]{{admonition note}}
@@ -268,3 +268,13 @@ spec:
           [Learn more
           ...](https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/administer-understanding_remediation_plan_retention_policy#about-the-remediation-plan-retention-policy)<i
           class="pf-icon [fa-external-link-alt]"></i>
+  conclusion: |-
+    **Thank you for taking the time to learn more about Remediations with Red Hat Lightspeed.**
+
+    As well as [Advisor Recommendations](https://console.redhat.com/insights/advisor/recommendations#SIDs=&tags=), you can also address [Content Advisories](https://console.redhat.com/insights/patch/advisories?offset=0), [Vulnerability CVEs](https://console.redhat.com/insights/vulnerability/cves#SIDs=&tags=), and [Compliance reports](https://console.redhat.com/insights/compliance/reports).
+
+    Remember that plans you leave idle are deleted automatically. See [Understanding the remediation plan retention policy](https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/administer-understanding_remediation_plan_retention_policy#about-the-remediation-plan-retention-policy) for details.
+
+    For additional information about this service, see the [Red Hat Lightspeed Remediations Guide](https://docs.redhat.com/en/documentation/red_hat_lightspeed/1-latest/html-single/red_hat_lightspeed_remediations_guide/index).
+
+    If you need additional assistance, you may also open a [support case](https://access.redhat.com/support).
