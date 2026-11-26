@@ -18,8 +18,8 @@ spec:
     Inventory Views lets you tailor the **Systems** table to show
     exactly the information you need. You can:
 
-    - Add or remove columns from services like **Advisor**,
-      **Vulnerability**, **Patch**, and **Compliance**
+    - Add or remove columns from applications like **Advisor**,
+      **Vulnerability**, **Content**, and **Compliance**
     - Reorder columns with drag and drop
     - Save your layout as a named view you can switch to anytime
     - Set a default view so it loads automatically
@@ -27,32 +27,38 @@ spec:
     This guide walks you through creating your first custom view.
   prerequisites:
     - You must have access to **Inventory** on console.redhat.com.
-    - Column data from services like Advisor or Vulnerability requires
-      the appropriate access to those services.
+    - Column data from applications like Advisor or Vulnerability requires
+      the appropriate access to those applications.
   tasks:
     - title: Customize Your Columns
       description: |
         ### Choose which columns to display
 
         1. Navigate to **Inventory** > **Systems**.
-        2. Click the **Manage columns** button above the table.
-        3. In the modal, you'll see column groups organized by service:
-           **Advisor**, **Vulnerability**, **Patch**, **Compliance**,
+        2. Above the table, click <i class="fas fa-ellipsis-v"></i> (more options),
+           then click **Manage columns**. **Manage columns** is not shown
+           until you open this menu.
+        3. In the modal, you'll see column groups organized by application:
+           **Advisor**, **Vulnerability**, **Content**, **Compliance**,
            **Malware**, and **Inventory**.
         4. Check or uncheck columns to add or remove them. For example,
            enable **Critical CVEs** under Vulnerability, or
            **Recommendations** under Advisor.
         5. Drag and drop columns to reorder them as you prefer.
-        6. Click **Save** to apply your changes.
+        6. Click **Save** to apply your changes. New columns are added at
+           the right side of the table. Scroll horizontally if you do not
+           see them right away.
       review:
         instructions: |
           #### Verify
 
           Do you see your newly selected columns in the Systems table?
+          Scroll to the right if they are not in view.
         failedTaskHelp: |
           If you don't see the columns:
+          - Scroll horizontally. New columns appear at the right edge of the table.
           - Ensure you clicked **Save** after making changes.
-          - Columns from services you don't have access to may show
+          - Columns from applications you don't have access to may show
             placeholder values.
           - Try refreshing the page.
     - title: Save a Custom View
@@ -62,7 +68,7 @@ spec:
         1. After customizing your columns (and optionally applying
            filters or sorting), click **Save as** in the toolbar.
         2. Enter a name for your view (e.g., "Security Overview" or
-           "Patch Status").
+           "Content Status").
         3. Click **Save**.
         4. Your new view now appears in the **view switcher** dropdown.
            You can switch between it and the default
@@ -81,7 +87,7 @@ spec:
         ### Make a view your default landing page
 
         1. Select your custom view from the **view switcher** dropdown.
-        2. Open the view actions menu and select **Set as my default**.
+        2. Open the view actions menu and select **Set as default**.
         3. The next time you visit **Inventory** > **Systems**, this
            view will load automatically with your saved columns,
            filters, and sort order.
