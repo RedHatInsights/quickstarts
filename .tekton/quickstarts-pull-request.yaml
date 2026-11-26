@@ -679,7 +679,7 @@ spec:
             value: $(params.PGSQL_USER)
           - name: POSTGRESQL_PASSWORD
             value: $(params.PGSQL_PASSWORD)
-          image: quay.io/sclorg/postgresql-15-c9s:c9s@sha256:7dfb27e83a9a0deabee912526db2fb13c37d8e9d017d7244419e5b36127fbd1c
+          image: quay.io/sclorg/postgresql-15-c9s:c9s@sha256:ac1ac9aa8ba2ef0bf312beee2b713dc2386fb179176137d11019009a52903ad4
           name: postgresql
         params:
         - description: The Trusted Artifact URI pointing to the artifact with the application source code.
