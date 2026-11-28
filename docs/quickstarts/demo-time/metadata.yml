@@ -1,0 +1,17 @@
+kind: QuickStarts
+name: demo-time
+tags:
+  - kind: bundle
+    value: allservices
+  - kind: bundle
+    value: ansible
+  - kind: bundle
+    value: settings
+  - kind: bundle
+    value: subscriptions
+  - kind: product-families
+    value: openshift
+  - kind: product-families
+    value: ansible
+  - kind: product-families
+    value: rhel
